@@ -1,4 +1,5 @@
 # InverseRG
+This is a clone from the original repo: https://github.com/Greyyy-HJC/InverseRG
 
 Research code for inverse renormalization group in 2D compact U(1) lattice gauge theory.
 
