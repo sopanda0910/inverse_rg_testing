@@ -33,6 +33,7 @@ class LocalWilsonLoopAction(nn.Module):
     def loop_values(self, field: torch.Tensor) -> list[torch.Tensor]:
         values = []
         for name in self.basis:
+            # Add quadratic terms as well due to introduction of bilinear layers
             if name == "plaquette":
                 angles = plaquette_angles(field)
             elif name == "rectangle_x":

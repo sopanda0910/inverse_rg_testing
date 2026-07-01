@@ -248,6 +248,8 @@ class SpatialGaugeCovariantBlocker(nn.Module):
     matching the behaviour of :class:`LearnableGaugeCovariantBlocker`.
     """
 
+    # Consider using naive approach of actual links instead of measurables as inputs
+
     N_PATHS = 7
     # The input features are the physical observable wilson loops (the square and rectangle wilson loops)
     N_INPUT_FEATURES = 12
@@ -269,6 +271,7 @@ class SpatialGaugeCovariantBlocker(nn.Module):
         # a non-zero padding would allow for edges where some of the kernel is just zeros or something like that
         self.conv1 = nn.Conv2d(self.N_INPUT_FEATURES, hidden_dim, kernel_size, padding=0)
         # This essentially just maps hidden_dim feature maps to hidden_dim feature maps with kernel of size 1
+        # What is the point of this convolution layer?
         self.conv2 = nn.Conv2d(hidden_dim, hidden_dim, 1)
         # This produces feature maps for each possible path for x and y (multiply by 2)
         # Only convolves with kernel size 1 (each grid point)
@@ -302,6 +305,8 @@ class SpatialGaugeCovariantBlocker(nn.Module):
         if fine_field.shape[-1] % 2 != 0 or fine_field.shape[-2] % 2 != 0:
             raise ValueError("2x2 blocking requires even lattice dimensions.")
         # Determines all of the square and rectangular wilson loop features
+        # QUESTION: Why only using gauage invariant features, why not consider guage covariant inputs
+        # like link variables + wilson loops/other observables, like used in the paper
         features = _block_gauge_invariant_features(fine_field)
         # Propagates through the NN layer
         x_logits, y_logits = self._predict_logits(features)
@@ -323,6 +328,7 @@ class SpatialGaugeCovariantBlocker(nn.Module):
         # Squared sum of all of its parameters
         # This isn't the full model loss, but just part of it
         # It may be useful to keep the parameters low to ensure smooth and accurate coarse graining
+        # QUESTION: Purpose
         loss = torch.tensor(0.0)
         for p in self.parameters():
             loss = loss + p.square().sum()
@@ -360,7 +366,7 @@ class ConditionedSpatialGaugeCovariantBlocker(nn.Module):
         self.conv2 = nn.Conv2d(hidden_dim, hidden_dim, 1)
         self.conv_out = nn.Conv2d(hidden_dim, 2 * self.N_PATHS, 1)
 
-
+        # What is this? What is the purpose of context, and how is it used?
         self.film1 = nn.Linear(context_dim, 2 * hidden_dim)
         self.film2 = nn.Linear(context_dim, 2 * hidden_dim)
         self._init_conditioning()

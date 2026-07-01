@@ -358,6 +358,7 @@ def train_learned_rg(
         # The contrastive_loss essentially dots the coefficients with the difference between the averages of the blocked vs sampled observables
         # This dot product is so that the partial derivative with respect to the parameters is equal to the difference between mean observables
         # This is where the course action coefficients are really trained because it is designed to be differentiable, and the derivative is explicitly given almost 
+        # QUESTION
         contrastive_loss = torch.dot(coarse_action.coefficients, model_obs.detach() - data_obs)
 
         # Considering the L2 loss of the weights/biases of the learnable blocker NN
