@@ -10,6 +10,7 @@ class LocalWilsonLoopAction(nn.Module):
         basis: tuple[str, ...] = ("plaquette", "rectangle_x", "rectangle_y"),
         initial_coefficients: torch.Tensor | None = None,
     ) -> None:
+        # The point of this is so that the action can be tuned to include weights of the rectangle_x and rectangle_y operators as well
         super().__init__()
         self.basis = basis
         if initial_coefficients is None:

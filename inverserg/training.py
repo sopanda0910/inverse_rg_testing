@@ -186,7 +186,9 @@ def _measurement_features(field: torch.Tensor, measurement_names: tuple[str, ...
         features.append(feature)
     return torch.stack(features, dim=-1)
 
-
+# This is really what lets the NN train on the underlying distribution and not just the configurations
+# Beyond just the means, the NN should be checking whether the blocked samples produced follow the same underlying distribution
+# as sampled coarse lattices (including things like variances, tails, and other features of the distribution)
 def measurement_distribution_mmd(
     blocked_field: torch.Tensor,
     coarse_field: torch.Tensor,
@@ -197,12 +199,18 @@ def measurement_distribution_mmd(
     coarse_features = _measurement_features(coarse_field, measurement_names)
     return _gaussian_mmd(blocked_features, coarse_features, bandwidth=bandwidth)
 
-
+# TODO - Understand better exactly what this does
 def _gaussian_mmd(data_features: torch.Tensor, model_features: torch.Tensor, bandwidth: float) -> torch.Tensor:
     gamma = 1.0 / max(2.0 * bandwidth * bandwidth, 1e-8)
+    # Pairwise distance squaured between the same and cross parameters
+    # How similar are the observables of the blocked lattice from one another
     xx = torch.cdist(data_features, data_features).pow(2)
+    # How similar are the observables of the sampled lattice from one another
     yy = torch.cdist(model_features, model_features).pow(2)
+    # How similar are the observables from blocked lattice to sampled lattice
     xy = torch.cdist(data_features, model_features).pow(2)
+    # Returns the average of guassian weighted distributions
+    # If near 0, both distributions are very similar
     return (
         torch.exp(-gamma * xx).mean()
         + torch.exp(-gamma * yy).mean()
@@ -252,6 +260,7 @@ def train_learned_rg(
     config: RGTrainingConfig | None = None,
     blocker: nn.Module | None = None,
 ) -> RGTrainingResult:
+    # Initializing parameters
     config = config or RGTrainingConfig()
     _set_seed(config.seed)
     device = torch.device(config.device)
@@ -259,11 +268,14 @@ def train_learned_rg(
     if coarse_beta_init is None:
         coarse_beta_init = tree_level_coarse_beta(config.fine_beta)
 
+    # Generates fine lattice if not already provided
     if fine_configs is None:
         fine_configs = generate_fine_ensemble(config)
     fine_configs = fine_configs.to(device)
     coarse_lattice_size = fine_configs.shape[-1] // 2
 
+    # Generates test fine lattices to check if the NN generalizes beyond data
+    # Optional, not used in training obviously
     test_configs: torch.Tensor | None = None
     if config.n_test_samples > 0:
         test_configs = generate_fine_ensemble(
@@ -272,18 +284,24 @@ def train_learned_rg(
 
     fixed_blocker = FixedGaugeCovariantBlocker().to(device)
     learnable_blocker = (blocker if blocker is not None else _create_blocker(config)).to(device)
+    # This coarse action actually has parameters that can update and dynamically change
+    # The parameters are just the coefficients for the rectangle x and y, and plaquette weights in the action
     coarse_action = LocalWilsonLoopAction.wilson(coarse_beta_init, basis=config.basis).to(device)
 
     with torch.no_grad():
+        # No tuned parameters, just baseline blocking from fine to coarse
         baseline_data = fixed_blocker(fine_configs)
+        # Generates all of the possible wilson loops available to calculate in the coarse lattice
         baseline_data_obs = coarse_action.observable_vector(baseline_data)
         baseline_model_action = LocalWilsonLoopAction.wilson(coarse_beta_init, basis=config.basis).to(device)
+        # HMC sampling to create sample coarse lattices
         baseline_model, _, model_state = _sample_model_ensemble(
             baseline_model_action,
             coarse_lattice_size=coarse_lattice_size,
             config=config,
         )
         baseline_model_obs = coarse_action.observable_vector(baseline_model)
+        # MMD is maximum mean discrepancy
         baseline_mismatch = float(
             measurement_distribution_mmd(
                 baseline_data,
@@ -293,18 +311,30 @@ def train_learned_rg(
             ).cpu()
         )
 
+    # Adam - Adapative Moment Estimation
+    # Where the SGD has fixed learning rates and parameters for the entire NN
+    # Adam dynamically changes these parameters for each weight
+    # 1st moment: Momentum - It tracks past movements of gradients so that if the weights have been consistently moving in a direction
+    # it starts carrying momentum in that direction and is able to carry forward through any flat regions in the gradient descent
+    # 2nd moment: RMSProp - It tracks the change of the squared gradient to check how quickly a parameter is changing, and based on that
+    # reduces or increases step size
     optimizer = torch.optim.Adam(
+        # This optimizes the blockers parameters and the coarse action parameters
         list(learnable_blocker.parameters()) + list(coarse_action.parameters()),
         lr=config.learning_rate,
     )
     history: list[dict[str, float]] = []
 
     for epoch in range(config.epochs):
+        # Clears old gradients before computing new ones
         optimizer.zero_grad()
+        # Generates a coarse lattice from the learnable blocker
         blocked = learnable_blocker(fine_configs)
+        # Generates the list of observables (all possible wilson loops)
         data_obs = coarse_action.observable_vector(blocked)
 
         with torch.no_grad():
+            # Generates more coarse lattices from HMC using the current coarse_action parameters
             model_samples, acceptance_rate, model_state = _sample_model_ensemble(
                 coarse_action,
                 coarse_lattice_size=coarse_lattice_size,
@@ -313,20 +343,30 @@ def train_learned_rg(
             )
             model_obs = coarse_action.observable_vector(model_samples)
 
+        # Squared difference between the observables
         mean_mismatch = _observable_mismatch(data_obs, model_obs.detach())
+        # Measures the mismatch between the distributions of various measurables (like plaquette, rectangle, topological charge)
+        # of the sampled and blocked
+        # This primarily trains the blocker because it is not differentiable with respect to the samples (which are controlled by the course action coefficients)
         distribution_mismatch = measurement_distribution_mmd(
             blocked,
             model_samples.detach(),
             measurement_names=config.measurement_set,
             bandwidth=config.mmd_bandwidth,
         )
+
+        # The contrastive_loss essentially dots the coefficients with the difference between the averages of the blocked vs sampled observables
+        # This dot product is so that the partial derivative with respect to the parameters is equal to the difference between mean observables
+        # This is where the course action coefficients are really trained because it is designed to be differentiable, and the derivative is explicitly given almost 
         contrastive_loss = torch.dot(coarse_action.coefficients, model_obs.detach() - data_obs)
 
+        # Considering the L2 loss of the weights/biases of the learnable blocker NN
         if hasattr(learnable_blocker, "regularization_loss"):
             sparsity_term = learnable_blocker.regularization_loss()
         else:
             sparsity_term = torch.tensor(0.0, device=device)
 
+        # Considering the L2 loss of the coarse action coefficents (except for the standard wilson action (0th term))
         coefficient_penalty = coarse_action.coefficients[1:].square().sum()
         loss = (
             contrastive_loss
@@ -335,7 +375,13 @@ def train_learned_rg(
             + config.path_sparsity_weight * sparsity_term
             + config.coefficient_l2 * coefficient_penalty
         )
+
+        # Backpropagation
+        # Computes gradients for anything except the .detach() or when torch.no_grad()
         loss.backward()
+
+        # Normalizes the gradients with respect to some maximum
+        # Gives greater numerical stability
         torch.nn.utils.clip_grad_norm_(
             list(learnable_blocker.parameters()) + list(coarse_action.parameters()),
             config.gradient_clip,
@@ -352,6 +398,7 @@ def train_learned_rg(
             }
         )
 
+    # After training is finished
     with torch.no_grad():
         final_blocked = learnable_blocker(fine_configs)
         final_data_obs = coarse_action.observable_vector(final_blocked)
