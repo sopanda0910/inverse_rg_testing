@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\"c:/Users/ompan/OneDrive/Desktop/Lattice QCD Research/dev/InverseRG/.venv/Scripts/python.exe\" -c \"import torch, numpy, scipy; print\\(torch.__version__, torch.cuda.is_available\\(\\)\\)\")",
+      "Bash(mkdir -p out/demo)",
+      "Bash(.venv/Scripts/python.exe -c ' *)",
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(git check-ignore *)",
+      "Bash(powershell -Command \"\\(Get-Item 'C:/Users/ompan/AppData/Local/Temp/claude/c--Users-ompan-OneDrive-Desktop-Lattice-QCD-Research-dev-InverseRG/617e204d-90f3-4104-883e-1611c6c9821a/tasks/bpz6zws3e.output'\\).LastWriteTime; Get-Date\")",
+      "Bash(\".venv/Scripts/python.exe\" \"C:/Users/ompan/AppData/Local/Temp/claude/c--Users-ompan-OneDrive-Desktop-Lattice-QCD-Research-dev-InverseRG/617e204d-90f3-4104-883e-1611c6c9821a/scratchpad/plot_distributions.py\")"
+    ]
+  }
+}

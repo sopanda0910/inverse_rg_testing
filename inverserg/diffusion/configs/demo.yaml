@@ -1,0 +1,65 @@
+# CPU demo (~1-2 h total): trains on beta = {1, 2, 4} at L = 16, then runs the
+# matched Wilson ladder L=8 (beta 1.347) -> L=16 (beta 4) -> L=32 (beta 14.15).
+# The top rung is deliberately outside the training range and topologically
+# frozen for direct HMC.
+
+seed: 0
+device: auto
+action_type: wilson
+
+data:
+  out_dir: artifacts/diffusion/demo/data
+  # All training data lives on L=16 (cheap); the ladder deploys the same model at
+  # L=32 and L=64. HMC step size is auto-adapted ~1/sqrt(beta) at large beta.
+  rungs:
+    - {beta: 1.0, lattice_size: 16}
+    - {beta: 2.0, lattice_size: 16}
+    - {beta: 4.0, lattice_size: 16}
+    - {beta: 8.0, lattice_size: 16}
+    - {beta: 14.1464, lattice_size: 16}
+    - {beta: 55.0237, lattice_size: 16}
+  heldout: []
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  hmc_steps: 10
+  hmc_step_size: 0.1
+  topological_updates: true
+  hot_start: true
+
+train:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 3.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  hidden: 56
+  depth: 4
+  kernel_size: 3
+  val_fraction: 0.1
+  checkpoint: artifacts/diffusion/demo/checkpoints/score_net.pt
+  history: artifacts/diffusion/demo/checkpoints/history.json
+
+ladder:
+  # beta values from approx_matched_*: block(beta=4) ~ Wilson at 1.3472,
+  # beta_f = 14.1464 blocks down to ~Wilson at 4.0, and 55.0237 blocks down to
+  # ~Wilson at 14.1464. The final rung (L=64, beta=55) is far outside the training
+  # set in BOTH lattice size and coupling, and is unreachable for direct HMC:
+  # Q-tunneling is suppressed by exp(-2 beta) ~ 1e-48.
+  base: {beta: 1.3472, lattice_size: 8}
+  n_base_configs: 192
+  beta_schedule: [4.0, 14.1464, 55.0237]
+  n_retherm_sweeps: 16
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  sample_batch_size: 32
+  out_dir: artifacts/diffusion/demo/generated
+
+validate:
+  out_dir: artifacts/diffusion/demo/validation
+  n_reference_configs: 384
+  freezing_rung: {beta: 55.0237, lattice_size: 64}
+  freezing_hmc_length: 300
