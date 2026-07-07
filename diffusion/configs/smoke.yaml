@@ -39,6 +39,7 @@ ladder:
   n_base_configs: 128
   beta_schedule: [4.0, 16.0]
   n_retherm_sweeps: 8
+  retherm_topological_updates: true
   n_sampler_steps: 150
   n_corrector_steps: 1
   sample_batch_size: 32

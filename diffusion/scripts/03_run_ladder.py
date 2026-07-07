@@ -76,6 +76,7 @@ def main() -> None:
         device=device,
         consistency_weight=float(ladder_cfg.get("consistency_weight", 1.0)),
         enforce_coarse_charge=bool(ladder_cfg.get("enforce_coarse_charge", True)),
+        retherm_topological_updates=bool(ladder_cfg.get("retherm_topological_updates", False)),
     )
 
     for i, rung in enumerate(results):
