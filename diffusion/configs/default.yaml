@@ -46,6 +46,7 @@ ladder:
   # replace with matched values from data/matching.json for the Wilson action.
   beta_schedule: [4.0, 16.0]
   n_retherm_sweeps: 10
+  retherm_topological_updates: true
   n_sampler_steps: 200
   n_corrector_steps: 1
   sample_batch_size: 32

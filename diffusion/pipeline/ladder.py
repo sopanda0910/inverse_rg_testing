@@ -147,6 +147,7 @@ def generate_ladder(
     verbose: bool = True,
     consistency_weight: float = 1.0,
     enforce_coarse_charge: bool = True,
+    retherm_topological_updates: bool = False,
 ) -> list[LadderRungResult]:
     """Iterate conditional generation up the ladder.
 
@@ -154,6 +155,13 @@ def generate_ladder(
     beta_schedule: target couplings for successive fine rungs (each doubles L).
     Returns one LadderRungResult per generated rung (observables logged at every
     rung so drift/bias accumulation is visible).
+
+    retherm_topological_updates: include instanton Q-hop proposals in the
+    rethermalization at every rung. The smooth-instanton dS is O(beta / V), so
+    acceptance stays high even at couplings where local updates never tunnel;
+    this re-equilibrates P(Q) at each rung instead of freezing in the sector
+    inherited from the base ensemble. Leave off to test whether the model and
+    charge transport alone reproduce topology.
     """
     current = coarse_ensemble
     results = []
@@ -173,7 +181,9 @@ def generate_ladder(
         )
         obs_raw = _rung_observables(fine)
         action = make_action(action_type, beta_target)
-        fine = retherm_sweeps(fine, action, n_retherm_sweeps)
+        fine = retherm_sweeps(
+            fine, action, n_retherm_sweeps, topological_updates=retherm_topological_updates
+        )
         obs = _rung_observables(fine)
         obs["plaquette_pre_retherm"] = obs_raw["plaquette"]
         obs["q_squared_pre_retherm"] = obs_raw["q_squared"]

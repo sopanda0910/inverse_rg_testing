@@ -55,6 +55,9 @@ ladder:
   n_corrector_steps: 1
   consistency_weight: 1.0
   enforce_coarse_charge: true
+  # Q-hop proposals during retherm: re-equilibrates P(Q) at each rung's own beta
+  # instead of freezing in the base ensemble's sectors.
+  retherm_topological_updates: true
   sample_batch_size: 32
   out_dir: artifacts/diffusion/demo/generated
 
