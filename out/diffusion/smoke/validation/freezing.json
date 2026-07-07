@@ -1,0 +1,8 @@
+{
+  "label": "direct HMC L=32 beta=16.0",
+  "tau_int_Q": 0.5,
+  "tau_int_Q_err": 0.0,
+  "q_series_std": 0.0,
+  "ladder_q_squared": 23.8125,
+  "ladder_tau_int_Q": 0.5542078865859802
+}

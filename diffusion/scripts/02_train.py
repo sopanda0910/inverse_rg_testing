@@ -6,9 +6,9 @@
 import argparse
 from pathlib import Path
 
-from inverserg.diffusion.lgt import block_links
-from inverserg.diffusion.model.train import RungData, TrainConfig, train_score_model
-from inverserg.diffusion.utils import (
+from diffusion.lgt import block_links
+from diffusion.model.train import RungData, TrainConfig, train_score_model
+from diffusion.utils import (
     load_config,
     resolve_device,
     set_seed,

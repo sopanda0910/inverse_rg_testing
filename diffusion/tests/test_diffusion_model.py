@@ -3,21 +3,21 @@ import math
 import pytest
 import torch
 
-from inverserg.diffusion.lgt import WilsonAction, random_gauge_transform, wrap
-from inverserg.diffusion.lgt.lattice import plaquette_angles
-from inverserg.diffusion.model.wrapped import (
+from diffusion.lgt import WilsonAction, random_gauge_transform, wrap
+from diffusion.lgt.lattice import plaquette_angles
+from diffusion.model.wrapped import (
     sample_wrapped_normal,
     wrapped_normal_score,
     wrapped_normal_log_density,
 )
-from inverserg.diffusion.model.schedule import GeometricNoiseSchedule
-from inverserg.diffusion.model.score_net import (
+from diffusion.model.schedule import GeometricNoiseSchedule
+from diffusion.model.score_net import (
     GaugeCovariantScoreNet,
     coarse_conditioning_channels,
     invariant_channels,
     plaquette_curl,
 )
-from inverserg.diffusion.model.train import RungData, TrainConfig, denoising_loss, train_score_model
+from diffusion.model.train import RungData, TrainConfig, denoising_loss, train_score_model
 
 
 def random_field(batch=4, size=8, seed=0):
@@ -116,9 +116,9 @@ class TestScoreNet:
 
 class TestBlockingConsistencyGuidance:
     def test_guidance_is_gauge_invariant_and_reduces_residual(self):
-        from inverserg.diffusion.pipeline.ladder import blocking_consistency_score
-        from inverserg.diffusion.lgt import block_links
-        from inverserg.diffusion.lgt.lattice import plaquette_angles, wrap
+        from diffusion.pipeline.ladder import blocking_consistency_score
+        from diffusion.lgt import block_links
+        from diffusion.lgt.lattice import plaquette_angles, wrap
 
         torch.manual_seed(7)
         fine = random_field(batch=2, size=8, seed=11)
@@ -143,9 +143,9 @@ class TestBlockingConsistencyGuidance:
 
 class TestCoarseChargeEnforcement:
     def test_instanton_shift_sets_fine_charge_to_coarse(self):
-        from inverserg.diffusion.lgt.local_updates import instanton_field
-        from inverserg.diffusion.lgt.lattice import topological_charge
-        from inverserg.diffusion.model.wrapped import wrap as wrap_angle
+        from diffusion.lgt.local_updates import instanton_field
+        from diffusion.lgt.lattice import topological_charge
+        from diffusion.model.wrapped import wrap as wrap_angle
 
         torch.manual_seed(4)
         # Valid on equilibrated-like fields (plaquettes away from +-pi), which is

@@ -10,7 +10,7 @@ import math
 
 import torch
 
-from ...lattice import (
+from inverserg.lattice import (
     plaquette_angles,
     rectangle_x_angles,
     rectangle_y_angles,

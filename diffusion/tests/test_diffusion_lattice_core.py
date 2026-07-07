@@ -4,7 +4,7 @@ import numpy as np
 import pytest
 import torch
 
-from inverserg.diffusion.lgt import (
+from diffusion.lgt import (
     WilsonAction,
     VillainAction,
     run_hmc_ensemble,
@@ -13,16 +13,16 @@ from inverserg.diffusion.lgt import (
     topological_charge_float,
     wrap,
 )
-from inverserg.diffusion.lgt.lattice import plaquette_angles, mean_plaquette, wilson_loop_angles
-from inverserg.diffusion.lgt.blocking import blocked_plaquette_from_fine, match_coarse_beta
-from inverserg.diffusion.lgt.local_updates import (
+from diffusion.lgt.lattice import plaquette_angles, mean_plaquette, wilson_loop_angles
+from diffusion.lgt.blocking import blocked_plaquette_from_fine, match_coarse_beta
+from diffusion.lgt.local_updates import (
     heatbath_sweep,
     overrelaxation_sweep,
     metropolis_sweep,
     topological_update,
     instanton_field,
 )
-from inverserg.diffusion.lgt import exact
+from diffusion.lgt import exact
 
 
 def random_field(batch=4, size=8, seed=0):

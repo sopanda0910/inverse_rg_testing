@@ -24,6 +24,23 @@ from .observables import measure_ensemble
 from .stats import binned_mean_err, z_score, integrated_autocorrelation_time
 
 
+GEN_COLOR = "#2a78d6"
+REF_COLOR = "#1baf7a"
+INK = "#0b0b0b"
+MUTED = "#898781"
+GRID_COLOR = "#e1e0d9"
+
+
+def _loop_dims(key: str) -> tuple[int, int]:
+    r, t = (int(v) for v in key.split("_")[1].split("x"))
+    return r, t
+
+
+def _sorted_wilson_keys(meas: dict) -> list[str]:
+    keys = [k for k in meas if k.startswith("wilson_")]
+    return sorted(keys, key=lambda k: (_loop_dims(k)[0] * _loop_dims(k)[1], _loop_dims(k)))
+
+
 def _q_histogram(charges: np.ndarray, q_values: np.ndarray) -> np.ndarray:
     counts = np.zeros(len(q_values))
     for i, q in enumerate(q_values):
@@ -50,11 +67,12 @@ def validate_ensemble(
     ref = measure_ensemble(reference_configs) if reference_configs is not None else None
     rows = []
 
-    def add_row(name, values, exact_value, ref_values=None, scalar=None):
+    def add_row(name, values, exact_value, ref_values=None, scalar=None, scalar_err=None):
         if values is not None:
             value, err = binned_mean_err(np.asarray(values))
         else:
-            value, err = scalar, float("nan")
+            value = scalar
+            err = float("nan") if scalar_err is None else scalar_err
         row = {"observable": name, "value": value, "error": err, "exact": exact_value}
         row["z_exact"] = (
             z_score(value, err, exact_value)
@@ -76,33 +94,47 @@ def validate_ensemble(
         exact.plaquette_exact(beta, action_type, lattice_size),
         ref["plaquette"] if ref else None,
     )
-    for key in sorted(k for k in meas if k.startswith("wilson_")):
-        r, t = (int(v) for v in key.split("_")[1].split("x"))
+    for key in _sorted_wilson_keys(meas):
+        r, t = _loop_dims(key)
         add_row(
             key,
             meas[key],
             exact.wilson_loop_exact(beta, r * t, action_type, lattice_size),
             ref[key] if ref and key in ref else None,
         )
-    sigma_exact = exact.string_tension_exact(beta, action_type)
-    for r in (2, 3):
-        if f"creutz_{r}" in meas:
-            add_row(
-                f"creutz_{r}",
-                None,
-                sigma_exact,
-                None,
-                scalar=meas[f"creutz_{r}"],
-            )
+    creutz_rs = sorted(
+        int(k.split("_")[1]) for k in meas if k.startswith("creutz_") and not k.endswith("_err")
+    )
+    for r in creutz_rs:
+        w_rr = exact.wilson_loop_exact(beta, r * r, action_type, lattice_size)
+        w_ss = exact.wilson_loop_exact(beta, (r - 1) * (r - 1), action_type, lattice_size)
+        w_rs = exact.wilson_loop_exact(beta, r * (r - 1), action_type, lattice_size)
+        creutz_exact = -math.log(w_rr * w_ss / w_rs**2)
+        add_row(
+            f"creutz_{r}",
+            None,
+            creutz_exact,
+            None,
+            scalar=meas[f"creutz_{r}"],
+            scalar_err=meas.get(f"creutz_{r}_err"),
+        )
 
     charges = meas["topological_charge"]
+    ref_charges = ref["topological_charge"] if ref else None
     volume = lattice_size * lattice_size
     chi_exact = exact.topological_susceptibility_exact(beta, action_type, lattice_size)
+    add_row("Q", charges, 0.0, ref_charges)
     add_row(
-        "chi_top*V (<Q^2>-<Q>^2)",
-        (charges - charges.mean()) ** 2,
+        "Q^2",
+        charges**2,
         chi_exact * volume,
-        ((ref["topological_charge"] - ref["topological_charge"].mean()) ** 2) if ref else None,
+        ref_charges**2 if ref is not None else None,
+    )
+    add_row(
+        "chi_top ((<Q^2>-<Q>^2)/V)",
+        (charges - charges.mean()) ** 2 / volume,
+        chi_exact,
+        ((ref_charges - ref_charges.mean()) ** 2 / volume) if ref is not None else None,
     )
 
     q_values, q_probs = exact.topological_charge_distribution(beta, lattice_size, action_type)
@@ -127,8 +159,52 @@ def validate_ensemble(
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
         _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, label, output_dir)
+        _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label, output_dir)
 
     return rows
+
+
+def _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label, output_dir):
+    """One histogram panel per loop size: per-config loop averages, generated vs
+    reference HMC, with the exact expectation marked."""
+    keys = _sorted_wilson_keys(meas)
+    if not keys:
+        return
+    ncols = 4
+    nrows = math.ceil(len(keys) / ncols)
+    fig, axes = plt.subplots(nrows, ncols, figsize=(3.4 * ncols, 2.7 * nrows))
+    axes = np.atleast_1d(axes).reshape(nrows, ncols)
+    for ax, key in zip(axes.flat, keys):
+        r, t = _loop_dims(key)
+        vals = np.asarray(meas[key])
+        lo, hi = vals.min(), vals.max()
+        if ref is not None and key in ref:
+            rvals = np.asarray(ref[key])
+            lo, hi = min(lo, rvals.min()), max(hi, rvals.max())
+        w_exact = exact.wilson_loop_exact(beta, r * t, action_type, lattice_size)
+        lo, hi = min(lo, w_exact), max(hi, w_exact)
+        pad = 0.06 * (hi - lo) if hi > lo else 0.01
+        bins = np.linspace(lo - pad, hi + pad, 37)
+        ax.hist(vals, bins=bins, density=True, color=GEN_COLOR, alpha=0.55, label="generated")
+        if ref is not None and key in ref:
+            ax.hist(rvals, bins=bins, density=True, histtype="step", lw=1.6,
+                    color=REF_COLOR, label="reference HMC")
+        ax.axvline(w_exact, color=INK, ls="--", lw=1.2, label="exact mean")
+        ax.set_title(f"$W({r}\\times{t})$  (area {r * t})", fontsize=9, color=INK)
+        ax.set_yticks([])
+        ax.tick_params(labelsize=7, colors=MUTED)
+        for spine in ax.spines.values():
+            spine.set_color(GRID_COLOR)
+    for ax in axes.flat[len(keys):]:
+        ax.axis("off")
+    axes.flat[0].legend(fontsize=8, frameon=False)
+    fig.suptitle(
+        f"{label}: per-config Wilson loop distributions (L={lattice_size}, beta={beta:g}, {action_type})",
+        fontsize=12,
+    )
+    fig.tight_layout(rect=(0, 0, 1, 0.975))
+    fig.savefig(Path(output_dir) / f"{label}_wilson_dists.png", dpi=130)
+    plt.close(fig)
 
 
 def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, label, output_dir):
@@ -168,8 +244,8 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
 
     ax = axes[1, 0]
     areas, neg_log_w, exact_line = [], [], []
-    for key in sorted(k for k in meas if k.startswith("wilson_")):
-        r, t = (int(v) for v in key.split("_")[1].split("x"))
+    for key in _sorted_wilson_keys(meas):
+        r, t = _loop_dims(key)
         mean_w = meas[key].mean()
         if mean_w > 0:
             areas.append(r * t)
@@ -178,8 +254,8 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     ax.plot(areas, neg_log_w, "o", label="generated")
     if ref is not None:
         ref_pts = [
-            (-math.log(ref[k].mean()), int(k.split("_")[1].split("x")[0]) * int(k.split("_")[1].split("x")[1]))
-            for k in sorted(ref)
+            (-math.log(ref[k].mean()), _loop_dims(k)[0] * _loop_dims(k)[1])
+            for k in _sorted_wilson_keys(ref)
             if k.startswith("wilson_") and ref[k].mean() > 0
         ]
         ax.plot([a for _, a in ref_pts], [v for v, _ in ref_pts], "s", mfc="none", label="reference HMC")
@@ -253,7 +329,62 @@ def validate_ladder(
     fig.savefig(output_dir / "ladder_drift.png", dpi=130)
     plt.close(fig)
 
+    _plot_ladder_topology(rung_results, all_rows, output_dir)
+
     return {"rows": all_rows, "drift": drift}
+
+
+def _plot_ladder_topology(rung_results, all_rows, output_dir):
+    """Generated vs exact vs reference-HMC topology observables along the ladder."""
+    names = ["Q", "Q^2", "chi_top ((<Q^2>-<Q>^2)/V)"]
+    titles = [
+        r"$\langle Q \rangle$",
+        r"$\langle Q^2 \rangle$",
+        r"$\chi_{\rm top} = (\langle Q^2\rangle - \langle Q\rangle^2)/V$",
+    ]
+    per_rung = []
+    for label, rows in all_rows.items():
+        by_name = {r["observable"]: r for r in rows}
+        if all(n in by_name for n in names):
+            per_rung.append(by_name)
+    if len(per_rung) != len(rung_results):
+        return
+
+    x = np.arange(len(rung_results))
+    tick_labels = [f"L={r.lattice_size}\n" + rf"$\beta$={r.beta:g}" for r in rung_results]
+    fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.2))
+    for ax, name, title in zip(axes, names, titles):
+        vals = np.array([r[name]["value"] for r in per_rung], dtype=float)
+        errs = np.array([r[name]["error"] for r in per_rung], dtype=float)
+        exacts = np.array([r[name]["exact"] for r in per_rung], dtype=float)
+        ax.plot(x, exacts, "_", color=INK, ms=22, mew=1.8, ls="none", label="exact", zorder=3)
+        ax.errorbar(x - 0.08, vals, yerr=errs, fmt="o", ms=6, color=GEN_COLOR,
+                    capsize=3, label="generated", zorder=4)
+        refs = [r[name].get("reference") for r in per_rung]
+        if all(v is not None for v in refs):
+            ref_errs = [r[name].get("ref_error", float("nan")) for r in per_rung]
+            ax.errorbar(x + 0.08, refs, yerr=ref_errs, fmt="s", ms=6, mfc="none",
+                        color=REF_COLOR, capsize=3, label="reference HMC", zorder=4)
+            positive = min(v for v in refs) > 0
+        else:
+            positive = True
+        if name == "Q":
+            ax.axhline(0.0, color=GRID_COLOR, lw=0.8, zorder=1)
+        elif vals.min() > 0 and exacts.min() > 0 and positive:
+            ax.set_yscale("log")
+        ax.set_xticks(x)
+        ax.set_xticklabels(tick_labels, fontsize=8)
+        ax.set_title(title, fontsize=11, color=INK)
+        ax.tick_params(labelsize=8, colors=MUTED)
+        ax.grid(axis="y", color=GRID_COLOR, lw=0.7)
+        ax.set_axisbelow(True)
+        for spine in ax.spines.values():
+            spine.set_color(GRID_COLOR)
+    axes[0].legend(fontsize=8, frameon=False)
+    fig.suptitle("Topological observables along the ladder", fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.savefig(Path(output_dir) / "ladder_topology.png", dpi=130)
+    plt.close(fig)
 
 
 def freezing_diagnostics(charge_series: np.ndarray, label: str = "") -> dict:

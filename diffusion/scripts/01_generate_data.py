@@ -9,10 +9,10 @@ from pathlib import Path
 
 import torch
 
-from inverserg.diffusion.lgt import make_action, run_hmc_ensemble, block_links, match_coarse_beta
-from inverserg.diffusion.lgt.blocking import villain_blocked_beta
-from inverserg.diffusion.lgt.hmc import adapted_hmc_params
-from inverserg.diffusion.utils import (
+from diffusion.lgt import make_action, run_hmc_ensemble, block_links, match_coarse_beta
+from diffusion.lgt.blocking import villain_blocked_beta
+from diffusion.lgt.hmc import adapted_hmc_params
+from diffusion.utils import (
     load_config,
     resolve_device,
     set_seed,

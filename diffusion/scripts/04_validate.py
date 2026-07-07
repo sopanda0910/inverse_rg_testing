@@ -12,14 +12,14 @@ from pathlib import Path
 import numpy as np
 import torch
 
-from inverserg.diffusion.lgt import make_action, run_hmc_ensemble
-from inverserg.diffusion.lgt.hmc import adapted_hmc_params
-from inverserg.diffusion.lgt.lattice import topological_charge
-from inverserg.diffusion.pipeline.ladder import LadderRungResult
-from inverserg.diffusion.validate import validate_ladder, write_report
-from inverserg.diffusion.validate.report import freezing_diagnostics
-from inverserg.diffusion.validate.stats import integrated_autocorrelation_time
-from inverserg.diffusion.utils import (
+from diffusion.lgt import make_action, run_hmc_ensemble
+from diffusion.lgt.hmc import adapted_hmc_params
+from diffusion.lgt.lattice import topological_charge
+from diffusion.pipeline.ladder import LadderRungResult
+from diffusion.validate import validate_ladder, write_report
+from diffusion.validate.report import freezing_diagnostics
+from diffusion.validate.stats import integrated_autocorrelation_time
+from diffusion.utils import (
     load_config,
     resolve_device,
     set_seed,

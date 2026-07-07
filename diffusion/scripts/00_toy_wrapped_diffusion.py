@@ -14,10 +14,10 @@ import numpy as np
 import torch
 from torch import nn
 
-from inverserg.diffusion.model.wrapped import wrap, wrapped_normal_score
-from inverserg.diffusion.model.schedule import GeometricNoiseSchedule
-from inverserg.diffusion.model.sampler import sample_ancestral
-from inverserg.diffusion.lgt import exact
+from diffusion.model.wrapped import wrap, wrapped_normal_score
+from diffusion.model.schedule import GeometricNoiseSchedule
+from diffusion.model.sampler import sample_ancestral
+from diffusion.lgt import exact
 
 
 class ToyScore(nn.Module):

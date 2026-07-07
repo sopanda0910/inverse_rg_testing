@@ -6,10 +6,10 @@
 import argparse
 from pathlib import Path
 
-from inverserg.diffusion.lgt import make_action, run_hmc_ensemble
-from inverserg.diffusion.model.train import load_checkpoint
-from inverserg.diffusion.pipeline import generate_ladder
-from inverserg.diffusion.utils import (
+from diffusion.lgt import make_action, run_hmc_ensemble
+from diffusion.model.train import load_checkpoint
+from diffusion.pipeline import generate_ladder
+from diffusion.utils import (
     load_config,
     resolve_device,
     set_seed,
