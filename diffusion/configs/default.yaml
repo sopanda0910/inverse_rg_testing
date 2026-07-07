@@ -1,0 +1,60 @@
+# Inverse-RG conditional diffusion: default experiment configuration.
+# CPU-feasible sizes; scale rungs/L up on GPU.
+
+seed: 0
+device: auto            # auto | cpu | cuda
+action_type: wilson     # wilson | villain
+
+data:
+  out_dir: artifacts/diffusion/data
+  # Training rungs: (fine beta, fine L). Pairs are (fine, block(fine)).
+  rungs:
+    - {beta: 1.0, lattice_size: 16}
+    - {beta: 2.0, lattice_size: 16}
+    - {beta: 4.0, lattice_size: 16}
+  # Held out entirely from training; used only for validation.
+  heldout:
+    - {beta: 8.0, lattice_size: 32}
+  n_configs: 768
+  n_chains: 24
+  burn_in: 300
+  thin: 5
+  hmc_steps: 10
+  hmc_step_size: 0.1
+  topological_updates: true   # instanton Q-hops so reference topology is correct
+  hot_start: true
+
+train:
+  epochs: 60
+  batch_size: 16
+  learning_rate: 2.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  hidden: 64
+  depth: 4
+  kernel_size: 3
+  val_fraction: 0.1           # per-rung tail split used for validation loss
+  checkpoint: artifacts/diffusion/checkpoints/score_net.pt
+  history: artifacts/diffusion/checkpoints/history.json
+
+ladder:
+  # Base rung simulated directly with HMC; each step doubles L.
+  base: {beta: 1.0, lattice_size: 16}
+  n_base_configs: 256
+  # Target fine couplings for successive rungs (L doubles each time):
+  # here 16 -> 32 (beta 4) -> 64 (beta 16). beta_f = 4 * beta_c (tree level) by default;
+  # replace with matched values from data/matching.json for the Wilson action.
+  beta_schedule: [4.0, 16.0]
+  n_retherm_sweeps: 10
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  sample_batch_size: 32
+  out_dir: artifacts/diffusion/generated
+
+validate:
+  out_dir: artifacts/diffusion/validation
+  n_reference_configs: 512
+  # Freezing demo: measure tau_int(Q) for direct HMC at the top rung, where
+  # topology freezes, and compare Q histograms against the ladder ensemble.
+  freezing_rung: {beta: 16.0, lattice_size: 64}
+  freezing_hmc_length: 400
