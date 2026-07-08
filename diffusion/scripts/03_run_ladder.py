@@ -93,6 +93,19 @@ def main() -> None:
             },
         )
         print(f"saved {path}")
+        if rung.raw_configs is not None:
+            raw_path = out_dir / f"ladder_rung{i}_raw_{action_type}_L{rung.lattice_size}_beta{rung.beta:g}.pt"
+            save_ensemble(
+                raw_path,
+                rung.raw_configs,
+                {
+                    "beta": rung.beta,
+                    "lattice_size": rung.lattice_size,
+                    "action_type": action_type,
+                    "provenance": f"ladder rung {i}: raw conditional diffusion sample, pre-retherm",
+                },
+            )
+            print(f"saved {raw_path}")
 
 
 if __name__ == "__main__":

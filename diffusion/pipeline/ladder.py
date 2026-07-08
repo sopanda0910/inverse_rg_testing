@@ -58,6 +58,7 @@ class LadderRungResult:
     lattice_size: int
     configs: torch.Tensor
     observables: dict = field(default_factory=dict)
+    raw_configs: torch.Tensor | None = None
 
 
 def generate_fine_from_coarse(
@@ -180,6 +181,7 @@ def generate_ladder(
             enforce_coarse_charge=enforce_coarse_charge,
         )
         obs_raw = _rung_observables(fine)
+        raw = fine.clone()
         action = make_action(action_type, beta_target)
         fine = retherm_sweeps(
             fine, action, n_retherm_sweeps, topological_updates=retherm_topological_updates
@@ -188,7 +190,8 @@ def generate_ladder(
         obs["plaquette_pre_retherm"] = obs_raw["plaquette"]
         obs["q_squared_pre_retherm"] = obs_raw["q_squared"]
         result = LadderRungResult(
-            beta=beta_target, lattice_size=fine.shape[-1], configs=fine, observables=obs
+            beta=beta_target, lattice_size=fine.shape[-1], configs=fine, observables=obs,
+            raw_configs=raw,
         )
         results.append(result)
         if verbose:
