@@ -1,0 +1,24 @@
+[Wed 07/08/2026 10:07:02.76] rec2 chain start 
+skip existing out\diffusion\demo\data\wilson_L16_beta1.pt
+skip existing out\diffusion\demo\data\wilson_L16_beta2.pt
+skip existing out\diffusion\demo\data\wilson_L16_beta4.pt
+generating out\diffusion\demo\data\wilson_L16_beta5.pt ...
+  L=16 beta=5.0: 448 configs, acceptance 0.995, cold start, burn-in 600, 17s
+  matched coarse beta: 1.6915 (tree level 1.25)
+generating out\diffusion\demo\data\wilson_L16_beta6.5.pt ...
+  L=16 beta=6.5: 448 configs, acceptance 0.996, cold start, burn-in 600, 27s
+  matched coarse beta: 2.1238 (tree level 1.625)
+skip existing out\diffusion\demo\data\wilson_L16_beta8.pt
+skip existing out\diffusion\demo\data\wilson_L16_beta14.1464.pt
+skip existing out\diffusion\demo\data\wilson_L16_beta55.0237.pt
+wrote out\diffusion\demo\data\matching.json
+STAGE_DATA_DONE 
+rung L16_beta1: 404 train / 44 val configs
+rung L16_beta2: 404 train / 44 val configs
+rung L16_beta4: 404 train / 44 val configs
+rung L16_beta5: 404 train / 44 val configs
+rung L16_beta6.5: 404 train / 44 val configs
+rung L16_beta8: 404 train / 44 val configs
+rung L16_beta14.1464: 404 train / 44 val configs
+rung L16_beta55.0237: 404 train / 44 val configs
+epoch   0  train=0.6505  val_L16_beta1=0.7860 val_L16_beta2=0.6602 val_L16_beta4=0.6962 val_L16_beta5=0.6827 val_L16_beta6.5=0.6685 val_L16_beta8=0.6066 val_L16_beta14.1464=0.6114 val_L16_beta55.0237=0.4964 val_total=5.2080
