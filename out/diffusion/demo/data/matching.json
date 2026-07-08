@@ -1,17 +1,32 @@
 {
+  "L16_beta1": {
+    "fine_beta": 1.0,
+    "matched_coarse_beta": 0.06225008276408432,
+    "tree_level": 0.25
+  },
+  "L16_beta2": {
+    "fine_beta": 2.0,
+    "matched_coarse_beta": 0.4793184446191384,
+    "tree_level": 0.5
+  },
+  "L16_beta4": {
+    "fine_beta": 4.0,
+    "matched_coarse_beta": 1.3643075121995607,
+    "tree_level": 1.0
+  },
   "L16_beta8": {
     "fine_beta": 8.0,
-    "matched_coarse_beta": 2.389652995568565,
+    "matched_coarse_beta": 2.496050857057307,
     "tree_level": 2.0
   },
   "L16_beta14.1464": {
     "fine_beta": 14.1464,
-    "matched_coarse_beta": 2.949218384077872,
+    "matched_coarse_beta": 3.9680659359061203,
     "tree_level": 3.5366
   },
   "L16_beta55.0237": {
     "fine_beta": 55.0237,
-    "matched_coarse_beta": 4.799605737533317,
+    "matched_coarse_beta": 14.375130121421233,
     "tree_level": 13.755925
   }
 }

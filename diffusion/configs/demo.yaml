@@ -11,13 +11,17 @@ data:
   out_dir: artifacts/diffusion/demo/data
   # All training data lives on L=16 (cheap); the ladder deploys the same model at
   # L=32 and L=64. HMC step size is auto-adapted ~1/sqrt(beta) at large beta.
+  # Hot starts at beta >= 8 settle into a metastable local-defect state with
+  # plaquette biased low by tens of sigma that neither Q-hops nor long burn-in
+  # anneal (generalization study, 2026-07-08). Those rungs use cold starts with
+  # long burn-in instead (verified against exact values up to beta = 218.6).
   rungs:
     - {beta: 1.0, lattice_size: 16}
     - {beta: 2.0, lattice_size: 16}
     - {beta: 4.0, lattice_size: 16}
-    - {beta: 8.0, lattice_size: 16}
-    - {beta: 14.1464, lattice_size: 16}
-    - {beta: 55.0237, lattice_size: 16}
+    - {beta: 8.0, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000}
   heldout: []
   n_configs: 448
   n_chains: 16

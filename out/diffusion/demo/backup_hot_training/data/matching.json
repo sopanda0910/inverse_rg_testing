@@ -1,0 +1,17 @@
+{
+  "L16_beta8": {
+    "fine_beta": 8.0,
+    "matched_coarse_beta": 2.389652995568565,
+    "tree_level": 2.0
+  },
+  "L16_beta14.1464": {
+    "fine_beta": 14.1464,
+    "matched_coarse_beta": 2.949218384077872,
+    "tree_level": 3.5366
+  },
+  "L16_beta55.0237": {
+    "fine_beta": 55.0237,
+    "matched_coarse_beta": 4.799605737533317,
+    "tree_level": 13.755925
+  }
+}
