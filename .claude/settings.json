@@ -1,6 +1,9 @@
 {
   "permissions": {
+    "defaultMode": "dontAsk",
     "allow": [
+      "Bash",
+      "PowerShell",
       "Bash(\"c:/Users/ompan/OneDrive/Desktop/Lattice QCD Research/dev/InverseRG/.venv/Scripts/python.exe\" -c \"import torch, numpy, scipy; print\\(torch.__version__, torch.cuda.is_available\\(\\)\\)\")",
       "Bash(mkdir -p out/demo)",
       "Bash(.venv/Scripts/python.exe -c ' *)",

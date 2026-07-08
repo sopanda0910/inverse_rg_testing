@@ -55,7 +55,7 @@ CHECKPOINT = "out/diffusion/demo/checkpoints/score_net.pt"
 OUT_DIR = Path("out/diffusion/demo/generalization")
 ACTION_TYPE = "wilson"
 
-A_COARSE_BETAS = [1.0, 2.0, 3.0, 4.0, 6.0, 8.0]
+A_COARSE_BETAS = [0.25, 0.5, 0.75, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0]
 D_COARSE_BETAS = [14.1464, 55.0237]
 B_TARGET_BETAS = [6.0, 10.0, 16.0, 20.0, 30.0, 55.0237]
 MATCHED_PAIR = (4.0, 14.1464)
@@ -109,25 +109,36 @@ def hmc_ensemble_cached(path: Path, lattice_size: int, beta: float, n_configs: i
         if configs.shape[0] >= n_configs:
             return configs[:n_configs]
     step_size, n_steps = adapted_hmc_params(beta)
+    # Hot starts at beta >= 8 leave a metastable local-defect plaquette deficit
+    # (~ -0.002 to -0.01, tens of sigma) that Q-hops do not anneal and that
+    # persists far beyond any affordable burn-in; a cold start with a longer
+    # burn-in reproduces exact plaquette/Wilson values at every beta tested
+    # (verified up to beta = 218.6 on L = 32). Burn 600 still left a few x 1e-4
+    # positive residual (up to +7.5 sigma on the plaquette) at beta >= 20, so
+    # those get 2000.
+    hot = beta < 8.0
+    burn_in = 30 if smoke else (200 if hot else (2000 if beta >= 20 else 600))
     t0 = time.time()
     configs, stats = run_hmc_ensemble(
         lattice_size,
         make_action(ACTION_TYPE, beta),
         n_configs=n_configs,
         n_chains=8 if smoke else 16,
-        burn_in=30 if smoke else 200,
+        burn_in=burn_in,
         thin=2 if smoke else 5,
         n_steps=n_steps,
         step_size=step_size,
         device=device,
         topological_updates=True,
-        hot_start=True,
+        hot_start=hot,
     )
     print(f"    HMC L={lattice_size} beta={beta:g}: {configs.shape[0]} configs, "
-          f"acc {stats.acceptance_rate:.3f}, {time.time()-t0:.0f}s", flush=True)
+          f"acc {stats.acceptance_rate:.3f}, {'hot' if hot else 'cold'} start, "
+          f"burn {burn_in}, {time.time()-t0:.0f}s", flush=True)
     save_ensemble(path, configs, {
         "beta": beta, "lattice_size": lattice_size, "action_type": ACTION_TYPE,
-        "provenance": "HMC with instanton Q-hop updates (unbiased topology)",
+        "provenance": f"HMC with instanton Q-hop updates, {'hot' if hot else 'cold'} start, "
+                      f"burn-in {burn_in} (unbiased topology and UV)",
     })
     return configs[:n_configs]
 
@@ -224,12 +235,16 @@ def _style_axis(ax):
         spine.set_color(GRID_COLOR)
 
 
-def _z_panel(ax, x, records, observable, title, xlabel):
+def _z_panel(ax, x, records, observable, title, xlabel, tick_values=None):
     zs = [_row(r, observable).get("z_exact", float("nan")) for r in records]
     ax.axhspan(-2, 2, color=GRID_COLOR, alpha=0.45, zorder=0)
     ax.axhline(0.0, color=INK, lw=0.8, zorder=1)
     ax.plot(x, zs, "o-", color=GEN_COLOR, ms=6, lw=1.6, zorder=3)
     ax.set_xscale("log")
+    if tick_values is not None:
+        ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+        ax.set_xticks(tick_values)
+        ax.set_xticklabels([f"{v:.3g}" for v in tick_values], fontsize=7)
     ax.set_title(title, fontsize=10, color=INK)
     ax.set_xlabel(xlabel, fontsize=9, color=INK)
     ax.set_ylabel("z vs exact", fontsize=9, color=INK)
@@ -247,15 +262,17 @@ def make_summary_figures(records: dict, out: Path) -> None:
         panels = [("plaquette", "Plaquette"), ("wilson_2x2", r"$W(2\times2)$"),
                   ("wilson_4x4", r"$W(4\times4)$"), ("Q^2", r"$\langle Q^2 \rangle$")]
         for ax, (obs, title) in zip(axes.flat, panels):
-            _z_panel(ax, x, matched, obs, title, r"coarse $\beta_c$ (matched $\beta_f$ generated)")
+            _z_panel(ax, x, matched, obs, title, r"coarse $\beta_c$ (matched $\beta_f$ generated)",
+                     tick_values=x)
         extrap = [r for r in matched if r["target_beta"] > 56]
         for r in extrap:
             for ax in axes.flat:
                 ax.axvline(r["base_beta"], color=MUTED, lw=0.9, ls=":")
         if extrap:
             axes.flat[0].annotate("beyond training range", fontsize=8, color=MUTED,
-                                  xy=(extrap[0]["base_beta"], 0.9),
-                                  xycoords=("data", "axes fraction"), ha="right", rotation=90)
+                                  xy=(extrap[0]["base_beta"], 0.06),
+                                  xycoords=("data", "axes fraction"),
+                                  ha="right", va="bottom", rotation=90)
         fig.suptitle("Matched-pair beta scan (L=16 base -> L=32 generated): z-scores vs exact",
                      fontsize=12)
         fig.tight_layout(rect=(0, 0, 1, 0.95))
@@ -272,8 +289,10 @@ def make_summary_figures(records: dict, out: Path) -> None:
         fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.0))
         panels = [("plaquette", "Plaquette"), ("wilson_2x2", r"$W(2\times2)$"),
                   ("Q^2", r"$\langle Q^2 \rangle$")]
+        ticks = [v for v in x if abs(v - MATCHED_PAIR[1]) > 1.5] + [8.0]
         for ax, (obs, title) in zip(axes, panels):
-            _z_panel(ax, x, mism, obs, title, r"target $\beta_f$ (base fixed at $\beta_c=4$)")
+            _z_panel(ax, x, mism, obs, title, r"target $\beta_f$ (base fixed at $\beta_c=4$)",
+                     tick_values=sorted(ticks))
             ax.axvline(MATCHED_PAIR[1], color=INK, lw=1.0, ls="--")
             ax.annotate("matched", fontsize=8, color=INK, rotation=90,
                         xy=(MATCHED_PAIR[1], 0.03), xycoords=("data", "axes fraction"),
@@ -291,7 +310,9 @@ def make_summary_figures(records: dict, out: Path) -> None:
 
     size = sorted(
         (r for r in records.values()
-         if (r["base_beta"], r["target_beta"]) == MATCHED_PAIR and r["part"] in ("A", "C")),
+         if r["base_beta"] == MATCHED_PAIR[0]
+         and abs(r["target_beta"] - MATCHED_PAIR[1]) < 1e-3
+         and r["part"] in ("A", "C")),
         key=lambda r: r["base_size"],
     )
     if len(size) > 1:
@@ -356,6 +377,9 @@ def main() -> None:
     parser.add_argument("--smoke", action="store_true", help="tiny end-to-end plumbing test")
     parser.add_argument("--report-only", action="store_true", help="rebuild figures/tables from summary.json")
     parser.add_argument("--out-dir", default=None)
+    parser.add_argument("--cases", default=None,
+                        help="comma-separated run_ids to run (e.g. A_bc4,A_bc2); others left untouched")
+    parser.add_argument("--checkpoint", default=None, help="override checkpoint path")
     args = parser.parse_args()
     out = Path(args.out_dir) if args.out_dir else (OUT_DIR / "smoke" if args.smoke else OUT_DIR)
     out.mkdir(parents=True, exist_ok=True)
@@ -367,8 +391,14 @@ def main() -> None:
     if not args.report_only:
         set_seed(1234)
         device = "cpu"
-        model, schedule = load_checkpoint(CHECKPOINT, device)
+        model, schedule = load_checkpoint(args.checkpoint or CHECKPOINT, device)
         cases = build_cases(args.smoke)
+        if args.cases:
+            wanted = {v.strip() for v in args.cases.split(",")}
+            missing = wanted - {c.run_id for c in cases}
+            if missing:
+                raise SystemExit(f"unknown case ids: {sorted(missing)}")
+            cases = [c for c in cases if c.run_id in wanted]
         print(f"{len(cases)} cases, output -> {out}", flush=True)
         for i, case in enumerate(cases):
             if case.run_id in records and "rows" in records[case.run_id]:

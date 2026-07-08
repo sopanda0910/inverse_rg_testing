@@ -30,23 +30,26 @@ def generate_rung(rung: dict, data_cfg: dict, action_type: str, device: str) -> 
     )
     step_size = float(rung.get("hmc_step_size", step_size))
     n_steps = int(rung.get("hmc_steps", n_steps))
+    burn_in = int(rung.get("burn_in", data_cfg["burn_in"]))
+    hot_start = bool(rung.get("hot_start", data_cfg.get("hot_start", True)))
     t0 = time.time()
     configs, stats = run_hmc_ensemble(
         lattice_size,
         action,
         n_configs=int(data_cfg["n_configs"]),
         n_chains=int(data_cfg["n_chains"]),
-        burn_in=int(data_cfg["burn_in"]),
+        burn_in=burn_in,
         thin=int(data_cfg["thin"]),
         n_steps=n_steps,
         step_size=step_size,
         device=device,
         topological_updates=bool(data_cfg.get("topological_updates", True)),
-        hot_start=bool(data_cfg.get("hot_start", True)),
+        hot_start=hot_start,
     )
     print(
         f"  L={lattice_size} beta={beta}: {configs.shape[0]} configs, "
-        f"acceptance {stats.acceptance_rate:.3f}, {time.time()-t0:.0f}s"
+        f"acceptance {stats.acceptance_rate:.3f}, {'hot' if hot_start else 'cold'} start, "
+        f"burn-in {burn_in}, {time.time()-t0:.0f}s"
     )
     return configs
 
@@ -79,7 +82,11 @@ def main() -> None:
                 "action_type": action_type,
                 "provenance": "direct HMC (Omelyan) + instanton updates",
                 "n_configs": configs.shape[0],
-                "sampler": {k: data_cfg[k] for k in ("n_chains", "burn_in", "thin", "hmc_steps", "hmc_step_size")},
+                "sampler": {
+                    **{k: data_cfg[k] for k in ("n_chains", "burn_in", "thin", "hmc_steps", "hmc_step_size")},
+                    "hot_start": bool(data_cfg.get("hot_start", True)),
+                    **{k: rung[k] for k in ("burn_in", "hot_start", "hmc_steps", "hmc_step_size") if k in rung},
+                },
                 "seed": int(config["seed"]),
             },
         )
