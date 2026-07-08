@@ -4,3 +4,4 @@ __pycache__/
 *.pyc
 inverserg.egg-info/
 artifacts/
+.claude/settings.local.json
