@@ -12,6 +12,7 @@ highlight how the single L=16-trained model scales:
                                 -ln W(2x2) across all cases
 """
 
+import argparse
 import json
 import math
 from pathlib import Path
@@ -95,9 +96,6 @@ def fig_volume(recs: dict) -> None:
     a_grid = np.arange(1, 145)
     exact_line = [-math.log(wilson_loop_exact(14.1464, int(a), "wilson", 128)) for a in a_grid]
     ax.plot(a_grid, exact_line, "--", color=INK, lw=1.2, label="exact area law")
-    ax.annotate("L=32 large-A deficit\n(trained pair; report sec. 2)",
-                xy=(80, 3.4), xytext=(35, 4.3), fontsize=7, color=MUTED,
-                arrowprops=dict(arrowstyle="-", color=MUTED, lw=0.8))
     ax.set_xlabel(r"loop area $A$", fontsize=9, color=INK)
     ax.set_ylabel(r"$-\ln\langle W(A)\rangle$", fontsize=9, color=INK)
     ax.set_title("Area law collapses across sizes\n(signal-dominated loops only)",
@@ -146,7 +144,7 @@ def fig_coupling(recs: dict) -> None:
     matched = sorted((r for r in recs.values() if r["part"] in ("A", "D")),
                      key=lambda r: r["target_beta"])
     betas = np.array([r["target_beta"] for r in matched])
-    train_betas = [1.0, 2.0, 4.0, 8.0, 14.1464, 55.0237]
+    train_betas = [1.0, 2.0, 4.0, 5.0, 6.5, 8.0, 14.1464, 55.0237]
     fig, axes = plt.subplots(1, 2, figsize=(10.5, 4.2))
 
     ax = axes[0]
@@ -255,6 +253,13 @@ def fig_parity(recs: dict) -> None:
 
 
 def main() -> None:
+    global OUT
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dir", default=None,
+                        help="study directory holding summary.json (default: the demo generalization dir)")
+    args = parser.parse_args()
+    if args.dir:
+        OUT = Path(args.dir)
     recs = load_records()
     fig_volume(recs)
     fig_coupling(recs)

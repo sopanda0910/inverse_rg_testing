@@ -15,10 +15,16 @@ data:
   # plaquette biased low by tens of sigma that neither Q-hops nor long burn-in
   # anneal (generalization study, 2026-07-08). Those rungs use cold starts with
   # long burn-in instead (verified against exact values up to beta = 218.6).
+  # beta = 5 and 6.5 fill the crossover gap beta in (4, 8) where the retrained
+  # model showed a ~1.3e-3 plaquette deficit at target beta ~ 6 (generalization
+  # recheck, 2026-07-08; Recommendation #2). Cold starts there too: the defect
+  # state is marginal near beta ~ 6-8 and cold+600 is verified everywhere.
   rungs:
     - {beta: 1.0, lattice_size: 16}
     - {beta: 2.0, lattice_size: 16}
     - {beta: 4.0, lattice_size: 16}
+    - {beta: 5.0, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 6.5, lattice_size: 16, hot_start: false, burn_in: 600}
     - {beta: 8.0, lattice_size: 16, hot_start: false, burn_in: 600}
     - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600}
     - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000}
