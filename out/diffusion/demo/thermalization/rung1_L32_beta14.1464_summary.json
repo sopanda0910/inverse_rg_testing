@@ -10,18 +10,18 @@
     "step_size": 0.05317494246906384,
     "n_steps": 19,
     "acceptance": {
-      "generated": 0.9954427083333334,
+      "generated": 0.9955512152777778,
       "hot": 0.994384765625,
       "cold": 0.995947265625
     },
-    "sec_per_traj_gen_batch": 0.2847612251838048,
-    "sec_per_traj_baseline_batch": 0.3617292452603579
+    "sec_per_traj_gen_batch": 0.17213482409715652,
+    "sec_per_traj_baseline_batch": 0.07193709649145603
   },
   "t_therm": {
     "diffusion seed": {
-      "plaquette": 2.0,
-      "wilson_2x2": 11.0,
-      "wilson_4x4": 11.0,
+      "plaquette": 3.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
       "Q^2": 0.0
     },
     "hot start": {
@@ -39,16 +39,16 @@
   },
   "t_therm_generated_full_batch": {
     "plaquette": 5.0,
-    "wilson_2x2": Infinity,
-    "wilson_4x4": 14.0,
+    "wilson_2x2": 5.0,
+    "wilson_4x4": 0.0,
     "Q^2": 0.0
   },
   "t_therm_subsample_size": 32,
   "final_abs_z": {
     "diffusion seed": {
-      "plaquette": 0.8533393144607544,
-      "wilson_2x2": 1.3461517095565796,
-      "wilson_4x4": 1.5089303255081177,
+      "plaquette": 0.7845593690872192,
+      "wilson_2x2": 1.2450498342514038,
+      "wilson_4x4": 1.3793680667877197,
       "Q^2": 1.4995763301849365
     },
     "hot start": {

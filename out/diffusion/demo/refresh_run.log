@@ -1,0 +1,119 @@
+[Wed 07/08/2026 18:51:47.26] refresh chain start (new 8-rung checkpoint) 
+loaded base ensemble out\diffusion\demo\generated\wilson_L8_beta1.3472.pt
+rung 0: L=16 beta=4.0 plaq=0.8641 (pre-retherm 0.8609) <Q^2>=1.776  [97s]
+rung 1: L=32 beta=14.1464 plaq=0.9639 (pre-retherm 0.9648) <Q^2>=1.969  [336s]
+rung 2: L=64 beta=55.0237 plaq=0.9909 (pre-retherm 0.9915) <Q^2>=1.792  [1701s]
+saved out\diffusion\demo\generated\ladder_rung0_wilson_L16_beta4.pt
+saved out\diffusion\demo\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+saved out\diffusion\demo\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+saved out\diffusion\demo\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+saved out\diffusion\demo\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+saved out\diffusion\demo\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+STAGE_LADDER_DONE 
+loaded out\diffusion\demo\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded out\diffusion\demo\generated\ladder_rung0_wilson_L16_beta4.pt
+loaded out\diffusion\demo\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded out\diffusion\demo\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded out\diffusion\demo\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded out\diffusion\demo\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.988
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\diffusion\demo\validation\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': -0.0026174238200705746, 'plaq_z': -2.1269870023376356}
+{'rung': 1, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0005717428772924471, 'plaq_z': 0.8873003767197792}
+{'rung': 2, 'L': 32, 'beta': 14.1464, 'plaq_deviation': 0.0008170446461683856, 'plaq_z': 7.951035515570572}
+{'rung': 3, 'L': 32, 'beta': 14.1464, 'plaq_deviation': -8.821610795983759e-05, 'plaq_z': -0.690778175444211}
+{'rung': 4, 'L': 64, 'beta': 55.0237, 'plaq_deviation': 0.0006738317245095216, 'plaq_z': 34.88021415382951}
+{'rung': 5, 'L': 64, 'beta': 55.0237, 'plaq_deviation': -1.8939091876224445e-05, 'plaq_z': -1.0775510849612868}
+STAGE_VALIDATE_DONE 
+
+=== rung0_L16_beta4: step_size=0.1000, n_steps=10 ===
+diffusion seed: 192 chains x 96 trajectories
+hot start: 64 chains x 640 trajectories
+cold start: 64 chains x 640 trajectories
+
+=== rung1_L32_beta14.1464: step_size=0.0532, n_steps=19 ===
+diffusion seed: 192 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== rung2_L64_beta55.0237: step_size=0.0270, n_steps=37 ===
+diffusion seed: 192 chains x 96 trajectories
+hot start: 16 chains x 640 trajectories
+cold start: 16 chains x 640 trajectories
+
+report: out\diffusion\demo\thermalization\report.md
+{
+  "label": "rung0_L16_beta4",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 13.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 6.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 53.0,
+      "wilson_2x2": 47.0,
+      "wilson_4x4": 20.0,
+      "Q^2": 9.0
+    },
+    "cold start": {
+      "plaquette": 36.0,
+      "wilson_2x2": 42.0,
+      "wilson_4x4": 20.0,
+      "Q^2": 38.0
+    }
+  },
+  "hmc_interval_trajectories": 7.386154292308953
+}
+{
+  "label": "rung1_L32_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 3.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 184.0,
+      "wilson_2x2": 186.0,
+      "wilson_4x4": 186.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 24.97860376239688
+}
+{
+  "label": "rung2_L64_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 11.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 625.0,
+      "wilson_2x2": 569.0,
+      "wilson_4x4": 240.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 92.03490126207687
+}
+CHAIN_DONE

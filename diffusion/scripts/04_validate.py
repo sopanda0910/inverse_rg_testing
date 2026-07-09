@@ -85,7 +85,7 @@ def main() -> None:
 
     rungs = []
     pattern = str(Path(config["ladder"]["out_dir"]) / f"ladder_rung*_{action_type}_*.pt")
-    for path in sorted(glob.glob(pattern)):
+    for path in sorted(p for p in glob.glob(pattern) if "_raw_" not in Path(p).name):
         configs, meta = load_ensemble(path)
         rungs.append(
             LadderRungResult(
