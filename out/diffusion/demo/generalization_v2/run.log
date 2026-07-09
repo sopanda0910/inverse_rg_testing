@@ -22,3 +22,173 @@ rung L16_beta8: 404 train / 44 val configs
 rung L16_beta14.1464: 404 train / 44 val configs
 rung L16_beta55.0237: 404 train / 44 val configs
 epoch   0  train=0.6505  val_L16_beta1=0.7860 val_L16_beta2=0.6602 val_L16_beta4=0.6962 val_L16_beta5=0.6827 val_L16_beta6.5=0.6685 val_L16_beta8=0.6066 val_L16_beta14.1464=0.6114 val_L16_beta55.0237=0.4964 val_total=5.2080
+epoch   1  train=0.6230  val_L16_beta1=0.7742 val_L16_beta2=0.6455 val_L16_beta4=0.6748 val_L16_beta5=0.6721 val_L16_beta6.5=0.6663 val_L16_beta8=0.5937 val_L16_beta14.1464=0.5961 val_L16_beta55.0237=0.4782 val_total=5.1010
+epoch   2  train=0.6381  val_L16_beta1=0.7903 val_L16_beta2=0.6571 val_L16_beta4=0.6782 val_L16_beta5=0.6766 val_L16_beta6.5=0.6551 val_L16_beta8=0.5990 val_L16_beta14.1464=0.6010 val_L16_beta55.0237=0.8704 val_total=5.5278
+epoch   3  train=0.6473  val_L16_beta1=0.7779 val_L16_beta2=0.6477 val_L16_beta4=0.6608 val_L16_beta5=0.6557 val_L16_beta6.5=0.6564 val_L16_beta8=0.5880 val_L16_beta14.1464=0.5977 val_L16_beta55.0237=0.4757 val_total=5.0599
+epoch   4  train=0.6226  val_L16_beta1=0.7638 val_L16_beta2=0.6276 val_L16_beta4=0.6746 val_L16_beta5=0.6559 val_L16_beta6.5=0.6471 val_L16_beta8=0.5794 val_L16_beta14.1464=0.5790 val_L16_beta55.0237=0.4652 val_total=4.9927
+epoch   5  train=0.6112  val_L16_beta1=0.7789 val_L16_beta2=0.6207 val_L16_beta4=0.6559 val_L16_beta5=0.6282 val_L16_beta6.5=0.6315 val_L16_beta8=0.5763 val_L16_beta14.1464=0.5731 val_L16_beta55.0237=0.4557 val_total=4.9203
+epoch   6  train=0.5916  val_L16_beta1=0.7641 val_L16_beta2=0.6118 val_L16_beta4=0.6400 val_L16_beta5=0.6294 val_L16_beta6.5=0.6191 val_L16_beta8=0.5692 val_L16_beta14.1464=0.5688 val_L16_beta55.0237=0.4500 val_total=4.8524
+epoch   7  train=0.5873  val_L16_beta1=0.7625 val_L16_beta2=0.6192 val_L16_beta4=0.6593 val_L16_beta5=0.6229 val_L16_beta6.5=0.6439 val_L16_beta8=0.5710 val_L16_beta14.1464=0.5696 val_L16_beta55.0237=0.4684 val_total=4.9168
+epoch   8  train=0.5886  val_L16_beta1=0.7644 val_L16_beta2=0.6204 val_L16_beta4=0.6267 val_L16_beta5=0.6340 val_L16_beta6.5=0.6220 val_L16_beta8=0.5557 val_L16_beta14.1464=0.5718 val_L16_beta55.0237=0.4563 val_total=4.8512
+epoch   9  train=0.5892  val_L16_beta1=0.7569 val_L16_beta2=0.6279 val_L16_beta4=0.6389 val_L16_beta5=0.6123 val_L16_beta6.5=0.6109 val_L16_beta8=0.5705 val_L16_beta14.1464=0.5779 val_L16_beta55.0237=0.4674 val_total=4.8628
+epoch  10  train=0.5935  val_L16_beta1=0.7700 val_L16_beta2=0.6205 val_L16_beta4=0.6334 val_L16_beta5=0.6222 val_L16_beta6.5=0.6274 val_L16_beta8=0.5613 val_L16_beta14.1464=0.5770 val_L16_beta55.0237=0.4493 val_total=4.8611
+epoch  11  train=0.5925  val_L16_beta1=0.7755 val_L16_beta2=0.6231 val_L16_beta4=0.6364 val_L16_beta5=0.6208 val_L16_beta6.5=0.6153 val_L16_beta8=0.5620 val_L16_beta14.1464=0.5725 val_L16_beta55.0237=0.4540 val_total=4.8597
+epoch  12  train=0.5843  val_L16_beta1=0.7554 val_L16_beta2=0.6014 val_L16_beta4=0.6401 val_L16_beta5=0.6104 val_L16_beta6.5=0.6220 val_L16_beta8=0.5575 val_L16_beta14.1464=0.5651 val_L16_beta55.0237=0.4660 val_total=4.8181
+epoch  13  train=0.5928  val_L16_beta1=0.7646 val_L16_beta2=0.6150 val_L16_beta4=0.6462 val_L16_beta5=0.6278 val_L16_beta6.5=0.6162 val_L16_beta8=0.5664 val_L16_beta14.1464=0.5615 val_L16_beta55.0237=0.4606 val_total=4.8583
+epoch  14  train=0.5812  val_L16_beta1=0.7377 val_L16_beta2=0.6144 val_L16_beta4=0.6395 val_L16_beta5=0.6248 val_L16_beta6.5=0.6129 val_L16_beta8=0.5681 val_L16_beta14.1464=0.5700 val_L16_beta55.0237=0.4771 val_total=4.8444
+epoch  15  train=0.6886  val_L16_beta1=0.7796 val_L16_beta2=0.6335 val_L16_beta4=0.6660 val_L16_beta5=0.6583 val_L16_beta6.5=0.6488 val_L16_beta8=0.5986 val_L16_beta14.1464=0.6395 val_L16_beta55.0237=4.4281 val_total=9.0524
+epoch  16  train=0.6369  val_L16_beta1=0.7493 val_L16_beta2=0.6120 val_L16_beta4=0.6251 val_L16_beta5=0.6153 val_L16_beta6.5=0.6162 val_L16_beta8=0.5691 val_L16_beta14.1464=0.5654 val_L16_beta55.0237=0.4656 val_total=4.8179
+epoch  17  train=0.5905  val_L16_beta1=0.7489 val_L16_beta2=0.6170 val_L16_beta4=0.6246 val_L16_beta5=0.6260 val_L16_beta6.5=0.6020 val_L16_beta8=0.5670 val_L16_beta14.1464=0.5619 val_L16_beta55.0237=0.4604 val_total=4.8079
+epoch  18  train=0.5871  val_L16_beta1=0.7543 val_L16_beta2=0.6124 val_L16_beta4=0.6247 val_L16_beta5=0.6178 val_L16_beta6.5=0.6162 val_L16_beta8=0.5679 val_L16_beta14.1464=0.5526 val_L16_beta55.0237=0.4655 val_total=4.8116
+epoch  19  train=0.5864  val_L16_beta1=0.7379 val_L16_beta2=0.6263 val_L16_beta4=0.6181 val_L16_beta5=0.6225 val_L16_beta6.5=0.6066 val_L16_beta8=0.5621 val_L16_beta14.1464=0.5720 val_L16_beta55.0237=0.4515 val_total=4.7970
+epoch  20  train=0.5844  val_L16_beta1=0.7469 val_L16_beta2=0.5998 val_L16_beta4=0.6307 val_L16_beta5=0.6130 val_L16_beta6.5=0.6052 val_L16_beta8=0.5622 val_L16_beta14.1464=0.5724 val_L16_beta55.0237=0.4555 val_total=4.7856
+epoch  21  train=0.5929  val_L16_beta1=0.7391 val_L16_beta2=0.6082 val_L16_beta4=0.6241 val_L16_beta5=0.6221 val_L16_beta6.5=0.6036 val_L16_beta8=0.5542 val_L16_beta14.1464=0.5743 val_L16_beta55.0237=0.4498 val_total=4.7754
+epoch  22  train=0.5818  val_L16_beta1=0.7343 val_L16_beta2=0.5894 val_L16_beta4=0.6215 val_L16_beta5=0.6095 val_L16_beta6.5=0.6011 val_L16_beta8=0.5656 val_L16_beta14.1464=0.5681 val_L16_beta55.0237=0.4624 val_total=4.7518
+epoch  23  train=0.5720  val_L16_beta1=0.7587 val_L16_beta2=0.6080 val_L16_beta4=0.6293 val_L16_beta5=0.6067 val_L16_beta6.5=0.6093 val_L16_beta8=0.5597 val_L16_beta14.1464=0.5636 val_L16_beta55.0237=0.4441 val_total=4.7794
+epoch  24  train=0.5834  val_L16_beta1=0.7409 val_L16_beta2=0.6004 val_L16_beta4=0.6246 val_L16_beta5=0.6109 val_L16_beta6.5=0.6165 val_L16_beta8=0.5759 val_L16_beta14.1464=0.5669 val_L16_beta55.0237=0.4437 val_total=4.7799
+epoch  25  train=0.5871  val_L16_beta1=0.7360 val_L16_beta2=0.5968 val_L16_beta4=0.6161 val_L16_beta5=0.6077 val_L16_beta6.5=0.6058 val_L16_beta8=0.5703 val_L16_beta14.1464=0.5535 val_L16_beta55.0237=0.4519 val_total=4.7382
+epoch  26  train=0.5915  val_L16_beta1=0.7433 val_L16_beta2=0.5998 val_L16_beta4=0.6215 val_L16_beta5=0.6178 val_L16_beta6.5=0.6148 val_L16_beta8=0.5433 val_L16_beta14.1464=0.5673 val_L16_beta55.0237=0.4596 val_total=4.7676
+epoch  27  train=0.5776  val_L16_beta1=0.7580 val_L16_beta2=0.5929 val_L16_beta4=0.6317 val_L16_beta5=0.6246 val_L16_beta6.5=0.6056 val_L16_beta8=0.5722 val_L16_beta14.1464=0.5652 val_L16_beta55.0237=0.4520 val_total=4.8022
+epoch  28  train=0.5853  val_L16_beta1=0.7325 val_L16_beta2=0.5989 val_L16_beta4=0.6244 val_L16_beta5=0.6180 val_L16_beta6.5=0.6081 val_L16_beta8=0.5640 val_L16_beta14.1464=0.5543 val_L16_beta55.0237=0.4678 val_total=4.7680
+epoch  29  train=0.5846  val_L16_beta1=0.7351 val_L16_beta2=0.6012 val_L16_beta4=0.6162 val_L16_beta5=0.6072 val_L16_beta6.5=0.6088 val_L16_beta8=0.5470 val_L16_beta14.1464=0.5662 val_L16_beta55.0237=0.4602 val_total=4.7420
+epoch  30  train=0.5827  val_L16_beta1=0.7227 val_L16_beta2=0.6022 val_L16_beta4=0.6271 val_L16_beta5=0.6165 val_L16_beta6.5=0.6061 val_L16_beta8=0.5553 val_L16_beta14.1464=0.5530 val_L16_beta55.0237=0.4551 val_total=4.7380
+epoch  31  train=0.5924  val_L16_beta1=0.7402 val_L16_beta2=0.5856 val_L16_beta4=0.6237 val_L16_beta5=0.6094 val_L16_beta6.5=0.6069 val_L16_beta8=0.5540 val_L16_beta14.1464=0.5624 val_L16_beta55.0237=0.4593 val_total=4.7415
+epoch  32  train=0.5828  val_L16_beta1=0.7322 val_L16_beta2=0.5978 val_L16_beta4=0.6270 val_L16_beta5=0.6223 val_L16_beta6.5=0.6144 val_L16_beta8=0.5706 val_L16_beta14.1464=0.5564 val_L16_beta55.0237=0.4585 val_total=4.7792
+epoch  33  train=0.5869  val_L16_beta1=0.7407 val_L16_beta2=0.6081 val_L16_beta4=0.6292 val_L16_beta5=0.6288 val_L16_beta6.5=0.6081 val_L16_beta8=0.5584 val_L16_beta14.1464=0.5697 val_L16_beta55.0237=0.4565 val_total=4.7995
+epoch  34  train=0.5872  val_L16_beta1=0.7314 val_L16_beta2=0.5949 val_L16_beta4=0.6232 val_L16_beta5=0.6098 val_L16_beta6.5=0.6061 val_L16_beta8=0.5629 val_L16_beta14.1464=0.5659 val_L16_beta55.0237=0.4543 val_total=4.7485
+epoch  35  train=0.5760  val_L16_beta1=0.7366 val_L16_beta2=0.5932 val_L16_beta4=0.6340 val_L16_beta5=0.6123 val_L16_beta6.5=0.6092 val_L16_beta8=0.5653 val_L16_beta14.1464=0.5718 val_L16_beta55.0237=0.4644 val_total=4.7868
+epoch  36  train=0.5885  val_L16_beta1=0.7230 val_L16_beta2=0.6014 val_L16_beta4=0.6261 val_L16_beta5=0.6172 val_L16_beta6.5=0.6156 val_L16_beta8=0.5564 val_L16_beta14.1464=0.5599 val_L16_beta55.0237=0.4535 val_total=4.7530
+epoch  37  train=0.5845  val_L16_beta1=0.7440 val_L16_beta2=0.5890 val_L16_beta4=0.6222 val_L16_beta5=0.6073 val_L16_beta6.5=0.5970 val_L16_beta8=0.5594 val_L16_beta14.1464=0.5729 val_L16_beta55.0237=0.5118 val_total=4.8037
+epoch  38  train=0.6009  val_L16_beta1=0.7516 val_L16_beta2=0.5991 val_L16_beta4=0.6190 val_L16_beta5=0.6327 val_L16_beta6.5=0.6163 val_L16_beta8=0.5679 val_L16_beta14.1464=0.5672 val_L16_beta55.0237=0.5557 val_total=4.9094
+epoch  39  train=0.5820  val_L16_beta1=0.7358 val_L16_beta2=0.5887 val_L16_beta4=0.6299 val_L16_beta5=0.6111 val_L16_beta6.5=0.6043 val_L16_beta8=0.5588 val_L16_beta14.1464=0.5568 val_L16_beta55.0237=0.4549 val_total=4.7401
+epoch  40  train=0.5890  val_L16_beta1=0.7449 val_L16_beta2=0.5928 val_L16_beta4=0.6196 val_L16_beta5=0.6049 val_L16_beta6.5=0.6114 val_L16_beta8=0.5645 val_L16_beta14.1464=0.5624 val_L16_beta55.0237=0.4485 val_total=4.7490
+epoch  41  train=0.5810  val_L16_beta1=0.7355 val_L16_beta2=0.5933 val_L16_beta4=0.6318 val_L16_beta5=0.6264 val_L16_beta6.5=0.5979 val_L16_beta8=0.5579 val_L16_beta14.1464=0.5584 val_L16_beta55.0237=0.4459 val_total=4.7470
+epoch  42  train=0.5733  val_L16_beta1=0.7369 val_L16_beta2=0.6017 val_L16_beta4=0.6054 val_L16_beta5=0.6072 val_L16_beta6.5=0.6117 val_L16_beta8=0.5539 val_L16_beta14.1464=0.5736 val_L16_beta55.0237=0.4673 val_total=4.7578
+epoch  43  train=0.5874  val_L16_beta1=0.7376 val_L16_beta2=0.5940 val_L16_beta4=0.6233 val_L16_beta5=0.5955 val_L16_beta6.5=0.6004 val_L16_beta8=0.5554 val_L16_beta14.1464=0.5629 val_L16_beta55.0237=0.4483 val_total=4.7172
+epoch  44  train=0.5751  val_L16_beta1=0.7293 val_L16_beta2=0.5958 val_L16_beta4=0.6107 val_L16_beta5=0.6221 val_L16_beta6.5=0.6053 val_L16_beta8=0.5667 val_L16_beta14.1464=0.5630 val_L16_beta55.0237=0.4610 val_total=4.7539
+epoch  45  train=0.5851  val_L16_beta1=0.7323 val_L16_beta2=0.5984 val_L16_beta4=0.6129 val_L16_beta5=0.6024 val_L16_beta6.5=0.6151 val_L16_beta8=0.5665 val_L16_beta14.1464=0.5580 val_L16_beta55.0237=0.4501 val_total=4.7358
+epoch  46  train=0.5752  val_L16_beta1=0.7381 val_L16_beta2=0.6073 val_L16_beta4=0.6185 val_L16_beta5=0.6121 val_L16_beta6.5=0.6061 val_L16_beta8=0.5486 val_L16_beta14.1464=0.5674 val_L16_beta55.0237=0.4593 val_total=4.7574
+epoch  47  train=0.5858  val_L16_beta1=0.7290 val_L16_beta2=0.5893 val_L16_beta4=0.6104 val_L16_beta5=0.6191 val_L16_beta6.5=0.6074 val_L16_beta8=0.5513 val_L16_beta14.1464=0.5659 val_L16_beta55.0237=0.4652 val_total=4.7376
+epoch  48  train=0.5761  val_L16_beta1=0.7379 val_L16_beta2=0.6014 val_L16_beta4=0.6277 val_L16_beta5=0.6111 val_L16_beta6.5=0.6205 val_L16_beta8=0.5520 val_L16_beta14.1464=0.5519 val_L16_beta55.0237=0.4559 val_total=4.7584
+epoch  49  train=0.5698  val_L16_beta1=0.7205 val_L16_beta2=0.5964 val_L16_beta4=0.6342 val_L16_beta5=0.6128 val_L16_beta6.5=0.6043 val_L16_beta8=0.5727 val_L16_beta14.1464=0.5626 val_L16_beta55.0237=0.4587 val_total=4.7620
+epoch  50  train=0.5822  val_L16_beta1=0.7285 val_L16_beta2=0.5975 val_L16_beta4=0.6277 val_L16_beta5=0.6241 val_L16_beta6.5=0.6159 val_L16_beta8=0.5602 val_L16_beta14.1464=0.5499 val_L16_beta55.0237=0.4472 val_total=4.7509
+epoch  51  train=0.5790  val_L16_beta1=0.7434 val_L16_beta2=0.5958 val_L16_beta4=0.6159 val_L16_beta5=0.6105 val_L16_beta6.5=0.6153 val_L16_beta8=0.5535 val_L16_beta14.1464=0.5657 val_L16_beta55.0237=0.4584 val_total=4.7585
+epoch  52  train=0.5820  val_L16_beta1=0.7263 val_L16_beta2=0.6006 val_L16_beta4=0.6271 val_L16_beta5=0.6066 val_L16_beta6.5=0.6066 val_L16_beta8=0.5516 val_L16_beta14.1464=0.5609 val_L16_beta55.0237=0.4449 val_total=4.7247
+epoch  53  train=0.5765  val_L16_beta1=0.7339 val_L16_beta2=0.5918 val_L16_beta4=0.6167 val_L16_beta5=0.6031 val_L16_beta6.5=0.6257 val_L16_beta8=0.5693 val_L16_beta14.1464=0.5614 val_L16_beta55.0237=0.4506 val_total=4.7526
+epoch  54  train=0.5713  val_L16_beta1=0.7218 val_L16_beta2=0.5875 val_L16_beta4=0.6236 val_L16_beta5=0.6278 val_L16_beta6.5=0.6093 val_L16_beta8=0.5542 val_L16_beta14.1464=0.5587 val_L16_beta55.0237=0.4491 val_total=4.7321
+epoch  55  train=0.5764  val_L16_beta1=0.7339 val_L16_beta2=0.5913 val_L16_beta4=0.6338 val_L16_beta5=0.6149 val_L16_beta6.5=0.6107 val_L16_beta8=0.5586 val_L16_beta14.1464=0.5701 val_L16_beta55.0237=0.4583 val_total=4.7716
+epoch  56  train=0.5803  val_L16_beta1=0.7321 val_L16_beta2=0.5800 val_L16_beta4=0.6294 val_L16_beta5=0.5977 val_L16_beta6.5=0.6131 val_L16_beta8=0.5437 val_L16_beta14.1464=0.5549 val_L16_beta55.0237=0.4557 val_total=4.7066
+epoch  57  train=0.5770  val_L16_beta1=0.7295 val_L16_beta2=0.6090 val_L16_beta4=0.6170 val_L16_beta5=0.6218 val_L16_beta6.5=0.6078 val_L16_beta8=0.5456 val_L16_beta14.1464=0.5532 val_L16_beta55.0237=0.4560 val_total=4.7398
+epoch  58  train=0.5874  val_L16_beta1=0.7216 val_L16_beta2=0.5937 val_L16_beta4=0.6239 val_L16_beta5=0.6190 val_L16_beta6.5=0.6058 val_L16_beta8=0.5744 val_L16_beta14.1464=0.5535 val_L16_beta55.0237=0.4563 val_total=4.7481
+epoch  59  train=0.5867  val_L16_beta1=0.7206 val_L16_beta2=0.5882 val_L16_beta4=0.6123 val_L16_beta5=0.6146 val_L16_beta6.5=0.6053 val_L16_beta8=0.5629 val_L16_beta14.1464=0.5639 val_L16_beta55.0237=0.4564 val_total=4.7242
+epoch  60  train=0.5808  val_L16_beta1=0.7310 val_L16_beta2=0.5891 val_L16_beta4=0.6154 val_L16_beta5=0.6249 val_L16_beta6.5=0.6019 val_L16_beta8=0.5626 val_L16_beta14.1464=0.5673 val_L16_beta55.0237=0.4630 val_total=4.7552
+epoch  61  train=0.5817  val_L16_beta1=0.7269 val_L16_beta2=0.5910 val_L16_beta4=0.6121 val_L16_beta5=0.6231 val_L16_beta6.5=0.6096 val_L16_beta8=0.5574 val_L16_beta14.1464=0.5600 val_L16_beta55.0237=0.4478 val_total=4.7279
+epoch  62  train=0.5746  val_L16_beta1=0.7198 val_L16_beta2=0.5900 val_L16_beta4=0.6191 val_L16_beta5=0.6186 val_L16_beta6.5=0.6066 val_L16_beta8=0.5606 val_L16_beta14.1464=0.5758 val_L16_beta55.0237=0.4526 val_total=4.7431
+epoch  63  train=0.5805  val_L16_beta1=0.7385 val_L16_beta2=0.5918 val_L16_beta4=0.6321 val_L16_beta5=0.6157 val_L16_beta6.5=0.6122 val_L16_beta8=0.5562 val_L16_beta14.1464=0.5705 val_L16_beta55.0237=0.4573 val_total=4.7744
+epoch  64  train=0.5794  val_L16_beta1=0.7252 val_L16_beta2=0.5935 val_L16_beta4=0.6173 val_L16_beta5=0.6127 val_L16_beta6.5=0.5996 val_L16_beta8=0.5436 val_L16_beta14.1464=0.5492 val_L16_beta55.0237=0.4588 val_total=4.7000
+epoch  65  train=0.5813  val_L16_beta1=0.7191 val_L16_beta2=0.5812 val_L16_beta4=0.6209 val_L16_beta5=0.6061 val_L16_beta6.5=0.6106 val_L16_beta8=0.5650 val_L16_beta14.1464=0.5622 val_L16_beta55.0237=0.4520 val_total=4.7171
+epoch  66  train=0.5860  val_L16_beta1=0.7200 val_L16_beta2=0.5948 val_L16_beta4=0.6210 val_L16_beta5=0.6091 val_L16_beta6.5=0.6001 val_L16_beta8=0.5524 val_L16_beta14.1464=0.5636 val_L16_beta55.0237=0.4570 val_total=4.7181
+epoch  67  train=0.5797  val_L16_beta1=0.7190 val_L16_beta2=0.5893 val_L16_beta4=0.6322 val_L16_beta5=0.6019 val_L16_beta6.5=0.5933 val_L16_beta8=0.5558 val_L16_beta14.1464=0.5591 val_L16_beta55.0237=0.4512 val_total=4.7019
+epoch  68  train=0.5800  val_L16_beta1=0.7316 val_L16_beta2=0.6037 val_L16_beta4=0.6170 val_L16_beta5=0.6121 val_L16_beta6.5=0.6149 val_L16_beta8=0.5535 val_L16_beta14.1464=0.5598 val_L16_beta55.0237=0.4604 val_total=4.7530
+epoch  69  train=0.5769  val_L16_beta1=0.7287 val_L16_beta2=0.5781 val_L16_beta4=0.6367 val_L16_beta5=0.6060 val_L16_beta6.5=0.6078 val_L16_beta8=0.5656 val_L16_beta14.1464=0.5611 val_L16_beta55.0237=0.4445 val_total=4.7285
+epoch  70  train=0.5763  val_L16_beta1=0.7228 val_L16_beta2=0.5866 val_L16_beta4=0.6209 val_L16_beta5=0.6156 val_L16_beta6.5=0.6031 val_L16_beta8=0.5525 val_L16_beta14.1464=0.5555 val_L16_beta55.0237=0.4613 val_total=4.7183
+epoch  71  train=0.5801  val_L16_beta1=0.7277 val_L16_beta2=0.5955 val_L16_beta4=0.6192 val_L16_beta5=0.6103 val_L16_beta6.5=0.6005 val_L16_beta8=0.5621 val_L16_beta14.1464=0.5525 val_L16_beta55.0237=0.4580 val_total=4.7258
+epoch  72  train=0.5838  val_L16_beta1=0.7386 val_L16_beta2=0.5982 val_L16_beta4=0.6301 val_L16_beta5=0.5980 val_L16_beta6.5=0.6140 val_L16_beta8=0.5619 val_L16_beta14.1464=0.5602 val_L16_beta55.0237=0.4627 val_total=4.7637
+epoch  73  train=0.5790  val_L16_beta1=0.7319 val_L16_beta2=0.5917 val_L16_beta4=0.6155 val_L16_beta5=0.6132 val_L16_beta6.5=0.6114 val_L16_beta8=0.5663 val_L16_beta14.1464=0.5628 val_L16_beta55.0237=0.4473 val_total=4.7402
+epoch  74  train=0.5783  val_L16_beta1=0.7263 val_L16_beta2=0.5933 val_L16_beta4=0.6180 val_L16_beta5=0.6056 val_L16_beta6.5=0.5972 val_L16_beta8=0.5476 val_L16_beta14.1464=0.5600 val_L16_beta55.0237=0.4524 val_total=4.7005
+epoch  75  train=0.5740  val_L16_beta1=0.7211 val_L16_beta2=0.5928 val_L16_beta4=0.6351 val_L16_beta5=0.6037 val_L16_beta6.5=0.6074 val_L16_beta8=0.5583 val_L16_beta14.1464=0.5669 val_L16_beta55.0237=0.4482 val_total=4.7334
+epoch  76  train=0.5896  val_L16_beta1=0.7284 val_L16_beta2=0.5740 val_L16_beta4=0.6157 val_L16_beta5=0.6182 val_L16_beta6.5=0.6005 val_L16_beta8=0.5675 val_L16_beta14.1464=0.5664 val_L16_beta55.0237=0.4519 val_total=4.7225
+epoch  77  train=0.5777  val_L16_beta1=0.7051 val_L16_beta2=0.5886 val_L16_beta4=0.6137 val_L16_beta5=0.6029 val_L16_beta6.5=0.6081 val_L16_beta8=0.5638 val_L16_beta14.1464=0.5558 val_L16_beta55.0237=0.4567 val_total=4.6949
+epoch  78  train=0.5786  val_L16_beta1=0.7333 val_L16_beta2=0.5926 val_L16_beta4=0.6265 val_L16_beta5=0.6163 val_L16_beta6.5=0.6160 val_L16_beta8=0.5614 val_L16_beta14.1464=0.5488 val_L16_beta55.0237=0.4546 val_total=4.7494
+epoch  79  train=0.5825  val_L16_beta1=0.7343 val_L16_beta2=0.6021 val_L16_beta4=0.6309 val_L16_beta5=0.6113 val_L16_beta6.5=0.5917 val_L16_beta8=0.5557 val_L16_beta14.1464=0.5477 val_L16_beta55.0237=0.4597 val_total=4.7334
+epoch  80  train=0.5724  val_L16_beta1=0.7158 val_L16_beta2=0.5869 val_L16_beta4=0.6138 val_L16_beta5=0.6149 val_L16_beta6.5=0.6099 val_L16_beta8=0.5672 val_L16_beta14.1464=0.5670 val_L16_beta55.0237=0.4528 val_total=4.7284
+epoch  81  train=0.5760  val_L16_beta1=0.7234 val_L16_beta2=0.5912 val_L16_beta4=0.6233 val_L16_beta5=0.6175 val_L16_beta6.5=0.6058 val_L16_beta8=0.5594 val_L16_beta14.1464=0.5563 val_L16_beta55.0237=0.4339 val_total=4.7109
+epoch  82  train=0.5706  val_L16_beta1=0.7152 val_L16_beta2=0.5918 val_L16_beta4=0.6224 val_L16_beta5=0.6157 val_L16_beta6.5=0.5958 val_L16_beta8=0.5528 val_L16_beta14.1464=0.5601 val_L16_beta55.0237=0.4518 val_total=4.7057
+epoch  83  train=0.5863  val_L16_beta1=0.7315 val_L16_beta2=0.5907 val_L16_beta4=0.6196 val_L16_beta5=0.6102 val_L16_beta6.5=0.6089 val_L16_beta8=0.5663 val_L16_beta14.1464=0.5628 val_L16_beta55.0237=0.4484 val_total=4.7383
+epoch  84  train=0.5773  val_L16_beta1=0.7234 val_L16_beta2=0.5906 val_L16_beta4=0.6175 val_L16_beta5=0.5968 val_L16_beta6.5=0.6138 val_L16_beta8=0.5471 val_L16_beta14.1464=0.5659 val_L16_beta55.0237=0.4562 val_total=4.7113
+epoch  85  train=0.5801  val_L16_beta1=0.7292 val_L16_beta2=0.5837 val_L16_beta4=0.6251 val_L16_beta5=0.6111 val_L16_beta6.5=0.6123 val_L16_beta8=0.5478 val_L16_beta14.1464=0.5641 val_L16_beta55.0237=0.4475 val_total=4.7209
+epoch  86  train=0.5686  val_L16_beta1=0.7119 val_L16_beta2=0.5894 val_L16_beta4=0.6164 val_L16_beta5=0.6065 val_L16_beta6.5=0.6135 val_L16_beta8=0.5670 val_L16_beta14.1464=0.5531 val_L16_beta55.0237=0.4523 val_total=4.7101
+epoch  87  train=0.5701  val_L16_beta1=0.7273 val_L16_beta2=0.5866 val_L16_beta4=0.6251 val_L16_beta5=0.6039 val_L16_beta6.5=0.6042 val_L16_beta8=0.5539 val_L16_beta14.1464=0.5671 val_L16_beta55.0237=0.4457 val_total=4.7138
+epoch  88  train=0.5746  val_L16_beta1=0.7254 val_L16_beta2=0.5972 val_L16_beta4=0.6252 val_L16_beta5=0.5989 val_L16_beta6.5=0.6078 val_L16_beta8=0.5616 val_L16_beta14.1464=0.5690 val_L16_beta55.0237=0.4523 val_total=4.7375
+epoch  89  train=0.5853  val_L16_beta1=0.7218 val_L16_beta2=0.5751 val_L16_beta4=0.6284 val_L16_beta5=0.6131 val_L16_beta6.5=0.6061 val_L16_beta8=0.5693 val_L16_beta14.1464=0.5544 val_L16_beta55.0237=0.4504 val_total=4.7186
+epoch  90  train=0.5716  val_L16_beta1=0.7191 val_L16_beta2=0.5963 val_L16_beta4=0.6180 val_L16_beta5=0.6226 val_L16_beta6.5=0.6085 val_L16_beta8=0.5702 val_L16_beta14.1464=0.5650 val_L16_beta55.0237=0.4599 val_total=4.7594
+epoch  91  train=0.5861  val_L16_beta1=0.7134 val_L16_beta2=0.5883 val_L16_beta4=0.6221 val_L16_beta5=0.6167 val_L16_beta6.5=0.6069 val_L16_beta8=0.5576 val_L16_beta14.1464=0.5584 val_L16_beta55.0237=0.4589 val_total=4.7223
+epoch  92  train=0.5767  val_L16_beta1=0.7240 val_L16_beta2=0.5817 val_L16_beta4=0.6232 val_L16_beta5=0.6093 val_L16_beta6.5=0.6137 val_L16_beta8=0.5661 val_L16_beta14.1464=0.5598 val_L16_beta55.0237=0.4512 val_total=4.7291
+epoch  93  train=0.5740  val_L16_beta1=0.7281 val_L16_beta2=0.5941 val_L16_beta4=0.6083 val_L16_beta5=0.6123 val_L16_beta6.5=0.6140 val_L16_beta8=0.5659 val_L16_beta14.1464=0.5582 val_L16_beta55.0237=0.4417 val_total=4.7226
+epoch  94  train=0.5792  val_L16_beta1=0.7120 val_L16_beta2=0.5906 val_L16_beta4=0.6177 val_L16_beta5=0.5959 val_L16_beta6.5=0.5983 val_L16_beta8=0.5556 val_L16_beta14.1464=0.5687 val_L16_beta55.0237=0.4528 val_total=4.6917
+epoch  95  train=0.5830  val_L16_beta1=0.7311 val_L16_beta2=0.6020 val_L16_beta4=0.6294 val_L16_beta5=0.6087 val_L16_beta6.5=0.6023 val_L16_beta8=0.5637 val_L16_beta14.1464=0.5504 val_L16_beta55.0237=0.4475 val_total=4.7351
+epoch  96  train=0.5753  val_L16_beta1=0.7295 val_L16_beta2=0.5963 val_L16_beta4=0.6045 val_L16_beta5=0.6134 val_L16_beta6.5=0.6005 val_L16_beta8=0.5670 val_L16_beta14.1464=0.5507 val_L16_beta55.0237=0.4565 val_total=4.7184
+epoch  97  train=0.5728  val_L16_beta1=0.7365 val_L16_beta2=0.5967 val_L16_beta4=0.6291 val_L16_beta5=0.6167 val_L16_beta6.5=0.6072 val_L16_beta8=0.5667 val_L16_beta14.1464=0.5605 val_L16_beta55.0237=0.4586 val_total=4.7720
+epoch  98  train=0.5725  val_L16_beta1=0.7250 val_L16_beta2=0.5956 val_L16_beta4=0.6156 val_L16_beta5=0.6104 val_L16_beta6.5=0.6146 val_L16_beta8=0.5481 val_L16_beta14.1464=0.5652 val_L16_beta55.0237=0.4534 val_total=4.7278
+epoch  99  train=0.5750  val_L16_beta1=0.7143 val_L16_beta2=0.5828 val_L16_beta4=0.6181 val_L16_beta5=0.6096 val_L16_beta6.5=0.6137 val_L16_beta8=0.5470 val_L16_beta14.1464=0.5585 val_L16_beta55.0237=0.4593 val_total=4.7034
+checkpoint: out/diffusion/demo/checkpoints/score_net.pt
+history:    out/diffusion/demo/checkpoints/history.json
+STAGE_TRAIN_DONE 
+20 cases, output -> out\diffusion\demo\generalization_v2
+[1/20] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 471s
+    case done in 488s
+[2/20] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 461s
+    case done in 477s
+[3/20] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 468s
+    case done in 486s
+[4/20] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 476s
+    case done in 497s
+[5/20] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 475s
+    case done in 495s
+[6/20] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 490s
+    case done in 511s
+[7/20] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 469s
+    case done in 491s
+[8/20] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 528s
+    case done in 548s
+[9/20] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 535s
+    case done in 555s
+[10/20] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 551s
+    case done in 573s
+[11/20] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 463s
+    case done in 479s
+[12/20] B_bt6: base L=16 beta=4 -> L=32 beta=6 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=6 in 469s
+    case done in 488s
+[13/20] B_bt10: base L=16 beta=4 -> L=32 beta=10 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=10 in 436s
+    case done in 455s
+[14/20] B_bt16: base L=16 beta=4 -> L=32 beta=16 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=16 in 460s
+    case done in 484s
+[15/20] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=20 in 475s
+    case done in 496s
+[16/20] B_bt30: base L=16 beta=4 -> L=32 beta=30 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=30 in 462s
+    case done in 478s
+[17/20] B_bt55.0237: base L=16 beta=4 -> L=32 beta=55.0237 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=55.0237 in 462s
+    case done in 478s
+[18/20] B_bc2_bt8: base L=16 beta=2 -> L=32 beta=8 (tree-level beta_f = 4 beta_c; matched target is 6.1052)
+    generated 128 configs L=32 beta=8 in 420s
+    case done in 436s
+[19/20] C_L64: base L=32 beta=4 -> L=64 beta=14.1464 (size scan rung)
+    generated 96 configs L=64 beta=14.1464 in 1136s
+    case done in 1194s
+[20/20] C_L128: base L=64 beta=4 -> L=128 beta=14.1464 (size scan rung)
+    generated 64 configs L=128 beta=14.1464 in 11255s
+    case done in 11349s
+summary: out\diffusion\demo\generalization_v2\summary.json
+tables:  out\diffusion\demo\generalization_v2\summary_tables.md
+STAGE_STUDY_DONE 
+out\diffusion\demo\generalization_v2\fig_scaling_volume.png
+out\diffusion\demo\generalization_v2\fig_scaling_coupling.png
+out\diffusion\demo\generalization_v2\fig_scaling_parity.png
+CHAIN_DONE

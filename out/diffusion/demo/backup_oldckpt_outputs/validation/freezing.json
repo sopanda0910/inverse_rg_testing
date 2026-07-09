@@ -1,0 +1,10 @@
+{
+  "label": "direct HMC L=64 beta=55.0237",
+  "tau_int_Q": 300.0,
+  "tau_int_Q_err": NaN,
+  "n_tunnelings": 0,
+  "frozen": true,
+  "q_series_std": 0.0,
+  "ladder_q_squared": 1.7864583730697632,
+  "ladder_tau_int_Q": 0.5
+}
