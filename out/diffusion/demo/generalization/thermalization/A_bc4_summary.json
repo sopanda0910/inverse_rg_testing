@@ -1,0 +1,48 @@
+{
+  "run_id": "A_bc4",
+  "beta": 14.146446570889967,
+  "lattice_size": 32,
+  "action_type": "wilson",
+  "n_traj": 600,
+  "n_chains": 32,
+  "hmc": {
+    "step_size": 0.053174854941555764,
+    "n_steps": 19,
+    "acceptance": {
+      "diffusion seed": 0.9954166666666666,
+      "cold start": 0.9958854166666666,
+      "hot start": 0.99625
+    }
+  },
+  "targets": {
+    "plaquette": 0.9639808987868075,
+    "wilson_2x2": 0.8635226110243367,
+    "wilson_4x4": 0.5560256872712839,
+    "wilson_6x6": 0.26697059232340353,
+    "Q^2": 1.9039912820080367
+  },
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "cold start": {
+      "plaquette": 243.0,
+      "wilson_2x2": 236.0,
+      "wilson_4x4": 227.0,
+      "wilson_6x6": 62.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 584.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    }
+  },
+  "seed_provenance": "generalization study A_bc4: base L=16 beta=4, diffusion + 16 retherm sweeps (Q-hops on)"
+}
