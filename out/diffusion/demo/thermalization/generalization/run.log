@@ -1,0 +1,58 @@
+11 matched-pair cases, output -> out\diffusion\demo\thermalization\generalization
+A_bc0.25_L32_beta1.4892: sampling 128 raw seeds from wilson_L16_beta0.25.pt
+    sampled in 519s
+
+=== A_bc0.25_L32_beta1.4892: step_size=0.1000, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc0.5_L32_beta2.02441: sampling 128 raw seeds from wilson_L16_beta0.5.pt
+    sampled in 517s
+
+=== A_bc0.5_L32_beta2.02441: step_size=0.1000, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc0.75_L32_beta2.5435: sampling 128 raw seeds from wilson_L16_beta0.75.pt
+    sampled in 553s
+
+=== A_bc0.75_L32_beta2.5435: step_size=0.1000, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc1_L32_beta3.10399: sampling 128 raw seeds from wilson_L16_beta1.pt
+    sampled in 515s
+
+=== A_bc1_L32_beta3.10399: step_size=0.1000, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc2_L32_beta6.10518: sampling 128 raw seeds from wilson_L16_beta2.pt
+    sampled in 503s
+
+=== A_bc2_L32_beta6.10518: step_size=0.0809, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc3_L32_beta10.015: sampling 128 raw seeds from wilson_L16_beta3.pt
+    sampled in 491s
+
+=== A_bc3_L32_beta10.015: step_size=0.0632, n_steps=16 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc4_L32_beta14.1464: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 492s
+
+=== A_bc4_L32_beta14.1464: step_size=0.0532, n_steps=19 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc6_L32_beta22.3151: sampling 128 raw seeds from wilson_L16_beta6.pt
+    sampled in 497s
+
+=== A_bc6_L32_beta22.3151: step_size=0.0423, n_steps=24 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc8_L32_beta30.3772: sampling 128 raw seeds from wilson_L16_beta8.pt

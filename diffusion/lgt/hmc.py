@@ -17,8 +17,8 @@ OMELYAN_LAMBDA = 0.1931833
 
 def adapted_hmc_params(
     beta: float,
-    base_step_size: float = 0.1,
-    base_n_steps: int = 10,
+    base_step_size: float = 0.2,
+    base_n_steps: int = 5,
     reference_beta: float = 4.0,
 ) -> tuple[float, int]:
     """Scale the leapfrog step with the force magnitude (~sqrt(beta)) at large beta,
@@ -40,8 +40,8 @@ class BatchedHMC:
         lattice_size: int,
         action,
         n_chains: int = 8,
-        n_steps: int = 10,
-        step_size: float = 0.1,
+        n_steps: int = 5,
+        step_size: float = 0.2,
         device: str = "cpu",
         hot_start: bool = False,
         topological_updates: bool = False,
@@ -143,8 +143,8 @@ def run_hmc_ensemble(
     n_chains: int = 8,
     burn_in: int = 100,
     thin: int = 5,
-    n_steps: int = 10,
-    step_size: float = 0.1,
+    n_steps: int = 5,
+    step_size: float = 0.2,
     device: str = "cpu",
     record_history: bool = False,
     topological_updates: bool = False,

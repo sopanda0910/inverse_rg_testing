@@ -3,3 +3,5 @@
 - Even if this cannot be generalized, the only difference would be that the training time would have to be accounted for during the "coast" period of the time difference
 # Does the produced lattice serve as a good starting point for HMC
 # Compare thermalization time for the HMC seed to the interval time of regular HMC
+# Plot the autocorrelations for various observables trace, still compare cold/hot average over the entire window, and plot the autocorrelation vs window size (look at paper)
+# Fit exponential decay to observables trace and compare characteristic time between cold/hot/diffusion

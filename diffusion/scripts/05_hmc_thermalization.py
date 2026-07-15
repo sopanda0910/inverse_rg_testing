@@ -11,6 +11,13 @@ generation + a short HMC tail is cheaper per independent config than running the
 chain itself. All chains here run WITHOUT topological updates (plain HMC).
 
     python diffusion/scripts/05_hmc_thermalization.py --config diffusion/configs/demo.yaml
+
+With --generalization the benchmark runs over the generalization study's
+matched-pair beta scan (parts A and D, L=16 -> L=32) instead of the ladder
+rungs, covering many more couplings -- including low betas where fresh HMC
+does thermalize, so 2 tau_int and burn-in are honest yardsticks:
+
+    python diffusion/scripts/05_hmc_thermalization.py --generalization
 """
 
 import argparse
@@ -51,7 +58,8 @@ MUTED_BAR = "#8f8d86"
 INK = "#0b0b0b"
 GRID_COLOR = "#e1e0d9"
 
-OBS_LOOPS = {"wilson_2x2": (2, 2), "wilson_4x4": (4, 4)}
+OBS_LOOPS = {"wilson_2x2": (2, 2), "wilson_4x4": (4, 4), "wilson_6x6": (6, 6)}
+INTERVAL_OBS = ("plaquette", "wilson_2x2", "wilson_4x4")
 
 
 def chain_observables(theta: torch.Tensor) -> dict[str, np.ndarray]:
@@ -155,7 +163,7 @@ def q_freezing(series: np.ndarray, discard: int, label: str) -> dict:
 
 
 def build_series_dict(raw: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
-    series = {k: v for k, v in raw.items() if k != "Q"}
+    series = dict(raw)
     series["Q^2"] = raw["Q"] ** 2
     return series
 
@@ -270,6 +278,72 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     plt.close(fig)
 
 
+def plot_beta_scan(summaries: list[dict], out_path: Path) -> None:
+    """Trajectories per new thermalized, independent config vs beta, across the
+    matched-pair scan: the same four timescales as plot_timescales, but as a
+    function of coupling so the crossover where fresh HMC stops thermalizing is
+    visible in one panel."""
+    wilson_obs = ("plaquette", "wilson_2x2", "wilson_4x4")
+
+    def slowest(summary, start):
+        return max(summary["t_therm"][start][n] for n in wilson_obs)
+
+    series = [
+        ("diffusion seed: t_therm", GEN_COLOR, "o",
+         lambda s: slowest(s, "diffusion seed")),
+        ("standard HMC interval: 2 tau_int", MUTED_BAR, "s",
+         lambda s: s["hmc_interval_trajectories"]),
+        ("fresh hot start: burn-in", HOT_COLOR, "^",
+         lambda s: slowest(s, "hot start")),
+        ("fresh cold start: burn-in", COLD_COLOR, "D",
+         lambda s: slowest(s, "cold start")),
+    ]
+    betas = np.array([s["beta"] for s in summaries], dtype=float)
+    budget = max(s["n_traj_baseline"] for s in summaries)
+    cap = budget * 1.8
+    fig, ax = plt.subplots(figsize=(9.5, 5.8))
+    ax.axhspan(budget, cap * 1.6, color=GRID_COLOR, alpha=0.55, zorder=0)
+    ax.annotate(f"never thermalized within the {budget}-trajectory baseline budget "
+                "(hollow markers)", xy=(0.985, budget * 1.28),
+                xycoords=("axes fraction", "data"), ha="right", va="bottom",
+                fontsize=8, color=INK)
+    for k, (name, color, marker, getter) in enumerate(series):
+        vals = np.array([getter(s) for s in summaries])
+        finite = np.isfinite(vals)
+        y = np.where(finite, vals, cap * (1.0 + 0.08 * k))
+        ax.plot(betas[finite], y[finite], marker=marker, color=color,
+                lw=1.5, ms=6, label=name, zorder=3)
+        if (~finite).any():
+            ax.plot(betas[~finite], y[~finite], marker=marker, color=color,
+                    ls="none", ms=7, mfc="none", mew=1.6, zorder=3)
+    frozen = np.array([bool(s["q_freezing"]["frozen"]) for s in summaries])
+    if frozen.any():
+        ax.plot(betas[frozen], np.full(frozen.sum(), cap * 1.42), marker="x",
+                color=INK, ls="none", ms=7, mew=1.8,
+                label="Q frozen (hot-start chain)", zorder=3)
+    ax.set_xscale("log")
+    ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+    ax.set_xticks(betas)
+    ax.set_xticklabels([f"{b:.3g}" for b in betas], fontsize=7, rotation=45)
+    ax.set_yscale("symlog", linthresh=1)
+    ax.set_ylim(-0.3, cap * 1.6)
+    ax.set_yticks([0, 1, 10, 100, budget])
+    ax.set_yticklabels(["0", "1", "10", "100", f"{budget} (budget)"], fontsize=8)
+    ax.set_xlabel(r"fine coupling $\beta_f$ (matched pair, L=32)", fontsize=10, color=INK)
+    ax.set_ylabel("HMC trajectories per new thermalized,\nindependent config",
+                  fontsize=9, color=INK)
+    ax.grid(color=GRID_COLOR, lw=0.7)
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_color(GRID_COLOR)
+    ax.legend(fontsize=8, frameon=False, loc="upper center",
+              bbox_to_anchor=(0.5, -0.18), ncol=3)
+    ax.set_title("Diffusion seed vs standard HMC across the matched beta scan",
+                 fontsize=11, color=INK)
+    fig.savefig(out_path, dpi=130, bbox_inches="tight")
+    plt.close(fig)
+
+
 def rows_to_md(rows: list[dict]) -> list[str]:
     cols = ["observable", "value", "error", "exact", "z_exact",
             "reference", "ref_error", "z_ref", "ks_p", "chi2_p"]
@@ -302,6 +376,7 @@ def run_rung(
     args,
     device: str,
     out_dir: Path,
+    label: str | None = None,
 ) -> dict:
     """seed_configs must be the RAW conditional-diffusion samples (pre-retherm):
     every sweep of equilibration the seeds need is charged here, in HMC units."""
@@ -313,7 +388,7 @@ def run_rung(
     step_size, n_steps = adapted_hmc_params(
         beta, float(data_cfg["hmc_step_size"]), int(data_cfg["hmc_steps"])
     )
-    label = f"rung{index}_L{lattice_size}_beta{beta:g}"
+    label = label or f"rung{index}_L{lattice_size}_beta{beta:g}"
     targets = exact_targets(beta, action_type, lattice_size)
     print(f"\n=== {label}: step_size={step_size:.4f}, n_steps={n_steps} ===")
 
@@ -400,7 +475,7 @@ def run_rung(
          "provenance": f"raw diffusion seed + {n_traj_gen} plain-HMC trajectories"},
     )
 
-    slowest = max(2.0 * tau[name][0] for name in tau)
+    slowest = max(2.0 * tau[name][0] for name in tau if name in INTERVAL_OBS)
     summary = {
         "label": label,
         "beta": beta,
@@ -424,40 +499,95 @@ def run_rung(
             "series": all_series, "targets": targets}
 
 
-def write_thermalization_report(results: list[dict], action_type: str, path: Path) -> None:
+def write_thermalization_report(
+    results: list[dict], action_type: str, path: Path, mode: str = "ladder"
+) -> None:
     wilson_obs = ("plaquette", "wilson_2x2", "wilson_4x4")
+    if mode == "ladder":
+        title = ("# Diffusion-seeded HMC: thermalization time vs the "
+                 "standard-HMC sampling interval")
+        claim = [
+            "**Claim.** A raw sample from the conditional-diffusion ladder, used as the "
+            "starting configuration of an HMC chain, thermalizes within a few tens of "
+            "trajectories at every coupling. The yardstick is the sampling interval "
+            "`2 tau_int` -- the trajectories a standard HMC chain needs between two of "
+            "its own independent configs, i.e. its *marginal* cost per config, charged "
+            "forever. At the fine rungs the ladder is built for, the ordering is",
+            "",
+            "> t_therm(diffusion seed)  <  2 tau_int(standard HMC)  <  burn-in(fresh chain)",
+            "",
+            "with a margin that grows with beta as standard HMC slides into critical "
+            "slowing down and topological freezing. At the cheapest rung the seed and "
+            "the interval are comparable -- where standard HMC is still efficient there "
+            "is nothing to win on Wilson-loop observables -- but even there the seed "
+            "starts in the correct topological sector at t = 0, while the chain's "
+            "topological interval `2 tau_int(Q)` is several times longer than its "
+            "Wilson-loop one. The fresh-chain burn-in is standard HMC's one-time entry "
+            "cost and exceeds the interval everywhere.",
+            "",
+            "![timescales](timescales.png)",
+        ]
+        seed_bullet = (
+            "- **Diffusion seed** -- the raw output of the conditional-diffusion ladder "
+            "at this rung (ancestral sampling + the deterministic coarse-charge "
+            "transport), with **no** rethermalization sweeps applied: every bit of "
+            "equilibration the seed needs is measured here, in HMC trajectories."
+        )
+        anchor = (
+            "The diffusion ladder itself is "
+            "anchored at a cheap coarse rung (L=8, beta ~ 1.35) where HMC mixes well, "
+            "and transports that ensemble to fine rungs -- which is precisely why it "
+            "can start chains in regions standard HMC cannot reach."
+        )
+    else:
+        title = ("# Diffusion-seeded HMC across the matched beta scan: "
+                 "thermalization time vs the standard-HMC sampling interval")
+        claim = [
+            "**Why this scan.** At the ladder's upper rungs the fresh-HMC baselines "
+            "never thermalize at all (topological freezing plus a metastable "
+            "local-defect state), so the only comparison available there is "
+            "'diffusion seed vs a baseline that never arrives'. This report extends "
+            "the benchmark to every matched coupling pair of the generalization "
+            "study -- one inverse-RG step L=16 -> L=32 per case -- including fine "
+            "couplings low enough that hot- and cold-start HMC *does* thermalize "
+            "within the budget. There the standard chain's own interval `2 tau_int` "
+            "and its fresh-start burn-in are honest, measurable yardsticks, and the "
+            "scan shows where the ordering",
+            "",
+            "> t_therm(diffusion seed)  <  2 tau_int(standard HMC)  <  burn-in(fresh chain)",
+            "",
+            "sets in as beta grows and standard HMC slides into critical slowing "
+            "down and topological freezing.",
+            "",
+            "![beta scan](beta_scan.png)",
+            "",
+            "![timescales](timescales.png)",
+        ]
+        seed_bullet = (
+            "- **Diffusion seed** -- the raw conditional-diffusion output for this "
+            "coupling: one inverse-RG step from a direct-HMC base ensemble at the "
+            "matched coarse coupling (ancestral sampling + the deterministic "
+            "coarse-charge transport), with **no** rethermalization sweeps applied: "
+            "every bit of equilibration the seed needs is measured here, in HMC "
+            "trajectories."
+        )
+        anchor = (
+            "Each diffusion seed here is one "
+            "inverse-RG step from a direct-HMC base ensemble at the matched coarse "
+            "coupling beta_c (L=16), where HMC mixes well -- which is precisely why "
+            "it can start chains in regions standard HMC cannot reach."
+        )
     lines = [
-        "# Diffusion-seeded HMC: thermalization time vs the standard-HMC sampling interval",
+        title,
         "",
         f"Action: {action_type}. All HMC in this report is plain HMC "
         "(Omelyan, adapted step size, **no** topological updates).",
         "",
-        "**Claim.** A raw sample from the conditional-diffusion ladder, used as the "
-        "starting configuration of an HMC chain, thermalizes within a few tens of "
-        "trajectories at every coupling. The yardstick is the sampling interval "
-        "`2 tau_int` -- the trajectories a standard HMC chain needs between two of "
-        "its own independent configs, i.e. its *marginal* cost per config, charged "
-        "forever. At the fine rungs the ladder is built for, the ordering is",
-        "",
-        "> t_therm(diffusion seed)  <  2 tau_int(standard HMC)  <  burn-in(fresh chain)",
-        "",
-        "with a margin that grows with beta as standard HMC slides into critical "
-        "slowing down and topological freezing. At the cheapest rung the seed and "
-        "the interval are comparable -- where standard HMC is still efficient there "
-        "is nothing to win on Wilson-loop observables -- but even there the seed "
-        "starts in the correct topological sector at t = 0, while the chain's "
-        "topological interval `2 tau_int(Q)` is several times longer than its "
-        "Wilson-loop one. The fresh-chain burn-in is standard HMC's one-time entry "
-        "cost and exceeds the interval everywhere.",
-        "",
-        "![timescales](timescales.png)",
+        *claim,
         "",
         "## The three starting points",
         "",
-        "- **Diffusion seed** -- the raw output of the conditional-diffusion ladder "
-        "at this rung (ancestral sampling + the deterministic coarse-charge "
-        "transport), with **no** rethermalization sweeps applied: every bit of "
-        "equilibration the seed needs is measured here, in HMC trajectories.",
+        seed_bullet,
         "- **Hot start** -- every link angle drawn uniformly from (-pi, pi]: a "
         "completely disordered (infinite-temperature) configuration. The standard "
         "way to initialize a fresh HMC chain without prior information.",
@@ -493,7 +623,7 @@ def write_thermalization_report(results: list[dict], action_type: str, path: Pat
         "",
         "t_therm and burn-in are the slowest Wilson-loop observable (plaquette, "
         "W(2x2), W(4x4)); topology is stricter still for the fresh chains: their "
-        "Q^2 **never** reaches the exact value at the two frozen rungs, while the "
+        "Q^2 **never** reaches the exact value at the frozen rungs, while the "
         "diffusion seed inherits the correct topological sector from the coarse "
         "ensemble it was generated from (see the Q^2 panels and per-rung tables "
         "below).",
@@ -513,7 +643,7 @@ def write_thermalization_report(results: list[dict], action_type: str, path: Pat
         "",
         "'never' = the ensemble mean was still outside |z| <= 2 of the exact value "
         "after the full baseline budget; the per-rung sections quote the z-score it "
-        "plateaued at. For hot starts at the two large-beta rungs this is not a "
+        "plateaued at. For hot starts at the large-beta rungs this is not a "
         "budget problem but a physical one: a random start freezes into a random "
         "topological sector (<Q^2> of order tens), plain HMC can never change Q at "
         "these couplings (tunneling is suppressed ~exp(-2 beta)), and the wrong "
@@ -524,10 +654,7 @@ def write_thermalization_report(results: list[dict], action_type: str, path: Pat
         "None of the exact values in this report come from fine-lattice HMC: the "
         "ground truth is the character expansion of 2D compact U(1) "
         "(`diffusion/lgt/exact.py`), which gives every Wilson loop, P(Q) and "
-        "chi_top in closed form at finite volume. The diffusion ladder itself is "
-        "anchored at a cheap coarse rung (L=8, beta ~ 1.35) where HMC mixes well, "
-        "and transports that ensemble to fine rungs -- which is precisely why it "
-        "can start chains in regions standard HMC cannot reach.",
+        "chi_top in closed form at finite volume. " + anchor,
         "",
     ]
     for res in results:
@@ -583,6 +710,82 @@ def write_thermalization_report(results: list[dict], action_type: str, path: Pat
     path.write_text("\n".join(lines), encoding="utf-8")
 
 
+def run_generalization_scan(args, config: dict, device: str) -> None:
+    """Thermalization benchmark over the generalization study's matched-pair
+    scan: raw diffusion seeds are (re)generated from the cached coarse bases
+    (the study only saved post-retherm ensembles) and cached next to them."""
+    from diffusion.model.train import load_checkpoint
+    from diffusion.pipeline.ladder import generate_fine_from_coarse
+
+    action_type = config["action_type"]
+    gen_dir = Path(args.generalization)
+    summary_path = gen_dir / "summary.json"
+    if not summary_path.exists():
+        raise SystemExit(f"no generalization summary at {summary_path}; "
+                         "run 06_generalization_study.py first")
+    records = json.loads(summary_path.read_text(encoding="utf-8"))
+    parts = {p.strip() for p in args.parts.split(",")}
+    cases = sorted(
+        (r for r in records.values()
+         if r.get("part") in parts and "rows" in r and int(r["base_size"]) == 16),
+        key=lambda r: float(r["target_beta"]),
+    )
+    if args.betas:
+        wanted = [float(v) for v in args.betas.split(",")]
+        cases = [r for r in cases
+                 if any(abs(float(r["target_beta"]) - w) < 1e-3 for w in wanted)]
+    if not cases:
+        raise SystemExit(f"no completed generalization cases for parts {sorted(parts)}")
+    out_dir = Path(args.out) if args.out else gen_dir.parent / "thermalization" / "generalization"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    print(f"{len(cases)} matched-pair cases, output -> {out_dir}", flush=True)
+
+    model_schedule = None
+    results = []
+    for index, record in enumerate(cases):
+        beta_f = float(record["target_beta"])
+        base_size = int(record["base_size"])
+        fine_size = 2 * base_size
+        run_id = record["run_id"]
+        label = f"{run_id}_L{fine_size}_beta{beta_f:g}"
+        raw_path = gen_dir / "generated" / f"{run_id}_raw_{action_type}_L{fine_size}_beta{beta_f:g}.pt"
+        if raw_path.exists():
+            seed_configs, _ = load_ensemble(raw_path)
+        else:
+            base_path = gen_dir / "bases" / f"{action_type}_L{base_size}_beta{float(record['base_beta']):g}.pt"
+            base = load_ensemble(base_path)[0][: int(record["n_configs"])]
+            if model_schedule is None:
+                model_schedule = load_checkpoint(args.checkpoint, device)
+            print(f"{label}: sampling {base.shape[0]} raw seeds from {base_path.name}", flush=True)
+            t0 = time.time()
+            seed_configs = generate_fine_from_coarse(
+                model_schedule[0], model_schedule[1], base, beta_f,
+                n_sampler_steps=200, n_corrector_steps=1, batch_size=32,
+                device=device, consistency_weight=1.0, enforce_coarse_charge=True,
+            )
+            save_ensemble(raw_path, seed_configs, {
+                "beta": beta_f, "lattice_size": fine_size, "action_type": action_type,
+                "provenance": f"raw conditional-diffusion output (pre-retherm), "
+                              f"base {base_path.name}, sampled for the thermalization scan",
+            })
+            print(f"    sampled in {time.time() - t0:.0f}s", flush=True)
+        ref_path = gen_dir / "reference" / f"{action_type}_L{fine_size}_beta{beta_f:g}.pt"
+        reference = load_ensemble(ref_path)[0] if ref_path.exists() else None
+        meta = {"beta": beta_f, "lattice_size": fine_size}
+        results.append(run_rung(index, meta, seed_configs, reference, config, args,
+                                device, out_dir, label=label))
+        save_json(out_dir / f"{label}_summary.json", results[-1]["summary"])
+
+    summaries = [res["summary"] for res in results]
+    plot_timescales(summaries, out_dir / "timescales.png")
+    plot_beta_scan(summaries, out_dir / "beta_scan.png")
+    write_thermalization_report(results, action_type, out_dir / "report.md",
+                                mode="generalization")
+    print(f"\nreport: {out_dir / 'report.md'}")
+    for s in summaries:
+        print(json.dumps({k: s[k] for k in ("label", "t_therm", "hmc_interval_trajectories")}, indent=2))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="diffusion/configs/demo.yaml")
@@ -595,10 +798,23 @@ def main() -> None:
     parser.add_argument("--run-dir", default=None, dest="run_dir",
                         help="override the run root (replaces the config's out_dir parents, "
                         "e.g. out/diffusion/demo when the config says artifacts/diffusion/demo)")
+    parser.add_argument("--generalization", nargs="?", const="out/diffusion/demo/generalization",
+                        default=None,
+                        help="benchmark the generalization study's matched-pair scan instead of "
+                        "the ladder rungs; optional value overrides the study directory")
+    parser.add_argument("--parts", default="A,D",
+                        help="generalization mode: which study parts to include")
+    parser.add_argument("--betas", default=None,
+                        help="generalization mode: comma-separated target-beta filter")
+    parser.add_argument("--checkpoint", default="out/diffusion/demo/checkpoints/score_net.pt",
+                        help="generalization mode: score-net checkpoint for raw-seed sampling")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]) + 5)
     device = resolve_device(config)
+    if args.generalization is not None:
+        run_generalization_scan(args, config, device)
+        return
     action_type = config["action_type"]
     generated_dir = Path(config["ladder"]["out_dir"])
     reference_dir = Path(config["validate"]["out_dir"]) / "reference"
