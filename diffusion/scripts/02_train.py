@@ -1,6 +1,6 @@
 """Train the conditional score model across all training rungs.
 
-    python inverserg/diffusion/scripts/02_train.py --config inverserg/diffusion/configs/default.yaml
+    python diffusion/scripts/02_train.py --config diffusion/configs/default.yaml
 """
 
 import argparse
@@ -20,7 +20,7 @@ from diffusion.utils import (
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="inverserg/diffusion/configs/default.yaml")
+    parser.add_argument("--config", default="diffusion/configs/default.yaml")
     parser.add_argument("--epochs", type=int, default=None, help="override config epochs")
     args = parser.parse_args()
     config = load_config(args.config)

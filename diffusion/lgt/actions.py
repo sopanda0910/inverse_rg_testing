@@ -35,6 +35,10 @@ class WilsonAction:
         return self.per_config(theta).sum()
 
 
+# The villain action is used as a verification of the model and machinery/pipeline.
+# The Wilson Action's coarse/fine beta values are numerically determined, and therefore
+# there isn't a precise target that the machinery/model can be tested on, while the villain action
+# has a simple scaling (beta --> beta/4 under blocking).
 class VillainAction:
     """S = -sum_p log sum_n exp(-beta/2 (theta_p + 2 pi n)^2).
 

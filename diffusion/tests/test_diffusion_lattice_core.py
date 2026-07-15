@@ -14,7 +14,12 @@ from diffusion.lgt import (
     wrap,
 )
 from diffusion.lgt.lattice import plaquette_angles, mean_plaquette, wilson_loop_angles
-from diffusion.lgt.blocking import blocked_plaquette_from_fine, match_coarse_beta
+from diffusion.lgt.blocking import (
+    blocked_character_exact,
+    blocked_plaquette_from_fine,
+    match_coarse_beta,
+    matching_residuals,
+)
 from diffusion.lgt.local_updates import (
     heatbath_sweep,
     overrelaxation_sweep,
@@ -60,11 +65,17 @@ class TestExactFormulas:
         chi_infinite = exact.topological_susceptibility_exact(2.0)
         assert chi_finite == pytest.approx(chi_infinite, rel=2e-3)
 
-    def test_infinite_volume_susceptibility_matches_parent_module(self):
-        from inverserg.measurements import topological_susceptibility_theory
+    def test_infinite_volume_susceptibility_matches_quadrature(self):
+        from scipy.integrate import quad
 
-        assert exact.topological_susceptibility_exact(3.0) == pytest.approx(
-            topological_susceptibility_theory(3.0), rel=1e-8
+        beta = 3.0
+        numerator, _ = quad(
+            lambda phi: (phi / (2 * math.pi)) ** 2 * math.exp(beta * math.cos(phi)),
+            -math.pi, math.pi,
+        )
+        denominator, _ = quad(lambda phi: math.exp(beta * math.cos(phi)), -math.pi, math.pi)
+        assert exact.topological_susceptibility_exact(beta) == pytest.approx(
+            numerator / denominator, rel=1e-8
         )
 
 
@@ -142,6 +153,52 @@ class TestBlocking:
         matched = match_coarse_beta(block_links(configs))
         expected = 1.3555
         assert matched == pytest.approx(expected, abs=0.12)
+
+
+class TestBetaMatching:
+    def test_character_q1_is_plaquette(self):
+        for lattice_size in (None, 8):
+            assert exact.plaquette_character_exact(2.0, 1, "wilson", lattice_size) == pytest.approx(
+                exact.plaquette_exact(2.0, "wilson", lattice_size), rel=1e-12
+            )
+
+    def test_blocked_density_normalized_with_matching_first_moment(self):
+        grid = np.linspace(-math.pi, math.pi, 8001)
+        for beta in (1.0, 4.0, 14.1464):
+            density = exact.blocked_plaquette_angle_density(grid, beta)
+            assert np.trapezoid(density, grid) == pytest.approx(1.0, abs=1e-6)
+            first_moment = np.trapezoid(np.cos(grid) * density, grid)
+            assert first_moment == pytest.approx(blocked_character_exact(beta, 1), abs=1e-8)
+
+    def test_villain_family_closed_so_residuals_vanish(self):
+        res = matching_residuals(4.0, "villain")
+        assert res["matched_beta"] == pytest.approx(1.0, abs=1e-6)
+        assert all(abs(v) < 1e-6 for v in res["character_residuals"].values())
+        assert abs(res["chi_t_residual"]) < 1e-5
+        assert res["ks_distance"] < 1e-6
+
+    def test_wilson_residuals_shrink_along_the_ladder(self):
+        coarse_rung = matching_residuals(14.1464)
+        fine_rung = matching_residuals(55.0237)
+        assert coarse_rung["matched_beta"] == pytest.approx(4.0, abs=2e-4)
+        for key in ("chi_t_residual", "ks_distance"):
+            assert abs(fine_rung[key]) < abs(coarse_rung[key])
+        assert abs(fine_rung["character_residuals"][2]) < abs(
+            coarse_rung["character_residuals"][2]
+        )
+        assert abs(fine_rung["chi_t_residual"]) < 1e-3
+
+    def test_multi_character_match_agrees_when_family_contains_truth(self):
+        torch.manual_seed(41)
+        beta = 2.0
+        configs, _ = run_hmc_ensemble(
+            8, WilsonAction(beta), n_configs=200, n_chains=10, burn_in=120, thin=3,
+            topological_updates=True, hot_start=True,
+        )
+        b1 = match_coarse_beta(configs)
+        b3 = match_coarse_beta(configs, n_characters=3)
+        assert b1 == pytest.approx(beta, abs=0.15)
+        assert b3 == pytest.approx(b1, abs=0.1)
 
 
 class TestLocalUpdates:

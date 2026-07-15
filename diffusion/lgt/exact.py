@@ -43,18 +43,24 @@ def _q_cutoff(beta: float, volume: int) -> int:
     return int(20 + 4 * math.sqrt(max(beta, 1.0)))
 
 
-def wilson_loop_exact(beta: float, area: int, action_type: str = "wilson", lattice_size: int | None = None) -> float:
-    """<W(A)> for a Wilson loop enclosing `area` plaquettes."""
+def wilson_loop_exact(
+    beta: float,
+    area: int,
+    action_type: str = "wilson",
+    lattice_size: int | None = None,
+    charge: int = 1,
+) -> float:
+    """<W_q(A)> for a charge-`charge` Wilson loop enclosing `area` plaquettes."""
     if lattice_size is None:
-        r1 = math.exp(float(_log_r_q(beta, np.array([1]), action_type)[0]))
-        return r1 ** area
+        rq = math.exp(float(_log_r_q(beta, np.array([charge]), action_type)[0]))
+        return rq ** area
     volume = lattice_size * lattice_size
     if area >= volume:
         raise ValueError("Loop area must be smaller than the lattice volume")
-    q_max = _q_cutoff(beta, volume)
+    q_max = _q_cutoff(beta, volume) + abs(charge)
     qs = np.arange(-q_max, q_max + 1)
     log_r = _log_r_q(beta, qs, action_type)
-    log_r_plus = _log_r_q(beta, qs + 1, action_type)
+    log_r_plus = _log_r_q(beta, qs + charge, action_type)
     log_num = (volume - area) * log_r + area * log_r_plus
     log_den = volume * log_r
     num_max, den_max = log_num.max(), log_den.max()
@@ -66,6 +72,28 @@ def wilson_loop_exact(beta: float, area: int, action_type: str = "wilson", latti
 def plaquette_exact(beta: float, action_type: str = "wilson", lattice_size: int | None = None) -> float:
     """<cos theta_p>. Infinite-volume Wilson: I_1(beta)/I_0(beta); Villain: exp(-1/(2 beta))."""
     return wilson_loop_exact(beta, 1, action_type, lattice_size)
+
+
+def plaquette_character_exact(
+    beta: float, q: int, action_type: str = "wilson", lattice_size: int | None = None
+) -> float:
+    """<cos(q theta_p)> for integer charge q; q=1 is the mean plaquette."""
+    if q == 0:
+        return 1.0
+    return wilson_loop_exact(beta, 1, action_type, lattice_size, charge=q)
+
+
+def blocked_plaquette_angle_density(
+    theta: np.ndarray, beta: float, action_type: str = "wilson", n_plaquettes: int = 4
+) -> np.ndarray:
+    """Exact infinite-volume density of the wrapped sum of `n_plaquettes` i.i.d.
+    plaquette angles (one 2x2 blocking sums four). Wrapped convolution multiplies
+    character coefficients, so f(theta) = (1 + 2 sum_q r_q^n cos(q theta)) / 2 pi."""
+    theta = np.asarray(theta, dtype=float)
+    qs = np.arange(1, _q_cutoff(beta, 1) + 1)
+    coeffs = np.exp(n_plaquettes * _log_r_q(beta, qs, action_type))
+    series = np.tensordot(coeffs, np.cos(np.multiply.outer(qs, theta)), axes=1)
+    return np.clip((1.0 + 2.0 * series) / TWO_PI, 0.0, None)
 
 
 def string_tension_exact(beta: float, action_type: str = "wilson") -> float:

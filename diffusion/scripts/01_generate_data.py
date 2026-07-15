@@ -1,6 +1,6 @@
 """Generate HMC ensembles for all training + held-out rungs, plus beta matching.
 
-    python inverserg/diffusion/scripts/01_generate_data.py --config inverserg/diffusion/configs/default.yaml
+    python diffusion/scripts/01_generate_data.py --config diffusion/configs/default.yaml
 """
 
 import argparse
@@ -56,7 +56,7 @@ def generate_rung(rung: dict, data_cfg: dict, action_type: str, device: str) -> 
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="inverserg/diffusion/configs/default.yaml")
+    parser.add_argument("--config", default="diffusion/configs/default.yaml")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]))

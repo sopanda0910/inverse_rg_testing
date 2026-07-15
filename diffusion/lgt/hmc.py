@@ -1,8 +1,7 @@
 """Batched HMC for 2D compact U(1).
 
-Same Omelyan integrator and conventions as `inverserg.hmc.HMCU1Sampler`, but runs
-many independent Markov chains vectorized over the batch dimension (essential on
-CPU) with per-chain Metropolis accept/reject.
+Omelyan integrator, running many independent Markov chains vectorized over the
+batch dimension (essential on CPU) with per-chain Metropolis accept/reject.
 """
 
 import math
@@ -73,6 +72,8 @@ class BatchedHMC:
 
     def omelyan(self, theta: torch.Tensor, pi: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
         lam, dt = OMELYAN_LAMBDA, self.step_size
+        # The force is -grad of the action?
+        # Updates according a trajectory of the potential (obeying the F = -grad rule)
         pi = pi - lam * dt * self.force(theta)
         for step in range(self.n_steps):
             theta = theta + 0.5 * dt * pi

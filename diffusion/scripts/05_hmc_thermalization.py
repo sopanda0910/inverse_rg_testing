@@ -30,7 +30,7 @@ import matplotlib.pyplot as plt
 
 from diffusion.lgt import make_action
 from diffusion.lgt.hmc import BatchedHMC, adapted_hmc_params
-from diffusion.lgt.lattice import plaquette_angles, topological_charge
+from diffusion.lgt.lattice import plaquette_angles, topological_charge, wilson_loop_angles
 from diffusion.lgt import exact
 from diffusion.validate.report import validate_ensemble, freezing_diagnostics
 from diffusion.validate.stats import integrated_autocorrelation_time
@@ -43,7 +43,6 @@ from diffusion.utils import (
     save_ensemble,
     save_json,
 )
-from inverserg.lattice import wilson_loop_angles
 
 GEN_COLOR = "#2a78d6"
 HOT_COLOR = "#d64550"

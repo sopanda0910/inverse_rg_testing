@@ -1,6 +1,6 @@
 """Run the inverse-RG ladder: HMC at the coarse base, then iterated generation.
 
-    python inverserg/diffusion/scripts/03_run_ladder.py --config inverserg/diffusion/configs/default.yaml
+    python diffusion/scripts/03_run_ladder.py --config diffusion/configs/default.yaml
 """
 
 import argparse
@@ -21,7 +21,7 @@ from diffusion.utils import (
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="inverserg/diffusion/configs/default.yaml")
+    parser.add_argument("--config", default="diffusion/configs/default.yaml")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]) + 1)
