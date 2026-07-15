@@ -4,7 +4,7 @@ Unconditional sampling of the single-plaquette distribution p(theta) ~ exp(beta 
 with a small MLP score model; verifies moments and the KS statistic against the exact
 distribution before any lattice-scale training. Run:
 
-    python inverserg/diffusion/scripts/00_toy_wrapped_diffusion.py [--beta 2.0]
+    python diffusion/scripts/00_toy_wrapped_diffusion.py [--beta 2.0]
 """
 
 import argparse

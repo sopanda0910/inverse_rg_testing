@@ -243,26 +243,53 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     ax.legend(fontsize=8)
 
     ax = axes[1, 0]
-    areas, neg_log_w, exact_line = [], [], []
-    for key in _sorted_wilson_keys(meas):
-        r, t = _loop_dims(key)
-        mean_w = meas[key].mean()
-        if mean_w > 0:
-            areas.append(r * t)
-            neg_log_w.append(-math.log(mean_w))
-            exact_line.append(-math.log(exact.wilson_loop_exact(beta, r * t, action_type, lattice_size)))
-    ax.plot(areas, neg_log_w, "o", label="generated")
+
+    def loop_stats(source):
+        out = []
+        for key in _sorted_wilson_keys(source):
+            r, t = _loop_dims(key)
+            mean_w, err = binned_mean_err(np.asarray(source[key]))
+            out.append((r * t, mean_w, err))
+        return out
+
+    # -log<W(A)> is only meaningful where the exact signal e^{-sigma A} clears the
+    # ensemble's statistical noise; past that area every estimate (generated and
+    # HMC alike) is noise around zero and would plot as a spurious plateau at
+    # -log(noise), far off the area law. Show only resolvable loops and mark the
+    # noise floor explicitly.
+    gen_stats = loop_stats(meas)
+    exact_w = {a: exact.wilson_loop_exact(beta, a, action_type, lattice_size)
+               for a, _, _ in gen_stats}
+    n_noise = sum(1 for a, _, e in gen_stats if exact_w[a] <= 3.0 * e)
+    gen_pts = [(a, m, e) for a, m, e in gen_stats if exact_w[a] > 3.0 * e and m > 0]
+    if gen_pts:
+        ax.errorbar([p[0] for p in gen_pts], [-math.log(p[1]) for p in gen_pts],
+                    yerr=[p[2] / p[1] for p in gen_pts], fmt="o", ms=5,
+                    color=GEN_COLOR, capsize=2, label="generated", zorder=4)
     if ref is not None:
-        ref_pts = [
-            (-math.log(ref[k].mean()), _loop_dims(k)[0] * _loop_dims(k)[1])
-            for k in _sorted_wilson_keys(ref)
-            if k.startswith("wilson_") and ref[k].mean() > 0
-        ]
-        ax.plot([a for _, a in ref_pts], [v for v, _ in ref_pts], "s", mfc="none", label="reference HMC")
-    ax.plot(areas, exact_line, "k--", label="exact area law")
+        ref_pts = [(a, m, e) for a, m, e in loop_stats(ref)
+                   if a in exact_w and exact_w[a] > 3.0 * e and m > 0]
+        if ref_pts:
+            ax.errorbar([p[0] for p in ref_pts], [-math.log(p[1]) for p in ref_pts],
+                        yerr=[p[2] / p[1] for p in ref_pts], fmt="s", ms=5, mfc="none",
+                        color=REF_COLOR, capsize=2, label="reference HMC", zorder=3)
+    line_areas = sorted(p[0] for p in gen_pts) or sorted(exact_w)
+    ax.plot(line_areas, [-math.log(exact_w[a]) for a in line_areas], "--", color=INK,
+            lw=1.2, label="exact area law", zorder=2)
+    if n_noise and gen_pts:
+        floor = -math.log(3.0 * float(np.median([e for _, _, e in gen_stats])))
+        if floor < 1.6 * max(-math.log(p[1]) for p in gen_pts):
+            ax.axhline(floor, color=MUTED, lw=1.0, ls=":", zorder=1)
+            ax.annotate(r"$3\sigma$ noise floor", xy=(0.03, floor),
+                        xycoords=("axes fraction", "data"), fontsize=8, color=MUTED,
+                        va="bottom")
+    title = "Wilson loops / string tension"
+    if n_noise:
+        title += (f"\n({n_noise} noise-dominated loops omitted: "
+                  r"exact $W(A) < 3\sigma_{\rm stat}$)")
     ax.set_xlabel("loop area A")
     ax.set_ylabel(r"$-\log \langle W(A) \rangle$")
-    ax.set_title("Wilson loops / string tension")
+    ax.set_title(title)
     ax.legend(fontsize=8)
 
     ax = axes[1, 1]

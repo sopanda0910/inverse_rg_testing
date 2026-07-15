@@ -11,7 +11,7 @@ topological freezing** of direct fine-lattice HMC.
 
 - **Theory**: 2D compact U(1) on a periodic `L x L` lattice; link variables are
   angles `theta_mu(x) in (-pi, pi]`, `U_mu(x) = exp(i theta_mu(x))`.
-- **Conventions** (same as the parent `inverserg` package): fields are
+- **Conventions**: fields are
   `theta[mu, x, y]` / `theta[B, mu, x, y]`, `mu = 0` are x-links; the plaquette is
   `theta_p(x,y) = theta_x(x,y) + theta_y(x+1,y) - theta_x(x,y+1) - theta_y(x,y)`,
   always wrapped to `(-pi, pi]` via `atan2(sin, cos)`.
@@ -39,8 +39,8 @@ Fourier coefficients of the single-plaquette weight; `r_q = c_q / c_0`):
 
 ## Pipeline
 
-1. **HMC** (`lgt/hmc.py`): batched Omelyan HMC (same integrator/conventions as
-   `inverserg/hmc.py`, vectorized over parallel chains) produces ensembles at
+1. **HMC** (`lgt/hmc.py`): batched Omelyan HMC (vectorized over parallel
+   chains) produces ensembles at
    cheap rungs. Optional **instanton updates** (global `Q -> Q +- 1` Metropolis
    moves through the smooth torus instanton, `dS = O(beta/V)`) keep reference
    topology ergodic at couplings where plain HMC is frozen.
@@ -51,6 +51,17 @@ Fourier coefficients of the single-plaquette weight; `r_q = c_q / c_0`):
    determines it nonperturbatively by matching the blocked mean plaquette to the
    exact finite-volume formula (`approx_matched_*` give the analytic i.i.d.
    estimate `r_1(beta_c) = r_1(beta_f)^4`, used to build ladder schedules).
+   Mean-plaquette matching is not an arbitrary single-observable choice: the
+   Wilson weight is a one-parameter exponential family with sufficient statistic
+   `sum_p cos theta_p`, so it is the maximum-likelihood / minimum-KL projection
+   of the exactly known blocked theory (`r_q -> r_q(beta_f)^4`) onto the Wilson
+   family, and it preserves every fundamental Wilson loop and the string tension
+   (`<W(A)> = r_1^A`). What one coupling cannot also fix (`r_{q>=2}`, `chi_t`,
+   distribution shape) is quantified exactly by `matching_residuals` and mapped
+   across couplings by `scripts/10_beta_matching_study.py`; the `chi_t` residual
+   peaks at ~6% in the crossover `beta_f ~ 5-6.5` and is `<~ 2e-2` at the ladder
+   rungs. `match_coarse_beta(..., n_characters=n)` offers a multi-character
+   least-squares alternative for diagnostics, deliberately not the default.
 3. **Conditional diffusion** (`model/`): `p_theta(fine | coarse invariants, beta)`
    — the core deliverable (details below).
 4. **Ladder deployment** (`pipeline/ladder.py`): HMC at the coarsest rung ->
@@ -124,7 +135,7 @@ or destroy charge at large beta, it only fixes UV modes within the sector.
 ## Layout
 
 ```
-inverserg/diffusion/
+diffusion/
   lgt/            lattice ops, Wilson/Villain actions, batched HMC, heatbath /
                   overrelaxation / instanton updates, blocking + beta matching,
                   exact analytic formulas
@@ -143,13 +154,13 @@ From the repository root (venv already set up; on Windows use
 `.venv/Scripts/python.exe`, on Unix `.venv/bin/python`):
 
 ```bash
-python inverserg/diffusion/scripts/00_toy_wrapped_diffusion.py          # machinery check
-python inverserg/diffusion/scripts/01_generate_data.py --config inverserg/diffusion/configs/demo.yaml
-python inverserg/diffusion/scripts/02_train.py         --config inverserg/diffusion/configs/demo.yaml
-python inverserg/diffusion/scripts/03_run_ladder.py    --config inverserg/diffusion/configs/demo.yaml
-python inverserg/diffusion/scripts/04_validate.py      --config inverserg/diffusion/configs/demo.yaml
+python diffusion/scripts/00_toy_wrapped_diffusion.py          # machinery check
+python diffusion/scripts/01_generate_data.py --config diffusion/configs/demo.yaml
+python diffusion/scripts/02_train.py         --config diffusion/configs/demo.yaml
+python diffusion/scripts/03_run_ladder.py    --config diffusion/configs/demo.yaml
+python diffusion/scripts/04_validate.py      --config diffusion/configs/demo.yaml
 
-pytest inverserg/diffusion/tests -q                                     # unit tests
+pytest diffusion/tests -q                                     # unit tests
 ```
 
 Outputs land under `artifacts/diffusion/<run>/`: ensembles (`.pt` with metadata:
@@ -185,4 +196,4 @@ available (`device: auto`); all tensor code is batched.
 - `tau_int` uses the Madras-Sokal windowing (`c = 6`); errors on means use
   binning (20 bins) or jackknife.
 - Wilson loops are measured for all `R x T` in the config list on every
-  configuration via wrapped path sums (same convention as `inverserg.lattice`).
+  configuration via wrapped path sums (`lgt/lattice.py` conventions).

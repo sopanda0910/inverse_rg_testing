@@ -7,8 +7,8 @@ from ..lgt.lattice import (
     plaquette_angles,
     topological_charge,
     plaquette_correlator,
+    wilson_loop_angles,
 )
-from inverserg.lattice import wilson_loop_angles
 
 DEFAULT_LOOPS = (
     (1, 1), (1, 2), (2, 2), (2, 3), (3, 3), (3, 4), (4, 4), (4, 5), (5, 5),

@@ -104,6 +104,7 @@ def metropolis_sweep(field: torch.Tensor, action, proposal_width: float | None =
     return field
 
 
+# NOTE: Unique addition to the standard HMC is chosen to do topological charge updates
 def instanton_field(lattice_size: int, device=None, dtype=torch.float32) -> torch.Tensor:
     """Smooth Q = +1 configuration on the torus: every plaquette angle is 2 pi / L^2.
 

@@ -1,7 +1,7 @@
 """Full validation: ladder ensembles vs exact results and held-out direct HMC,
 including the topological-freezing comparison at the top rung.
 
-    python inverserg/diffusion/scripts/04_validate.py --config inverserg/diffusion/configs/default.yaml
+    python diffusion/scripts/04_validate.py --config diffusion/configs/default.yaml
 """
 
 import argparse
@@ -72,7 +72,7 @@ def get_reference(lattice_size, beta, config, device):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", default="inverserg/diffusion/configs/default.yaml")
+    parser.add_argument("--config", default="diffusion/configs/default.yaml")
     parser.add_argument("--skip-reference", action="store_true", help="validate against exact results only")
     args = parser.parse_args()
     config = load_config(args.config)

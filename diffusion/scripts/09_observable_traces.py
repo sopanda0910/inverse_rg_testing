@@ -44,9 +44,8 @@ import matplotlib.pyplot as plt
 
 from diffusion.lgt import exact, make_action
 from diffusion.lgt.hmc import BatchedHMC, adapted_hmc_params
-from diffusion.lgt.lattice import plaquette_angles, topological_charge
+from diffusion.lgt.lattice import plaquette_angles, topological_charge, wilson_loop_angles
 from diffusion.utils import load_ensemble, save_json, set_seed
-from inverserg.lattice import wilson_loop_angles
 
 THERM_COLOR = "#2440b3"
 PROD_COLOR = "#f5a623"

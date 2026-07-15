@@ -95,6 +95,34 @@ uptick at B_bt16/B_bt20 (4/19, 3/19; min p 0.004) sits near the noise floor of
 Small-beta large-loop histograms remain noise-dominated (v1 finding 6 applies
 unchanged).
 
+### 6. Addendum (2026-07-15): low-beta area-law figures showed the noise floor, not a failure
+
+The original per-case "Wilson loops / string tension" panels appeared to show
+gross disagreement with the exact area law at low beta_f: points plateauing at
+`-log W ~ 6-8` while the exact line climbs past 50 (worst at A_bc0.25,
+beta_f = 1.489). Quantitative check against the stored per-loop statistics
+confirms this is **entirely estimator noise, not a model or matching defect**:
+
+- The exact signal decays as `W(A) = e^{-sigma A}`; the statistical error of a
+  ~128-config ensemble is ~2e-3 per loop. Beyond the resolvability area
+  `A* = ln(1/(3 sigma_stat)) / sigma` (~10 at beta_f = 1.49, ~52 at 6.1,
+  > 500 for beta_f >= 55) the exact value (down to 1e-33 at area 144) is
+  unmeasurably far below the noise, so `-log(mean)` saturates at
+  `-log(noise) ~ 7` for any Monte Carlo estimate of this size -- resolving it
+  would need ~e^{2 sigma A} configs.
+- Every noise-class loop across all 20 cases has |z| <= 2.8 vs exact (worst
+  case: 14 noise loops, max |z| = 2.33 -- exactly the distribution zero-mean
+  noise gives). No genuine misalignment exists anywhere.
+- The decisive signature: the **reference HMC points plateau at the same level**
+  as the generated points, since both estimators share the same noise floor.
+
+The per-case figures have been regenerated with the fixed panel
+(`diffusion/validate/report.py`): loops with `exact W(A) < 3 sigma_stat` are
+omitted, the surviving points carry error bars, the omitted count is stated in
+the panel title, and the 3-sigma noise floor is drawn explicitly. This is a
+genuine (and expected) limitation of loop *measurement* at strong coupling, not
+of generation; it applies identically to direct HMC.
+
 ## Recommendations (updated)
 
 1. ~~Regenerate training data cold and retrain~~ -- **done, confirmed effective**.
