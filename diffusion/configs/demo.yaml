@@ -33,8 +33,8 @@ data:
   n_chains: 16
   burn_in: 200
   thin: 5
-  hmc_steps: 10
-  hmc_step_size: 0.1
+  hmc_steps: 5
+  hmc_step_size: 0.2
   topological_updates: true
   hot_start: true
 

@@ -54,6 +54,29 @@ def integrated_autocorrelation_time(
     return float(max(tau, 0.5)), float(err)
 
 
+def normalized_autocorrelation(series: np.ndarray, max_lag: int) -> np.ndarray:
+    """Normalized autocorrelation Gamma(delta) for delta = 0 .. max_lag.
+
+    Gamma(delta) = <(x_t - mu)(x_{t+delta} - mu)> / var(x), so Gamma(0) = 1.
+    Accepts a single trace [T] or batched chains [T, B]; each chain is centered
+    and normalized by its own mean/variance. Returns [max_lag + 1] or
+    [max_lag + 1, B]. max_lag is clipped to T - 2.
+    """
+    series = np.asarray(series, dtype=float)
+    single = series.ndim == 1
+    if single:
+        series = series[:, None]
+    n = series.shape[0]
+    max_lag = max(0, min(max_lag, n - 2))
+    centered = series - series.mean(axis=0)
+    var = np.maximum((centered**2).mean(axis=0), 1e-300)
+    gamma = np.empty((max_lag + 1, series.shape[1]))
+    gamma[0] = 1.0
+    for lag in range(1, max_lag + 1):
+        gamma[lag] = (centered[:-lag] * centered[lag:]).mean(axis=0) / var
+    return gamma[:, 0] if single else gamma
+
+
 def z_score(value: float, error: float, reference: float, reference_error: float = 0.0) -> float:
     total_err = math.sqrt(error**2 + reference_error**2)
     if total_err == 0:
