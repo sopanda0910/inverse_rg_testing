@@ -56,6 +56,7 @@ def main() -> None:
         kernel_size=int(train_cfg.get("kernel_size", 3)),
         device=device,
         seed=int(config["seed"]),
+        topo_weight=float(train_cfg.get("topo_weight", 0.0)),
         checkpoint_path=train_cfg["checkpoint"],
     )
     model, history = train_score_model(train_rungs, val_rungs, cfg)

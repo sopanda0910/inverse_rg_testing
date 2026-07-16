@@ -1,0 +1,79 @@
+# v3 training set: multi-lattice-size (L = 8/16/32) and denser beta coverage, plus
+# a soft-topological-charge penalty (train.topo_weight) emphasizing Q / Q^2 fidelity.
+# Targets the v2 generalization weak spots: crossover <Q^2> (beta_f ~ 6), the
+# L=128 small-loop KS shifts (training saw only L=16), and the beta_f = 218.6
+# extrapolation. L=16 rungs are identical to demo.yaml so their ensembles can be
+# reused verbatim. Paths live under out/ (the artifacts/ tree is unreliable on
+# this machine — OneDrive reparse-point issue, 2026-07-07).
+
+seed: 0
+device: auto
+action_type: wilson
+
+data:
+  out_dir: out/diffusion/demo_v3/data
+  # Hot starts at beta >= 8 settle into a metastable local-defect state biased low
+  # by tens of sigma (generalization study, 2026-07-08); those rungs (and the
+  # marginal beta 5-6.5 crossover) use cold starts with long burn-in, verified
+  # against exact values up to beta = 218.6. Same policy at L=32.
+  rungs:
+    - {beta: 1.0, lattice_size: 8}
+    - {beta: 2.0, lattice_size: 8}
+    - {beta: 1.0, lattice_size: 16}
+    - {beta: 2.0, lattice_size: 16}
+    - {beta: 4.0, lattice_size: 16}
+    - {beta: 5.0, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 6.5, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 8.0, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600}
+    - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000}
+    - {beta: 2.0, lattice_size: 32}
+    - {beta: 4.0, lattice_size: 32}
+    - {beta: 6.5, lattice_size: 32, hot_start: false, burn_in: 600}
+    - {beta: 14.1464, lattice_size: 32, hot_start: false, burn_in: 600}
+    - {beta: 55.0237, lattice_size: 32, hot_start: false, burn_in: 2000}
+  heldout: []
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  topological_updates: true
+  hot_start: true
+
+train:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 3.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  hidden: 56
+  depth: 4
+  kernel_size: 3
+  val_fraction: 0.1
+  # Soft-charge penalty: ties sum sin(theta_p)/2pi of the one-step denoised estimate
+  # to the target's, down-weighted at large sigma. The integer charge has zero
+  # gradient a.e. (curl zero mode); the sin surrogate does not.
+  topo_weight: 0.1
+  checkpoint: out/diffusion/demo_v3/checkpoints/score_net.pt
+  history: out/diffusion/demo_v3/checkpoints/history.json
+
+ladder:
+  base: {beta: 1.3472, lattice_size: 8}
+  n_base_configs: 192
+  beta_schedule: [4.0, 14.1464, 55.0237]
+  n_retherm_sweeps: 16
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  retherm_topological_updates: true
+  sample_batch_size: 32
+  out_dir: out/diffusion/demo_v3/generated
+
+validate:
+  out_dir: out/diffusion/demo_v3/validation
+  n_reference_configs: 384
+  freezing_rung: {beta: 55.0237, lattice_size: 64}
+  freezing_hmc_length: 300

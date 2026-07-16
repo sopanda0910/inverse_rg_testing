@@ -33,6 +33,7 @@ import torch
 import matplotlib
 
 matplotlib.use("Agg")
+import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 
 from diffusion.lgt import make_action
@@ -40,7 +41,7 @@ from diffusion.lgt.hmc import BatchedHMC, adapted_hmc_params
 from diffusion.lgt.lattice import plaquette_angles, topological_charge, wilson_loop_angles
 from diffusion.lgt import exact
 from diffusion.validate.report import validate_ensemble, freezing_diagnostics
-from diffusion.validate.stats import integrated_autocorrelation_time
+from diffusion.validate.stats import fit_exponential_relaxation, integrated_autocorrelation_time
 from diffusion.utils import (
     load_config,
     resolve_device,
@@ -168,47 +169,136 @@ def build_series_dict(raw: dict[str, np.ndarray]) -> dict[str, np.ndarray]:
     return series
 
 
+OBS_LABEL = {"plaquette": "plaquette", "wilson_2x2": r"$W(2\times2)$",
+             "wilson_4x4": r"$W(4\times4)$", "Q^2": r"$Q^2$"}
+
+
 def plot_relaxation(
     all_series: dict[str, dict[str, np.ndarray]],
     targets: dict[str, float],
     label: str,
     out_path: Path,
-    x_max: int | None = None,
-    t_therm_gen: dict[str, float] | None = None,
+    t_therm: dict[str, dict[str, float]] | None = None,
     tau_int: dict[str, tuple[float, float]] | None = None,
 ) -> None:
+    """One row per observable, two views: (left) the early-window ensemble-mean
+    relaxation of each start with its fitted exponential C + A exp(-t/tau);
+    (right) the ensemble mean's distance from the exact value in SEM units over
+    the full budget, log scale, with the |z| <= 2 thermalization band. Shared
+    legend on top, how-to-read caption at the bottom."""
+    t_therm = t_therm or {}
     names = [n for n in ("plaquette", "wilson_2x2", "wilson_4x4", "Q^2") if n in targets]
+    order = ["diffusion seed", "hot start", "cold start"]
+    starts = [s for s in order if s in all_series]
     colors = {"diffusion seed": GEN_COLOR, "hot start": HOT_COLOR, "cold start": COLD_COLOR}
-    styles = {"diffusion seed": "-", "hot start": "-", "cold start": (0, (4, 2))}
-    fig, axes = plt.subplots(2, 2, figsize=(11, 7.5))
-    for ax, name in zip(axes.flat, names):
-        for start, series in all_series.items():
-            if name not in series:
+
+    fits = {start: {name: fit_exponential_relaxation(series[name].mean(axis=1), targets[name])
+                    for name in names if name in series}
+            for start, series in all_series.items()}
+    budget = max(all_series[s][names[0]].shape[0] for s in starts) - 1
+
+    fig, axes = plt.subplots(len(names), 2, figsize=(12.5, 2.9 * len(names) + 1.9),
+                             gridspec_kw={"width_ratios": [1.15, 1.0]}, squeeze=False)
+    for i, name in enumerate(names):
+        ax_zoom, ax_z = axes[i]
+        finite_marks = [t_therm.get(s, {}).get(name) for s in starts]
+        finite_marks = [t for t in finite_marks if t is not None and math.isfinite(t)]
+        taus = [fits[s][name]["tau"] for s in starts
+                if name in fits[s] and fits[s][name]["tau"] is not None]
+        x_zoom = int(min(budget, max(25.0, 1.6 * max(finite_marks, default=0.0),
+                                     6.0 * max(taus, default=0.0))))
+
+        z_max = 2.0
+        for start in starts:
+            if name not in all_series[start]:
                 continue
-            data = series[name]
+            data = all_series[start][name]
             mean = data.mean(axis=1)
             sem = data.std(axis=1, ddof=1) / math.sqrt(data.shape[1])
             x = np.arange(len(mean))
-            ax.plot(x, mean, lw=1.4, color=colors[start], ls=styles[start], label=start)
-            ax.fill_between(x, mean - sem, mean + sem, color=colors[start], alpha=0.25, lw=0)
-        ax.axhline(targets[name], color=INK, ls="--", lw=1.1, label="exact")
-        if t_therm_gen is not None and math.isfinite(t_therm_gen.get(name, float("inf"))):
-            ax.axvline(t_therm_gen[name], color=GEN_COLOR, ls=":", lw=1.8,
-                       label=f"diffusion seed thermalized (t={t_therm_gen[name]:.0f})")
+            color = colors[start]
+            sl = slice(0, x_zoom + 1)
+            ax_zoom.plot(x[sl], mean[sl], lw=1.4, color=color)
+            ax_zoom.fill_between(x[sl], (mean - sem)[sl], (mean + sem)[sl],
+                                 color=color, alpha=0.20, lw=0)
+            fit = fits[start].get(name, {"tau": None})
+            if fit["tau"] is not None:
+                tf = np.linspace(0, x_zoom, 300)
+                ax_zoom.plot(tf, fit["C"] + fit["A"] * np.exp(-tf / fit["tau"]),
+                             color=color, lw=1.1, ls=(0, (5, 2)), alpha=0.9)
+            tt = t_therm.get(start, {}).get(name)
+            if tt is not None and math.isfinite(tt) and tt <= x_zoom:
+                ax_zoom.plot([tt], [targets[name]], marker="v", ms=7.5, color=color,
+                             mec="white", mew=0.7, ls="none", zorder=6)
+            z = np.maximum(np.abs(ensemble_z_series(data, targets[name])), 1e-2)
+            z_max = max(z_max, float(z.max()))
+            ax_z.plot(np.arange(len(z)), z, lw=0.9, color=color, alpha=0.9)
+
+        ax_zoom.axhline(targets[name], color=INK, ls="--", lw=1.1)
+        ax_zoom.set_xlim(-0.02 * x_zoom, x_zoom)
+        ax_zoom.set_ylabel(OBS_LABEL[name], fontsize=10, color=INK)
+        tau_text = "   ".join(
+            f"{s.split()[0]} " + (f"{fits[s][name]['tau']:.1f}"
+                                  if name in fits[s] and fits[s][name]["tau"] is not None
+                                  else "--")
+            for s in starts)
+        ax_zoom.text(0.985, 0.03, rf"$\tau_{{exp}}$ [traj]:  {tau_text}",
+                     transform=ax_zoom.transAxes, ha="right", va="bottom",
+                     fontsize=8, color=INK,
+                     bbox=dict(facecolor="white", edgecolor=GRID_COLOR, alpha=0.8, pad=2.5))
+
+        ax_z.axhspan(1e-2, 2.0, color=GRID_COLOR, alpha=0.55, zorder=0)
+        ax_z.axhline(2.0, color=INK, ls=":", lw=1.0)
         if tau_int is not None and name in tau_int:
-            ax.axvline(2.0 * tau_int[name][0], color=INK, ls=(0, (1, 1)), lw=1.4,
-                       label=f"standard-HMC interval 2 tau_int = {2 * tau_int[name][0]:.1f}")
-        if x_max is not None:
-            ax.set_xlim(-0.02 * x_max, x_max)
-        ax.set_xlabel("HMC trajectories")
-        ax.set_title(name, fontsize=10, color=INK)
-        ax.grid(color=GRID_COLOR, lw=0.7)
-        ax.set_axisbelow(True)
-        for spine in ax.spines.values():
-            spine.set_color(GRID_COLOR)
-        ax.legend(fontsize=7, frameon=False)
-    fig.suptitle(f"{label}: ensemble-mean relaxation under plain HMC", fontsize=12)
-    fig.tight_layout(rect=(0, 0, 1, 0.96))
+            ax_z.axvline(2.0 * tau_int[name][0], color=MUTED_BAR, ls=(0, (1, 1)), lw=1.5)
+        ax_z.set_yscale("log")
+        ax_z.set_ylim(5e-2, min(z_max * 1.8, 5e3))
+        ax_z.set_xscale("symlog", linthresh=10)
+        ax_z.set_xlim(0, budget)
+        ax_z.set_ylabel(r"$|z|$ vs exact", fontsize=9, color=INK)
+        for ax in (ax_zoom, ax_z):
+            ax.grid(color=GRID_COLOR, lw=0.7)
+            ax.set_axisbelow(True)
+            ax.tick_params(labelsize=8)
+            for spine in ax.spines.values():
+                spine.set_color(GRID_COLOR)
+        if i == 0:
+            ax_zoom.set_title("ensemble-mean relaxation, early window (zoom)",
+                              fontsize=10, color=INK)
+            ax_z.set_title("distance from exact over the full budget",
+                           fontsize=10, color=INK)
+        if i == len(names) - 1:
+            ax_zoom.set_xlabel("HMC trajectories", fontsize=9)
+            ax_z.set_xlabel("HMC trajectories (symlog)", fontsize=9)
+
+    handles = [mlines.Line2D([], [], color=colors[s], lw=2.2, label=s) for s in starts]
+    handles += [
+        mlines.Line2D([], [], color=INK, ls="--", lw=1.2, label="exact value"),
+        mlines.Line2D([], [], color=MUTED_BAR, ls=(0, (5, 2)), lw=1.4,
+                      label=r"exponential fit $C + A\,e^{-t/\tau}$"),
+        mlines.Line2D([], [], color=MUTED_BAR, marker="v", ls="none", ms=7,
+                      label=r"$t_{\mathrm{therm}}$ (first sustained $|z| \leq 2$)"),
+    ]
+    if tau_int:
+        handles.append(mlines.Line2D([], [], color=MUTED_BAR, ls=(0, (1, 1)), lw=1.5,
+                                     label=r"standard-HMC interval $2\,\tau_{\mathrm{int}}$"))
+    fig.legend(handles=handles, ncol=4, loc="upper center",
+               bbox_to_anchor=(0.5, 0.965), fontsize=8.5, frameon=False)
+    fig.suptitle(f"{label}: thermalization under plain HMC", fontsize=13, y=0.995)
+    fig.text(
+        0.01, 0.002,
+        "How to read: LEFT -- ensemble mean over chains (band: +-1 SEM) during the first "
+        "trajectories, with the fitted exponential relaxation per start (dashed; "
+        "characteristic times in the box).\n"
+        "Triangles mark t_therm on the exact line. RIGHT -- how many SEMs the ensemble mean "
+        "sits from the exact value over the whole run (y capped at 5000; the t=0 spike of "
+        "identical fresh starts is an SEM~0 artifact):\n"
+        "a start is thermalized once its curve enters and stays inside the shaded |z| <= 2 "
+        "band; a curve that plateaus above the band never thermalizes (stuck or biased "
+        "topological sector).",
+        fontsize=7.5, color="#6b6963", va="bottom",
+    )
+    fig.tight_layout(rect=(0, 0.055, 1, 0.94))
     fig.savefig(out_path, dpi=130)
     plt.close(fig)
 
@@ -389,6 +479,8 @@ def run_rung(
         beta, float(data_cfg["hmc_step_size"]), int(data_cfg["hmc_steps"])
     )
     label = label or f"rung{index}_L{lattice_size}_beta{beta:g}"
+    case_dir = out_dir / f"L{lattice_size}_beta{beta:g}"
+    case_dir.mkdir(parents=True, exist_ok=True)
     targets = exact_targets(beta, action_type, lattice_size)
     print(f"\n=== {label}: step_size={step_size:.4f}, n_steps={n_steps} ===")
 
@@ -448,29 +540,25 @@ def run_rung(
     freezing = q_freezing(hot_raw["Q"], discard, f"hot-start HMC L={lattice_size} beta={beta:g}")
 
     plot_relaxation(
-        all_series, targets, label, out_dir / f"{label}_relaxation.png",
-        x_max=min(n_traj_base, max(n_traj_gen, 4 * max(
-            (t for obs in t_therm.values() for t in obs.values() if math.isfinite(t)), default=25,
-        ))),
-        t_therm_gen=t_therm["diffusion seed"],
-        tau_int=tau,
+        all_series, targets, label, case_dir / f"{label}_relaxation.png",
+        t_therm=t_therm, tau_int=tau,
     )
     np.savez_compressed(
-        out_dir / f"{label}_series.npz",
+        case_dir / f"{label}_series.npz",
         **{f"{start}|{name}": series for start, obs in all_series.items()
            for name, series in obs.items()},
     )
 
     rows_pre = validate_ensemble(
         seed_configs, beta, action_type, reference_configs=reference,
-        label=f"{label}_generated", output_dir=out_dir,
+        label=f"{label}_generated", output_dir=case_dir, make_plots=False,
     )
     rows_post = validate_ensemble(
         gen_final.cpu(), beta, action_type, reference_configs=reference,
-        label=f"{label}_after_hmc", output_dir=out_dir,
+        label=f"{label}_after_hmc", output_dir=case_dir, make_plots=False,
     )
     save_ensemble(
-        out_dir / f"{label}_after_hmc.pt", gen_final.cpu(),
+        case_dir / f"{label}_after_hmc.pt", gen_final.cpu(),
         {"beta": beta, "lattice_size": lattice_size, "action_type": action_type,
          "provenance": f"raw diffusion seed + {n_traj_gen} plain-HMC trajectories"},
     )
@@ -495,6 +583,7 @@ def run_rung(
         "hmc_interval_trajectories": slowest,
         "q_freezing": freezing,
     }
+    save_json(case_dir / f"{label}_summary.json", summary)
     return {"summary": summary, "rows_pre": rows_pre, "rows_post": rows_post,
             "series": all_series, "targets": targets}
 
@@ -635,9 +724,12 @@ def write_thermalization_report(
         "matched to the baseline chain count so all starts are compared at equal "
         "statistical power. `tau_int` is Madras-Sokal, measured on the second half "
         "of the hot-start chains, averaged over chains. In the per-rung relaxation "
-        "figures, the blue dotted vertical line marks where the diffusion seed "
-        "thermalizes and the black dotted vertical line marks the standard-HMC "
-        "interval `2 tau_int` for that observable.",
+        "figures, triangles mark each start's t_therm, dashed curves are the "
+        "exponential fits C + A exp(-t/tau) to the ensemble means (tau quoted per "
+        "panel), and the right-hand panels track the ensemble mean's distance from "
+        "the exact value in SEM units -- thermalized means inside the shaded "
+        "|z| <= 2 band; the dotted vertical line there is the standard-HMC "
+        "interval `2 tau_int`.",
         "",
         "## What 'never' means, and where the ground truth comes from",
         "",
@@ -660,6 +752,7 @@ def write_thermalization_report(
     for res in results:
         s = res["summary"]
         label = s["label"]
+        case_dir = f"L{s['lattice_size']}_beta{s['beta']:g}"
         acc = s["hmc"]["acceptance"]
         never_notes = []
         for start in ("hot start", "cold start"):
@@ -680,7 +773,7 @@ def write_thermalization_report(
             f"({s['hmc']['sec_per_traj_gen_batch']:.2f} s/traj for the whole batch); baselines: "
             f"{s['n_baseline_chains']} chains x {s['n_traj_baseline']} trajectories.",
             "",
-            f"![relaxation]({label}_relaxation.png)",
+            f"![relaxation]({case_dir}/{label}_relaxation.png)",
             "",
             "tau_int (hot-start chains, second half): "
             + ", ".join(f"{name} = {d['value']:.2f} +- {d['error']:.2f}"
@@ -698,16 +791,33 @@ def write_thermalization_report(
             "",
             *rows_to_md(res["rows_pre"]),
             "",
-            f"![generated]({label}_generated.png)",
-            "",
             f"### Diagnostics: the same configs after {s['n_traj_gen']} HMC trajectories",
             "",
             *rows_to_md(res["rows_post"]),
             "",
-            f"![after_hmc]({label}_after_hmc.png)",
-            "",
         ]
     path.write_text("\n".join(lines), encoding="utf-8")
+
+
+def replot_relaxations(out_dir: Path, action_type: str) -> None:
+    """Regenerate every relaxation figure from the cached per-case series and
+    summaries under out_dir's L*_beta*/ subfolders; no HMC is run."""
+    summary_paths = sorted(out_dir.glob("L*_beta*/*_summary.json"))
+    if not summary_paths:
+        raise SystemExit(f"no L*_beta*/*_summary.json under {out_dir}")
+    for sp in summary_paths:
+        s = json.loads(sp.read_text(encoding="utf-8"))
+        label, case_dir = s["label"], sp.parent
+        series = np.load(case_dir / f"{label}_series.npz")
+        all_series: dict[str, dict[str, np.ndarray]] = {}
+        for key in series.files:
+            start, name = key.split("|", 1)
+            all_series.setdefault(start, {})[name] = series[key]
+        targets = exact_targets(float(s["beta"]), action_type, int(s["lattice_size"]))
+        tau = {name: (d["value"], d["error"]) for name, d in s.get("tau_int", {}).items()}
+        plot_relaxation(all_series, targets, label, case_dir / f"{label}_relaxation.png",
+                        t_therm=s.get("t_therm"), tau_int=tau)
+        print(case_dir / f"{label}_relaxation.png", flush=True)
 
 
 def run_generalization_scan(args, config: dict, device: str) -> None:
@@ -737,6 +847,9 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
     if not cases:
         raise SystemExit(f"no completed generalization cases for parts {sorted(parts)}")
     out_dir = Path(args.out) if args.out else gen_dir.parent / "thermalization" / "generalization"
+    if args.replot:
+        replot_relaxations(out_dir, action_type)
+        return
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"{len(cases)} matched-pair cases, output -> {out_dir}", flush=True)
 
@@ -774,7 +887,6 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
         meta = {"beta": beta_f, "lattice_size": fine_size}
         results.append(run_rung(index, meta, seed_configs, reference, config, args,
                                 device, out_dir, label=label))
-        save_json(out_dir / f"{label}_summary.json", results[-1]["summary"])
 
     summaries = [res["summary"] for res in results]
     plot_timescales(summaries, out_dir / "timescales.png")
@@ -808,6 +920,9 @@ def main() -> None:
                         help="generalization mode: comma-separated target-beta filter")
     parser.add_argument("--checkpoint", default="out/diffusion/demo/checkpoints/score_net.pt",
                         help="generalization mode: score-net checkpoint for raw-seed sampling")
+    parser.add_argument("--replot", action="store_true",
+                        help="regenerate the relaxation figures from cached per-case "
+                        "series under the mode's output directory; no HMC is run")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]) + 5)
@@ -823,6 +938,9 @@ def main() -> None:
         generated_dir = run_dir / generated_dir.name
         reference_dir = run_dir / Path(config["validate"]["out_dir"]).name / "reference"
     out_dir = Path(args.out) if args.out else generated_dir.parent / "thermalization"
+    if args.replot:
+        replot_relaxations(out_dir, action_type)
+        return
     out_dir.mkdir(parents=True, exist_ok=True)
 
     pattern = str(generated_dir / f"ladder_rung*_{action_type}_*.pt")
@@ -849,8 +967,6 @@ def main() -> None:
         )
         reference = load_ensemble(ref_path)[0] if ref_path.exists() else None
         results.append(run_rung(index, meta, seed_configs, reference, config, args, device, out_dir))
-        save_json(out_dir / f"{results[-1]['summary']['label']}_summary.json",
-                  results[-1]["summary"])
 
     plot_timescales([res["summary"] for res in results], out_dir / "timescales.png")
     write_thermalization_report(results, action_type, out_dir / "report.md")
