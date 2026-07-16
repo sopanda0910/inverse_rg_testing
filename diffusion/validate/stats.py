@@ -1,8 +1,63 @@
-"""Statistics helpers: jackknife errors, integrated autocorrelation times, z-scores."""
+"""Statistics helpers: jackknife errors, integrated autocorrelation times,
+z-scores, exponential relaxation fits."""
 
 import math
 
 import numpy as np
+from scipy.optimize import curve_fit
+
+
+def fit_exponential_relaxation(mean: np.ndarray, target: float) -> dict:
+    """Fit C + A exp(-t/tau) to an ensemble-mean relaxation curve.
+
+    Always attempts the fit (a curve that starts at its plateau -- e.g. a
+    diffusion seed -- still gets a tau, flagged in `status` as amplitude within
+    noise). tau is None only when the fit fails outright, the window is too
+    short, or the fitted tau exceeds the window and is meaningless. C is the
+    fitted plateau; `plateau_minus_target` says whether the curve relaxes
+    toward the exact value or gets stuck away from it."""
+    mean = np.asarray(mean, dtype=float)
+    t = np.arange(len(mean), dtype=float)
+    tail = mean[max(len(mean) // 2, 1):]
+    c0, noise = float(tail.mean()), float(tail.std())
+    a0 = float(mean[0] - c0)
+    out = {"tau": None, "A": a0, "C": c0, "target": target,
+           "plateau_minus_target": c0 - target, "status": "fit failed"}
+    if len(mean) < 8:
+        out["status"] = "window too short to fit"
+        return out
+    if float(np.std(mean)) < 1e-12 * max(1.0, abs(c0)):
+        out["status"] = "constant series (no decay; frozen)"
+        return out
+
+    def model(t, A, tau, C):
+        return C + A * np.exp(-t / tau)
+
+    a_init = a0 if abs(a0) > 1e-12 else max(noise, 1e-6)
+    try:
+        popt, pcov = curve_fit(
+            model, t, mean, p0=(a_init, max(len(mean) / 10.0, 2.0), c0),
+            bounds=([-np.inf, 1e-2, -np.inf], [np.inf, 50.0 * len(mean), np.inf]),
+            maxfev=20000,
+        )
+    except Exception as exc:
+        out["status"] = f"fit failed ({type(exc).__name__})"
+        return out
+    A, tau, C = (float(v) for v in popt)
+    tau_err = float(np.sqrt(pcov[1, 1])) if np.all(np.isfinite(pcov)) else float("inf")
+    out.update(A=A, C=C, plateau_minus_target=C - target)
+    if tau > 3.0 * len(mean):
+        out["status"] = "unreliable (tau exceeds window)"
+        return out
+    if not math.isfinite(tau_err) or tau_err <= 0.0 or tau_err >= tau:
+        out["status"] = ("no measurable decay (starts at plateau; tau unconstrained)"
+                         if abs(A) <= 2.0 * max(noise, 1e-12)
+                         else "unconstrained fit (tau error exceeds tau)")
+        return out
+    out.update(tau=tau, tau_error=tau_err)
+    out["status"] = ("ok" if abs(A) > 2.0 * max(noise, 1e-12)
+                     else "ok (amplitude within noise of plateau)")
+    return out
 
 
 def jackknife(values: np.ndarray, estimator=np.mean) -> tuple[float, float]:

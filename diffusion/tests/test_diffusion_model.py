@@ -169,3 +169,64 @@ class TestTraining:
         model, history = train_score_model([rung], [rung], config)
         assert all(math.isfinite(rec["train_loss"]) for rec in history)
         assert history[-1]["train_loss"] < history[0]["train_loss"] * 1.5
+
+
+class TestTopoPenalty:
+    def test_soft_charge_matches_integer_charge_on_smooth_configs(self):
+        from diffusion.lgt.local_updates import instanton_field
+        from diffusion.lgt.lattice import topological_charge
+        from diffusion.model.train import soft_topological_charge
+
+        inst = instanton_field(16)
+        for q in (-2.0, 1.0, 3.0):
+            field = wrap(q * inst + 0.02 * torch.randn(2, 16, 16, generator=torch.Generator().manual_seed(7)))
+            assert abs(float(soft_topological_charge(field)) - q) < 0.15
+            assert float(topological_charge(field)) == q
+
+    def test_zero_weight_reproduces_plain_dsm(self):
+        torch.manual_seed(6)
+        fine = random_field(batch=8, size=8, seed=11)
+        cond = coarse_conditioning_channels(fine[:, :, ::2, ::2], 8)
+        beta = torch.full((8,), 2.0)
+        schedule = GeometricNoiseSchedule(0.05, 4.0)
+        model = GaugeCovariantScoreNet(hidden=16, depth=2)
+        sigma = schedule.sample_sigma(8, "cpu")
+        torch.manual_seed(42)
+        plain = denoising_loss(model, fine, cond, beta, schedule, sigma=sigma)
+        torch.manual_seed(42)
+        total, dsm, topo = denoising_loss(
+            model, fine, cond, beta, schedule, sigma=sigma, topo_weight=0.0, return_parts=True
+        )
+        assert torch.allclose(plain, total) and torch.allclose(plain, dsm)
+        assert float(topo) == 0.0
+
+    def test_penalty_is_finite_and_carries_gradient(self):
+        torch.manual_seed(6)
+        fine = random_field(batch=8, size=8, seed=12)
+        cond = coarse_conditioning_channels(fine[:, :, ::2, ::2], 8)
+        beta = torch.full((8,), 2.0)
+        schedule = GeometricNoiseSchedule(0.05, 4.0)
+        model = GaugeCovariantScoreNet(hidden=16, depth=2)
+        sigma = schedule.sample_sigma(8, "cpu")
+        torch.manual_seed(42)
+        total, dsm, topo = denoising_loss(
+            model, fine, cond, beta, schedule, sigma=sigma, topo_weight=0.5, return_parts=True
+        )
+        assert math.isfinite(float(total.detach())) and math.isfinite(float(topo.detach()))
+        assert torch.allclose(total, dsm + 0.5 * topo)
+        (0.5 * topo).backward(retain_graph=False)
+        grads = [p.grad for p in model.parameters() if p.grad is not None]
+        assert grads and any(float(g.abs().max()) > 0 for g in grads)
+
+    def test_multi_size_rungs_train_together(self):
+        fine16 = random_field(batch=12, size=16, seed=13)
+        fine8 = random_field(batch=12, size=8, seed=14)
+        rungs = [
+            RungData("L16", fine16, fine16[:, :, ::2, ::2], beta=2.0),
+            RungData("L8", fine8, fine8[:, :, ::2, ::2], beta=1.0),
+        ]
+        config = TrainConfig(epochs=1, batch_size=4, hidden=16, depth=2, topo_weight=0.1, seed=0)
+        model, history = train_score_model(rungs, rungs, config)
+        assert math.isfinite(history[-1]["train_loss"])
+        assert math.isfinite(history[-1]["train_topo"])
+        assert "val_L16" in history[-1] and "val_L8" in history[-1]

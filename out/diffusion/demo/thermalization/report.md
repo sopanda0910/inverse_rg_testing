@@ -26,7 +26,7 @@ with a margin that grows with beta as standard HMC slides into critical slowing 
 
 t_therm and burn-in are the slowest Wilson-loop observable (plaquette, W(2x2), W(4x4)); topology is stricter still for the fresh chains: their Q^2 **never** reaches the exact value at the frozen rungs, while the diffusion seed inherits the correct topological sector from the coarse ensemble it was generated from (see the Q^2 panels and per-rung tables below).
 
-Thermalization time `t_therm` = first trajectory at which the ensemble-mean z-score vs the exact value satisfies |z| <= 2 and stays there for 5 consecutive trajectories (t = 0: already thermalized before any HMC). For the diffusion seed, t_therm is computed on a random subsample of chains matched to the baseline chain count so all starts are compared at equal statistical power. `tau_int` is Madras-Sokal, measured on the second half of the hot-start chains, averaged over chains. In the per-rung relaxation figures, the blue dotted vertical line marks where the diffusion seed thermalizes and the black dotted vertical line marks the standard-HMC interval `2 tau_int` for that observable.
+Thermalization time `t_therm` = first trajectory at which the ensemble-mean z-score vs the exact value satisfies |z| <= 2 and stays there for 5 consecutive trajectories (t = 0: already thermalized before any HMC). For the diffusion seed, t_therm is computed on a random subsample of chains matched to the baseline chain count so all starts are compared at equal statistical power. `tau_int` is Madras-Sokal, measured on the second half of the hot-start chains, averaged over chains. In the per-rung relaxation figures, triangles mark each start's t_therm, dashed curves are the exponential fits C + A exp(-t/tau) to the ensemble means (tau quoted per panel), and the right-hand panels track the ensemble mean's distance from the exact value in SEM units -- thermalized means inside the shaded |z| <= 2 band; the dotted vertical line there is the standard-HMC interval `2 tau_int`.
 
 ## What 'never' means, and where the ground truth comes from
 
@@ -38,7 +38,7 @@ None of the exact values in this report come from fine-lattice HMC: the ground t
 
 HMC: step size 0.1000, 10 leapfrog steps, acceptance seed/hot/cold = 0.995/0.995/0.995. Diffusion-seed batch: 192 chains x 96 trajectories (0.72 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
 
-![relaxation](rung0_L16_beta4_relaxation.png)
+![relaxation](L16_beta4/rung0_L16_beta4_relaxation.png)
 
 tau_int (hot-start chains, second half): plaquette = 3.69 +- 0.26, wilson_2x2 = 2.47 +- 0.15, wilson_4x4 = 1.22 +- 0.10, wilson_6x6 = 0.59 +- 0.01. Topology: hot-start HMC L=16 beta=4 -> tau_int(Q) = 20.4.
 
@@ -73,8 +73,6 @@ tau_int (hot-start chains, second half): plaquette = 3.69 +- 0.26, wilson_2x2 = 
 | chi_top ((<Q^2>-<Q>^2)/V) | 0.006897 | 0.0008879 | 0.007554 | -0.7407 | 0.007718 | 0.0008656 | -0.6628 | 3.027e-12 |  |
 | Q histogram vs exact P(Q) | 5.423 | nan | 6 | nan |  |  |  |  | 0.4908 |
 
-![generated](rung0_L16_beta4_generated.png)
-
 ### Diagnostics: the same configs after 96 HMC trajectories
 
 | observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
@@ -106,13 +104,11 @@ tau_int (hot-start chains, second half): plaquette = 3.69 +- 0.26, wilson_2x2 = 
 | chi_top ((<Q^2>-<Q>^2)/V) | 0.008325 | 0.0007716 | 0.007554 | 0.9993 | 0.007718 | 0.0008656 | 0.5234 | 1.137e-11 |  |
 | Q histogram vs exact P(Q) | 1.971 | nan | 6 | nan |  |  |  |  | 0.9223 |
 
-![after_hmc](rung0_L16_beta4_after_hmc.png)
-
 ## rung1_L32_beta14.1464
 
 HMC: step size 0.0532, 19 leapfrog steps, acceptance seed/hot/cold = 0.995/0.995/0.996. Diffusion-seed batch: 192 chains x 96 trajectories (0.52 s/traj for the whole batch); baselines: 32 chains x 640 trajectories.
 
-![relaxation](rung1_L32_beta14.1464_relaxation.png)
+![relaxation](L32_beta14.1464/rung1_L32_beta14.1464_relaxation.png)
 
 tau_int (hot-start chains, second half): plaquette = 7.73 +- 1.00, wilson_2x2 = 14.02 +- 1.83, wilson_4x4 = 8.33 +- 1.45, wilson_6x6 = 0.91 +- 0.06. Topology: hot-start HMC L=32 beta=14.1464 -> **frozen** (no tunneling).
 
@@ -154,8 +150,6 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0.001733 | 0.0001529 | 0.001859 | -0.826 | 0.006283 | 0.0001452 | -21.58 | 2.44e-19 |  |
 | Q histogram vs exact P(Q) | 6.621 | nan | 6 | nan |  |  |  |  | 0.3574 |
 
-![generated](rung1_L32_beta14.1464_generated.png)
-
 ### Diagnostics: the same configs after 96 HMC trajectories
 
 | observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
@@ -192,13 +186,11 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0.001733 | 0.0001529 | 0.001859 | -0.826 | 0.006283 | 0.0001452 | -21.58 | 2.44e-19 |  |
 | Q histogram vs exact P(Q) | 6.621 | nan | 6 | nan |  |  |  |  | 0.3574 |
 
-![after_hmc](rung1_L32_beta14.1464_after_hmc.png)
-
 ## rung2_L64_beta55.0237
 
 HMC: step size 0.0270, 37 leapfrog steps, acceptance seed/hot/cold = 0.992/0.992/0.992. Diffusion-seed batch: 192 chains x 96 trajectories (1.47 s/traj for the whole batch); baselines: 16 chains x 640 trajectories.
 
-![relaxation](rung2_L64_beta55.0237_relaxation.png)
+![relaxation](L64_beta55.0237/rung2_L64_beta55.0237_relaxation.png)
 
 tau_int (hot-start chains, second half): plaquette = 39.24 +- 2.22, wilson_2x2 = 45.70 +- 1.36, wilson_4x4 = 39.56 +- 1.92, wilson_6x6 = 27.55 +- 2.97. Topology: hot-start HMC L=64 beta=55.0237 -> **frozen** (no tunneling).
 
@@ -240,8 +232,6 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0.0004807 | 3.75e-05 | 0.0004646 | 0.4275 | 0.006592 | 0.0002345 | -25.74 | 0 |  |
 | Q histogram vs exact P(Q) | 8.105 | nan | 6 | nan |  |  |  |  | 0.2305 |
 
-![generated](rung2_L64_beta55.0237_generated.png)
-
 ### Diagnostics: the same configs after 96 HMC trajectories
 
 | observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
@@ -277,5 +267,3 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | Q^2 | 1.969 | 0.1536 | 1.903 | 0.4275 | 27.25 | 1.042 | -24.01 | 7.006e-45 |  |
 | chi_top ((<Q^2>-<Q>^2)/V) | 0.0004807 | 3.75e-05 | 0.0004646 | 0.4275 | 0.006592 | 0.0002345 | -25.74 | 0 |  |
 | Q histogram vs exact P(Q) | 8.105 | nan | 6 | nan |  |  |  |  | 0.2305 |
-
-![after_hmc](rung2_L64_beta55.0237_after_hmc.png)
