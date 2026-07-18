@@ -588,6 +588,32 @@ def run_rung(
             "series": all_series, "targets": targets}
 
 
+def cached_rung_record(case_dir: Path, label: str, seed_configs: torch.Tensor,
+                       reference: torch.Tensor | None, beta: float,
+                       action_type: str) -> dict | None:
+    """Rebuild a run_rung result from a completed case's on-disk outputs.
+
+    The benchmark chains (the expensive part) are read back via the saved
+    summary; only the two validation-row tables are recomputed, from the cached
+    seed and after-HMC ensembles. Returns None if any required file is missing."""
+    summary_path = case_dir / f"{label}_summary.json"
+    after_path = case_dir / f"{label}_after_hmc.pt"
+    if not (summary_path.exists() and after_path.exists()
+            and (case_dir / f"{label}_series.npz").exists()):
+        return None
+    summary = json.loads(summary_path.read_text(encoding="utf-8"))
+    after, _ = load_ensemble(after_path)
+    rows_pre = validate_ensemble(
+        seed_configs, beta, action_type, reference_configs=reference,
+        label=f"{label}_generated", output_dir=case_dir, make_plots=False,
+    )
+    rows_post = validate_ensemble(
+        after, beta, action_type, reference_configs=reference,
+        label=f"{label}_after_hmc", output_dir=case_dir, make_plots=False,
+    )
+    return {"summary": summary, "rows_pre": rows_pre, "rows_post": rows_post}
+
+
 def write_thermalization_report(
     results: list[dict], action_type: str, path: Path, mode: str = "ladder"
 ) -> None:
@@ -836,9 +862,8 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
     records = json.loads(summary_path.read_text(encoding="utf-8"))
     parts = {p.strip() for p in args.parts.split(",")}
     cases = sorted(
-        (r for r in records.values()
-         if r.get("part") in parts and "rows" in r and int(r["base_size"]) == 16),
-        key=lambda r: float(r["target_beta"]),
+        (r for r in records.values() if r.get("part") in parts and "rows" in r),
+        key=lambda r: (int(r["base_size"]), float(r["target_beta"])),
     )
     if args.betas:
         wanted = [float(v) for v in args.betas.split(",")]
@@ -885,6 +910,14 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
         ref_path = gen_dir / "reference" / f"{action_type}_L{fine_size}_beta{beta_f:g}.pt"
         reference = load_ensemble(ref_path)[0] if ref_path.exists() else None
         meta = {"beta": beta_f, "lattice_size": fine_size}
+        if args.skip_cached:
+            case_dir = out_dir / f"L{fine_size}_beta{beta_f:g}"
+            cached = cached_rung_record(case_dir, label, seed_configs, reference,
+                                        beta_f, action_type)
+            if cached is not None:
+                print(f"{label}: benchmark cached, reusing series/summary", flush=True)
+                results.append(cached)
+                continue
         results.append(run_rung(index, meta, seed_configs, reference, config, args,
                                 device, out_dir, label=label))
 
@@ -920,6 +953,10 @@ def main() -> None:
                         help="generalization mode: comma-separated target-beta filter")
     parser.add_argument("--checkpoint", default="out/diffusion/demo/checkpoints/score_net.pt",
                         help="generalization mode: score-net checkpoint for raw-seed sampling")
+    parser.add_argument("--skip-cached", action="store_true", dest="skip_cached",
+                        help="generalization mode: reuse completed cases' saved "
+                        "benchmark outputs (series/summary/after_hmc) instead of "
+                        "re-running their HMC; validation rows are recomputed")
     parser.add_argument("--replot", action="store_true",
                         help="regenerate the relaxation figures from cached per-case "
                         "series under the mode's output directory; no HMC is run")

@@ -1,0 +1,184 @@
+[Thu 07/16/2026 13:05:15.79] STAGE_V4_FULL_S1 
+20 cases, output -> out\diffusion\demo\generalization_v4
+[1/20] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 182s
+    case done in 198s
+[2/20] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 306s
+    case done in 317s
+[3/20] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 250s
+    case done in 261s
+[4/20] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 220s
+    case done in 232s
+[5/20] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 298s
+    case done in 310s
+[6/20] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 249s
+    case done in 261s
+[7/20] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 237s
+    case done in 254s
+[8/20] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 253s
+    case done in 267s
+[9/20] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 237s
+    case done in 251s
+[10/20] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 233s
+    case done in 245s
+[11/20] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 220s
+    case done in 235s
+[12/20] B_bt6: base L=16 beta=4 -> L=32 beta=6 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=6 in 201s
+    case done in 212s
+[13/20] B_bt10: base L=16 beta=4 -> L=32 beta=10 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=10 in 208s
+    case done in 221s
+[14/20] B_bt16: base L=16 beta=4 -> L=32 beta=16 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=16 in 195s
+    case done in 208s
+[15/20] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=20 in 245s
+    case done in 258s
+[16/20] B_bt30: base L=16 beta=4 -> L=32 beta=30 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=30 in 209s
+    case done in 223s
+[17/20] B_bt55.0237: base L=16 beta=4 -> L=32 beta=55.0237 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=55.0237 in 201s
+    case done in 214s
+[18/20] B_bc2_bt8: base L=16 beta=2 -> L=32 beta=8 (tree-level beta_f = 4 beta_c; matched target is 6.1052)
+    generated 128 configs L=32 beta=8 in 221s
+    case done in 233s
+[19/20] C_L64: base L=32 beta=4 -> L=64 beta=14.1464 (size scan rung)
+    generated 96 configs L=64 beta=14.1464 in 599s
+    case done in 630s
+[20/20] C_L128: base L=64 beta=4 -> L=128 beta=14.1464 (size scan rung)
+    generated 64 configs L=128 beta=14.1464 in 1487s
+    case done in 1552s
+summary: out\diffusion\demo\generalization_v4\summary.json
+tables:  out\diffusion\demo\generalization_v4\summary_tables.md
+[Thu 07/16/2026 14:55:06.17] STAGE_V4_AD_S2 
+11 cases, output -> out\diffusion\demo\generalization_v4\seeds\s2
+[1/11] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 217s
+    case done in 229s
+[2/11] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 197s
+    case done in 209s
+[3/11] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 232s
+    case done in 243s
+[4/11] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 272s
+    case done in 285s
+[5/11] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 296s
+    case done in 307s
+[6/11] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 369s
+    case done in 381s
+[7/11] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 269s
+    case done in 279s
+[8/11] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 396s
+    case done in 412s
+[9/11] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 483s
+    case done in 501s
+[10/11] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 405s
+    case done in 417s
+[11/11] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 487s
+    case done in 503s
+c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion\scripts\06_generalization_study.py:326: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: out\diffusion\demo\generalization_v4\seeds\s2\summary.json
+tables:  out\diffusion\demo\generalization_v4\seeds\s2\summary_tables.md
+[Thu 07/16/2026 15:58:02.89] STAGE_V4_AD_S3 
+11 cases, output -> out\diffusion\demo\generalization_v4\seeds\s3
+[1/11] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 217s
+    case done in 228s
+[2/11] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 204s
+    case done in 219s
+[3/11] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 460s
+    case done in 479s
+[4/11] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 330s
+    case done in 342s
+[5/11] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 180s
+    case done in 189s
+[6/11] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 173s
+    case done in 184s
+[7/11] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 183s
+    case done in 195s
+[8/11] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 178s
+    case done in 189s
+[9/11] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 177s
+    case done in 188s
+[10/11] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 197s
+    case done in 209s
+[11/11] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 245s
+    case done in 256s
+c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion\scripts\06_generalization_study.py:326: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: out\diffusion\demo\generalization_v4\seeds\s3\summary.json
+tables:  out\diffusion\demo\generalization_v4\seeds\s3\summary_tables.md
+[Thu 07/16/2026 16:42:48.33] STAGE_V4_AD_CKPT_V2 
+11 cases, output -> out\diffusion\demo\generalization_v4\ckpt_v2
+[1/11] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 451s
+    case done in 473s
+[2/11] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 513s
+    case done in 527s
+[3/11] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 471s
+    case done in 493s
+[4/11] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 447s
+    case done in 464s
+[5/11] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 551s
+    case done in 584s
+[6/11] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 545s
+    case done in 566s
+[7/11] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 530s
+    case done in 551s
+[8/11] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 497s
+    case done in 516s
+[9/11] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 487s
+    case done in 505s
+[10/11] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 469s
+    case done in 487s
+[11/11] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 1122s
+    case done in 1143s
+c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion\scripts\06_generalization_study.py:326: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: out\diffusion\demo\generalization_v4\ckpt_v2\summary.json
+tables:  out\diffusion\demo\generalization_v4\ckpt_v2\summary_tables.md
+[Thu 07/16/2026 18:28:07.72] STAGE_V4_AGGREGATE 
+wrote out\diffusion\demo\generalization_v4\seed_spread.md
+[Thu 07/16/2026 18:28:07.95] CHAIN_DONE 

@@ -30,6 +30,7 @@ import argparse
 import json
 import math
 import time
+import zlib
 from dataclasses import dataclass, asdict
 from pathlib import Path
 
@@ -47,7 +48,7 @@ from diffusion.lgt.blocking import approx_matched_fine_beta
 from diffusion.lgt.lattice import mean_plaquette, topological_charge
 from diffusion.lgt.local_updates import retherm_sweeps
 from diffusion.model.train import load_checkpoint
-from diffusion.pipeline.ladder import generate_fine_from_coarse
+from diffusion.pipeline.ladder import generate_fine_from_coarse, apply_coarse_charge
 from diffusion.validate.report import validate_ensemble, GEN_COLOR, REF_COLOR, INK, MUTED, GRID_COLOR
 from diffusion.utils import set_seed, save_ensemble, load_ensemble, save_json
 
@@ -55,8 +56,12 @@ CHECKPOINT = "out/diffusion/demo/checkpoints/score_net.pt"
 OUT_DIR = Path("out/diffusion/demo/generalization")
 ACTION_TYPE = "wilson"
 
-A_COARSE_BETAS = [0.25, 0.5, 0.75, 1.0, 2.0, 3.0, 4.0, 6.0, 8.0]
-D_COARSE_BETAS = [14.1464, 55.0237]
+A_COARSE_BETAS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]
+D_COARSE_BETAS = [14.1464, 20.0, 30.0, 40.0, 55.0237]
+# Out-of-sample matched track: every base AND matched target sits mid-gap between
+# training couplings (both >= ~10% log-distance from all trained rungs), so this
+# part measures genuine off-grid generalization, not in-sample recall.
+E_COARSE_BETAS = [1.2, 2.7, 3.4, 4.5, 5.8, 9.0, 11.8, 18.0, 35.0, 45.0]
 B_TARGET_BETAS = [6.0, 10.0, 16.0, 20.0, 30.0, 55.0237]
 MATCHED_PAIR = (4.0, 14.1464)
 
@@ -85,6 +90,10 @@ def build_cases(smoke: bool) -> list[Case]:
         cases.append(Case(f"D_bc{bc:g}", "D", 16, bc, bf, n32, nref32,
                           f"matched pair {bc:g} -> {bf:.4f}"
                           + (" (beyond training range)" if bf > 56 else "")))
+    for bc in E_COARSE_BETAS:
+        bf = approx_matched_fine_beta(bc, ACTION_TYPE)
+        cases.append(Case(f"E_bc{bc:g}", "E", 16, bc, bf, n32, nref32,
+                          f"out-of-sample matched pair {bc:g} -> {bf:.4f}"))
     for bf in B_TARGET_BETAS:
         cases.append(Case(f"B_bt{bf:g}", "B", 16, 4.0, bf, n32, nref32,
                           f"mismatch: matched target is {MATCHED_PAIR[1]:g}"))
@@ -143,7 +152,8 @@ def hmc_ensemble_cached(path: Path, lattice_size: int, beta: float, n_configs: i
     return configs[:n_configs]
 
 
-def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool) -> dict:
+def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
+             seed: int = 1234) -> dict:
     record: dict = asdict(case)
     record["matched_target_beta"] = approx_matched_fine_beta(case.base_beta, ACTION_TYPE)
     record["mismatch_ratio"] = case.target_beta / record["matched_target_beta"]
@@ -161,8 +171,16 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool) -
         fine, meta = load_ensemble(gen_path)
         record.update(meta.get("timings", {}))
         record.update(meta.get("pre_retherm", {}))
+        record.update(meta.get("raw_topology", {}))
         print(f"    loaded cached generation {gen_path.name}", flush=True)
     else:
+        # Per-case seed: results do not depend on case order or subsetting, and
+        # different --seed values give genuinely independent sampler noise (a fixed
+        # global seed lets identical retherm RNG synchronously couple two runs at
+        # high beta, hiding model differences).
+        case_seed = (seed + zlib.crc32(case.run_id.encode())) % (2**31)
+        record["seed"] = case_seed
+        set_seed(case_seed)
         t0 = time.time()
         fine = generate_fine_from_coarse(
             model, schedule, base, case.target_beta,
@@ -171,9 +189,18 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool) -
             batch_size=8 if smoke else (16 if fine_size >= 128 else 32),
             device=device,
             consistency_weight=1.0,
-            enforce_coarse_charge=True,
+            enforce_coarse_charge=False,
         )
         record["sample_seconds"] = time.time() - t0
+        # Model-level topology transport, measured before the deterministic charge
+        # map hides it (ideal transport: Q_fine == Q_base, since blocking preserves Q).
+        q_base = topological_charge(base)
+        q_raw = topological_charge(fine)
+        dq = (q_raw - q_base).abs()
+        record["q_match_rate_raw"] = float((dq == 0).float().mean())
+        record["mean_abs_dq_raw"] = float(dq.mean())
+        record["q_squared_raw"] = float(q_raw.square().mean())
+        fine = apply_coarse_charge(fine, q_base)
         record["plaquette_pre_retherm"] = float(mean_plaquette(fine))
         record["q_squared_pre_retherm"] = float(topological_charge(fine).square().mean())
         t0 = time.time()
@@ -183,9 +210,12 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool) -
         save_ensemble(gen_path, fine, {
             "beta": case.target_beta, "lattice_size": fine_size, "action_type": ACTION_TYPE,
             "provenance": f"generalization study {case.run_id}: base L={case.base_size} "
-                          f"beta={case.base_beta:g}, diffusion + 16 retherm sweeps (Q-hops on)",
+                          f"beta={case.base_beta:g}, diffusion (case seed {case_seed}) + "
+                          f"charge enforcement + 16 retherm sweeps (Q-hops on)",
             "timings": {k: record[k] for k in ("sample_seconds", "retherm_seconds")},
             "pre_retherm": {k: record[k] for k in ("plaquette_pre_retherm", "q_squared_pre_retherm")},
+            "raw_topology": {k: record[k] for k in
+                             ("q_match_rate_raw", "mean_abs_dq_raw", "q_squared_raw", "seed")},
         })
         print(f"    generated {fine.shape[0]} configs L={fine_size} beta={case.target_beta:g} "
               f"in {record['sample_seconds']:.0f}s", flush=True)
@@ -308,6 +338,37 @@ def make_summary_figures(records: dict, out: Path) -> None:
         fig.savefig(out / "fig_mismatch_scan.png", dpi=130)
         plt.close(fig)
 
+    raw = sorted(
+        (r for r in records.values()
+         if r["part"] in ("A", "D") and r.get("q_match_rate_raw") is not None),
+        key=lambda r: r["base_beta"],
+    )
+    if raw:
+        x = [r["base_beta"] for r in raw]
+        fig, axes = plt.subplots(1, 2, figsize=(9.5, 4.0))
+        axes[0].plot(x, [r["q_match_rate_raw"] for r in raw], "o-", color=GEN_COLOR, ms=6, lw=1.6)
+        axes[0].set_ylim(0, 1)
+        axes[0].set_title("P(Q_fine = Q_base) before enforcement", fontsize=10, color=INK)
+        axes[0].set_ylabel("match rate", fontsize=9, color=INK)
+        axes[1].plot(x, [r["q_squared_raw"] for r in raw], "o-", color=GEN_COLOR, ms=6, lw=1.6,
+                     label="raw sampler")
+        axes[1].plot(x, [r["base_q_squared"] for r in raw], "s--", color=REF_COLOR, ms=5, lw=1.2,
+                     mfc="none", label="base (ideal transport)")
+        axes[1].set_yscale("log")
+        axes[1].set_title(r"$\langle Q^2 \rangle$ of the raw sampler output", fontsize=10, color=INK)
+        axes[1].legend(fontsize=8, frameon=False)
+        for ax in axes:
+            ax.set_xscale("log")
+            ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
+            ax.set_xticks(x)
+            ax.set_xticklabels([f"{v:.3g}" for v in x], fontsize=7)
+            ax.set_xlabel(r"coarse $\beta_c$", fontsize=9, color=INK)
+            _style_axis(ax)
+        fig.suptitle("Model-level topology transport (pre-enforcement, pre-retherm)", fontsize=11)
+        fig.tight_layout(rect=(0, 0, 1, 0.92))
+        fig.savefig(out / "fig_raw_topology.png", dpi=130)
+        plt.close(fig)
+
     size = sorted(
         (r for r in records.values()
          if r["base_beta"] == MATCHED_PAIR[0]
@@ -341,16 +402,18 @@ def write_summary_tables(records: dict, out: Path) -> None:
     )
     lines.append("")
     header = ("| run | base (L, beta) | target beta | matched beta | beta ratio | plaq z | "
-              "W(2x2) z | W(4x4) z | W(8x8) z | Q z | Q^2 z | chi_top z | P(Q) chi2 p | min KS p |")
+              "W(2x2) z | W(4x4) z | W(8x8) z | Q z | Q^2 z | chi_top z | P(Q) chi2 p | min KS p | "
+              "raw Q match | raw Q^2 (base) |")
     for part, title in [("A", "Part A: matched-pair beta scan (L=16 -> L=32)"),
                         ("D", "Part D: upper-coupling matched pairs (L=16 -> L=32)"),
+                        ("E", "Part E: out-of-sample matched pairs (bases and targets mid-gap between training couplings)"),
                         ("B", "Part B: target-coupling mismatch (base L=16)"),
                         ("C", "Part C: lattice-size scan (pair 4 -> 14.1464)")]:
         rows = sorted((r for r in records.values() if r["part"] == part),
                       key=lambda r: (r["base_size"], r["base_beta"], r["target_beta"]))
         if not rows:
             continue
-        lines += [f"## {title}", "", header, "|" + "---|" * 14]
+        lines += [f"## {title}", "", header, "|" + "---|" * 16]
         for r in rows:
             cells = [
                 r["run_id"],
@@ -367,6 +430,10 @@ def write_summary_tables(records: dict, out: Path) -> None:
             cells.append(f"{chi2:.3f}" if chi2 is not None else "-")
             ks = _min_wilson_ks(r)
             cells.append(f"{ks:.3f}" if not math.isnan(ks) else "-")
+            match = r.get("q_match_rate_raw")
+            cells.append(f"{match:.2f}" if match is not None else "-")
+            q2r = r.get("q_squared_raw")
+            cells.append(f"{q2r:.2f} ({r['base_q_squared']:.2f})" if q2r is not None else "-")
             lines.append("| " + " | ".join(cells) + " |")
         lines.append("")
     (out / "summary_tables.md").write_text("\n".join(lines), encoding="utf-8")
@@ -380,6 +447,9 @@ def main() -> None:
     parser.add_argument("--cases", default=None,
                         help="comma-separated run_ids to run (e.g. A_bc4,A_bc2); others left untouched")
     parser.add_argument("--checkpoint", default=None, help="override checkpoint path")
+    parser.add_argument("--seed", type=int, default=1234,
+                        help="base seed; each case derives its own seed from this + run_id, "
+                        "so different values give independent sampler noise")
     args = parser.parse_args()
     out = Path(args.out_dir) if args.out_dir else (OUT_DIR / "smoke" if args.smoke else OUT_DIR)
     out.mkdir(parents=True, exist_ok=True)
@@ -389,7 +459,7 @@ def main() -> None:
         records = json.loads(summary_path.read_text(encoding="utf-8"))
 
     if not args.report_only:
-        set_seed(1234)
+        set_seed(args.seed)
         device = "cpu"
         model, schedule = load_checkpoint(args.checkpoint or CHECKPOINT, device)
         cases = build_cases(args.smoke)
@@ -409,7 +479,9 @@ def main() -> None:
                   f"({case.note})", flush=True)
             t0 = time.time()
             try:
-                records[case.run_id] = _json_clean(run_case(case, model, schedule, out, device, args.smoke))
+                records[case.run_id] = _json_clean(
+                    run_case(case, model, schedule, out, device, args.smoke, seed=args.seed)
+                )
             except Exception as exc:
                 records[case.run_id] = {**asdict(case), "error": f"{type(exc).__name__}: {exc}"}
                 print(f"    FAILED: {exc}", flush=True)
