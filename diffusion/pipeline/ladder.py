@@ -72,20 +72,29 @@ def generate_fine_from_coarse(
     device: str = "cpu",
     consistency_weight: float = 1.0,
     enforce_coarse_charge: bool = True,
+    charge_projection_sigma: float = 0.5,
+    charge_projection_interval: int = 10,
 ) -> torch.Tensor:
     """Conditional diffusion sample of fine configs, one per coarse config.
 
-    enforce_coarse_charge: after sampling, set each fine configuration's
-    topological sector to its coarse partner's by adding the smooth instanton
-    difference (a deterministic, gauge-covariant map using only the conditioning
-    input). Justification: the blocking preserves Q up to wrap events whose
-    probability is exp-small at the couplings where topology matters, while the
-    Wilson action's own preference between neighboring Q sectors is O(beta/V) --
-    far too weak for the learned score to pin the sector reliably. Any curl-type
+    enforce_coarse_charge: set each fine configuration's topological sector to
+    its coarse partner's by adding the smooth instanton difference (a
+    deterministic, gauge-covariant map using only the conditioning input).
+    Justification: the blocking preserves Q up to wrap events whose probability
+    is exp-small at the couplings where topology matters, while the Wilson
+    action's own preference between neighboring Q sectors is O(beta/V) -- far
+    too weak for the learned score to pin the sector reliably. Any curl-type
     guidance provably cannot fix a wrong sector either (the total wrapped
     plaquette sum is invariant under link deformations until a plaquette crosses
     +-pi), so the sector is enforced structurally and rethermalization then
-    relaxes the tiny uniform strain (2 pi dQ / V per plaquette)."""
+    relaxes the tiny uniform strain (2 pi dQ / V per plaquette).
+
+    The projection is applied DURING the reverse SDE once sigma drops below
+    charge_projection_sigma (every charge_projection_interval steps, plus a final
+    exact pass): the sector freezes at sigma ~ O(1), and correcting it while
+    noise is still present lets the sampler relax the instanton strain instead of
+    leaving it all to rethermalization. Set charge_projection_interval <= 0 to
+    recover the old end-only behavior."""
     model.eval()
     fine_size = coarse.shape[-1] * 2
     sigmas = schedule.discrete_sigmas(n_sampler_steps, device=device)
@@ -105,23 +114,44 @@ def generate_fine_from_coarse(
                 )
             return score
 
+        step_callback = None
+        if enforce_coarse_charge and charge_projection_interval > 0:
+            coarse_q = topological_charge(chunk)
+            counter = {"n": 0}
+
+            def step_callback(theta, sigma_next, coarse_q=coarse_q, counter=counter):
+                if sigma_next >= charge_projection_sigma:
+                    return theta
+                counter["n"] += 1
+                if counter["n"] % charge_projection_interval:
+                    return theta
+                return apply_coarse_charge(theta, coarse_q)
+
         sample = sample_ancestral(
             score_fn,
             (chunk.shape[0], 2, fine_size, fine_size),
             sigmas,
             device=device,
             n_corrector_steps=n_corrector_steps,
+            step_callback=step_callback,
         )
         if enforce_coarse_charge:
-            inst = instanton_field(fine_size, device=sample.device, dtype=sample.dtype)
-            coarse_q = topological_charge(chunk)
-            for _ in range(3):
-                delta_q = coarse_q - topological_charge(sample)
-                if not delta_q.any():
-                    break
-                sample = wrap(sample + delta_q.view(-1, 1, 1, 1) * inst)
+            sample = apply_coarse_charge(sample, topological_charge(chunk))
         outputs.append(sample.cpu())
     return torch.cat(outputs, dim=0)
+
+
+def apply_coarse_charge(sample: torch.Tensor, coarse_q: torch.Tensor) -> torch.Tensor:
+    """Set each configuration's topological sector to coarse_q by adding the smooth
+    instanton difference (the deterministic map generate_fine_from_coarse applies
+    when enforce_coarse_charge=True), iterated up to 3x for wrap-induced misses."""
+    inst = instanton_field(sample.shape[-1], device=sample.device, dtype=sample.dtype)
+    for _ in range(3):
+        delta_q = coarse_q.to(sample.device) - topological_charge(sample)
+        if not delta_q.any():
+            break
+        sample = wrap(sample + delta_q.view(-1, 1, 1, 1) * inst)
+    return sample
 
 
 def _rung_observables(configs: torch.Tensor) -> dict:

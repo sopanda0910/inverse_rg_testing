@@ -22,8 +22,14 @@ def sample_ancestral(
     n_corrector_steps: int = 1,
     corrector_snr: float = 0.16,
     initial_state: torch.Tensor | None = None,
+    step_callback=None,
 ) -> torch.Tensor:
-    """sigmas: descending [n_steps] from ~sigma_max to sigma_min."""
+    """sigmas: descending [n_steps] from ~sigma_max to sigma_min.
+
+    step_callback(theta, sigma_next) -> theta, applied after each predictor +
+    corrector block; use for deterministic projections that must act during the
+    trajectory (e.g. topological-sector enforcement) rather than only at the end.
+    """
     if initial_state is None:
         theta = torch.rand(shape, device=device) * (2 * math.pi) - math.pi
     else:
@@ -44,5 +50,8 @@ def sample_ancestral(
             noise_norm = z.flatten(1).norm(dim=1).mean()
             eps = 2.0 * (corrector_snr * noise_norm / grad_norm) ** 2
             theta = wrap(theta + eps * score + torch.sqrt(2.0 * eps) * z)
+
+        if step_callback is not None:
+            theta = step_callback(theta, sigma_next)
 
     return theta

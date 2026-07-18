@@ -230,3 +230,44 @@ class TestTopoPenalty:
         assert math.isfinite(history[-1]["train_loss"])
         assert math.isfinite(history[-1]["train_topo"])
         assert "val_L16" in history[-1] and "val_L8" in history[-1]
+
+
+class TestInSamplerChargeProjection:
+    def test_sampler_step_callback_is_applied_each_step(self):
+        from diffusion.model.sampler import sample_ancestral
+
+        calls = []
+
+        def callback(theta, sigma_next):
+            calls.append(float(sigma_next))
+            return theta
+
+        sigmas = torch.tensor([2.0, 1.0, 0.5, 0.1])
+        torch.manual_seed(3)
+        sample_ancestral(lambda t, s: torch.zeros_like(t), (2, 2, 8, 8), sigmas,
+                         n_corrector_steps=0, step_callback=callback)
+        assert len(calls) == 4
+        assert calls[-1] == 0.0
+
+    def test_generation_projects_charge_during_and_after_sampling(self):
+        from diffusion.lgt.lattice import topological_charge
+        from diffusion.model.schedule import GeometricNoiseSchedule
+        from diffusion.pipeline.ladder import generate_fine_from_coarse
+
+        class ZeroScoreModel:
+            def eval(self):
+                return self
+
+            def score(self, theta, sigma, beta, cond):
+                return torch.zeros_like(theta)
+
+        torch.manual_seed(9)
+        coarse = 0.1 * torch.randn(4, 2, 8, 8)
+        schedule = GeometricNoiseSchedule(0.03, 3.0)
+        fine = generate_fine_from_coarse(
+            ZeroScoreModel(), schedule, coarse, beta_target=8.0,
+            n_sampler_steps=40, n_corrector_steps=0, batch_size=4,
+            consistency_weight=0.0, enforce_coarse_charge=True,
+            charge_projection_sigma=0.5, charge_projection_interval=5,
+        )
+        assert torch.equal(topological_charge(fine), topological_charge(coarse))

@@ -1,0 +1,2355 @@
+[Fri 07/17/2026  8:19:19.69] STAGE_DATA 
+skip existing out\diffusion\demo_v4\data\wilson_L8_beta1.pt
+skip existing out\diffusion\demo_v4\data\wilson_L8_beta2.pt
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta1.pt
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta2.pt
+generating out\diffusion\demo_v4\data\wilson_L16_beta3.pt ...
+  L=16 beta=3.0: 448 configs, acceptance 0.984, hot start, burn-in 200, 3s
+  matched coarse beta: 0.9382 (tree level 0.75)
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta4.pt
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta5.pt
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta6.5.pt
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta8.pt
+generating out\diffusion\demo_v4\data\wilson_L16_beta10.pt ...
+  L=16 beta=10.0: 448 configs, acceptance 0.990, cold start, burn-in 600, 13s
+  matched coarse beta: 3.0010 (tree level 2.5)
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta14.1464.pt
+generating out\diffusion\demo_v4\data\wilson_L16_beta25.pt ...
+  L=16 beta=25.0: 448 configs, acceptance 0.991, cold start, burn-in 2000, 111s
+  matched coarse beta: 6.5409 (tree level 6.25)
+skip existing out\diffusion\demo_v4\data\wilson_L16_beta55.0237.pt
+skip existing out\diffusion\demo_v4\data\wilson_L32_beta2.pt
+skip existing out\diffusion\demo_v4\data\wilson_L32_beta4.pt
+skip existing out\diffusion\demo_v4\data\wilson_L32_beta6.5.pt
+skip existing out\diffusion\demo_v4\data\wilson_L32_beta14.1464.pt
+skip existing out\diffusion\demo_v4\data\wilson_L32_beta55.0237.pt
+wrote out\diffusion\demo_v4\data\matching.json
+[Fri 07/17/2026  8:21:30.49] STAGE_TRAIN 
+rung L8_beta1: 404 train / 44 val configs
+rung L8_beta2: 404 train / 44 val configs
+rung L16_beta1: 404 train / 44 val configs
+rung L16_beta2: 404 train / 44 val configs
+rung L16_beta3: 404 train / 44 val configs
+rung L16_beta4: 404 train / 44 val configs
+rung L16_beta5: 404 train / 44 val configs
+rung L16_beta6.5: 404 train / 44 val configs
+rung L16_beta8: 404 train / 44 val configs
+rung L16_beta10: 404 train / 44 val configs
+rung L16_beta14.1464: 404 train / 44 val configs
+rung L16_beta25: 404 train / 44 val configs
+rung L16_beta55.0237: 404 train / 44 val configs
+rung L32_beta2: 404 train / 44 val configs
+rung L32_beta4: 404 train / 44 val configs
+rung L32_beta6.5: 404 train / 44 val configs
+rung L32_beta14.1464: 404 train / 44 val configs
+rung L32_beta55.0237: 404 train / 44 val configs
+epoch   0  train=0.7609  val_L8_beta1=0.7980 val_L8_beta2=0.6961 val_L16_beta1=0.8538 val_L16_beta2=0.7901 val_L16_beta3=0.7757 val_L16_beta4=0.7056 val_L16_beta5=0.7044 val_L16_beta6.5=0.6204 val_L16_beta8=0.6333 val_L16_beta10=0.6029 val_L16_beta14.1464=0.6871 val_L16_beta25=0.5790 val_L16_beta55.0237=0.6068 val_L32_beta2=1.0224 val_L32_beta4=0.7626 val_L32_beta6.5=0.7619 val_L32_beta14.1464=0.6800 val_L32_beta55.0237=0.7494 val_total=13.0295
+epoch   1  train=0.6971  val_L8_beta1=0.8098 val_L8_beta2=0.6943 val_L16_beta1=0.8121 val_L16_beta2=0.8065 val_L16_beta3=0.7707 val_L16_beta4=0.6792 val_L16_beta5=0.7067 val_L16_beta6.5=0.5861 val_L16_beta8=0.6053 val_L16_beta10=0.6027 val_L16_beta14.1464=0.6936 val_L16_beta25=0.5881 val_L16_beta55.0237=0.6027 val_L32_beta2=1.0486 val_L32_beta4=0.7415 val_L32_beta6.5=0.7087 val_L32_beta14.1464=0.6868 val_L32_beta55.0237=0.6842 val_total=12.8276
+epoch   2  train=0.7029  val_L8_beta1=0.7989 val_L8_beta2=0.6584 val_L16_beta1=0.8240 val_L16_beta2=0.7966 val_L16_beta3=0.7362 val_L16_beta4=0.6724 val_L16_beta5=0.6786 val_L16_beta6.5=0.5982 val_L16_beta8=0.6266 val_L16_beta10=0.5746 val_L16_beta14.1464=0.6779 val_L16_beta25=0.5640 val_L16_beta55.0237=0.5971 val_L32_beta2=0.9520 val_L32_beta4=0.6721 val_L32_beta6.5=0.7106 val_L32_beta14.1464=0.6420 val_L32_beta55.0237=0.6671 val_total=12.4473
+epoch   3  train=0.7199  val_L8_beta1=0.7679 val_L8_beta2=0.6688 val_L16_beta1=0.8800 val_L16_beta2=0.7790 val_L16_beta3=0.7546 val_L16_beta4=0.6594 val_L16_beta5=0.6821 val_L16_beta6.5=0.5824 val_L16_beta8=0.6064 val_L16_beta10=0.5835 val_L16_beta14.1464=0.6821 val_L16_beta25=0.5494 val_L16_beta55.0237=0.5812 val_L32_beta2=0.7871 val_L32_beta4=0.6765 val_L32_beta6.5=0.6958 val_L32_beta14.1464=0.6080 val_L32_beta55.0237=0.6499 val_total=12.1940
+epoch   4  train=0.6900  val_L8_beta1=0.8429 val_L8_beta2=0.6411 val_L16_beta1=0.8394 val_L16_beta2=0.7636 val_L16_beta3=0.7356 val_L16_beta4=0.6497 val_L16_beta5=0.6796 val_L16_beta6.5=0.5787 val_L16_beta8=0.6100 val_L16_beta10=0.5873 val_L16_beta14.1464=0.6616 val_L16_beta25=0.5464 val_L16_beta55.0237=0.5746 val_L32_beta2=0.8718 val_L32_beta4=0.6493 val_L32_beta6.5=0.7054 val_L32_beta14.1464=0.6940 val_L32_beta55.0237=0.6208 val_total=12.2518
+epoch   5  train=0.6743  val_L8_beta1=0.7459 val_L8_beta2=0.6440 val_L16_beta1=0.8507 val_L16_beta2=0.7650 val_L16_beta3=0.7420 val_L16_beta4=0.6533 val_L16_beta5=0.6597 val_L16_beta6.5=0.5824 val_L16_beta8=0.6008 val_L16_beta10=0.5871 val_L16_beta14.1464=0.6667 val_L16_beta25=0.5446 val_L16_beta55.0237=0.5829 val_L32_beta2=0.8524 val_L32_beta4=0.6171 val_L32_beta6.5=0.6820 val_L32_beta14.1464=0.6250 val_L32_beta55.0237=0.6013 val_total=12.0031
+epoch   6  train=0.6828  val_L8_beta1=0.7770 val_L8_beta2=0.6533 val_L16_beta1=0.8285 val_L16_beta2=0.7702 val_L16_beta3=0.7361 val_L16_beta4=0.6851 val_L16_beta5=0.6787 val_L16_beta6.5=0.5795 val_L16_beta8=0.5970 val_L16_beta10=0.5877 val_L16_beta14.1464=0.6551 val_L16_beta25=0.5557 val_L16_beta55.0237=0.5807 val_L32_beta2=0.8440 val_L32_beta4=0.6694 val_L32_beta6.5=0.6833 val_L32_beta14.1464=0.6374 val_L32_beta55.0237=0.6120 val_total=12.1306
+epoch   7  train=0.6652  val_L8_beta1=0.7662 val_L8_beta2=0.6473 val_L16_beta1=0.8501 val_L16_beta2=0.7835 val_L16_beta3=0.7378 val_L16_beta4=0.6515 val_L16_beta5=0.6666 val_L16_beta6.5=0.5688 val_L16_beta8=0.5867 val_L16_beta10=0.5765 val_L16_beta14.1464=0.6605 val_L16_beta25=0.5398 val_L16_beta55.0237=0.5653 val_L32_beta2=0.9750 val_L32_beta4=0.6778 val_L32_beta6.5=0.6878 val_L32_beta14.1464=0.6116 val_L32_beta55.0237=0.5952 val_total=12.1480
+epoch   8  train=0.6728  val_L8_beta1=0.8161 val_L8_beta2=0.6935 val_L16_beta1=0.8430 val_L16_beta2=0.7598 val_L16_beta3=0.7304 val_L16_beta4=0.6647 val_L16_beta5=0.6723 val_L16_beta6.5=0.5878 val_L16_beta8=0.6080 val_L16_beta10=0.5739 val_L16_beta14.1464=0.6689 val_L16_beta25=0.5463 val_L16_beta55.0237=0.5809 val_L32_beta2=0.8529 val_L32_beta4=0.6517 val_L32_beta6.5=0.7150 val_L32_beta14.1464=0.6684 val_L32_beta55.0237=0.6506 val_total=12.2840
+epoch   9  train=0.6797  val_L8_beta1=0.7874 val_L8_beta2=0.6485 val_L16_beta1=0.8378 val_L16_beta2=0.7754 val_L16_beta3=0.7413 val_L16_beta4=0.6469 val_L16_beta5=0.6741 val_L16_beta6.5=0.5740 val_L16_beta8=0.5972 val_L16_beta10=0.5861 val_L16_beta14.1464=0.6783 val_L16_beta25=0.5968 val_L16_beta55.0237=0.5865 val_L32_beta2=0.8194 val_L32_beta4=0.6207 val_L32_beta6.5=0.6923 val_L32_beta14.1464=0.6399 val_L32_beta55.0237=0.6241 val_total=12.1266
+epoch  10  train=0.6709  val_L8_beta1=0.8135 val_L8_beta2=0.6382 val_L16_beta1=0.8542 val_L16_beta2=0.7628 val_L16_beta3=0.7282 val_L16_beta4=0.6433 val_L16_beta5=0.6727 val_L16_beta6.5=0.5658 val_L16_beta8=0.5916 val_L16_beta10=0.5724 val_L16_beta14.1464=0.6511 val_L16_beta25=0.5473 val_L16_beta55.0237=0.5572 val_L32_beta2=0.8405 val_L32_beta4=0.6530 val_L32_beta6.5=0.6622 val_L32_beta14.1464=0.6039 val_L32_beta55.0237=0.5753 val_total=11.9332
+epoch  11  train=0.6578  val_L8_beta1=0.7963 val_L8_beta2=0.6577 val_L16_beta1=0.8369 val_L16_beta2=0.7550 val_L16_beta3=0.7170 val_L16_beta4=0.6531 val_L16_beta5=0.6669 val_L16_beta6.5=0.5782 val_L16_beta8=0.5912 val_L16_beta10=0.5822 val_L16_beta14.1464=0.6559 val_L16_beta25=0.5475 val_L16_beta55.0237=0.5786 val_L32_beta2=0.7738 val_L32_beta4=0.6345 val_L32_beta6.5=0.6569 val_L32_beta14.1464=0.6036 val_L32_beta55.0237=0.5950 val_total=11.8802
+epoch  12  train=0.6719  val_L8_beta1=0.8064 val_L8_beta2=0.6418 val_L16_beta1=0.8624 val_L16_beta2=0.7384 val_L16_beta3=0.7405 val_L16_beta4=0.6291 val_L16_beta5=0.6612 val_L16_beta6.5=0.5724 val_L16_beta8=0.6019 val_L16_beta10=0.5543 val_L16_beta14.1464=0.6476 val_L16_beta25=0.5291 val_L16_beta55.0237=0.5665 val_L32_beta2=0.8672 val_L32_beta4=0.6531 val_L32_beta6.5=0.6875 val_L32_beta14.1464=0.6345 val_L32_beta55.0237=0.6313 val_total=12.0253
+epoch  13  train=0.6516  val_L8_beta1=0.8146 val_L8_beta2=0.6779 val_L16_beta1=0.8320 val_L16_beta2=0.7586 val_L16_beta3=0.6984 val_L16_beta4=0.6525 val_L16_beta5=0.6479 val_L16_beta6.5=0.5556 val_L16_beta8=0.5827 val_L16_beta10=0.5584 val_L16_beta14.1464=0.6270 val_L16_beta25=0.5232 val_L16_beta55.0237=0.5626 val_L32_beta2=0.8452 val_L32_beta4=0.5909 val_L32_beta6.5=0.6267 val_L32_beta14.1464=0.5844 val_L32_beta55.0237=0.5888 val_total=11.7274
+epoch  14  train=0.6437  val_L8_beta1=0.7645 val_L8_beta2=0.6559 val_L16_beta1=0.8679 val_L16_beta2=0.7514 val_L16_beta3=0.7028 val_L16_beta4=0.6239 val_L16_beta5=0.6385 val_L16_beta6.5=0.5532 val_L16_beta8=0.5715 val_L16_beta10=0.5558 val_L16_beta14.1464=0.6253 val_L16_beta25=0.5250 val_L16_beta55.0237=0.5816 val_L32_beta2=0.8053 val_L32_beta4=0.5944 val_L32_beta6.5=0.6572 val_L32_beta14.1464=0.5851 val_L32_beta55.0237=0.5759 val_total=11.6352
+epoch  15  train=0.6411  val_L8_beta1=0.7834 val_L8_beta2=0.6438 val_L16_beta1=0.8846 val_L16_beta2=0.7397 val_L16_beta3=0.6763 val_L16_beta4=0.6216 val_L16_beta5=0.6356 val_L16_beta6.5=0.5619 val_L16_beta8=0.5609 val_L16_beta10=0.5387 val_L16_beta14.1464=0.6172 val_L16_beta25=0.5295 val_L16_beta55.0237=0.5489 val_L32_beta2=0.8681 val_L32_beta4=0.6434 val_L32_beta6.5=0.6411 val_L32_beta14.1464=0.5742 val_L32_beta55.0237=0.5524 val_total=11.6212
+epoch  16  train=0.6427  val_L8_beta1=0.7725 val_L8_beta2=0.6328 val_L16_beta1=0.8799 val_L16_beta2=0.7468 val_L16_beta3=0.6921 val_L16_beta4=0.6016 val_L16_beta5=0.6305 val_L16_beta6.5=0.5481 val_L16_beta8=0.5683 val_L16_beta10=0.5472 val_L16_beta14.1464=0.6164 val_L16_beta25=0.5229 val_L16_beta55.0237=0.5467 val_L32_beta2=0.8612 val_L32_beta4=0.5880 val_L32_beta6.5=0.6364 val_L32_beta14.1464=0.5744 val_L32_beta55.0237=0.5775 val_total=11.5432
+epoch  17  train=0.6372  val_L8_beta1=0.7810 val_L8_beta2=0.6334 val_L16_beta1=0.8302 val_L16_beta2=0.7570 val_L16_beta3=0.6879 val_L16_beta4=0.6173 val_L16_beta5=0.6274 val_L16_beta6.5=0.5453 val_L16_beta8=0.5673 val_L16_beta10=0.5467 val_L16_beta14.1464=0.6366 val_L16_beta25=0.5206 val_L16_beta55.0237=0.5592 val_L32_beta2=0.7580 val_L32_beta4=0.5822 val_L32_beta6.5=0.6164 val_L32_beta14.1464=0.5793 val_L32_beta55.0237=0.6011 val_total=11.4470
+epoch  18  train=0.6376  val_L8_beta1=0.7659 val_L8_beta2=0.6597 val_L16_beta1=0.8459 val_L16_beta2=0.7304 val_L16_beta3=0.6952 val_L16_beta4=0.6182 val_L16_beta5=0.6329 val_L16_beta6.5=0.5503 val_L16_beta8=0.5690 val_L16_beta10=0.5414 val_L16_beta14.1464=0.6305 val_L16_beta25=0.5342 val_L16_beta55.0237=0.5568 val_L32_beta2=0.7999 val_L32_beta4=0.5939 val_L32_beta6.5=0.6210 val_L32_beta14.1464=0.5715 val_L32_beta55.0237=0.5837 val_total=11.5003
+epoch  19  train=0.6501  val_L8_beta1=0.7711 val_L8_beta2=0.6535 val_L16_beta1=0.8429 val_L16_beta2=0.7397 val_L16_beta3=0.6964 val_L16_beta4=0.6171 val_L16_beta5=0.6269 val_L16_beta6.5=0.5341 val_L16_beta8=0.5614 val_L16_beta10=0.5431 val_L16_beta14.1464=0.6116 val_L16_beta25=0.5279 val_L16_beta55.0237=0.5254 val_L32_beta2=0.8140 val_L32_beta4=0.5684 val_L32_beta6.5=0.6249 val_L32_beta14.1464=0.5722 val_L32_beta55.0237=0.5457 val_total=11.3763
+epoch  20  train=0.6250  val_L8_beta1=0.7948 val_L8_beta2=0.6536 val_L16_beta1=0.8271 val_L16_beta2=0.7260 val_L16_beta3=0.6805 val_L16_beta4=0.6191 val_L16_beta5=0.6197 val_L16_beta6.5=0.5424 val_L16_beta8=0.5675 val_L16_beta10=0.5393 val_L16_beta14.1464=0.6248 val_L16_beta25=0.5199 val_L16_beta55.0237=0.5399 val_L32_beta2=0.7925 val_L32_beta4=0.5806 val_L32_beta6.5=0.6213 val_L32_beta14.1464=0.5738 val_L32_beta55.0237=0.5706 val_total=11.3937
+epoch  21  train=0.6289  val_L8_beta1=0.7559 val_L8_beta2=0.6264 val_L16_beta1=0.8347 val_L16_beta2=0.7239 val_L16_beta3=0.6807 val_L16_beta4=0.6176 val_L16_beta5=0.6320 val_L16_beta6.5=0.5313 val_L16_beta8=0.5659 val_L16_beta10=0.5418 val_L16_beta14.1464=0.6448 val_L16_beta25=0.5198 val_L16_beta55.0237=0.5510 val_L32_beta2=0.7452 val_L32_beta4=0.6007 val_L32_beta6.5=0.6362 val_L32_beta14.1464=0.5619 val_L32_beta55.0237=0.5641 val_total=11.3339
+epoch  22  train=0.6287  val_L8_beta1=0.7599 val_L8_beta2=0.6528 val_L16_beta1=0.8431 val_L16_beta2=0.7140 val_L16_beta3=0.6843 val_L16_beta4=0.5910 val_L16_beta5=0.6115 val_L16_beta6.5=0.5331 val_L16_beta8=0.5633 val_L16_beta10=0.5487 val_L16_beta14.1464=0.6159 val_L16_beta25=0.5212 val_L16_beta55.0237=0.5451 val_L32_beta2=0.7655 val_L32_beta4=0.5861 val_L32_beta6.5=0.6030 val_L32_beta14.1464=0.5667 val_L32_beta55.0237=0.5512 val_total=11.2564
+epoch  23  train=0.6485  val_L8_beta1=0.7806 val_L8_beta2=0.6364 val_L16_beta1=0.8534 val_L16_beta2=0.7121 val_L16_beta3=0.6744 val_L16_beta4=0.6183 val_L16_beta5=0.6254 val_L16_beta6.5=0.5490 val_L16_beta8=0.5593 val_L16_beta10=0.5251 val_L16_beta14.1464=0.6285 val_L16_beta25=0.5069 val_L16_beta55.0237=0.5505 val_L32_beta2=0.7698 val_L32_beta4=0.5644 val_L32_beta6.5=0.6183 val_L32_beta14.1464=0.5711 val_L32_beta55.0237=0.5618 val_total=11.3052
+epoch  24  train=0.6269  val_L8_beta1=0.7936 val_L8_beta2=0.6290 val_L16_beta1=0.8224 val_L16_beta2=0.7332 val_L16_beta3=0.6949 val_L16_beta4=0.6167 val_L16_beta5=0.6216 val_L16_beta6.5=0.5502 val_L16_beta8=0.5567 val_L16_beta10=0.5393 val_L16_beta14.1464=0.6188 val_L16_beta25=0.5208 val_L16_beta55.0237=0.5437 val_L32_beta2=0.7343 val_L32_beta4=0.6214 val_L32_beta6.5=0.6569 val_L32_beta14.1464=0.6003 val_L32_beta55.0237=0.5908 val_total=11.4446
+epoch  25  train=0.6212  val_L8_beta1=0.7568 val_L8_beta2=0.6292 val_L16_beta1=0.8053 val_L16_beta2=0.7173 val_L16_beta3=0.6870 val_L16_beta4=0.6165 val_L16_beta5=0.6328 val_L16_beta6.5=0.5267 val_L16_beta8=0.5480 val_L16_beta10=0.5406 val_L16_beta14.1464=0.6185 val_L16_beta25=0.5214 val_L16_beta55.0237=0.5437 val_L32_beta2=0.7939 val_L32_beta4=0.5775 val_L32_beta6.5=0.6152 val_L32_beta14.1464=0.5661 val_L32_beta55.0237=0.5703 val_total=11.2668
+epoch  26  train=0.6270  val_L8_beta1=0.7948 val_L8_beta2=0.6374 val_L16_beta1=0.8208 val_L16_beta2=0.7188 val_L16_beta3=0.6595 val_L16_beta4=0.5969 val_L16_beta5=0.6121 val_L16_beta6.5=0.5329 val_L16_beta8=0.5677 val_L16_beta10=0.5336 val_L16_beta14.1464=0.6191 val_L16_beta25=0.5155 val_L16_beta55.0237=0.5511 val_L32_beta2=0.7620 val_L32_beta4=0.5986 val_L32_beta6.5=0.6213 val_L32_beta14.1464=0.5610 val_L32_beta55.0237=0.5621 val_total=11.2653
+epoch  27  train=0.6283  val_L8_beta1=0.7720 val_L8_beta2=0.6183 val_L16_beta1=0.8283 val_L16_beta2=0.7154 val_L16_beta3=0.6782 val_L16_beta4=0.6220 val_L16_beta5=0.6134 val_L16_beta6.5=0.5345 val_L16_beta8=0.5580 val_L16_beta10=0.5429 val_L16_beta14.1464=0.6205 val_L16_beta25=0.5301 val_L16_beta55.0237=0.5524 val_L32_beta2=0.7420 val_L32_beta4=0.5687 val_L32_beta6.5=0.6192 val_L32_beta14.1464=0.5688 val_L32_beta55.0237=0.5485 val_total=11.2332
+epoch  28  train=0.6226  val_L8_beta1=0.7792 val_L8_beta2=0.6493 val_L16_beta1=0.8063 val_L16_beta2=0.7355 val_L16_beta3=0.6722 val_L16_beta4=0.6128 val_L16_beta5=0.6210 val_L16_beta6.5=0.5409 val_L16_beta8=0.5518 val_L16_beta10=0.5441 val_L16_beta14.1464=0.6253 val_L16_beta25=0.5029 val_L16_beta55.0237=0.5403 val_L32_beta2=0.7938 val_L32_beta4=0.5935 val_L32_beta6.5=0.6151 val_L32_beta14.1464=0.5737 val_L32_beta55.0237=0.5600 val_total=11.3175
+epoch  29  train=0.6187  val_L8_beta1=0.7668 val_L8_beta2=0.6450 val_L16_beta1=0.8226 val_L16_beta2=0.7418 val_L16_beta3=0.6629 val_L16_beta4=0.6011 val_L16_beta5=0.6270 val_L16_beta6.5=0.5435 val_L16_beta8=0.5482 val_L16_beta10=0.5307 val_L16_beta14.1464=0.6088 val_L16_beta25=0.5101 val_L16_beta55.0237=0.5390 val_L32_beta2=0.7995 val_L32_beta4=0.5823 val_L32_beta6.5=0.6064 val_L32_beta14.1464=0.5711 val_L32_beta55.0237=0.5557 val_total=11.2624
+epoch  30  train=0.6314  val_L8_beta1=0.7506 val_L8_beta2=0.6175 val_L16_beta1=0.8306 val_L16_beta2=0.7111 val_L16_beta3=0.6764 val_L16_beta4=0.6140 val_L16_beta5=0.6254 val_L16_beta6.5=0.5224 val_L16_beta8=0.5630 val_L16_beta10=0.5356 val_L16_beta14.1464=0.6257 val_L16_beta25=0.5365 val_L16_beta55.0237=0.5532 val_L32_beta2=0.7763 val_L32_beta4=0.5801 val_L32_beta6.5=0.6301 val_L32_beta14.1464=0.5767 val_L32_beta55.0237=0.5941 val_total=11.3193
+epoch  31  train=0.6264  val_L8_beta1=0.7562 val_L8_beta2=0.6367 val_L16_beta1=0.8323 val_L16_beta2=0.7053 val_L16_beta3=0.6641 val_L16_beta4=0.6258 val_L16_beta5=0.6103 val_L16_beta6.5=0.5355 val_L16_beta8=0.5513 val_L16_beta10=0.5234 val_L16_beta14.1464=0.6189 val_L16_beta25=0.5149 val_L16_beta55.0237=0.5389 val_L32_beta2=0.7811 val_L32_beta4=0.5663 val_L32_beta6.5=0.5907 val_L32_beta14.1464=0.5582 val_L32_beta55.0237=0.5543 val_total=11.1642
+epoch  32  train=0.6212  val_L8_beta1=0.7487 val_L8_beta2=0.6235 val_L16_beta1=0.8070 val_L16_beta2=0.7221 val_L16_beta3=0.6787 val_L16_beta4=0.6090 val_L16_beta5=0.6230 val_L16_beta6.5=0.5415 val_L16_beta8=0.5579 val_L16_beta10=0.5367 val_L16_beta14.1464=0.6148 val_L16_beta25=0.5153 val_L16_beta55.0237=0.5460 val_L32_beta2=0.7442 val_L32_beta4=0.5783 val_L32_beta6.5=0.6093 val_L32_beta14.1464=0.5952 val_L32_beta55.0237=0.5665 val_total=11.2178
+epoch  33  train=0.6152  val_L8_beta1=0.7842 val_L8_beta2=0.5992 val_L16_beta1=0.7929 val_L16_beta2=0.6911 val_L16_beta3=0.6776 val_L16_beta4=0.6124 val_L16_beta5=0.6167 val_L16_beta6.5=0.5286 val_L16_beta8=0.5626 val_L16_beta10=0.5300 val_L16_beta14.1464=0.6139 val_L16_beta25=0.5249 val_L16_beta55.0237=0.5817 val_L32_beta2=0.8151 val_L32_beta4=0.5727 val_L32_beta6.5=0.5989 val_L32_beta14.1464=0.5608 val_L32_beta55.0237=0.6334 val_total=11.2967
+epoch  34  train=0.7252  val_L8_beta1=0.7669 val_L8_beta2=0.6289 val_L16_beta1=0.7959 val_L16_beta2=0.6972 val_L16_beta3=0.6627 val_L16_beta4=0.6088 val_L16_beta5=0.6297 val_L16_beta6.5=0.5290 val_L16_beta8=0.5603 val_L16_beta10=0.5367 val_L16_beta14.1464=0.6041 val_L16_beta25=0.5266 val_L16_beta55.0237=0.5470 val_L32_beta2=0.7558 val_L32_beta4=0.5788 val_L32_beta6.5=0.6222 val_L32_beta14.1464=0.5593 val_L32_beta55.0237=0.5557 val_total=11.1655
+epoch  35  train=0.6176  val_L8_beta1=0.8007 val_L8_beta2=0.6368 val_L16_beta1=0.8034 val_L16_beta2=0.7186 val_L16_beta3=0.6830 val_L16_beta4=0.6114 val_L16_beta5=0.6179 val_L16_beta6.5=0.5396 val_L16_beta8=0.5525 val_L16_beta10=0.5331 val_L16_beta14.1464=0.6101 val_L16_beta25=0.5209 val_L16_beta55.0237=0.5526 val_L32_beta2=0.7457 val_L32_beta4=0.5706 val_L32_beta6.5=0.6058 val_L32_beta14.1464=0.5795 val_L32_beta55.0237=0.5800 val_total=11.2623
+epoch  36  train=0.6154  val_L8_beta1=0.7346 val_L8_beta2=0.6216 val_L16_beta1=0.8433 val_L16_beta2=0.7138 val_L16_beta3=0.6732 val_L16_beta4=0.6189 val_L16_beta5=0.6204 val_L16_beta6.5=0.5284 val_L16_beta8=0.5588 val_L16_beta10=0.5243 val_L16_beta14.1464=0.6117 val_L16_beta25=0.5171 val_L16_beta55.0237=0.5477 val_L32_beta2=0.7706 val_L32_beta4=0.5641 val_L32_beta6.5=0.6019 val_L32_beta14.1464=0.5550 val_L32_beta55.0237=0.5464 val_total=11.1516
+epoch  37  train=0.6183  val_L8_beta1=0.7679 val_L8_beta2=0.6283 val_L16_beta1=0.8348 val_L16_beta2=0.6895 val_L16_beta3=0.6779 val_L16_beta4=0.6204 val_L16_beta5=0.6085 val_L16_beta6.5=0.5195 val_L16_beta8=0.5632 val_L16_beta10=0.5390 val_L16_beta14.1464=0.6069 val_L16_beta25=0.5084 val_L16_beta55.0237=0.5399 val_L32_beta2=0.8106 val_L32_beta4=0.5741 val_L32_beta6.5=0.6034 val_L32_beta14.1464=0.5657 val_L32_beta55.0237=0.5483 val_total=11.2063
+epoch  38  train=0.6178  val_L8_beta1=0.7742 val_L8_beta2=0.6498 val_L16_beta1=0.8227 val_L16_beta2=0.7098 val_L16_beta3=0.6636 val_L16_beta4=0.6044 val_L16_beta5=0.6196 val_L16_beta6.5=0.5300 val_L16_beta8=0.5484 val_L16_beta10=0.5438 val_L16_beta14.1464=0.6171 val_L16_beta25=0.5153 val_L16_beta55.0237=0.5414 val_L32_beta2=0.8247 val_L32_beta4=0.5748 val_L32_beta6.5=0.6112 val_L32_beta14.1464=0.5554 val_L32_beta55.0237=0.5495 val_total=11.2557
+epoch  39  train=0.6127  val_L8_beta1=0.7672 val_L8_beta2=0.6204 val_L16_beta1=0.8387 val_L16_beta2=0.7137 val_L16_beta3=0.6835 val_L16_beta4=0.5979 val_L16_beta5=0.6135 val_L16_beta6.5=0.5330 val_L16_beta8=0.5469 val_L16_beta10=0.5406 val_L16_beta14.1464=0.6130 val_L16_beta25=0.5169 val_L16_beta55.0237=0.5419 val_L32_beta2=0.8236 val_L32_beta4=0.5592 val_L32_beta6.5=0.5977 val_L32_beta14.1464=0.5759 val_L32_beta55.0237=0.5512 val_total=11.2349
+epoch  40  train=0.6059  val_L8_beta1=0.7539 val_L8_beta2=0.6145 val_L16_beta1=0.8513 val_L16_beta2=0.7156 val_L16_beta3=0.6617 val_L16_beta4=0.6052 val_L16_beta5=0.5998 val_L16_beta6.5=0.5357 val_L16_beta8=0.5470 val_L16_beta10=0.5592 val_L16_beta14.1464=0.6220 val_L16_beta25=0.5157 val_L16_beta55.0237=0.5440 val_L32_beta2=0.7823 val_L32_beta4=0.5792 val_L32_beta6.5=0.6014 val_L32_beta14.1464=0.5628 val_L32_beta55.0237=0.5471 val_total=11.1984
+epoch  41  train=0.6117  val_L8_beta1=0.7685 val_L8_beta2=0.6208 val_L16_beta1=0.8322 val_L16_beta2=0.7054 val_L16_beta3=0.6647 val_L16_beta4=0.5989 val_L16_beta5=0.6225 val_L16_beta6.5=0.5407 val_L16_beta8=0.5691 val_L16_beta10=0.5363 val_L16_beta14.1464=0.6043 val_L16_beta25=0.5195 val_L16_beta55.0237=0.5446 val_L32_beta2=0.7537 val_L32_beta4=0.5706 val_L32_beta6.5=0.6326 val_L32_beta14.1464=0.6011 val_L32_beta55.0237=0.5770 val_total=11.2623
+epoch  42  train=0.6145  val_L8_beta1=0.7248 val_L8_beta2=0.6431 val_L16_beta1=0.8077 val_L16_beta2=0.7067 val_L16_beta3=0.6619 val_L16_beta4=0.6153 val_L16_beta5=0.6107 val_L16_beta6.5=0.5335 val_L16_beta8=0.5452 val_L16_beta10=0.5225 val_L16_beta14.1464=0.6142 val_L16_beta25=0.5152 val_L16_beta55.0237=0.5387 val_L32_beta2=0.8198 val_L32_beta4=0.5674 val_L32_beta6.5=0.6094 val_L32_beta14.1464=0.5754 val_L32_beta55.0237=0.5549 val_total=11.1663
+epoch  43  train=0.6136  val_L8_beta1=0.7443 val_L8_beta2=0.6307 val_L16_beta1=0.8204 val_L16_beta2=0.7059 val_L16_beta3=0.6580 val_L16_beta4=0.6098 val_L16_beta5=0.6188 val_L16_beta6.5=0.5323 val_L16_beta8=0.5631 val_L16_beta10=0.5338 val_L16_beta14.1464=0.6258 val_L16_beta25=0.5101 val_L16_beta55.0237=0.5449 val_L32_beta2=0.8239 val_L32_beta4=0.5892 val_L32_beta6.5=0.6108 val_L32_beta14.1464=0.5550 val_L32_beta55.0237=0.5470 val_total=11.2237
+epoch  44  train=0.6161  val_L8_beta1=0.7803 val_L8_beta2=0.6259 val_L16_beta1=0.8367 val_L16_beta2=0.7056 val_L16_beta3=0.6610 val_L16_beta4=0.6101 val_L16_beta5=0.6067 val_L16_beta6.5=0.5411 val_L16_beta8=0.5410 val_L16_beta10=0.5302 val_L16_beta14.1464=0.6171 val_L16_beta25=0.5204 val_L16_beta55.0237=0.5512 val_L32_beta2=0.7673 val_L32_beta4=0.5632 val_L32_beta6.5=0.6174 val_L32_beta14.1464=0.5608 val_L32_beta55.0237=0.5506 val_total=11.1866
+epoch  45  train=0.6200  val_L8_beta1=0.7459 val_L8_beta2=0.6218 val_L16_beta1=0.7961 val_L16_beta2=0.7199 val_L16_beta3=0.6745 val_L16_beta4=0.6052 val_L16_beta5=0.6154 val_L16_beta6.5=0.5243 val_L16_beta8=0.5494 val_L16_beta10=0.5417 val_L16_beta14.1464=0.6291 val_L16_beta25=0.5156 val_L16_beta55.0237=0.5412 val_L32_beta2=0.7565 val_L32_beta4=0.5635 val_L32_beta6.5=0.6038 val_L32_beta14.1464=0.5574 val_L32_beta55.0237=0.5447 val_total=11.1060
+epoch  46  train=0.6151  val_L8_beta1=0.7785 val_L8_beta2=0.6351 val_L16_beta1=0.8094 val_L16_beta2=0.7105 val_L16_beta3=0.6655 val_L16_beta4=0.5977 val_L16_beta5=0.6231 val_L16_beta6.5=0.5309 val_L16_beta8=0.5515 val_L16_beta10=0.5385 val_L16_beta14.1464=0.6184 val_L16_beta25=0.5227 val_L16_beta55.0237=0.5530 val_L32_beta2=0.7725 val_L32_beta4=0.5622 val_L32_beta6.5=0.6106 val_L32_beta14.1464=0.5603 val_L32_beta55.0237=0.5473 val_total=11.1876
+epoch  47  train=0.6085  val_L8_beta1=0.7603 val_L8_beta2=0.6368 val_L16_beta1=0.8271 val_L16_beta2=0.6982 val_L16_beta3=0.6629 val_L16_beta4=0.6068 val_L16_beta5=0.6299 val_L16_beta6.5=0.5248 val_L16_beta8=0.5527 val_L16_beta10=0.5317 val_L16_beta14.1464=0.6122 val_L16_beta25=0.5074 val_L16_beta55.0237=0.5361 val_L32_beta2=0.8534 val_L32_beta4=0.5787 val_L32_beta6.5=0.6097 val_L32_beta14.1464=0.5573 val_L32_beta55.0237=0.5425 val_total=11.2284
+epoch  48  train=0.6177  val_L8_beta1=0.7674 val_L8_beta2=0.6457 val_L16_beta1=0.8039 val_L16_beta2=0.7082 val_L16_beta3=0.6620 val_L16_beta4=0.6033 val_L16_beta5=0.6024 val_L16_beta6.5=0.5296 val_L16_beta8=0.5455 val_L16_beta10=0.5356 val_L16_beta14.1464=0.6117 val_L16_beta25=0.5082 val_L16_beta55.0237=0.5437 val_L32_beta2=0.7802 val_L32_beta4=0.5575 val_L32_beta6.5=0.6064 val_L32_beta14.1464=0.5708 val_L32_beta55.0237=0.5434 val_total=11.1255
+epoch  49  train=0.6186  val_L8_beta1=0.7641 val_L8_beta2=0.6218 val_L16_beta1=0.8034 val_L16_beta2=0.7100 val_L16_beta3=0.6794 val_L16_beta4=0.5987 val_L16_beta5=0.6188 val_L16_beta6.5=0.5270 val_L16_beta8=0.5522 val_L16_beta10=0.5394 val_L16_beta14.1464=0.6107 val_L16_beta25=0.5028 val_L16_beta55.0237=0.5475 val_L32_beta2=0.7456 val_L32_beta4=0.5750 val_L32_beta6.5=0.6009 val_L32_beta14.1464=0.5646 val_L32_beta55.0237=0.5609 val_total=11.1231
+epoch  50  train=0.6133  val_L8_beta1=0.7724 val_L8_beta2=0.6121 val_L16_beta1=0.8137 val_L16_beta2=0.7222 val_L16_beta3=0.6583 val_L16_beta4=0.6051 val_L16_beta5=0.6261 val_L16_beta6.5=0.5231 val_L16_beta8=0.5467 val_L16_beta10=0.5345 val_L16_beta14.1464=0.5994 val_L16_beta25=0.5164 val_L16_beta55.0237=0.5399 val_L32_beta2=0.7724 val_L32_beta4=0.5437 val_L32_beta6.5=0.5917 val_L32_beta14.1464=0.5674 val_L32_beta55.0237=0.5410 val_total=11.0862
+epoch  51  train=0.6113  val_L8_beta1=0.7754 val_L8_beta2=0.6145 val_L16_beta1=0.8005 val_L16_beta2=0.7085 val_L16_beta3=0.6573 val_L16_beta4=0.6057 val_L16_beta5=0.6070 val_L16_beta6.5=0.5374 val_L16_beta8=0.5522 val_L16_beta10=0.5316 val_L16_beta14.1464=0.6232 val_L16_beta25=0.5050 val_L16_beta55.0237=0.5586 val_L32_beta2=0.7336 val_L32_beta4=0.5576 val_L32_beta6.5=0.6047 val_L32_beta14.1464=0.5789 val_L32_beta55.0237=0.5733 val_total=11.1251
+epoch  52  train=0.6260  val_L8_beta1=0.7658 val_L8_beta2=0.6182 val_L16_beta1=0.8485 val_L16_beta2=0.7050 val_L16_beta3=0.6539 val_L16_beta4=0.6086 val_L16_beta5=0.6166 val_L16_beta6.5=0.5316 val_L16_beta8=0.5432 val_L16_beta10=0.5360 val_L16_beta14.1464=0.6071 val_L16_beta25=0.5070 val_L16_beta55.0237=0.5352 val_L32_beta2=0.7665 val_L32_beta4=0.5659 val_L32_beta6.5=0.5985 val_L32_beta14.1464=0.5534 val_L32_beta55.0237=0.5386 val_total=11.0993
+epoch  53  train=0.6169  val_L8_beta1=0.7706 val_L8_beta2=0.6268 val_L16_beta1=0.8556 val_L16_beta2=0.7104 val_L16_beta3=0.6628 val_L16_beta4=0.6086 val_L16_beta5=0.6196 val_L16_beta6.5=0.5351 val_L16_beta8=0.5461 val_L16_beta10=0.5334 val_L16_beta14.1464=0.6087 val_L16_beta25=0.5174 val_L16_beta55.0237=0.5456 val_L32_beta2=0.7455 val_L32_beta4=0.5686 val_L32_beta6.5=0.6035 val_L32_beta14.1464=0.5686 val_L32_beta55.0237=0.5394 val_total=11.1664
+epoch  54  train=0.6109  val_L8_beta1=0.7398 val_L8_beta2=0.6262 val_L16_beta1=0.8433 val_L16_beta2=0.7120 val_L16_beta3=0.6574 val_L16_beta4=0.6068 val_L16_beta5=0.6253 val_L16_beta6.5=0.5331 val_L16_beta8=0.5430 val_L16_beta10=0.5307 val_L16_beta14.1464=0.6248 val_L16_beta25=0.5048 val_L16_beta55.0237=0.5438 val_L32_beta2=0.8262 val_L32_beta4=0.5715 val_L32_beta6.5=0.6034 val_L32_beta14.1464=0.5546 val_L32_beta55.0237=0.5543 val_total=11.2009
+epoch  55  train=0.6010  val_L8_beta1=0.7600 val_L8_beta2=0.6192 val_L16_beta1=0.8277 val_L16_beta2=0.6981 val_L16_beta3=0.6584 val_L16_beta4=0.6124 val_L16_beta5=0.6109 val_L16_beta6.5=0.5220 val_L16_beta8=0.5520 val_L16_beta10=0.5259 val_L16_beta14.1464=0.6115 val_L16_beta25=0.5076 val_L16_beta55.0237=0.5412 val_L32_beta2=0.7617 val_L32_beta4=0.5641 val_L32_beta6.5=0.6031 val_L32_beta14.1464=0.5758 val_L32_beta55.0237=0.5507 val_total=11.1024
+epoch  56  train=0.6128  val_L8_beta1=0.7716 val_L8_beta2=0.6283 val_L16_beta1=0.8025 val_L16_beta2=0.7120 val_L16_beta3=0.6716 val_L16_beta4=0.5996 val_L16_beta5=0.6249 val_L16_beta6.5=0.5308 val_L16_beta8=0.5498 val_L16_beta10=0.5358 val_L16_beta14.1464=0.6293 val_L16_beta25=0.5193 val_L16_beta55.0237=0.5500 val_L32_beta2=0.7575 val_L32_beta4=0.5800 val_L32_beta6.5=0.5943 val_L32_beta14.1464=0.5736 val_L32_beta55.0237=0.5788 val_total=11.2099
+epoch  57  train=0.6115  val_L8_beta1=0.7825 val_L8_beta2=0.6102 val_L16_beta1=0.8080 val_L16_beta2=0.7277 val_L16_beta3=0.6628 val_L16_beta4=0.6134 val_L16_beta5=0.6218 val_L16_beta6.5=0.5328 val_L16_beta8=0.5578 val_L16_beta10=0.5281 val_L16_beta14.1464=0.6212 val_L16_beta25=0.5159 val_L16_beta55.0237=0.5429 val_L32_beta2=0.8088 val_L32_beta4=0.5644 val_L32_beta6.5=0.6101 val_L32_beta14.1464=0.5636 val_L32_beta55.0237=0.5601 val_total=11.2322
+epoch  58  train=0.6134  val_L8_beta1=0.7719 val_L8_beta2=0.6020 val_L16_beta1=0.7971 val_L16_beta2=0.7081 val_L16_beta3=0.6485 val_L16_beta4=0.6114 val_L16_beta5=0.6029 val_L16_beta6.5=0.5286 val_L16_beta8=0.5564 val_L16_beta10=0.5159 val_L16_beta14.1464=0.6112 val_L16_beta25=0.5122 val_L16_beta55.0237=0.5379 val_L32_beta2=0.8516 val_L32_beta4=0.5792 val_L32_beta6.5=0.6063 val_L32_beta14.1464=0.5619 val_L32_beta55.0237=0.5457 val_total=11.1488
+epoch  59  train=0.6141  val_L8_beta1=0.7485 val_L8_beta2=0.6201 val_L16_beta1=0.8226 val_L16_beta2=0.7218 val_L16_beta3=0.6675 val_L16_beta4=0.6093 val_L16_beta5=0.6193 val_L16_beta6.5=0.5307 val_L16_beta8=0.5545 val_L16_beta10=0.5331 val_L16_beta14.1464=0.6125 val_L16_beta25=0.5107 val_L16_beta55.0237=0.5420 val_L32_beta2=0.7418 val_L32_beta4=0.5602 val_L32_beta6.5=0.5994 val_L32_beta14.1464=0.5662 val_L32_beta55.0237=0.5405 val_total=11.1005
+epoch  60  train=0.6124  val_L8_beta1=0.7546 val_L8_beta2=0.6066 val_L16_beta1=0.7804 val_L16_beta2=0.6950 val_L16_beta3=0.6592 val_L16_beta4=0.6180 val_L16_beta5=0.6157 val_L16_beta6.5=0.5328 val_L16_beta8=0.5569 val_L16_beta10=0.5456 val_L16_beta14.1464=0.6107 val_L16_beta25=0.5092 val_L16_beta55.0237=0.5346 val_L32_beta2=0.7016 val_L32_beta4=0.5519 val_L32_beta6.5=0.6100 val_L32_beta14.1464=0.5622 val_L32_beta55.0237=0.5401 val_total=10.9852
+epoch  61  train=0.6102  val_L8_beta1=0.7577 val_L8_beta2=0.6158 val_L16_beta1=0.8144 val_L16_beta2=0.6976 val_L16_beta3=0.6627 val_L16_beta4=0.6240 val_L16_beta5=0.6012 val_L16_beta6.5=0.5206 val_L16_beta8=0.5564 val_L16_beta10=0.5375 val_L16_beta14.1464=0.6148 val_L16_beta25=0.5221 val_L16_beta55.0237=0.5338 val_L32_beta2=0.7386 val_L32_beta4=0.5573 val_L32_beta6.5=0.6058 val_L32_beta14.1464=0.5689 val_L32_beta55.0237=0.5498 val_total=11.0791
+epoch  62  train=0.6078  val_L8_beta1=0.7847 val_L8_beta2=0.6259 val_L16_beta1=0.8176 val_L16_beta2=0.7023 val_L16_beta3=0.6607 val_L16_beta4=0.6146 val_L16_beta5=0.6060 val_L16_beta6.5=0.5288 val_L16_beta8=0.5490 val_L16_beta10=0.5355 val_L16_beta14.1464=0.6034 val_L16_beta25=0.5193 val_L16_beta55.0237=0.5364 val_L32_beta2=0.7802 val_L32_beta4=0.5649 val_L32_beta6.5=0.5948 val_L32_beta14.1464=0.5573 val_L32_beta55.0237=0.5365 val_total=11.1178
+epoch  63  train=0.6064  val_L8_beta1=0.7729 val_L8_beta2=0.5906 val_L16_beta1=0.8243 val_L16_beta2=0.7081 val_L16_beta3=0.6502 val_L16_beta4=0.6032 val_L16_beta5=0.6115 val_L16_beta6.5=0.5371 val_L16_beta8=0.5474 val_L16_beta10=0.5478 val_L16_beta14.1464=0.6007 val_L16_beta25=0.5142 val_L16_beta55.0237=0.5332 val_L32_beta2=0.7407 val_L32_beta4=0.5559 val_L32_beta6.5=0.5987 val_L32_beta14.1464=0.5547 val_L32_beta55.0237=0.5474 val_total=11.0385
+epoch  64  train=0.6054  val_L8_beta1=0.7589 val_L8_beta2=0.6340 val_L16_beta1=0.7999 val_L16_beta2=0.7028 val_L16_beta3=0.6773 val_L16_beta4=0.5877 val_L16_beta5=0.6159 val_L16_beta6.5=0.5178 val_L16_beta8=0.5492 val_L16_beta10=0.5246 val_L16_beta14.1464=0.6105 val_L16_beta25=0.5217 val_L16_beta55.0237=0.5483 val_L32_beta2=0.7595 val_L32_beta4=0.5633 val_L32_beta6.5=0.6167 val_L32_beta14.1464=0.5663 val_L32_beta55.0237=0.5576 val_total=11.1119
+epoch  65  train=0.6017  val_L8_beta1=0.7637 val_L8_beta2=0.6145 val_L16_beta1=0.8247 val_L16_beta2=0.6999 val_L16_beta3=0.6566 val_L16_beta4=0.6021 val_L16_beta5=0.6147 val_L16_beta6.5=0.5150 val_L16_beta8=0.5542 val_L16_beta10=0.5240 val_L16_beta14.1464=0.6088 val_L16_beta25=0.5268 val_L16_beta55.0237=0.5431 val_L32_beta2=0.7918 val_L32_beta4=0.5550 val_L32_beta6.5=0.6050 val_L32_beta14.1464=0.5644 val_L32_beta55.0237=0.5425 val_total=11.1067
+epoch  66  train=0.6064  val_L8_beta1=0.7541 val_L8_beta2=0.6201 val_L16_beta1=0.7955 val_L16_beta2=0.6989 val_L16_beta3=0.6771 val_L16_beta4=0.5978 val_L16_beta5=0.6101 val_L16_beta6.5=0.5292 val_L16_beta8=0.5495 val_L16_beta10=0.5266 val_L16_beta14.1464=0.6063 val_L16_beta25=0.5081 val_L16_beta55.0237=0.5396 val_L32_beta2=0.7406 val_L32_beta4=0.5746 val_L32_beta6.5=0.5929 val_L32_beta14.1464=0.5516 val_L32_beta55.0237=0.5376 val_total=11.0101
+epoch  67  train=0.6076  val_L8_beta1=0.7525 val_L8_beta2=0.6138 val_L16_beta1=0.8094 val_L16_beta2=0.7090 val_L16_beta3=0.6666 val_L16_beta4=0.6082 val_L16_beta5=0.6035 val_L16_beta6.5=0.5306 val_L16_beta8=0.5490 val_L16_beta10=0.5205 val_L16_beta14.1464=0.6212 val_L16_beta25=0.5077 val_L16_beta55.0237=0.5286 val_L32_beta2=0.7583 val_L32_beta4=0.5424 val_L32_beta6.5=0.6032 val_L32_beta14.1464=0.5630 val_L32_beta55.0237=0.5352 val_total=11.0225
+epoch  68  train=0.6039  val_L8_beta1=0.7511 val_L8_beta2=0.6019 val_L16_beta1=0.8091 val_L16_beta2=0.6966 val_L16_beta3=0.6657 val_L16_beta4=0.6076 val_L16_beta5=0.6068 val_L16_beta6.5=0.5257 val_L16_beta8=0.5539 val_L16_beta10=0.5229 val_L16_beta14.1464=0.6106 val_L16_beta25=0.5083 val_L16_beta55.0237=0.5471 val_L32_beta2=0.8480 val_L32_beta4=0.5580 val_L32_beta6.5=0.6142 val_L32_beta14.1464=0.5634 val_L32_beta55.0237=0.5439 val_total=11.1347
+epoch  69  train=0.6199  val_L8_beta1=0.7442 val_L8_beta2=0.6059 val_L16_beta1=0.7800 val_L16_beta2=0.7030 val_L16_beta3=0.6577 val_L16_beta4=0.6039 val_L16_beta5=0.6204 val_L16_beta6.5=0.5397 val_L16_beta8=0.5501 val_L16_beta10=0.5287 val_L16_beta14.1464=0.6124 val_L16_beta25=0.5172 val_L16_beta55.0237=0.5475 val_L32_beta2=0.7888 val_L32_beta4=0.5727 val_L32_beta6.5=0.5975 val_L32_beta14.1464=0.5493 val_L32_beta55.0237=0.5356 val_total=11.0546
+epoch  70  train=0.6041  val_L8_beta1=0.7647 val_L8_beta2=0.6292 val_L16_beta1=0.7952 val_L16_beta2=0.7042 val_L16_beta3=0.6514 val_L16_beta4=0.6028 val_L16_beta5=0.6088 val_L16_beta6.5=0.5341 val_L16_beta8=0.5337 val_L16_beta10=0.5284 val_L16_beta14.1464=0.6013 val_L16_beta25=0.5119 val_L16_beta55.0237=0.5363 val_L32_beta2=0.7838 val_L32_beta4=0.5704 val_L32_beta6.5=0.5971 val_L32_beta14.1464=0.5614 val_L32_beta55.0237=0.5295 val_total=11.0442
+epoch  71  train=0.6077  val_L8_beta1=0.7657 val_L8_beta2=0.6252 val_L16_beta1=0.8289 val_L16_beta2=0.7005 val_L16_beta3=0.6730 val_L16_beta4=0.6016 val_L16_beta5=0.6094 val_L16_beta6.5=0.5264 val_L16_beta8=0.5483 val_L16_beta10=0.5223 val_L16_beta14.1464=0.6118 val_L16_beta25=0.5125 val_L16_beta55.0237=0.5413 val_L32_beta2=0.8055 val_L32_beta4=0.5493 val_L32_beta6.5=0.5980 val_L32_beta14.1464=0.5528 val_L32_beta55.0237=0.5376 val_total=11.1101
+epoch  72  train=0.6037  val_L8_beta1=0.7580 val_L8_beta2=0.6079 val_L16_beta1=0.8262 val_L16_beta2=0.7159 val_L16_beta3=0.6643 val_L16_beta4=0.6012 val_L16_beta5=0.6191 val_L16_beta6.5=0.5152 val_L16_beta8=0.5599 val_L16_beta10=0.5284 val_L16_beta14.1464=0.6066 val_L16_beta25=0.5108 val_L16_beta55.0237=0.5280 val_L32_beta2=0.7842 val_L32_beta4=0.5788 val_L32_beta6.5=0.5957 val_L32_beta14.1464=0.5658 val_L32_beta55.0237=0.5335 val_total=11.0994
+epoch  73  train=0.6029  val_L8_beta1=0.7466 val_L8_beta2=0.6161 val_L16_beta1=0.7910 val_L16_beta2=0.6961 val_L16_beta3=0.6653 val_L16_beta4=0.6077 val_L16_beta5=0.6150 val_L16_beta6.5=0.5297 val_L16_beta8=0.5526 val_L16_beta10=0.5266 val_L16_beta14.1464=0.5881 val_L16_beta25=0.4970 val_L16_beta55.0237=0.5423 val_L32_beta2=0.7808 val_L32_beta4=0.5552 val_L32_beta6.5=0.5953 val_L32_beta14.1464=0.5517 val_L32_beta55.0237=0.5397 val_total=10.9966
+epoch  74  train=0.6144  val_L8_beta1=0.7733 val_L8_beta2=0.6430 val_L16_beta1=0.8322 val_L16_beta2=0.6927 val_L16_beta3=0.6666 val_L16_beta4=0.6138 val_L16_beta5=0.6148 val_L16_beta6.5=0.5233 val_L16_beta8=0.5453 val_L16_beta10=0.5219 val_L16_beta14.1464=0.6241 val_L16_beta25=0.5136 val_L16_beta55.0237=0.5327 val_L32_beta2=0.7458 val_L32_beta4=0.5822 val_L32_beta6.5=0.5966 val_L32_beta14.1464=0.5556 val_L32_beta55.0237=0.5342 val_total=11.1118
+epoch  75  train=0.6024  val_L8_beta1=0.7305 val_L8_beta2=0.6168 val_L16_beta1=0.8229 val_L16_beta2=0.7003 val_L16_beta3=0.6712 val_L16_beta4=0.6051 val_L16_beta5=0.6105 val_L16_beta6.5=0.5221 val_L16_beta8=0.5492 val_L16_beta10=0.5205 val_L16_beta14.1464=0.6173 val_L16_beta25=0.5044 val_L16_beta55.0237=0.5340 val_L32_beta2=0.7596 val_L32_beta4=0.5415 val_L32_beta6.5=0.6041 val_L32_beta14.1464=0.5572 val_L32_beta55.0237=0.5445 val_total=11.0117
+epoch  76  train=0.6001  val_L8_beta1=0.7670 val_L8_beta2=0.6351 val_L16_beta1=0.7927 val_L16_beta2=0.7116 val_L16_beta3=0.6749 val_L16_beta4=0.6027 val_L16_beta5=0.6058 val_L16_beta6.5=0.5126 val_L16_beta8=0.5533 val_L16_beta10=0.5414 val_L16_beta14.1464=0.6151 val_L16_beta25=0.5110 val_L16_beta55.0237=0.5467 val_L32_beta2=0.7709 val_L32_beta4=0.5574 val_L32_beta6.5=0.6016 val_L32_beta14.1464=0.5756 val_L32_beta55.0237=0.5499 val_total=11.1252
+epoch  77  train=0.6047  val_L8_beta1=0.7472 val_L8_beta2=0.6234 val_L16_beta1=0.8094 val_L16_beta2=0.6837 val_L16_beta3=0.6535 val_L16_beta4=0.6034 val_L16_beta5=0.6181 val_L16_beta6.5=0.5331 val_L16_beta8=0.5439 val_L16_beta10=0.5258 val_L16_beta14.1464=0.6066 val_L16_beta25=0.5209 val_L16_beta55.0237=0.5287 val_L32_beta2=0.7443 val_L32_beta4=0.5712 val_L32_beta6.5=0.5918 val_L32_beta14.1464=0.5566 val_L32_beta55.0237=0.5382 val_total=10.9997
+epoch  78  train=0.6038  val_L8_beta1=0.7360 val_L8_beta2=0.6008 val_L16_beta1=0.7780 val_L16_beta2=0.7094 val_L16_beta3=0.6621 val_L16_beta4=0.6016 val_L16_beta5=0.5996 val_L16_beta6.5=0.5235 val_L16_beta8=0.5413 val_L16_beta10=0.5320 val_L16_beta14.1464=0.6081 val_L16_beta25=0.5257 val_L16_beta55.0237=0.5317 val_L32_beta2=0.7215 val_L32_beta4=0.5806 val_L32_beta6.5=0.5952 val_L32_beta14.1464=0.5560 val_L32_beta55.0237=0.5280 val_total=10.9311
+epoch  79  train=0.6061  val_L8_beta1=0.7902 val_L8_beta2=0.6081 val_L16_beta1=0.7962 val_L16_beta2=0.7044 val_L16_beta3=0.6723 val_L16_beta4=0.5991 val_L16_beta5=0.6089 val_L16_beta6.5=0.5263 val_L16_beta8=0.5558 val_L16_beta10=0.5267 val_L16_beta14.1464=0.6136 val_L16_beta25=0.5015 val_L16_beta55.0237=0.5359 val_L32_beta2=0.8283 val_L32_beta4=0.5666 val_L32_beta6.5=0.5941 val_L32_beta14.1464=0.5612 val_L32_beta55.0237=0.5388 val_total=11.1281
+epoch  80  train=0.6033  val_L8_beta1=0.7579 val_L8_beta2=0.6178 val_L16_beta1=0.8042 val_L16_beta2=0.6888 val_L16_beta3=0.6681 val_L16_beta4=0.6145 val_L16_beta5=0.6041 val_L16_beta6.5=0.5342 val_L16_beta8=0.5398 val_L16_beta10=0.5219 val_L16_beta14.1464=0.6029 val_L16_beta25=0.5064 val_L16_beta55.0237=0.5432 val_L32_beta2=0.7370 val_L32_beta4=0.5474 val_L32_beta6.5=0.5931 val_L32_beta14.1464=0.5481 val_L32_beta55.0237=0.5358 val_total=10.9651
+epoch  81  train=0.5931  val_L8_beta1=0.7424 val_L8_beta2=0.5895 val_L16_beta1=0.8378 val_L16_beta2=0.6939 val_L16_beta3=0.6558 val_L16_beta4=0.6014 val_L16_beta5=0.6062 val_L16_beta6.5=0.5217 val_L16_beta8=0.5498 val_L16_beta10=0.5261 val_L16_beta14.1464=0.6002 val_L16_beta25=0.5131 val_L16_beta55.0237=0.5481 val_L32_beta2=0.7532 val_L32_beta4=0.5478 val_L32_beta6.5=0.6004 val_L32_beta14.1464=0.5615 val_L32_beta55.0237=0.5341 val_total=10.9829
+epoch  82  train=0.6036  val_L8_beta1=0.7583 val_L8_beta2=0.6041 val_L16_beta1=0.8103 val_L16_beta2=0.6867 val_L16_beta3=0.6561 val_L16_beta4=0.6187 val_L16_beta5=0.6154 val_L16_beta6.5=0.5131 val_L16_beta8=0.5605 val_L16_beta10=0.5444 val_L16_beta14.1464=0.6038 val_L16_beta25=0.5059 val_L16_beta55.0237=0.5287 val_L32_beta2=0.7591 val_L32_beta4=0.5608 val_L32_beta6.5=0.5967 val_L32_beta14.1464=0.5508 val_L32_beta55.0237=0.5388 val_total=11.0120
+epoch  83  train=0.6025  val_L8_beta1=0.7720 val_L8_beta2=0.6172 val_L16_beta1=0.8204 val_L16_beta2=0.7142 val_L16_beta3=0.6788 val_L16_beta4=0.6026 val_L16_beta5=0.6227 val_L16_beta6.5=0.5254 val_L16_beta8=0.5534 val_L16_beta10=0.5336 val_L16_beta14.1464=0.6158 val_L16_beta25=0.5206 val_L16_beta55.0237=0.5273 val_L32_beta2=0.7520 val_L32_beta4=0.5584 val_L32_beta6.5=0.5960 val_L32_beta14.1464=0.5568 val_L32_beta55.0237=0.5334 val_total=11.1005
+epoch  84  train=0.6094  val_L8_beta1=0.7390 val_L8_beta2=0.6126 val_L16_beta1=0.7839 val_L16_beta2=0.7048 val_L16_beta3=0.6594 val_L16_beta4=0.6012 val_L16_beta5=0.6044 val_L16_beta6.5=0.5274 val_L16_beta8=0.5541 val_L16_beta10=0.5359 val_L16_beta14.1464=0.6187 val_L16_beta25=0.5162 val_L16_beta55.0237=0.5406 val_L32_beta2=0.8063 val_L32_beta4=0.5527 val_L32_beta6.5=0.6019 val_L32_beta14.1464=0.5508 val_L32_beta55.0237=0.5343 val_total=11.0441
+epoch  85  train=0.6035  val_L8_beta1=0.7438 val_L8_beta2=0.6074 val_L16_beta1=0.8076 val_L16_beta2=0.6949 val_L16_beta3=0.6654 val_L16_beta4=0.6138 val_L16_beta5=0.6036 val_L16_beta6.5=0.5281 val_L16_beta8=0.5449 val_L16_beta10=0.5306 val_L16_beta14.1464=0.6159 val_L16_beta25=0.5173 val_L16_beta55.0237=0.5423 val_L32_beta2=0.7384 val_L32_beta4=0.5710 val_L32_beta6.5=0.6033 val_L32_beta14.1464=0.5465 val_L32_beta55.0237=0.5364 val_total=11.0112
+epoch  86  train=0.6018  val_L8_beta1=0.7139 val_L8_beta2=0.5968 val_L16_beta1=0.8394 val_L16_beta2=0.7009 val_L16_beta3=0.6567 val_L16_beta4=0.6016 val_L16_beta5=0.6046 val_L16_beta6.5=0.5278 val_L16_beta8=0.5370 val_L16_beta10=0.5170 val_L16_beta14.1464=0.6159 val_L16_beta25=0.5060 val_L16_beta55.0237=0.5375 val_L32_beta2=0.7742 val_L32_beta4=0.5463 val_L32_beta6.5=0.6039 val_L32_beta14.1464=0.5629 val_L32_beta55.0237=0.5419 val_total=10.9840
+epoch  87  train=0.6021  val_L8_beta1=0.7482 val_L8_beta2=0.6119 val_L16_beta1=0.8172 val_L16_beta2=0.7028 val_L16_beta3=0.6620 val_L16_beta4=0.6137 val_L16_beta5=0.6063 val_L16_beta6.5=0.5263 val_L16_beta8=0.5491 val_L16_beta10=0.5244 val_L16_beta14.1464=0.6113 val_L16_beta25=0.5138 val_L16_beta55.0237=0.5379 val_L32_beta2=0.7520 val_L32_beta4=0.5537 val_L32_beta6.5=0.5840 val_L32_beta14.1464=0.5471 val_L32_beta55.0237=0.5304 val_total=10.9922
+epoch  88  train=0.5973  val_L8_beta1=0.7646 val_L8_beta2=0.6167 val_L16_beta1=0.7968 val_L16_beta2=0.6952 val_L16_beta3=0.6529 val_L16_beta4=0.5996 val_L16_beta5=0.6101 val_L16_beta6.5=0.5239 val_L16_beta8=0.5582 val_L16_beta10=0.5209 val_L16_beta14.1464=0.5983 val_L16_beta25=0.5104 val_L16_beta55.0237=0.5391 val_L32_beta2=0.8272 val_L32_beta4=0.5540 val_L32_beta6.5=0.5949 val_L32_beta14.1464=0.5469 val_L32_beta55.0237=0.5377 val_total=11.0478
+epoch  89  train=0.6003  val_L8_beta1=0.7218 val_L8_beta2=0.6397 val_L16_beta1=0.8012 val_L16_beta2=0.7090 val_L16_beta3=0.6538 val_L16_beta4=0.5919 val_L16_beta5=0.5973 val_L16_beta6.5=0.5304 val_L16_beta8=0.5456 val_L16_beta10=0.5297 val_L16_beta14.1464=0.6112 val_L16_beta25=0.5160 val_L16_beta55.0237=0.5433 val_L32_beta2=0.7905 val_L32_beta4=0.5397 val_L32_beta6.5=0.5899 val_L32_beta14.1464=0.5530 val_L32_beta55.0237=0.5355 val_total=10.9996
+epoch  90  train=0.6022  val_L8_beta1=0.7386 val_L8_beta2=0.5868 val_L16_beta1=0.7807 val_L16_beta2=0.6873 val_L16_beta3=0.6638 val_L16_beta4=0.6118 val_L16_beta5=0.6089 val_L16_beta6.5=0.5268 val_L16_beta8=0.5365 val_L16_beta10=0.5295 val_L16_beta14.1464=0.6186 val_L16_beta25=0.5047 val_L16_beta55.0237=0.5276 val_L32_beta2=0.7258 val_L32_beta4=0.5434 val_L32_beta6.5=0.6002 val_L32_beta14.1464=0.5575 val_L32_beta55.0237=0.5386 val_total=10.8871
+epoch  91  train=0.6032  val_L8_beta1=0.7775 val_L8_beta2=0.6227 val_L16_beta1=0.7927 val_L16_beta2=0.7086 val_L16_beta3=0.6604 val_L16_beta4=0.5965 val_L16_beta5=0.6111 val_L16_beta6.5=0.5232 val_L16_beta8=0.5293 val_L16_beta10=0.5191 val_L16_beta14.1464=0.6001 val_L16_beta25=0.5157 val_L16_beta55.0237=0.5304 val_L32_beta2=0.7207 val_L32_beta4=0.5495 val_L32_beta6.5=0.5977 val_L32_beta14.1464=0.5595 val_L32_beta55.0237=0.5357 val_total=10.9503
+epoch  92  train=0.6061  val_L8_beta1=0.7568 val_L8_beta2=0.6193 val_L16_beta1=0.7749 val_L16_beta2=0.7207 val_L16_beta3=0.6586 val_L16_beta4=0.6082 val_L16_beta5=0.6057 val_L16_beta6.5=0.5169 val_L16_beta8=0.5575 val_L16_beta10=0.5333 val_L16_beta14.1464=0.6086 val_L16_beta25=0.4987 val_L16_beta55.0237=0.5488 val_L32_beta2=0.7479 val_L32_beta4=0.5701 val_L32_beta6.5=0.5888 val_L32_beta14.1464=0.5615 val_L32_beta55.0237=0.5329 val_total=11.0092
+epoch  93  train=0.6032  val_L8_beta1=0.7483 val_L8_beta2=0.6189 val_L16_beta1=0.7969 val_L16_beta2=0.7081 val_L16_beta3=0.6615 val_L16_beta4=0.5983 val_L16_beta5=0.6110 val_L16_beta6.5=0.5249 val_L16_beta8=0.5469 val_L16_beta10=0.5257 val_L16_beta14.1464=0.6062 val_L16_beta25=0.5087 val_L16_beta55.0237=0.5322 val_L32_beta2=0.7664 val_L32_beta4=0.5530 val_L32_beta6.5=0.5951 val_L32_beta14.1464=0.5575 val_L32_beta55.0237=0.5318 val_total=10.9916
+epoch  94  train=0.6044  val_L8_beta1=0.7641 val_L8_beta2=0.6256 val_L16_beta1=0.8081 val_L16_beta2=0.6972 val_L16_beta3=0.6632 val_L16_beta4=0.5938 val_L16_beta5=0.6005 val_L16_beta6.5=0.5353 val_L16_beta8=0.5679 val_L16_beta10=0.5213 val_L16_beta14.1464=0.6160 val_L16_beta25=0.5189 val_L16_beta55.0237=0.5454 val_L32_beta2=0.7404 val_L32_beta4=0.5507 val_L32_beta6.5=0.6173 val_L32_beta14.1464=0.5495 val_L32_beta55.0237=0.5308 val_total=11.0460
+epoch  95  train=0.6006  val_L8_beta1=0.7731 val_L8_beta2=0.5953 val_L16_beta1=0.8020 val_L16_beta2=0.7066 val_L16_beta3=0.6636 val_L16_beta4=0.6192 val_L16_beta5=0.6095 val_L16_beta6.5=0.5273 val_L16_beta8=0.5445 val_L16_beta10=0.5249 val_L16_beta14.1464=0.6158 val_L16_beta25=0.5058 val_L16_beta55.0237=0.5332 val_L32_beta2=0.7540 val_L32_beta4=0.5668 val_L32_beta6.5=0.5970 val_L32_beta14.1464=0.5515 val_L32_beta55.0237=0.5378 val_total=11.0277
+epoch  96  train=0.6098  val_L8_beta1=0.7612 val_L8_beta2=0.6133 val_L16_beta1=0.7917 val_L16_beta2=0.7213 val_L16_beta3=0.6445 val_L16_beta4=0.6128 val_L16_beta5=0.5974 val_L16_beta6.5=0.5250 val_L16_beta8=0.5542 val_L16_beta10=0.5284 val_L16_beta14.1464=0.6036 val_L16_beta25=0.5094 val_L16_beta55.0237=0.5334 val_L32_beta2=0.7469 val_L32_beta4=0.5551 val_L32_beta6.5=0.5937 val_L32_beta14.1464=0.5535 val_L32_beta55.0237=0.5339 val_total=10.9794
+epoch  97  train=0.6038  val_L8_beta1=0.7395 val_L8_beta2=0.5924 val_L16_beta1=0.8135 val_L16_beta2=0.7001 val_L16_beta3=0.6558 val_L16_beta4=0.5987 val_L16_beta5=0.6193 val_L16_beta6.5=0.5262 val_L16_beta8=0.5482 val_L16_beta10=0.5281 val_L16_beta14.1464=0.6005 val_L16_beta25=0.4991 val_L16_beta55.0237=0.5417 val_L32_beta2=0.7529 val_L32_beta4=0.5620 val_L32_beta6.5=0.5966 val_L32_beta14.1464=0.5564 val_L32_beta55.0237=0.5416 val_total=10.9727
+epoch  98  train=0.6028  val_L8_beta1=0.7499 val_L8_beta2=0.6090 val_L16_beta1=0.8018 val_L16_beta2=0.6952 val_L16_beta3=0.6726 val_L16_beta4=0.6032 val_L16_beta5=0.6068 val_L16_beta6.5=0.5186 val_L16_beta8=0.5613 val_L16_beta10=0.5352 val_L16_beta14.1464=0.6086 val_L16_beta25=0.5201 val_L16_beta55.0237=0.5353 val_L32_beta2=0.7545 val_L32_beta4=0.5662 val_L32_beta6.5=0.5905 val_L32_beta14.1464=0.5622 val_L32_beta55.0237=0.5410 val_total=11.0321
+epoch  99  train=0.5967  val_L8_beta1=0.7319 val_L8_beta2=0.6476 val_L16_beta1=0.8073 val_L16_beta2=0.6956 val_L16_beta3=0.6715 val_L16_beta4=0.6057 val_L16_beta5=0.6208 val_L16_beta6.5=0.5141 val_L16_beta8=0.5585 val_L16_beta10=0.5304 val_L16_beta14.1464=0.6176 val_L16_beta25=0.5168 val_L16_beta55.0237=0.5320 val_L32_beta2=0.7403 val_L32_beta4=0.5714 val_L32_beta6.5=0.5911 val_L32_beta14.1464=0.5557 val_L32_beta55.0237=0.5334 val_total=11.0417
+checkpoint: out/diffusion/demo_v4/checkpoints/score_net.pt
+history:    out/diffusion/demo_v4/checkpoints/history.json
+[Fri 07/17/2026 12:06:20.13] STAGE_STUDY 
+25 cases, output -> out\diffusion\demo\generalization_v5
+[1/25] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 515s
+    case done in 532s
+[2/25] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 567s
+    case done in 587s
+[3/25] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 523s
+    case done in 542s
+[4/25] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 521s
+    case done in 540s
+[5/25] A_bc1.5: base L=16 beta=1.5 -> L=32 beta=4.44493 (matched pair 1.5 -> 4.4449)
+    HMC L=16 beta=1.5: 128 configs, acc 0.987, hot start, burn 200, 8s
+    generated 128 configs L=32 beta=4.44493 in 522s
+    HMC L=32 beta=4.44493: 192 configs, acc 0.964, hot start, burn 200, 13s
+    case done in 575s
+[6/25] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 514s
+    case done in 531s
+[7/25] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 521s
+    case done in 540s
+[8/25] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 526s
+    case done in 547s
+[9/25] A_bc5: base L=16 beta=5 -> L=32 beta=18.2524 (matched pair 5 -> 18.2524)
+    HMC L=16 beta=5: 128 configs, acc 0.985, hot start, burn 200, 8s
+    generated 128 configs L=32 beta=18.2524 in 517s
+    HMC L=32 beta=18.2524: 192 configs, acc 0.982, cold start, burn 600, 50s
+    case done in 594s
+[10/25] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 538s
+    case done in 559s
+[11/25] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 511s
+    case done in 531s
+[12/25] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 609s
+    case done in 634s
+[13/25] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    HMC L=16 beta=20: 128 configs, acc 0.992, cold start, burn 2000, 122s
+    generated 128 configs L=32 beta=78.4578 in 511s
+    HMC L=32 beta=78.4578: 192 configs, acc 0.978, cold start, burn 2000, 234s
+    case done in 885s
+[14/25] D_bc30: base L=16 beta=30 -> L=32 beta=118.473 (matched pair 30 -> 118.4726 (beyond training range))
+    HMC L=16 beta=30: 128 configs, acc 0.992, cold start, burn 2000, 129s
+    generated 128 configs L=32 beta=118.473 in 509s
+    HMC L=32 beta=118.473: 192 configs, acc 0.975, cold start, burn 2000, 268s
+    case done in 926s
+[15/25] D_bc40: base L=16 beta=40 -> L=32 beta=158.48 (matched pair 40 -> 158.4797 (beyond training range))
+    HMC L=16 beta=40: 128 configs, acc 0.988, cold start, burn 2000, 149s
+    generated 128 configs L=32 beta=158.48 in 515s
+    HMC L=32 beta=158.48: 192 configs, acc 0.978, cold start, burn 2000, 328s
+    case done in 1015s
+[16/25] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 538s
+    case done in 561s
+[17/25] B_bt6: base L=16 beta=4 -> L=32 beta=6 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=6 in 540s
+    case done in 561s
+[18/25] B_bt10: base L=16 beta=4 -> L=32 beta=10 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=10 in 475s
+    case done in 496s
+[19/25] B_bt16: base L=16 beta=4 -> L=32 beta=16 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=16 in 479s
+    case done in 494s
+[20/25] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=20 in 466s
+    case done in 488s
+[21/25] B_bt30: base L=16 beta=4 -> L=32 beta=30 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=30 in 470s
+    case done in 493s
+[22/25] B_bt55.0237: base L=16 beta=4 -> L=32 beta=55.0237 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=55.0237 in 473s
+    case done in 491s
+[23/25] B_bc2_bt8: base L=16 beta=2 -> L=32 beta=8 (tree-level beta_f = 4 beta_c; matched target is 6.1052)
+    generated 128 configs L=32 beta=8 in 465s
+    case done in 489s
+[24/25] C_L64: base L=32 beta=4 -> L=64 beta=14.1464 (size scan rung)
+    generated 96 configs L=64 beta=14.1464 in 2095s
+    case done in 2148s
+[25/25] C_L128: base L=64 beta=4 -> L=128 beta=14.1464 (size scan rung)
+    generated 64 configs L=128 beta=14.1464 in 3104s
+    case done in 3221s
+summary: out\diffusion\demo\generalization_v5\summary.json
+tables:  out\diffusion\demo\generalization_v5\summary_tables.md
+[Fri 07/17/2026 17:22:56.71] STAGE_STUDY_S2 
+16 cases, output -> out\diffusion\demo\generalization_v5\seeds\s2
+[1/16] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 573s
+    case done in 594s
+[2/16] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 610s
+    case done in 629s
+[3/16] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 574s
+    case done in 595s
+[4/16] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 566s
+    case done in 597s
+[5/16] A_bc1.5: base L=16 beta=1.5 -> L=32 beta=4.44493 (matched pair 1.5 -> 4.4449)
+    HMC L=16 beta=1.5: 128 configs, acc 0.982, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=4.44493 in 524s
+    HMC L=32 beta=4.44493: 192 configs, acc 0.968, hot start, burn 200, 9s
+    case done in 562s
+[6/16] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 540s
+    case done in 563s
+[7/16] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 535s
+    case done in 555s
+[8/16] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 508s
+    case done in 528s
+[9/16] A_bc5: base L=16 beta=5 -> L=32 beta=18.2524 (matched pair 5 -> 18.2524)
+    HMC L=16 beta=5: 128 configs, acc 0.984, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=18.2524 in 535s
+    HMC L=32 beta=18.2524: 192 configs, acc 0.982, cold start, burn 600, 51s
+    case done in 615s
+[10/16] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 521s
+    case done in 544s
+[11/16] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 545s
+    case done in 568s
+[12/16] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 557s
+    case done in 581s
+[13/16] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    HMC L=16 beta=20: 128 configs, acc 0.991, cold start, burn 2000, 115s
+    generated 128 configs L=32 beta=78.4578 in 532s
+    HMC L=32 beta=78.4578: 192 configs, acc 0.979, cold start, burn 2000, 254s
+    case done in 924s
+[14/16] D_bc30: base L=16 beta=30 -> L=32 beta=118.473 (matched pair 30 -> 118.4726 (beyond training range))
+    HMC L=16 beta=30: 128 configs, acc 0.992, cold start, burn 2000, 138s
+    generated 128 configs L=32 beta=118.473 in 2776s
+    HMC L=32 beta=118.473: 192 configs, acc 0.975, cold start, burn 2000, 297s
+    case done in 3235s
+[15/16] D_bc40: base L=16 beta=40 -> L=32 beta=158.48 (matched pair 40 -> 158.4797 (beyond training range))
+    HMC L=16 beta=40: 128 configs, acc 0.987, cold start, burn 2000, 150s
+    generated 128 configs L=32 beta=158.48 in 526s
+    HMC L=32 beta=158.48: 192 configs, acc 0.978, cold start, burn 2000, 339s
+    case done in 1039s
+[16/16] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 550s
+    case done in 574s
+c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion\scripts\06_generalization_study.py:326: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: out\diffusion\demo\generalization_v5\seeds\s2\summary.json
+tables:  out\diffusion\demo\generalization_v5\seeds\s2\summary_tables.md
+[Fri 07/17/2026 20:54:54.86] STAGE_THERM 
+25 matched-pair cases, output -> out\diffusion\demo\generalization_v5\thermalization
+A_bc0.25_L32_beta1.4892: sampling 128 raw seeds from wilson_L16_beta0.25.pt
+    sampled in 553s
+
+=== A_bc0.25_L32_beta1.4892: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc0.5_L32_beta2.02441: sampling 128 raw seeds from wilson_L16_beta0.5.pt
+    sampled in 561s
+
+=== A_bc0.5_L32_beta2.02441: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc0.75_L32_beta2.5435: sampling 128 raw seeds from wilson_L16_beta0.75.pt
+    sampled in 548s
+
+=== A_bc0.75_L32_beta2.5435: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc1_L32_beta3.10399: sampling 128 raw seeds from wilson_L16_beta1.pt
+    sampled in 620s
+
+=== A_bc1_L32_beta3.10399: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc1.5_L32_beta4.44493: sampling 128 raw seeds from wilson_L16_beta1.5.pt
+    sampled in 598s
+
+=== A_bc1.5_L32_beta4.44493: step_size=0.1897, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt6_L32_beta6: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 604s
+
+=== B_bt6_L32_beta6: step_size=0.1633, n_steps=6 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc2_L32_beta6.10518: sampling 128 raw seeds from wilson_L16_beta2.pt
+    sampled in 602s
+
+=== A_bc2_L32_beta6.10518: step_size=0.1619, n_steps=6 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bc2_bt8_L32_beta8: sampling 128 raw seeds from wilson_L16_beta2.pt
+    sampled in 619s
+
+=== B_bc2_bt8_L32_beta8: step_size=0.1414, n_steps=7 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt10_L32_beta10: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 617s
+
+=== B_bt10_L32_beta10: step_size=0.1265, n_steps=8 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc3_L32_beta10.015: sampling 128 raw seeds from wilson_L16_beta3.pt
+    sampled in 600s
+
+=== A_bc3_L32_beta10.015: step_size=0.1264, n_steps=8 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc4_L32_beta14.1464: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 613s
+
+=== A_bc4_L32_beta14.1464: step_size=0.1063, n_steps=9 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt16_L32_beta16: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 590s
+
+=== B_bt16_L32_beta16: step_size=0.1000, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc5_L32_beta18.2524: sampling 128 raw seeds from wilson_L16_beta5.pt
+    sampled in 599s
+
+=== A_bc5_L32_beta18.2524: step_size=0.0936, n_steps=11 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt20_L32_beta20: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 593s
+
+=== B_bt20_L32_beta20: step_size=0.0894, n_steps=11 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc6_L32_beta22.3151: sampling 128 raw seeds from wilson_L16_beta6.pt
+    sampled in 595s
+
+=== A_bc6_L32_beta22.3151: step_size=0.0847, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt30_L32_beta30: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 607s
+
+=== B_bt30_L32_beta30: step_size=0.0730, n_steps=14 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc8_L32_beta30.3772: sampling 128 raw seeds from wilson_L16_beta8.pt
+    sampled in 600s
+
+=== A_bc8_L32_beta30.3772: step_size=0.0726, n_steps=14 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc14.1464_L32_beta55.0237: sampling 128 raw seeds from wilson_L16_beta14.1464.pt
+    sampled in 600s
+
+=== D_bc14.1464_L32_beta55.0237: step_size=0.0539, n_steps=19 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt55.0237_L32_beta55.0237: sampling 128 raw seeds from wilson_L16_beta4.pt
+    sampled in 602s
+
+=== B_bt55.0237_L32_beta55.0237: step_size=0.0539, n_steps=19 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc20_L32_beta78.4578: sampling 128 raw seeds from wilson_L16_beta20.pt
+    sampled in 592s
+
+=== D_bc20_L32_beta78.4578: step_size=0.0452, n_steps=22 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc30_L32_beta118.473: sampling 128 raw seeds from wilson_L16_beta30.pt
+    sampled in 580s
+
+=== D_bc30_L32_beta118.473: step_size=0.0367, n_steps=27 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc40_L32_beta158.48: sampling 128 raw seeds from wilson_L16_beta40.pt
+    sampled in 613s
+
+=== D_bc40_L32_beta158.48: step_size=0.0318, n_steps=31 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc55.0237_L32_beta218.58: sampling 128 raw seeds from wilson_L16_beta55.0237.pt
+    sampled in 631s
+
+=== D_bc55.0237_L32_beta218.58: step_size=0.0271, n_steps=37 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+C_L64_L64_beta14.1464: sampling 96 raw seeds from wilson_L32_beta4.pt
+    sampled in 1442s
+
+=== C_L64_L64_beta14.1464: step_size=0.1063, n_steps=9 ===
+diffusion seed: 96 chains x 96 trajectories
+hot start: 16 chains x 640 trajectories
+cold start: 16 chains x 640 trajectories
+C_L128_L128_beta14.1464: sampling 64 raw seeds from wilson_L64_beta4.pt
+    sampled in 22772s
+
+=== C_L128_L128_beta14.1464: step_size=0.1063, n_steps=9 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 8 chains x 640 trajectories
+cold start: 8 chains x 640 trajectories
+
+report: out\diffusion\demo\generalization_v5\thermalization\report.md
+{
+  "label": "A_bc0.25_L32_beta1.4892",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 6.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 8.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "hot start": {
+      "plaquette": 7.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "cold start": {
+      "plaquette": 9.0,
+      "wilson_2x2": 9.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 7.0
+    }
+  },
+  "hmc_interval_trajectories": 2.545043092420065
+}
+{
+  "label": "A_bc0.5_L32_beta2.02441",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 13.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 23.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "cold start": {
+      "plaquette": 20.0,
+      "wilson_2x2": 12.0,
+      "wilson_4x4": 5.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 10.0
+    }
+  },
+  "hmc_interval_trajectories": 4.914210377247884
+}
+{
+  "label": "A_bc0.75_L32_beta2.5435",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 14.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 26.0,
+      "wilson_2x2": 20.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 34.0,
+      "wilson_2x2": 23.0,
+      "wilson_4x4": 12.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 18.0
+    }
+  },
+  "hmc_interval_trajectories": 7.028869133146729
+}
+{
+  "label": "A_bc1_L32_beta3.10399",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 18.0,
+      "wilson_2x2": 19.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 36.0,
+      "wilson_2x2": 25.0,
+      "wilson_4x4": 13.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 3.0
+    },
+    "cold start": {
+      "plaquette": 39.0,
+      "wilson_2x2": 36.0,
+      "wilson_4x4": 29.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 21.0
+    }
+  },
+  "hmc_interval_trajectories": 8.129510120675544
+}
+{
+  "label": "A_bc1.5_L32_beta4.44493",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 9.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 31.0
+    },
+    "hot start": {
+      "plaquette": 59.0,
+      "wilson_2x2": 58.0,
+      "wilson_4x4": 35.0,
+      "wilson_6x6": 23.0,
+      "Q^2": 74.0
+    },
+    "cold start": {
+      "plaquette": 64.0,
+      "wilson_2x2": 39.0,
+      "wilson_4x4": 18.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 67.0
+    }
+  },
+  "hmc_interval_trajectories": 9.035934671640172
+}
+{
+  "label": "B_bt6_L32_beta6",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 27.0,
+      "wilson_2x2": 47.0,
+      "wilson_4x4": 4.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 127.0,
+      "wilson_2x2": 143.0,
+      "wilson_4x4": 35.0,
+      "wilson_6x6": 29.0,
+      "Q^2": 76.0
+    },
+    "cold start": {
+      "plaquette": 87.0,
+      "wilson_2x2": 103.0,
+      "wilson_4x4": 18.0,
+      "wilson_6x6": 16.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 6.772181182122511
+}
+{
+  "label": "A_bc2_L32_beta6.10518",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 128.0,
+      "wilson_2x2": 142.0,
+      "wilson_4x4": 40.0,
+      "wilson_6x6": 39.0,
+      "Q^2": 8.0
+    },
+    "cold start": {
+      "plaquette": 94.0,
+      "wilson_2x2": 102.0,
+      "wilson_4x4": 13.0,
+      "wilson_6x6": 27.0,
+      "Q^2": 528.0
+    }
+  },
+  "hmc_interval_trajectories": 6.912698966138661
+}
+{
+  "label": "B_bc2_bt8_L32_beta8",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 37.0,
+      "wilson_4x4": 15.0,
+      "wilson_6x6": 9.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 253.0,
+      "wilson_2x2": 466.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 307.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 88.0,
+      "wilson_2x2": 128.0,
+      "wilson_4x4": 81.0,
+      "wilson_6x6": 9.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 10.557751815380024
+}
+{
+  "label": "B_bt10_L32_beta10",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 11.0,
+      "wilson_2x2": 10.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 467.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 233.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 223.0,
+      "wilson_2x2": 176.0,
+      "wilson_4x4": 106.0,
+      "wilson_6x6": 50.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 13.134262905336538
+}
+{
+  "label": "A_bc3_L32_beta10.015",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 3.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 163.0,
+      "wilson_2x2": 159.0,
+      "wilson_4x4": 83.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 14.083757525190723
+}
+{
+  "label": "A_bc4_L32_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 5.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 439.0,
+      "wilson_2x2": 531.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 176.0,
+      "wilson_2x2": 117.0,
+      "wilson_4x4": 91.0,
+      "wilson_6x6": 25.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 11.435316320642675
+}
+{
+  "label": "B_bt16_L32_beta16",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 55.0,
+      "wilson_2x2": 24.0,
+      "wilson_4x4": 2.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 343.0,
+      "wilson_2x2": 558.0,
+      "wilson_4x4": 228.0,
+      "wilson_6x6": 93.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 26.925569626895506
+}
+{
+  "label": "A_bc5_L32_beta18.2524",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 78.0,
+      "wilson_2x2": 56.0,
+      "wilson_4x4": 9.0,
+      "wilson_6x6": 8.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 512.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 210.0,
+      "wilson_2x2": 181.0,
+      "wilson_4x4": 91.0,
+      "wilson_6x6": 138.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 12.137650115975124
+}
+{
+  "label": "B_bt20_L32_beta20",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 14.0,
+      "wilson_4x4": 12.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 540.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 180.0,
+      "wilson_2x2": 119.0,
+      "wilson_4x4": 56.0,
+      "wilson_6x6": 159.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 12.990114402629906
+}
+{
+  "label": "A_bc6_L32_beta22.3151",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 9.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 259.0,
+      "wilson_2x2": 143.0,
+      "wilson_4x4": 78.0,
+      "wilson_6x6": 59.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 14.63966106203453
+}
+{
+  "label": "B_bt30_L32_beta30",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 376.0,
+      "wilson_2x2": 489.0,
+      "wilson_4x4": 230.0,
+      "wilson_6x6": 151.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 30.90098416902204
+}
+{
+  "label": "A_bc8_L32_beta30.3772",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 92.0,
+      "wilson_2x2": 59.0,
+      "wilson_4x4": 7.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 262.0,
+      "wilson_2x2": 476.0,
+      "wilson_4x4": 248.0,
+      "wilson_6x6": 242.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 39.409735556119465
+}
+{
+  "label": "D_bc14.1464_L32_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 15.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 371.0,
+      "wilson_2x2": 231.0,
+      "wilson_4x4": 163.0,
+      "wilson_6x6": 147.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 25.619431675506128
+}
+{
+  "label": "B_bt55.0237_L32_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 263.0,
+      "wilson_2x2": 231.0,
+      "wilson_4x4": 113.0,
+      "wilson_6x6": 108.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 29.011794806674637
+}
+{
+  "label": "D_bc20_L32_beta78.4578",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 24.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 189.0,
+      "wilson_4x4": 72.0,
+      "wilson_6x6": 72.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 15.316220520515161
+}
+{
+  "label": "D_bc30_L32_beta118.473",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 58.0,
+      "wilson_6x6": 58.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 302.0,
+      "wilson_2x2": 204.0,
+      "wilson_4x4": 347.0,
+      "wilson_6x6": 204.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 41.745968156698225
+}
+{
+  "label": "D_bc40_L32_beta158.48",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 70.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 214.0,
+      "wilson_2x2": 263.0,
+      "wilson_4x4": 145.0,
+      "wilson_6x6": 28.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 73.46834386408666
+}
+{
+  "label": "D_bc55.0237_L32_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 25.0,
+      "wilson_6x6": 19.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 504.0,
+      "wilson_4x4": 113.0,
+      "wilson_6x6": 113.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 21.92942248271043
+}
+{
+  "label": "C_L64_L64_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 2.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 276.0,
+      "wilson_2x2": 337.0,
+      "wilson_4x4": 337.0,
+      "wilson_6x6": 23.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 28.173967731067265
+}
+{
+  "label": "C_L128_L128_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 529.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 233.0,
+      "wilson_2x2": 567.0,
+      "wilson_4x4": 236.0,
+      "wilson_6x6": 38.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 66.48131496932318
+}
+[Sat 07/18/2026  9:23:44.03] CHAIN_DONE 
+[Sat 07/18/2026  9:24:36.19] STAGE_OOS_STUDY 
+10 cases, output -> out\diffusion\demo\generalization_v5
+[1/10] E_bc1.2: base L=16 beta=1.2 -> L=32 beta=3.6012 (out-of-sample matched pair 1.2 -> 3.6012)
+    HMC L=16 beta=1.2: 128 configs, acc 0.986, hot start, burn 200, 3s
+    generated 128 configs L=32 beta=3.6012 in 284s
+    HMC L=32 beta=3.6012: 192 configs, acc 0.959, hot start, burn 200, 7s
+    case done in 307s
+[2/10] E_bc2.7: base L=16 beta=2.7 -> L=32 beta=8.79549 (out-of-sample matched pair 2.7 -> 8.7955)
+    HMC L=16 beta=2.7: 128 configs, acc 0.983, hot start, burn 200, 4s
+    generated 128 configs L=32 beta=8.79549 in 377s
+    HMC L=32 beta=8.79549: 192 configs, acc 0.976, cold start, burn 600, 22s
+    case done in 421s
+[3/10] E_bc3.4: base L=16 beta=3.4 -> L=32 beta=11.6638 (out-of-sample matched pair 3.4 -> 11.6638)
+    HMC L=16 beta=3.4: 128 configs, acc 0.983, hot start, burn 200, 6s
+    generated 128 configs L=32 beta=11.6638 in 377s
+    HMC L=32 beta=11.6638: 192 configs, acc 0.983, cold start, burn 600, 31s
+    case done in 431s
+[4/10] E_bc4.5: base L=16 beta=4.5 -> L=32 beta=16.2057 (out-of-sample matched pair 4.5 -> 16.2057)
+    HMC L=16 beta=4.5: 128 configs, acc 0.986, hot start, burn 200, 6s
+    generated 128 configs L=32 beta=16.2057 in 380s
+    HMC L=32 beta=16.2057: 192 configs, acc 0.978, cold start, burn 600, 34s
+    case done in 435s
+[5/10] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    HMC L=16 beta=5.8: 128 configs, acc 0.988, hot start, burn 200, 10s
+    generated 128 configs L=32 beta=21.5051 in 354s
+    HMC L=32 beta=21.5051: 192 configs, acc 0.983, cold start, burn 2000, 119s
+    case done in 496s
+[6/10] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    HMC L=16 beta=9: 128 configs, acc 0.990, cold start, burn 600, 20s
+    generated 128 configs L=32 beta=34.3944 in 389s
+    HMC L=32 beta=34.3944: 192 configs, acc 0.981, cold start, burn 2000, 146s
+    case done in 569s
+[7/10] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    HMC L=16 beta=11.8: 128 configs, acc 0.993, cold start, burn 600, 22s
+    generated 128 configs L=32 beta=45.6238 in 382s
+    HMC L=32 beta=45.6238: 192 configs, acc 0.981, cold start, burn 2000, 158s
+    case done in 578s
+[8/10] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    HMC L=16 beta=18: 128 configs, acc 0.990, cold start, burn 600, 28s
+    generated 128 configs L=32 beta=70.4526 in 363s
+    HMC L=32 beta=70.4526: 192 configs, acc 0.976, cold start, burn 2000, 174s
+    case done in 578s
+[9/10] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    HMC L=16 beta=35: 128 configs, acc 0.989, cold start, burn 2000, 112s
+    generated 128 configs L=32 beta=138.477 in 361s
+    HMC L=32 beta=138.477: 192 configs, acc 0.977, cold start, burn 2000, 241s
+    case done in 728s
+[10/10] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    HMC L=16 beta=45: 128 configs, acc 0.990, cold start, burn 2000, 122s
+    generated 128 configs L=32 beta=178.482 in 357s
+    HMC L=32 beta=178.482: 192 configs, acc 0.977, cold start, burn 2000, 269s
+    case done in 762s
+summary: out\diffusion\demo\generalization_v5\summary.json
+tables:  out\diffusion\demo\generalization_v5\summary_tables.md
+[Sat 07/18/2026 10:53:11.97] STAGE_OOS_CACHECOPY 
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta0.25.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta0.5.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta0.75.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta1.2.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta1.5.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta1.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta11.8.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta14.1464.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta18.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta2.7.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta2.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta20.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta3.4.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta3.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta30.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta35.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta4.5.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta4.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta40.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta45.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta5.8.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta5.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta55.0237.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta6.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta8.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L16_beta9.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L32_beta4.pt
+out\diffusion\demo\generalization_v5\bases\wilson_L64_beta4.pt
+28 File(s) copied
+out\diffusion\demo\generalization_v5\reference\wilson_L128_beta14.1464.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta1.4892.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta10.015.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta10.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta11.6638.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta118.473.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta138.477.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta14.1464.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta158.48.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta16.2057.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta16.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta178.482.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta18.2524.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta2.02441.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta2.5435.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta20.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta21.5051.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta218.58.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta22.3151.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta3.10399.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta3.6012.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta30.3772.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta30.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta34.3944.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta4.44493.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta45.6238.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta55.0237.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta6.10518.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta6.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta70.4526.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta78.4578.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta8.79549.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L32_beta8.pt
+out\diffusion\demo\generalization_v5\reference\wilson_L64_beta14.1464.pt
+34 File(s) copied
+[Sat 07/18/2026 10:53:12.33] STAGE_OOS_S2 
+10 cases, output -> out\diffusion\demo\generalization_v5\seeds\s2
+[1/10] E_bc1.2: base L=16 beta=1.2 -> L=32 beta=3.6012 (out-of-sample matched pair 1.2 -> 3.6012)
+    generated 128 configs L=32 beta=3.6012 in 222s
+    case done in 232s
+[2/10] E_bc2.7: base L=16 beta=2.7 -> L=32 beta=8.79549 (out-of-sample matched pair 2.7 -> 8.7955)
+    generated 128 configs L=32 beta=8.79549 in 166s
+    case done in 177s
+[3/10] E_bc3.4: base L=16 beta=3.4 -> L=32 beta=11.6638 (out-of-sample matched pair 3.4 -> 11.6638)
+    generated 128 configs L=32 beta=11.6638 in 183s
+    case done in 194s
+[4/10] E_bc4.5: base L=16 beta=4.5 -> L=32 beta=16.2057 (out-of-sample matched pair 4.5 -> 16.2057)
+    generated 128 configs L=32 beta=16.2057 in 187s
+    case done in 198s
+[5/10] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    generated 128 configs L=32 beta=21.5051 in 190s
+    case done in 201s
+[6/10] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    generated 128 configs L=32 beta=34.3944 in 206s
+    case done in 217s
+[7/10] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    generated 128 configs L=32 beta=45.6238 in 225s
+    case done in 237s
+[8/10] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    generated 128 configs L=32 beta=70.4526 in 220s
+    case done in 231s
+[9/10] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    generated 128 configs L=32 beta=138.477 in 199s
+    case done in 211s
+[10/10] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    generated 128 configs L=32 beta=178.482 in 192s
+    case done in 204s
+c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion\scripts\06_generalization_study.py:334: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: out\diffusion\demo\generalization_v5\seeds\s2\summary.json
+tables:  out\diffusion\demo\generalization_v5\seeds\s2\summary_tables.md
+[Sat 07/18/2026 11:28:24.57] STAGE_OOS_THERM 
+35 matched-pair cases, output -> out\diffusion\demo\generalization_v5\thermalization
+A_bc0.25_L32_beta1.4892: benchmark cached, reusing series/summary
+A_bc0.5_L32_beta2.02441: benchmark cached, reusing series/summary
+A_bc0.75_L32_beta2.5435: benchmark cached, reusing series/summary
+A_bc1_L32_beta3.10399: benchmark cached, reusing series/summary
+E_bc1.2_L32_beta3.6012: sampling 128 raw seeds from wilson_L16_beta1.2.pt
+    sampled in 189s
+
+=== E_bc1.2_L32_beta3.6012: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc1.5_L32_beta4.44493: benchmark cached, reusing series/summary
+B_bt6_L32_beta6: benchmark cached, reusing series/summary
+A_bc2_L32_beta6.10518: benchmark cached, reusing series/summary
+B_bc2_bt8_L32_beta8: benchmark cached, reusing series/summary
+E_bc2.7_L32_beta8.79549: sampling 128 raw seeds from wilson_L16_beta2.7.pt
+    sampled in 213s
+
+=== E_bc2.7_L32_beta8.79549: step_size=0.1349, n_steps=7 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+B_bt10_L32_beta10: benchmark cached, reusing series/summary
+A_bc3_L32_beta10.015: benchmark cached, reusing series/summary
+E_bc3.4_L32_beta11.6638: sampling 128 raw seeds from wilson_L16_beta3.4.pt
+    sampled in 272s
+
+=== E_bc3.4_L32_beta11.6638: step_size=0.1171, n_steps=9 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc4_L32_beta14.1464: benchmark cached, reusing series/summary
+B_bt16_L32_beta16: benchmark cached, reusing series/summary
+E_bc4.5_L32_beta16.2057: sampling 128 raw seeds from wilson_L16_beta4.5.pt
+    sampled in 239s
+
+=== E_bc4.5_L32_beta16.2057: step_size=0.0994, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc5_L32_beta18.2524: benchmark cached, reusing series/summary
+B_bt20_L32_beta20: benchmark cached, reusing series/summary
+E_bc5.8_L32_beta21.5051: sampling 128 raw seeds from wilson_L16_beta5.8.pt
+    sampled in 226s
+
+=== E_bc5.8_L32_beta21.5051: step_size=0.0863, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+A_bc6_L32_beta22.3151: benchmark cached, reusing series/summary
+B_bt30_L32_beta30: benchmark cached, reusing series/summary
+A_bc8_L32_beta30.3772: benchmark cached, reusing series/summary
+E_bc9_L32_beta34.3944: sampling 128 raw seeds from wilson_L16_beta9.pt
+    sampled in 215s
+
+=== E_bc9_L32_beta34.3944: step_size=0.0682, n_steps=15 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+E_bc11.8_L32_beta45.6238: sampling 128 raw seeds from wilson_L16_beta11.8.pt
+    sampled in 269s
+
+=== E_bc11.8_L32_beta45.6238: step_size=0.0592, n_steps=17 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc14.1464_L32_beta55.0237: benchmark cached, reusing series/summary
+B_bt55.0237_L32_beta55.0237: benchmark cached, reusing series/summary
+E_bc18_L32_beta70.4526: sampling 128 raw seeds from wilson_L16_beta18.pt
+    sampled in 575s
+
+=== E_bc18_L32_beta70.4526: step_size=0.0477, n_steps=21 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc20_L32_beta78.4578: benchmark cached, reusing series/summary
+D_bc30_L32_beta118.473: benchmark cached, reusing series/summary
+E_bc35_L32_beta138.477: sampling 128 raw seeds from wilson_L16_beta35.pt
+    sampled in 545s
+
+=== E_bc35_L32_beta138.477: step_size=0.0340, n_steps=29 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc40_L32_beta158.48: benchmark cached, reusing series/summary
+E_bc45_L32_beta178.482: sampling 128 raw seeds from wilson_L16_beta45.pt
+    sampled in 564s
+
+=== E_bc45_L32_beta178.482: step_size=0.0299, n_steps=33 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+D_bc55.0237_L32_beta218.58: benchmark cached, reusing series/summary
+C_L64_L64_beta14.1464: benchmark cached, reusing series/summary
+C_L128_L128_beta14.1464: benchmark cached, reusing series/summary
+
+report: out\diffusion\demo\generalization_v5\thermalization\report.md
+{
+  "label": "A_bc0.25_L32_beta1.4892",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 6.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 8.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "hot start": {
+      "plaquette": 7.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "cold start": {
+      "plaquette": 9.0,
+      "wilson_2x2": 9.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 7.0
+    }
+  },
+  "hmc_interval_trajectories": 2.545043092420065
+}
+{
+  "label": "A_bc0.5_L32_beta2.02441",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 13.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 23.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "cold start": {
+      "plaquette": 20.0,
+      "wilson_2x2": 12.0,
+      "wilson_4x4": 5.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 10.0
+    }
+  },
+  "hmc_interval_trajectories": 4.914210377247884
+}
+{
+  "label": "A_bc0.75_L32_beta2.5435",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 14.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 26.0,
+      "wilson_2x2": 20.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 34.0,
+      "wilson_2x2": 23.0,
+      "wilson_4x4": 12.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 18.0
+    }
+  },
+  "hmc_interval_trajectories": 7.028869133146729
+}
+{
+  "label": "A_bc1_L32_beta3.10399",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 18.0,
+      "wilson_2x2": 19.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 36.0,
+      "wilson_2x2": 25.0,
+      "wilson_4x4": 13.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 3.0
+    },
+    "cold start": {
+      "plaquette": 39.0,
+      "wilson_2x2": 36.0,
+      "wilson_4x4": 29.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 21.0
+    }
+  },
+  "hmc_interval_trajectories": 8.129510120675544
+}
+{
+  "label": "E_bc1.2_L32_beta3.6012",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 9.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 11.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 45.0,
+      "wilson_2x2": 41.0,
+      "wilson_4x4": 23.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 6.0
+    },
+    "cold start": {
+      "plaquette": 36.0,
+      "wilson_2x2": 36.0,
+      "wilson_4x4": 27.0,
+      "wilson_6x6": 15.0,
+      "Q^2": 24.0
+    }
+  },
+  "hmc_interval_trajectories": 9.92773122045513
+}
+{
+  "label": "A_bc1.5_L32_beta4.44493",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 9.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 31.0
+    },
+    "hot start": {
+      "plaquette": 59.0,
+      "wilson_2x2": 58.0,
+      "wilson_4x4": 35.0,
+      "wilson_6x6": 23.0,
+      "Q^2": 74.0
+    },
+    "cold start": {
+      "plaquette": 64.0,
+      "wilson_2x2": 39.0,
+      "wilson_4x4": 18.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 67.0
+    }
+  },
+  "hmc_interval_trajectories": 9.035934671640172
+}
+{
+  "label": "B_bt6_L32_beta6",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 27.0,
+      "wilson_2x2": 47.0,
+      "wilson_4x4": 4.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 127.0,
+      "wilson_2x2": 143.0,
+      "wilson_4x4": 35.0,
+      "wilson_6x6": 29.0,
+      "Q^2": 76.0
+    },
+    "cold start": {
+      "plaquette": 87.0,
+      "wilson_2x2": 103.0,
+      "wilson_4x4": 18.0,
+      "wilson_6x6": 16.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 6.772181182122511
+}
+{
+  "label": "A_bc2_L32_beta6.10518",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 128.0,
+      "wilson_2x2": 142.0,
+      "wilson_4x4": 40.0,
+      "wilson_6x6": 39.0,
+      "Q^2": 8.0
+    },
+    "cold start": {
+      "plaquette": 94.0,
+      "wilson_2x2": 102.0,
+      "wilson_4x4": 13.0,
+      "wilson_6x6": 27.0,
+      "Q^2": 528.0
+    }
+  },
+  "hmc_interval_trajectories": 6.912698966138661
+}
+{
+  "label": "B_bc2_bt8_L32_beta8",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 37.0,
+      "wilson_4x4": 15.0,
+      "wilson_6x6": 9.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 253.0,
+      "wilson_2x2": 466.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 307.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 88.0,
+      "wilson_2x2": 128.0,
+      "wilson_4x4": 81.0,
+      "wilson_6x6": 9.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 10.557751815380024
+}
+{
+  "label": "E_bc2.7_L32_beta8.79549",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 16.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 337.0,
+      "wilson_2x2": 533.0,
+      "wilson_4x4": 334.0,
+      "wilson_6x6": 109.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 127.0,
+      "wilson_2x2": 160.0,
+      "wilson_4x4": 36.0,
+      "wilson_6x6": 6.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 8.21018671105443
+}
+{
+  "label": "B_bt10_L32_beta10",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 11.0,
+      "wilson_2x2": 10.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 467.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 233.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 223.0,
+      "wilson_2x2": 176.0,
+      "wilson_4x4": 106.0,
+      "wilson_6x6": 50.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 13.134262905336538
+}
+{
+  "label": "A_bc3_L32_beta10.015",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 3.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 163.0,
+      "wilson_2x2": 159.0,
+      "wilson_4x4": 83.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 14.083757525190723
+}
+{
+  "label": "E_bc3.4_L32_beta11.6638",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 91.0,
+      "wilson_2x2": 55.0,
+      "wilson_4x4": 20.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 185.0,
+      "wilson_2x2": 229.0,
+      "wilson_4x4": 240.0,
+      "wilson_6x6": 241.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 170.0,
+      "wilson_2x2": 153.0,
+      "wilson_4x4": 70.0,
+      "wilson_6x6": 18.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 12.020268678044069
+}
+{
+  "label": "A_bc4_L32_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 5.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 439.0,
+      "wilson_2x2": 531.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 176.0,
+      "wilson_2x2": 117.0,
+      "wilson_4x4": 91.0,
+      "wilson_6x6": 25.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 11.435316320642675
+}
+{
+  "label": "B_bt16_L32_beta16",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 55.0,
+      "wilson_2x2": 24.0,
+      "wilson_4x4": 2.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 343.0,
+      "wilson_2x2": 558.0,
+      "wilson_4x4": 228.0,
+      "wilson_6x6": 93.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 26.925569626895506
+}
+{
+  "label": "E_bc4.5_L32_beta16.2057",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 7.0,
+      "wilson_2x2": 7.0,
+      "wilson_4x4": 7.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 265.0,
+      "wilson_2x2": 391.0,
+      "wilson_4x4": 323.0,
+      "wilson_6x6": 85.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 24.09997062894521
+}
+{
+  "label": "A_bc5_L32_beta18.2524",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 78.0,
+      "wilson_2x2": 56.0,
+      "wilson_4x4": 9.0,
+      "wilson_6x6": 8.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 512.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 210.0,
+      "wilson_2x2": 181.0,
+      "wilson_4x4": 91.0,
+      "wilson_6x6": 138.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 12.137650115975124
+}
+{
+  "label": "B_bt20_L32_beta20",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 14.0,
+      "wilson_4x4": 12.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 540.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 180.0,
+      "wilson_2x2": 119.0,
+      "wilson_4x4": 56.0,
+      "wilson_6x6": 159.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 12.990114402629906
+}
+{
+  "label": "E_bc5.8_L32_beta21.5051",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 58.0,
+      "wilson_2x2": 31.0,
+      "wilson_4x4": 14.0,
+      "wilson_6x6": 14.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 282.0,
+      "wilson_2x2": 181.0,
+      "wilson_4x4": 47.0,
+      "wilson_6x6": 46.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 16.51866354105042
+}
+{
+  "label": "A_bc6_L32_beta22.3151",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 9.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 259.0,
+      "wilson_2x2": 143.0,
+      "wilson_4x4": 78.0,
+      "wilson_6x6": 59.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 14.63966106203453
+}
+{
+  "label": "B_bt30_L32_beta30",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 376.0,
+      "wilson_2x2": 489.0,
+      "wilson_4x4": 230.0,
+      "wilson_6x6": 151.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 30.90098416902204
+}
+{
+  "label": "A_bc8_L32_beta30.3772",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 92.0,
+      "wilson_2x2": 59.0,
+      "wilson_4x4": 7.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 262.0,
+      "wilson_2x2": 476.0,
+      "wilson_4x4": 248.0,
+      "wilson_6x6": 242.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 39.409735556119465
+}
+{
+  "label": "E_bc9_L32_beta34.3944",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": 44.0,
+      "wilson_4x4": 7.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 424.0,
+      "wilson_2x2": 268.0,
+      "wilson_4x4": 28.0,
+      "wilson_6x6": 28.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 16.293681633469763
+}
+{
+  "label": "E_bc11.8_L32_beta45.6238",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 64.0,
+      "wilson_2x2": 14.0,
+      "wilson_4x4": 2.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 243.0,
+      "wilson_2x2": 144.0,
+      "wilson_4x4": 73.0,
+      "wilson_6x6": 73.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 18.546398253343217
+}
+{
+  "label": "D_bc14.1464_L32_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 15.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 371.0,
+      "wilson_2x2": 231.0,
+      "wilson_4x4": 163.0,
+      "wilson_6x6": 147.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 25.619431675506128
+}
+{
+  "label": "B_bt55.0237_L32_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 263.0,
+      "wilson_2x2": 231.0,
+      "wilson_4x4": 113.0,
+      "wilson_6x6": 108.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 29.011794806674637
+}
+{
+  "label": "E_bc18_L32_beta70.4526",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 16.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 326.0,
+      "wilson_2x2": 209.0,
+      "wilson_4x4": 164.0,
+      "wilson_6x6": 105.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 28.838449954449576
+}
+{
+  "label": "D_bc20_L32_beta78.4578",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 24.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 189.0,
+      "wilson_4x4": 72.0,
+      "wilson_6x6": 72.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 15.316220520515161
+}
+{
+  "label": "D_bc30_L32_beta118.473",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 58.0,
+      "wilson_6x6": 58.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 302.0,
+      "wilson_2x2": 204.0,
+      "wilson_4x4": 347.0,
+      "wilson_6x6": 204.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 41.745968156698225
+}
+{
+  "label": "E_bc35_L32_beta138.477",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 481.0,
+      "wilson_2x2": 533.0,
+      "wilson_4x4": 372.0,
+      "wilson_6x6": 314.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 80.38106894011011
+}
+{
+  "label": "D_bc40_L32_beta158.48",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 70.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 214.0,
+      "wilson_2x2": 263.0,
+      "wilson_4x4": 145.0,
+      "wilson_6x6": 28.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 73.46834386408666
+}
+{
+  "label": "E_bc45_L32_beta178.482",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 313.0,
+      "wilson_2x2": 253.0,
+      "wilson_4x4": 90.0,
+      "wilson_6x6": 9.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 37.53624710088596
+}
+{
+  "label": "D_bc55.0237_L32_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 25.0,
+      "wilson_6x6": 19.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 504.0,
+      "wilson_4x4": 113.0,
+      "wilson_6x6": 113.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 21.92942248271043
+}
+{
+  "label": "C_L64_L64_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 2.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 276.0,
+      "wilson_2x2": 337.0,
+      "wilson_4x4": 337.0,
+      "wilson_6x6": 23.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 28.173967731067265
+}
+{
+  "label": "C_L128_L128_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 529.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 233.0,
+      "wilson_2x2": 567.0,
+      "wilson_4x4": 236.0,
+      "wilson_6x6": 38.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 66.48131496932318
+}
+[Sat 07/18/2026 12:54:01.22] CHAIN_DONE_OOS 

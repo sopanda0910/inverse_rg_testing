@@ -1,0 +1,48 @@
+{
+  "run_id": "A_bc4",
+  "beta": 14.146446570889967,
+  "lattice_size": 32,
+  "action_type": "wilson",
+  "n_traj": 600,
+  "n_chains": 32,
+  "hmc": {
+    "step_size": 0.10634970988311153,
+    "n_steps": 9,
+    "acceptance": {
+      "diffusion seed": 0.98453125,
+      "cold start": 0.9848958333333333,
+      "hot start": 0.985
+    }
+  },
+  "targets": {
+    "plaquette": 0.9639808987868075,
+    "wilson_2x2": 0.8635226110243367,
+    "wilson_4x4": 0.5560256872712839,
+    "wilson_6x6": 0.26697059232340353,
+    "Q^2": 1.9039912820080367
+  },
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 4.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 0.0
+    },
+    "cold start": {
+      "plaquette": 194.0,
+      "wilson_2x2": 147.0,
+      "wilson_4x4": 66.0,
+      "wilson_6x6": 29.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 429.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    }
+  },
+  "seed_provenance": "raw conditional-diffusion output (pre-retherm), base wilson_L16_beta4.pt, sampled for the thermalization scan"
+}

@@ -98,7 +98,7 @@ def equilibrated_window(series: np.ndarray, t_therm: float | None) -> tuple[np.n
 def load_rung(therm_dir: Path, label: str, obs_list: list[str], max_lag: int) -> dict:
     summary = json.loads((therm_dir / f"{label}_summary.json").read_text(encoding="utf-8"))
     series = np.load(therm_dir / f"{label}_series.npz")
-    rung = {"label": label, "beta": summary["beta"], "lattice_size": summary["lattice_size"],
+    rung = {"label": Path(label).name, "beta": summary["beta"], "lattice_size": summary["lattice_size"],
             "obs": {}}
     for obs in obs_list:
         window_key = "Q^2" if obs == "Q" else obs
@@ -241,7 +241,12 @@ def main() -> None:
     out_dir = Path(args.out) if args.out else therm_dir
     out_dir.mkdir(parents=True, exist_ok=True)
     obs_list = OBS_ORDER if args.obs == "all" else [v.strip() for v in args.obs.split(",")]
-    labels = sorted(p.name[: -len("_series.npz")] for p in therm_dir.glob("*_series.npz"))
+    labels = sorted(
+        str(p.relative_to(therm_dir))[: -len("_series.npz")]
+        for pattern in ("*_series.npz", "*/*_series.npz")
+        for p in therm_dir.glob(pattern)
+        if p.parent.name != "generalization"
+    )
     if not labels:
         raise SystemExit(f"no *_series.npz under {therm_dir}; run 05_hmc_thermalization.py first")
 
