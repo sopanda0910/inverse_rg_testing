@@ -271,3 +271,95 @@ class TestInSamplerChargeProjection:
             charge_projection_sigma=0.5, charge_projection_interval=5,
         )
         assert torch.equal(topological_charge(fine), topological_charge(coarse))
+
+
+class TestV6Machinery:
+    def test_beta_aware_sigma_min(self):
+        sched = GeometricNoiseSchedule(0.03, 6.0, sigma_min_beta_coef=0.3)
+        assert sched.effective_sigma_min(None) == 0.03
+        assert sched.effective_sigma_min(4.0) == 0.03
+        assert abs(sched.effective_sigma_min(400.0) - 0.015) < 1e-9
+        grid = sched.discrete_sigmas(50, beta=400.0)
+        assert abs(float(grid[-1]) - 0.015) < 1e-6
+        assert abs(float(grid[0]) - 6.0) < 1e-5
+        betas = torch.tensor([1.0, 900.0])
+        sig = sched.sample_sigma(2, "cpu", beta=betas)
+        assert sig.shape == (2,) and float(sig.min()) > 0
+
+    def test_legacy_schedule_unchanged(self):
+        old = GeometricNoiseSchedule(0.03, 6.0)
+        new = GeometricNoiseSchedule(0.03, 6.0, sigma_min_beta_coef=0.3)
+        t = torch.linspace(0, 1, 7)
+        assert torch.allclose(old.sigma(t), new.sigma(t))
+        assert torch.allclose(old.discrete_sigmas(20), new.discrete_sigmas(20))
+
+    def test_winding_channel_carries_charge(self):
+        from diffusion.lgt.local_updates import instanton_field
+        from diffusion.lgt.lattice import TWO_PI
+
+        coarse = wrap(2.0 * instanton_field(8).unsqueeze(0) + 0.01 * torch.randn(1, 2, 8, 8))
+        cond4 = coarse_conditioning_channels(coarse, 16)
+        cond5 = coarse_conditioning_channels(coarse, 16, n_channels=5)
+        assert cond4.shape == (1, 4, 16, 16) and cond5.shape == (1, 5, 16, 16)
+        assert torch.allclose(cond4, cond5[:, :4])
+        q_from_channel = float(cond5[0, 4].sum()) / (4.0 * TWO_PI)
+        assert abs(q_from_channel - 2.0) < 0.05
+
+    def test_checkpoint_roundtrip_with_v6_fields(self, tmp_path):
+        from diffusion.model.train import save_checkpoint, load_checkpoint
+
+        cfg = TrainConfig(hidden=16, depth=2, cond_channels=5, sigma_min=0.03,
+                          sigma_max=6.0, sigma_min_beta_coef=0.3)
+        model = GaugeCovariantScoreNet(hidden=16, depth=2, cond_channels=5)
+        path = str(tmp_path / "ckpt.pt")
+        save_checkpoint(model.state_dict(), cfg, path)
+        loaded, sched = load_checkpoint(path)
+        assert loaded.cond_channels == 5
+        assert sched.sigma_min_beta_coef == 0.3
+        theta = random_field(batch=2, size=8, seed=21)
+        cond = coarse_conditioning_channels(theta[:, :, ::2, ::2], 8, n_channels=5)
+        out = loaded(theta, torch.tensor([0.5, 0.5]), torch.tensor([100.0, 100.0]), cond)
+        assert out.shape == (2, 2, 8, 8)
+
+    def test_expand_rungs_deterministic_and_policied(self):
+        from diffusion.utils import expand_rungs
+
+        cfg = {"rungs": [{"beta": 55.0, "lattice_size": 16}],
+               "random_rungs": [{"n": 20, "beta_min": 1.0, "beta_max": 60.0,
+                                 "lattice_size": 16, "n_configs": 128}]}
+        a = expand_rungs(cfg, seed=0)
+        b = expand_rungs(cfg, seed=0)
+        assert a == b and len(a) == 21
+        for rung in a[1:]:
+            assert 1.0 <= rung["beta"] <= 60.0 and rung["n_configs"] == 128
+            if rung["beta"] < 5.0:
+                assert rung["hot_start"] and rung["burn_in"] == 200
+            elif rung["beta"] >= 20.0:
+                assert not rung["hot_start"] and rung["burn_in"] == 2000
+            else:
+                assert not rung["hot_start"] and rung["burn_in"] == 600
+        assert expand_rungs(cfg, seed=1)[1:] != a[1:]
+
+
+class TestTrainingResumeAndEarlyStop:
+    def test_snapshot_resume_continues_history(self, tmp_path):
+        fine = random_field(batch=16, size=8, seed=31)
+        rung = RungData("r", fine, fine[:, :, ::2, ::2], beta=1.0)
+        ckpt = str(tmp_path / "net.pt")
+        cfg = TrainConfig(epochs=4, batch_size=8, hidden=16, depth=2, seed=0,
+                          checkpoint_path=ckpt, snapshot_every=2)
+        _, hist1 = train_score_model([rung], [rung], cfg)
+        assert (tmp_path / "net.pt.resume").exists()
+        cfg2 = TrainConfig(epochs=6, batch_size=8, hidden=16, depth=2, seed=0,
+                           checkpoint_path=ckpt, snapshot_every=2, resume=True)
+        _, hist2 = train_score_model([rung], [rung], cfg2)
+        assert [h["epoch"] for h in hist2] == [0, 1, 2, 3, 4, 5]
+
+    def test_early_stop_breaks_before_epochs(self):
+        torch.manual_seed(6)
+        fine = random_field(batch=16, size=8, seed=32)
+        rung = RungData("r", fine, fine[:, :, ::2, ::2], beta=1.0)
+        cfg = TrainConfig(epochs=50, batch_size=8, hidden=16, depth=2, seed=0,
+                          learning_rate=0.0, early_stop_patience=2)
+        _, hist = train_score_model([rung], [rung], cfg)
+        assert len(hist) < 50

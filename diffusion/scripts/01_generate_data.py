@@ -12,6 +12,8 @@ import torch
 from diffusion.lgt import make_action, run_hmc_ensemble, block_links, match_coarse_beta
 from diffusion.lgt.blocking import villain_blocked_beta
 from diffusion.lgt.hmc import adapted_hmc_params
+from diffusion.lgt.lattice import wrap
+from diffusion.lgt.local_updates import instanton_field, retherm_sweeps
 from diffusion.utils import (
     load_config,
     resolve_device,
@@ -19,6 +21,7 @@ from diffusion.utils import (
     save_ensemble,
     ensemble_path,
     save_json,
+    expand_rungs,
 )
 
 
@@ -36,7 +39,7 @@ def generate_rung(rung: dict, data_cfg: dict, action_type: str, device: str) -> 
     configs, stats = run_hmc_ensemble(
         lattice_size,
         action,
-        n_configs=int(data_cfg["n_configs"]),
+        n_configs=int(rung.get("n_configs", data_cfg["n_configs"])),
         n_chains=int(data_cfg["n_chains"]),
         burn_in=burn_in,
         thin=int(data_cfg["thin"]),
@@ -51,7 +54,31 @@ def generate_rung(rung: dict, data_cfg: dict, action_type: str, device: str) -> 
         f"acceptance {stats.acceptance_rate:.3f}, {'hot' if hot_start else 'cold'} start, "
         f"burn-in {burn_in}, {time.time()-t0:.0f}s"
     )
+    fraction = float(rung.get("sector_augment", 0.0))
+    if fraction > 0:
+        configs = sector_augment(configs, action, fraction)
     return configs
+
+
+def sector_augment(configs: torch.Tensor, action, fraction: float) -> torch.Tensor:
+    """Append instanton-shifted copies so charged sectors are represented at high
+    beta, where P(|Q| > 0) is tiny and the conditional model otherwise sees almost
+    no charged coarse configurations. Shifting fine configs shifts their blocked
+    partners' charge identically (blocking preserves Q), so the (fine | coarse)
+    pairs remain on the correct conditional relation -- this broadens conditioning
+    coverage without biasing the conditional law. Local rethermalization (no Q-hops)
+    relaxes the smooth instanton strain inside the fixed sector."""
+    n_aug = int(fraction * configs.shape[0])
+    if n_aug == 0:
+        return configs
+    lattice_size = configs.shape[-1]
+    index = torch.randperm(configs.shape[0])[:n_aug]
+    charges = torch.tensor([-2.0, -1.0, 1.0, 2.0])[torch.randint(0, 4, (n_aug,))]
+    inst = instanton_field(lattice_size, dtype=configs.dtype)
+    shifted = wrap(configs[index] + charges.view(-1, 1, 1, 1) * inst)
+    shifted = retherm_sweeps(shifted, action, 8, topological_updates=False)
+    print(f"    sector augmentation: +{n_aug} configs at Q shifts of +-1, +-2")
+    return torch.cat([configs, shifted], dim=0)
 
 
 def main() -> None:
@@ -66,7 +93,7 @@ def main() -> None:
     out_dir = Path(data_cfg["out_dir"])
 
     matching = {}
-    for rung in list(data_cfg["rungs"]) + list(data_cfg.get("heldout", [])):
+    for rung in expand_rungs(data_cfg, int(config["seed"])) + list(data_cfg.get("heldout", [])):
         path = ensemble_path(out_dir, action_type, rung["lattice_size"], rung["beta"])
         if path.exists():
             print(f"skip existing {path}")

@@ -56,15 +56,27 @@ def invariant_channels(theta: torch.Tensor) -> torch.Tensor:
     )
 
 
-def coarse_conditioning_channels(coarse: torch.Tensor, fine_size: int) -> torch.Tensor:
-    """[B, 2, L/2, L/2] coarse links -> [B, 4, L, L] invariant conditioning channels."""
+def coarse_conditioning_channels(
+    coarse: torch.Tensor, fine_size: int, n_channels: int = 4
+) -> torch.Tensor:
+    """[B, 2, L/2, L/2] coarse links -> [B, n_channels, L, L] invariant conditioning.
+
+    n_channels = 4: cos/sin of coarse plaquette and 2x2 loop angles (original set).
+    n_channels = 5: adds the raw wrapped plaquette angle itself. cos/sin discard the
+    winding count, so topology reaches the (locally receptive) network only weakly;
+    the raw angle is the local winding density -- it sums to 2 pi Q_coarse -- giving
+    the sampler direct access to where the coarse configuration carries its charge.
+    """
     if coarse.dim() == 3:
         coarse = coarse.unsqueeze(0)
     plaq = plaquette_angles(coarse)
     loop22 = wilson_loop_angles(coarse, 2, 2)
-    feats = torch.stack(
-        [torch.cos(plaq), torch.sin(plaq), torch.cos(loop22), torch.sin(loop22)], dim=1
-    )
+    channels = [torch.cos(plaq), torch.sin(plaq), torch.cos(loop22), torch.sin(loop22)]
+    if n_channels == 5:
+        channels.append(plaq)
+    elif n_channels != 4:
+        raise ValueError(f"unsupported conditioning channel count: {n_channels}")
+    feats = torch.stack(channels, dim=1)
     scale = fine_size // coarse.shape[-1]
     return feats.repeat_interleave(scale, dim=-2).repeat_interleave(scale, dim=-1)
 

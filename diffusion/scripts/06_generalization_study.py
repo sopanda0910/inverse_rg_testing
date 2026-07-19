@@ -62,6 +62,14 @@ D_COARSE_BETAS = [14.1464, 20.0, 30.0, 40.0, 55.0237]
 # training couplings (both >= ~10% log-distance from all trained rungs), so this
 # part measures genuine off-grid generalization, not in-sample recall.
 E_COARSE_BETAS = [1.2, 2.7, 3.4, 4.5, 5.8, 9.0, 11.8, 18.0, 35.0, 45.0]
+# Part F: the one-model demonstration — matched pairs far beyond any training
+# coupling (targets ~7x and ~15x the training maximum) plus a rung that is
+# simultaneously large-beta and large-volume.
+F_CASES = [
+    (16, 100.0),
+    (16, 218.58),
+    (32, 55.0237),
+]
 B_TARGET_BETAS = [6.0, 10.0, 16.0, 20.0, 30.0, 55.0237]
 MATCHED_PAIR = (4.0, 14.1464)
 
@@ -94,6 +102,12 @@ def build_cases(smoke: bool) -> list[Case]:
         bf = approx_matched_fine_beta(bc, ACTION_TYPE)
         cases.append(Case(f"E_bc{bc:g}", "E", 16, bc, bf, n32, nref32,
                           f"out-of-sample matched pair {bc:g} -> {bf:.4f}"))
+    for base_size, bc in F_CASES:
+        bf = approx_matched_fine_beta(bc, ACTION_TYPE)
+        n = 8 if smoke else 64
+        nref = 8 if smoke else 96
+        cases.append(Case(f"F_L{base_size*2}_bc{bc:g}", "F", base_size, bc, bf, n, nref,
+                          f"extrapolation demo {bc:g} -> {bf:.4f} at L={base_size*2}"))
     for bf in B_TARGET_BETAS:
         cases.append(Case(f"B_bt{bf:g}", "B", 16, 4.0, bf, n32, nref32,
                           f"mismatch: matched target is {MATCHED_PAIR[1]:g}"))
@@ -407,6 +421,7 @@ def write_summary_tables(records: dict, out: Path) -> None:
     for part, title in [("A", "Part A: matched-pair beta scan (L=16 -> L=32)"),
                         ("D", "Part D: upper-coupling matched pairs (L=16 -> L=32)"),
                         ("E", "Part E: out-of-sample matched pairs (bases and targets mid-gap between training couplings)"),
+                        ("F", "Part F: extrapolation demo (targets far beyond the training range, incl. large volume)"),
                         ("B", "Part B: target-coupling mismatch (base L=16)"),
                         ("C", "Part C: lattice-size scan (pair 4 -> 14.1464)")]:
         rows = sorted((r for r in records.values() if r["part"] == part),

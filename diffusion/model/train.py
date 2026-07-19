@@ -36,6 +36,8 @@ class TrainConfig:
     hidden: int = 64
     depth: int = 4
     kernel_size: int = 3
+    cond_channels: int = 4
+    sigma_min_beta_coef: float | None = None
     device: str = "cpu"
     seed: int = 0
     topo_weight: float = 0.0
@@ -44,6 +46,9 @@ class TrainConfig:
     ema_decay: float = 0.999
     cosine_lr: bool = True
     min_learning_rate: float = 1e-6
+    early_stop_patience: int = 0
+    resume: bool = False
+    snapshot_every: int = 10
 
 
 def soft_topological_charge(field: torch.Tensor) -> torch.Tensor:
@@ -78,7 +83,7 @@ def denoising_loss(
     """
     batch = fine.shape[0]
     if sigma is None:
-        sigma = schedule.sample_sigma(batch, fine.device)
+        sigma = schedule.sample_sigma(batch, fine.device, beta=beta)
     sigma4 = sigma.view(-1, 1, 1, 1)
     theta_t = wrap(fine + sigma4 * torch.randn_like(fine))
     delta = wrap(theta_t - fine)
@@ -98,9 +103,11 @@ def denoising_loss(
     return total
 
 
-def _prepare_rung(rung: RungData, device: str) -> dict:
+def _prepare_rung(rung: RungData, device: str, cond_channels: int = 4) -> dict:
     fine = rung.fine.to(device).float()
-    cond = coarse_conditioning_channels(rung.coarse.to(device).float(), rung.lattice_size)
+    cond = coarse_conditioning_channels(
+        rung.coarse.to(device).float(), rung.lattice_size, n_channels=cond_channels
+    )
     beta = torch.full((fine.shape[0],), float(rung.beta), device=device)
     return {"name": rung.name, "fine": fine, "cond": cond, "beta": beta}
 
@@ -115,14 +122,17 @@ def train_score_model(
     device = config.device
     if model is None:
         model = GaugeCovariantScoreNet(
-            hidden=config.hidden, depth=config.depth, kernel_size=config.kernel_size
+            hidden=config.hidden, depth=config.depth, kernel_size=config.kernel_size,
+            cond_channels=config.cond_channels,
         )
     model = model.to(device)
-    schedule = GeometricNoiseSchedule(config.sigma_min, config.sigma_max)
+    schedule = GeometricNoiseSchedule(
+        config.sigma_min, config.sigma_max, sigma_min_beta_coef=config.sigma_min_beta_coef
+    )
     optimizer = torch.optim.Adam(model.parameters(), lr=config.learning_rate)
 
-    train_data = [_prepare_rung(r, device) for r in train_rungs]
-    val_data = [_prepare_rung(r, device) for r in val_rungs]
+    train_data = [_prepare_rung(r, device, config.cond_channels) for r in train_rungs]
+    val_data = [_prepare_rung(r, device, config.cond_channels) for r in val_rungs]
     history: list[dict] = []
     best_val = math.inf
 
@@ -138,7 +148,25 @@ def train_score_model(
     )
     ema_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
 
-    for epoch in range(config.epochs):
+    snapshot_path = (
+        Path(str(config.checkpoint_path) + ".resume") if config.checkpoint_path else None
+    )
+    start_epoch = 0
+    best_epoch = -1
+    if config.resume and snapshot_path and snapshot_path.exists():
+        snap = torch.load(snapshot_path, map_location=device, weights_only=False)
+        model.load_state_dict(snap["model_state"])
+        ema_state = {k: v.to(device) for k, v in snap["ema_state"].items()}
+        optimizer.load_state_dict(snap["optimizer_state"])
+        if lr_schedule is not None and snap.get("lr_state") is not None:
+            lr_schedule.load_state_dict(snap["lr_state"])
+        history = snap["history"]
+        best_val = snap["best_val"]
+        best_epoch = snap["best_epoch"]
+        start_epoch = snap["epoch"] + 1
+        print(f"resuming from epoch {start_epoch} (best val {best_val:.4f} at {best_epoch})")
+
+    for epoch in range(start_epoch, config.epochs):
         model.train()
         losses = []
         all_batches = []
@@ -193,10 +221,27 @@ def train_score_model(
 
         if config.checkpoint_path and (not val_data or val_total <= best_val):
             best_val = val_total
+            best_epoch = epoch
             save_checkpoint(ema_state, config, config.checkpoint_path)
         if config.log_every and epoch % config.log_every == 0:
             val_str = " ".join(f"{k}={v:.4f}" for k, v in record.items() if k.startswith("val_"))
             print(f"epoch {epoch:3d}  train={record['train_loss']:.4f}  {val_str}")
+        if snapshot_path and config.snapshot_every and (epoch + 1) % config.snapshot_every == 0:
+            torch.save({
+                "epoch": epoch,
+                "model_state": model.state_dict(),
+                "ema_state": ema_state,
+                "optimizer_state": optimizer.state_dict(),
+                "lr_state": lr_schedule.state_dict() if lr_schedule is not None else None,
+                "history": history,
+                "best_val": best_val,
+                "best_epoch": best_epoch,
+            }, snapshot_path)
+        if (config.early_stop_patience > 0 and val_data
+                and epoch - best_epoch >= config.early_stop_patience):
+            print(f"early stop at epoch {epoch}: no val improvement for "
+                  f"{config.early_stop_patience} epochs (best {best_val:.4f} at {best_epoch})")
+            break
 
     model.load_state_dict(ema_state)
     model.eval()
@@ -212,9 +257,11 @@ def save_checkpoint(state_dict: dict, config: TrainConfig, path: str) -> None:
                 "hidden": config.hidden,
                 "depth": config.depth,
                 "kernel_size": config.kernel_size,
+                "cond_channels": config.cond_channels,
             },
             "sigma_min": config.sigma_min,
             "sigma_max": config.sigma_max,
+            "sigma_min_beta_coef": config.sigma_min_beta_coef,
         },
         path,
     )
@@ -225,5 +272,8 @@ def load_checkpoint(path: str, device: str = "cpu") -> tuple[GaugeCovariantScore
     model = GaugeCovariantScoreNet(**payload["model_kwargs"])
     model.load_state_dict(payload["model_state"])
     model.to(device).eval()
-    schedule = GeometricNoiseSchedule(payload["sigma_min"], payload["sigma_max"])
+    schedule = GeometricNoiseSchedule(
+        payload["sigma_min"], payload["sigma_max"],
+        sigma_min_beta_coef=payload.get("sigma_min_beta_coef"),
+    )
     return model, schedule

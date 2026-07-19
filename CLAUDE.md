@@ -32,6 +32,8 @@ All project code lives in `diffusion/`.
 - Beta ladder: matched sequence of (L, beta) rungs; each inverse step doubles L
 - Validation compares gauge-invariant observable distributions (plaquette, rectangles, Wilson loops, topological charge/susceptibility) between generated and direct-HMC ensembles
 - Watch for topological freezing in direct HMC at large beta — that is the regime the ladder is meant to beat
+- When comparing checkpoints with the generalization study (06), always use per-case seeds (`--seed`) and the raw (pre-enforcement) topology metrics: charge enforcement pins the Q columns and a shared seed lets retherm RNG-couple two runs at high beta, hiding model differences
+- Training couplings can be continuous (`data.random_rungs`, log-uniform); the noise floor can be beta-aware (`train.sigma_min_beta_coef`); conditioning can carry the raw coarse plaquette angle (`train.cond_channels: 5`)
 
 ### Code Style
 
@@ -54,7 +56,7 @@ diffusion/
   lgt/            -- lattice gauge theory core (lattice geometry/wrapping/topology, actions, hmc, exact references, blocking, local updates)
   model/          -- score network and diffusion machinery
   pipeline/       -- data generation, training, ladder, validation stages
-  scripts/        -- numbered runnable entry points (00_ ... 10_)
+  scripts/        -- numbered runnable entry points (00_ ... 12_)
   tests/          -- pytest tests
   validate/       -- observable extraction and comparison
 out/              -- generated results (reports, figures, ensembles)

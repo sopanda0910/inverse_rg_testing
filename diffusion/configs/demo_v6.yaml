@@ -1,0 +1,77 @@
+# v6: one model for arbitrary beta and lattice size.
+# Design (from the v5/OOS post-mortem):
+#   1. Continuous-beta training — log-uniform draws replace the coupling grid, so
+#      "off-grid" ceases to exist inside [1, 60]; couplings beyond 60 are the
+#      genuine extrapolation frontier (study part F demonstrates ~397 and ~870).
+#   2. Beta-aware noise floor sigma_min(beta) = min(0.03, 0.3/sqrt(beta)) — a fixed
+#      floor stops resolving link fluctuations (width ~ 1/sqrt(beta)) near beta ~
+#      200, the plausible mechanism of the v5 raw-seed wall at beta_f >~ 70.
+#   3. Winding conditioning (cond_channels: 5) — the raw coarse plaquette angle is
+#      the local winding density (sums to 2 pi Q); cos/sin channels discard it.
+#   4. Sector augmentation on the high-beta anchors — instanton-shifted copies keep
+#      charged coarse configurations represented where P(|Q|>0) is tiny.
+# Carried over from v3-v5 (nothing measurably regressed): soft-topological-charge
+# penalty (topo_weight), in-sampler charge projection, multi-size rungs.
+
+seed: 0
+device: auto
+action_type: wilson
+
+data:
+  out_dir: out/diffusion/demo_v6/data
+  # Fixed anchors: full-statistics, sector-augmented high-beta rungs (charged
+  # sectors are vanishing there: <Q^2> = 0.05-0.5 at L=16).
+  rungs:
+    - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600, sector_augment: 0.5}
+    - {beta: 25.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 40.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+  # Continuous coverage: log-uniform beta draws (deterministic in the seed).
+  random_rungs:
+    - {n: 60, beta_min: 1.0, beta_max: 60.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 2.0, beta_max: 60.0, lattice_size: 32, n_configs: 128}
+    - {n: 6, beta_min: 1.0, beta_max: 8.0, lattice_size: 8, n_configs: 128}
+  heldout: []
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  topological_updates: true
+  hot_start: true
+
+train:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 3.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  sigma_min_beta_coef: 0.3
+  hidden: 56
+  depth: 4
+  kernel_size: 3
+  cond_channels: 5
+  val_fraction: 0.1
+  topo_weight: 0.1
+  checkpoint: out/diffusion/demo_v6/checkpoints/score_net.pt
+  history: out/diffusion/demo_v6/checkpoints/history.json
+
+ladder:
+  base: {beta: 1.3472, lattice_size: 8}
+  n_base_configs: 192
+  beta_schedule: [4.0, 14.1464, 55.0237]
+  n_retherm_sweeps: 16
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  retherm_topological_updates: true
+  sample_batch_size: 32
+  out_dir: out/diffusion/demo_v6/generated
+
+validate:
+  out_dir: out/diffusion/demo_v6/validation
+  n_reference_configs: 384
+  freezing_rung: {beta: 55.0237, lattice_size: 64}
+  freezing_hmc_length: 300

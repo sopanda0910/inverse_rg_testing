@@ -46,3 +46,30 @@ def save_json(path: str | Path, payload) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+
+def expand_rungs(data_cfg: dict, seed: int) -> list[dict]:
+    """Fixed rungs plus deterministic log-uniform draws from data.random_rungs.
+
+    Each random_rungs spec {n, beta_min, beta_max, lattice_size, n_configs?} expands
+    to n rungs with betas drawn log-uniformly (deterministic in the config seed and
+    the spec's position), carrying the established start policy: hot below beta = 5,
+    cold with burn-in 600 up to beta = 20, cold with burn-in 2000 above.
+    """
+    rungs = [dict(r) for r in data_cfg.get("rungs", [])]
+    for index, spec in enumerate(data_cfg.get("random_rungs", [])):
+        rng = np.random.default_rng(seed + 1000 * (index + 1))
+        betas = np.exp(rng.uniform(np.log(float(spec["beta_min"])),
+                                   np.log(float(spec["beta_max"])), int(spec["n"])))
+        for beta in np.sort(betas):
+            beta = round(float(beta), 4)
+            rung = {
+                "beta": beta,
+                "lattice_size": int(spec["lattice_size"]),
+                "hot_start": beta < 5.0,
+                "burn_in": 200 if beta < 5.0 else (2000 if beta >= 20.0 else 600),
+            }
+            if "n_configs" in spec:
+                rung["n_configs"] = int(spec["n_configs"])
+            rungs.append(rung)
+    return rungs

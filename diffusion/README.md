@@ -43,7 +43,11 @@ Fourier coefficients of the single-plaquette weight; `r_q = c_q / c_0`):
    chains) produces ensembles at
    cheap rungs. Optional **instanton updates** (global `Q -> Q +- 1` Metropolis
    moves through the smooth torus instanton, `dS = O(beta/V)`) keep reference
-   topology ergodic at couplings where plain HMC is frozen.
+   topology ergodic at couplings where plain HMC is frozen. Training couplings
+   can be a fixed grid (`data.rungs`) and/or **continuous log-uniform draws**
+   (`data.random_rungs`, expanded deterministically by `utils.expand_rungs`) —
+   dense beta coverage makes mid-grid couplings in-distribution instead of a
+   generalization gamble.
 2. **Forward blocking** (`lgt/blocking.py`): fixed gauge-covariant 2x2 decimation
    (coarse link = product of the two straight fine links). The coarse plaquette
    is exactly the wrapped sum of the four fine plaquettes in the cell. Coarse
@@ -80,7 +84,10 @@ Fourier coefficients of the single-plaquette weight; `r_q = c_q / c_0`):
 **Compact variables.** Diffusion runs on the torus, never on raw angles in R:
 the forward kernel is the **wrapped Gaussian** `theta_t = wrap(theta_0 + sigma(t) z)`
 with a geometric (variance-exploding) `sigma(t)`; at `sigma_max = 6` the state is
-uniform on the circle to ~1e-8. Training is denoising score matching with the
+uniform on the circle to ~1e-8. The floor can be **beta-aware**
+(`train.sigma_min_beta_coef`): `sigma_min(beta) = min(sigma_min, c/sqrt(beta))`,
+since physical link fluctuations scale like `1/sqrt(beta)` and a fixed floor stops
+resolving them near `beta ~ (c/sigma_min)^2`. Training is denoising score matching with the
 exact wrapped-normal score (winding-weighted; `model/wrapped.py`), and sampling
 is ancestral SMLD with optional Langevin correctors, wrapping after every step
 (`model/sampler.py`). The machinery is verified standalone on the single-plaquette
@@ -102,6 +109,10 @@ distribution (`scripts/00_toy_wrapped_diffusion.py`).
   features (cos/sin of coarse plaquettes and coarse 2x2 loops) upsampled onto the
   fine grid (each coarse site covers its 2x2 fine cell — the coarse plaquette sits
   exactly on the four fine plaquettes it constrains), concatenated at the input.
+  With `train.cond_channels: 5` a fifth channel carries the **raw wrapped coarse
+  plaquette angle** — the local winding density (it sums to `2 pi Q_coarse`),
+  which the cos/sin channels discard — giving the locally-receptive network
+  direct access to where the coarse configuration carries its charge.
   `log beta` and `log sigma` enter through sinusoidal embeddings driving FiLM
   modulation in every residual block. No gauge relation is imposed *between* the
   lattices (independent gauge groups).
@@ -122,9 +133,22 @@ mechanisms enforce this in generation:
    link deformations until a plaquette crosses +-pi (an exact zero mode of any
    curl-type force), and a wrong global `Q` unit smears into a smooth instanton
    costing only `O(beta/V)` action, far below what a learned score can resolve.
-   So after sampling, `Q_fine` is set to `Q_coarse` by adding the smooth-
-   instanton difference — a deterministic, gauge-covariant map that uses only
-   the conditioning input (exact when plaquettes are concentrated, beta >~ 4).
+   So `Q_fine` is set to `Q_coarse` by adding the smooth-instanton difference —
+   a deterministic, gauge-covariant map that uses only the conditioning input
+   (exact when plaquettes are concentrated, beta >~ 4). The projection is applied
+   **during** the reverse SDE (every `charge_projection_interval` steps once
+   `sigma < charge_projection_sigma`, plus a final exact pass), so the sampler
+   relaxes the instanton strain instead of leaving it all to rethermalization.
+
+Two training-side aids: a **soft-topological-charge penalty**
+(`train.topo_weight`; `(sum sin theta_p / 2pi)` of the one-step denoised estimate
+vs the target's, down-weighted at large sigma — the integer charge has zero
+gradient a.e. through the curl head, the sin surrogate does not), and **sector
+augmentation** (`sector_augment` per data rung: instanton-shifted copies
+rethermalized without Q-hops keep charged coarse configurations represented at
+couplings where `P(|Q| > 0)` is vanishing). Neither replaces enforcement: the
+spurious-charge density of raw sampling is roughly constant per site, so the
+excess grows with volume.
 
 The base rung is simulated where topology is cheap to decorrelate (with
 instanton Metropolis updates), and the ladder transports the correct `P(Q)` to
