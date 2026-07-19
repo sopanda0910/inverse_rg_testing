@@ -97,11 +97,12 @@ def generate_fine_from_coarse(
     recover the old end-only behavior."""
     model.eval()
     fine_size = coarse.shape[-1] * 2
-    sigmas = schedule.discrete_sigmas(n_sampler_steps, device=device)
+    sigmas = schedule.discrete_sigmas(n_sampler_steps, device=device, beta=beta_target)
+    cond_channels = getattr(model, "cond_channels", 4)
     outputs = []
     for start in range(0, coarse.shape[0], batch_size):
         chunk = coarse[start : start + batch_size].to(device).float()
-        cond = coarse_conditioning_channels(chunk, fine_size)
+        cond = coarse_conditioning_channels(chunk, fine_size, n_channels=cond_channels)
         coarse_plaq = plaquette_angles(chunk)
         beta = torch.full((chunk.shape[0],), float(beta_target), device=device)
 

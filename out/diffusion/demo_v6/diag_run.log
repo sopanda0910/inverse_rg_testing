@@ -1,0 +1,23 @@
+[Sun 07/19/2026 10:48:57.99] DIAG_START 
+=== A: sampling-time floor A/B ===
+beta_f=218.58 coef=0.3 corr=1: plaq z=-97.98 W22 z=-65.57 W44 z=-30.37 (64s)
+beta_f=218.58 coef=0.1 corr=1: plaq z=-67.65 W22 z=-37.97 W44 z=-12.84 (79s)
+beta_f=218.58 coef=0.1 corr=2: plaq z=-51.82 W22 z=-23.36 W44 z=-5.32 (163s)
+beta_f=872.816 coef=0.3 corr=1: plaq z=-130.99 W22 z=-105.83 W44 z=-61.44 (72s)
+beta_f=872.816 coef=0.1 corr=1: plaq z=-103.70 W22 z=-63.17 W44 z=-29.26 (82s)
+beta_f=872.816 coef=0.1 corr=2: plaq z=-114.16 W22 z=-54.30 W44 z=-15.57 (126s)
+=== B: large-volume reference re-baseline (burn 5000) ===
+L=64 beta=218.58: new ref 96 configs, acc 0.947, 937s
+  old ref: per-config plaq 0.997767 +- 4.8e-06 (plaq z vs exact +12.11)
+  new ref: per-config plaq 0.997732 +- 5.3e-06 (plaq z vs exact +4.30)
+  cached generated vs NEW ref -> KS failures: [('plaquette', 0.0116), ('wilson_1x1', 0.0116), ('wilson_2x2', 0.026), ('wilson_4x5', 0.0214), ('wilson_5x5', 0.0176), ('wilson_5x6', 0.0048), ('wilson_6x6', 0.0094), ('wilson_6x7', 0.0004), ('wilson_7x7', 0.0019), ('wilson_7x8', 0.0019), ('wilson_8x8', 0.0019), ('wilson_8x10', 0.0003), ('wilson_10x10', 0.0002), ('wilson_10x12', 0.0001), ('wilson_12x12', 0.0001), ('chi_top ((<Q^2>-<Q>^2)/V)', 0.0)]
+L=64 beta=14.1464: new ref 96 configs, acc 0.970, 219s
+  old ref: per-config plaq 0.963889 +- 7.8e-05 (plaq z vs exact -1.20)
+  new ref: per-config plaq 0.963948 +- 7.9e-05 (plaq z vs exact -0.36)
+  cached generated vs NEW ref -> KS failures: [('Q', 0.0048), ('chi_top ((<Q^2>-<Q>^2)/V)', 0.0001)]
+L=128 beta=14.1464: new ref 64 configs, acc 0.941, 242s
+  old ref: per-config plaq 0.964113 +- 4.9e-05 (plaq z vs exact +2.94)
+  new ref: per-config plaq 0.963853 +- 5.8e-05 (plaq z vs exact -3.05)
+  cached generated vs NEW ref -> KS failures: [('plaquette', 0.0215), ('wilson_1x1', 0.0215), ('wilson_8x8', 0.0123), ('chi_top ((<Q^2>-<Q>^2)/V)', 0.0123)]
+DIAG_DONE
+[Sun 07/19/2026 11:22:08.68] DIAG_CHAIN_DONE 

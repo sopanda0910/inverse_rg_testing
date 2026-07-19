@@ -15,6 +15,7 @@ from diffusion.utils import (
     load_ensemble,
     ensemble_path,
     save_json,
+    expand_rungs,
 )
 
 
@@ -22,6 +23,8 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="diffusion/configs/default.yaml")
     parser.add_argument("--epochs", type=int, default=None, help="override config epochs")
+    parser.add_argument("--resume", action="store_true",
+                        help="continue from the .resume snapshot next to the checkpoint")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]))
@@ -32,7 +35,7 @@ def main() -> None:
     val_fraction = float(train_cfg.get("val_fraction", 0.1))
 
     train_rungs, val_rungs = [], []
-    for rung in data_cfg["rungs"]:
+    for rung in expand_rungs(data_cfg, int(config["seed"])):
         configs, meta = load_ensemble(
             ensemble_path(out_dir, action_type, rung["lattice_size"], rung["beta"])
         )
@@ -54,9 +57,16 @@ def main() -> None:
         hidden=int(train_cfg["hidden"]),
         depth=int(train_cfg["depth"]),
         kernel_size=int(train_cfg.get("kernel_size", 3)),
+        cond_channels=int(train_cfg.get("cond_channels", 4)),
+        sigma_min_beta_coef=(
+            float(train_cfg["sigma_min_beta_coef"])
+            if train_cfg.get("sigma_min_beta_coef") is not None else None
+        ),
         device=device,
         seed=int(config["seed"]),
         topo_weight=float(train_cfg.get("topo_weight", 0.0)),
+        early_stop_patience=int(train_cfg.get("early_stop_patience", 0)),
+        resume=bool(args.resume),
         checkpoint_path=train_cfg["checkpoint"],
     )
     model, history = train_score_model(train_rungs, val_rungs, cfg)
