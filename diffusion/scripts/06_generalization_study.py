@@ -167,7 +167,7 @@ def hmc_ensemble_cached(path: Path, lattice_size: int, beta: float, n_configs: i
 
 
 def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
-             seed: int = 1234) -> dict:
+             seed: int = 1234, physics_blend: float = 0.0) -> dict:
     record: dict = asdict(case)
     record["matched_target_beta"] = approx_matched_fine_beta(case.base_beta, ACTION_TYPE)
     record["mismatch_ratio"] = case.target_beta / record["matched_target_beta"]
@@ -204,8 +204,10 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
             device=device,
             consistency_weight=1.0,
             enforce_coarse_charge=False,
+            physics_blend_coef=physics_blend,
         )
         record["sample_seconds"] = time.time() - t0
+        record["physics_blend_coef"] = physics_blend
         # Model-level topology transport, measured before the deterministic charge
         # map hides it (ideal transport: Q_fine == Q_base, since blocking preserves Q).
         q_base = topological_charge(base)
@@ -462,6 +464,11 @@ def main() -> None:
     parser.add_argument("--cases", default=None,
                         help="comma-separated run_ids to run (e.g. A_bc4,A_bc2); others left untouched")
     parser.add_argument("--checkpoint", default=None, help="override checkpoint path")
+    parser.add_argument("--physics-blend", type=float, default=0.0, dest="physics_blend",
+                        help="exact-score blend coefficient at sampling time (0 = off)")
+    parser.add_argument("--sigma-floor-coef", type=float, default=None, dest="sigma_floor_coef",
+                        help="override the checkpoint schedule's beta-aware noise floor "
+                        "coefficient at sampling time (safe when --physics-blend > 0)")
     parser.add_argument("--seed", type=int, default=1234,
                         help="base seed; each case derives its own seed from this + run_id, "
                         "so different values give independent sampler noise")
@@ -477,6 +484,13 @@ def main() -> None:
         set_seed(args.seed)
         device = "cpu"
         model, schedule = load_checkpoint(args.checkpoint or CHECKPOINT, device)
+        if args.sigma_floor_coef is not None:
+            from diffusion.model.schedule import GeometricNoiseSchedule
+
+            schedule = GeometricNoiseSchedule(
+                schedule.sigma_min, schedule.sigma_max,
+                sigma_min_beta_coef=args.sigma_floor_coef,
+            )
         cases = build_cases(args.smoke)
         if args.cases:
             wanted = {v.strip() for v in args.cases.split(",")}
@@ -495,7 +509,8 @@ def main() -> None:
             t0 = time.time()
             try:
                 records[case.run_id] = _json_clean(
-                    run_case(case, model, schedule, out, device, args.smoke, seed=args.seed)
+                    run_case(case, model, schedule, out, device, args.smoke,
+                             seed=args.seed, physics_blend=args.physics_blend)
                 )
             except Exception as exc:
                 records[case.run_id] = {**asdict(case), "error": f"{type(exc).__name__}: {exc}"}

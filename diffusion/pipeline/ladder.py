@@ -8,6 +8,7 @@ Each rung doubles the linear lattice size:
     3. the result becomes the coarse ensemble for the next rung.
 """
 
+import math
 import time
 from dataclasses import dataclass, field
 
@@ -52,6 +53,13 @@ def blocking_consistency_score(
     return plaquette_curl(h.unsqueeze(1))
 
 
+def wilson_exact_score(theta: torch.Tensor, beta: torch.Tensor | float) -> torch.Tensor:
+    """Exact score of the Wilson target: grad_links log p = grad (beta sum cos theta_p),
+    assembled through the same plaquette-curl head as the model score."""
+    h = -beta * torch.sin(plaquette_angles(theta))
+    return plaquette_curl(h.unsqueeze(1))
+
+
 @dataclass
 class LadderRungResult:
     beta: float
@@ -74,6 +82,7 @@ def generate_fine_from_coarse(
     enforce_coarse_charge: bool = True,
     charge_projection_sigma: float = 0.5,
     charge_projection_interval: int = 10,
+    physics_blend_coef: float = 0.0,
 ) -> torch.Tensor:
     """Conditional diffusion sample of fine configs, one per coarse config.
 
@@ -94,7 +103,19 @@ def generate_fine_from_coarse(
     exact pass): the sector freezes at sigma ~ O(1), and correcting it while
     noise is still present lets the sampler relax the instanton strain instead of
     leaving it all to rethermalization. Set charge_projection_interval <= 0 to
-    recover the old end-only behavior."""
+    recover the old end-only behavior.
+
+    physics_blend_coef: blend the model score toward the analytic score of the
+    noised Wilson target as sigma -> 0, weight w(sigma) = 1/(1 + (sigma/sigma_c)^2)
+    with sigma_c = physics_blend_coef / sqrt(beta_target). The analytic score is
+    the Wilson curl at the smeared coupling beta_eff = beta / (1 + 4 beta sigma^2):
+    a plaquette angle carries 4 links' noise (variance 4 sigma^2), and in the
+    near-Gaussian regime (beta theta_p^2 fluctuations small) convolving precision
+    beta with that noise gives precision beta_eff exactly -- NOT beta exp(-2
+    sigma^2), which damps <cos> but overestimates the drift ~5x at sigma_c and
+    over-orders the field. The small-sigma endgame is then exact at ANY beta
+    regardless of training range; the model supplies only the large-sigma,
+    topology-carrying structure. Wilson action only; 0 = off."""
     model.eval()
     fine_size = coarse.shape[-1] * 2
     sigmas = schedule.discrete_sigmas(n_sampler_steps, device=device, beta=beta_target)
@@ -109,6 +130,11 @@ def generate_fine_from_coarse(
         def score_fn(theta, sigma):
             sig = sigma.expand(theta.shape[0])
             score = model.score(theta, sig, beta[: theta.shape[0]], cond[: theta.shape[0]])
+            if physics_blend_coef > 0:
+                sigma_c = physics_blend_coef / math.sqrt(beta_target)
+                w = 1.0 / (1.0 + (sigma / sigma_c) ** 2)
+                beta_eff = beta_target / (1.0 + 4.0 * beta_target * sigma**2)
+                score = (1.0 - w) * score + w * wilson_exact_score(theta, beta_eff)
             if consistency_weight > 0:
                 score = score + consistency_weight * blocking_consistency_score(
                     theta, coarse_plaq[: theta.shape[0]], sigma
@@ -180,6 +206,7 @@ def generate_ladder(
     consistency_weight: float = 1.0,
     enforce_coarse_charge: bool = True,
     retherm_topological_updates: bool = False,
+    physics_blend_coef: float = 0.0,
 ) -> list[LadderRungResult]:
     """Iterate conditional generation up the ladder.
 
@@ -210,6 +237,7 @@ def generate_ladder(
             device=device,
             consistency_weight=consistency_weight,
             enforce_coarse_charge=enforce_coarse_charge,
+            physics_blend_coef=physics_blend_coef,
         )
         obs_raw = _rung_observables(fine)
         raw = fine.clone()

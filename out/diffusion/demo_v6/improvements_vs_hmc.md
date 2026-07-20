@@ -79,9 +79,10 @@ Wilson observable (chain-count matched).
 - The volume trend is the strongest cost result: at L = 128 one independent
   plain-HMC configuration costs ~60x more than thermalizing a seed.
 - Honesty rows: at beta_f <= 10 plain HMC is simply good — nothing to win; and
-  raw seeds above beta_f ~ 78 need the pipeline's retherm sweeps (which then
-  pass everything to 872.8). The "wall" moved from ~70 (v5) to ~78 (v6) but
-  was not eliminated.
+  at the time of the main campaign, raw seeds above beta_f ~ 78 needed the
+  pipeline's retherm sweeps. SUPERSEDED by section 6: with the exact-score
+  blend the never-zone is gone — raw seeds thermalize in 0-12 trajectories at
+  every coupling to 872.8.
 
 ## 4. Improvement ledger (v2 baseline -> v6)
 
@@ -141,7 +142,45 @@ plaquette at 872.8 (-104 -> -114). The pipeline's 16 rethermalization sweeps
 remain the correct mechanism above the wall; the identified training-side
 lever for a future run is oversampling small sigma at high beta.
 
-## 6. One-paragraph claim (safe to quote)
+## 6. Exact-score blend: the raw-seed wall is gone (2026-07-19 evening)
+
+Following the section-5 diagnosis (the wall was small-sigma score accuracy), the
+sampler now blends the model score into the ANALYTIC score of the noised Wilson
+target as sigma -> 0: weight w = 1/(1 + (sigma sqrt(beta))^2), drift =
+plaquette curl of -beta_eff sin(theta_p) with beta_eff = beta/(1 + 4 beta
+sigma^2) (the exact Gaussian-smeared precision; 4 links of noise per
+plaquette). Zero learned parameters, zero data: the small-sigma endgame is
+Langevin dynamics under the true action — asymptotically exact MCMC at any
+coupling, trained or not. Recipe: `--physics-blend 1.0 --sigma-floor-coef 0.1`
+(the deeper sampling floor is only safe *because* the exact score owns that
+region; without the blend it amplifies model bias). Full rerun of all study
+parts A-F (two seeds on E/F) + the thermalization scan:
+`generalization_blend/`.
+
+- **Raw UV bias essentially eliminated.** Raw pre-retherm plaquette lands
+  within ~5e-5 of exact where v6 was off by ~5e-3 (e.g. beta_f = 178.5:
+  0.99119 -> 0.99714 vs exact 0.99719); at beta 218.6 / 872.8 the raw
+  smallest-loop z went from -98 / -131 to O(1).
+- **The raw-seed never-zone no longer exists.** t_therm (slowest Wilson
+  observable) at beta_f = 78.5 / 118 / 138 / 158 / 178 / 218.6 / 398 / 873:
+  v6 = never at every one; blend = 5 / 6 / 0 / 12 / 0 / 0 / 0 / 0. At L = 64,
+  beta 218.6: never -> 2. Raw samples at 15x the training coupling now arrive
+  effectively thermalized; the retherm stage is a no-op safeguard there.
+- **Everything still passes vs exact, including the volume scan.** All 38
+  cases pass the pipeline tests (|z| <= ~2, P(Q) chi^2 where testable), now
+  including C_L64 (+0.47) and C_L128 (+0.97) at the new checkpoint.
+- **Honest trade-off:** the pre-enforcement spurious-Q^2 excess (model-level
+  topology transport, no charge enforcement) worsens moderately (e.g. part A
+  2.30 -> 7.45, part E 2.56 -> 3.83): the pure action score does not carry the
+  learned topo-penalty's suppression of winding defects, and the action is
+  locally blind to a formed winding. The pipeline's deterministic charge
+  enforcement + in-sampler projection make this irrelevant downstream (all
+  post-pipeline Q^2 and P(Q) tests above pass), but raw-metric comparisons
+  between checkpoints must use matching blend settings. Low beta (< ~5) also
+  gains nothing (the harmonic limit is poor there and plain HMC was already
+  winning); a beta-gated blend is the obvious refinement.
+
+## 7. One-paragraph claim (safe to quote)
 
 A single conditional diffusion model, trained once on couplings beta in [1, 60]
 and lattices up to L = 32, generates gauge-field ensembles whose Wilson loops
@@ -151,11 +190,12 @@ at L = 64 once the HMC reference is itself properly thermalized (L = 128
 validated at the previous checkpoint) — including regimes where standard HMC's
 topology is provably
 frozen (zero tunnelings, exp(-2 beta) suppression) and its Q distribution is
-unfixably wrong from either standard initialization. In the ladder's working
-range the model's raw samples also thermalize faster than one standard-HMC
-autocorrelation interval, with the margin growing with volume; outside that
-range the pipeline's short rethermalization carries the ensembles to exactness
-at every tested coupling.
+unfixably wrong from either standard initialization. With the exact-score blend
+(a zero-parameter, physics-derived drift that hands the small-noise endgame to
+the analytic Wilson score), raw samples arrive effectively thermalized at every
+coupling tested — 0-12 plain-HMC trajectories to pass every Wilson observable
+from beta_f = 6 to 872.8, where fresh HMC chains need hundreds of trajectories
+or never thermalize at all.
 
 Artifacts: `generalization/verdict.md` (all numbers), `showcase.png` (one-look
 figure), `report.md` (v6 campaign detail), predecessor reports under
