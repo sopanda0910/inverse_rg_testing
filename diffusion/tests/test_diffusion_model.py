@@ -363,3 +363,40 @@ class TestTrainingResumeAndEarlyStop:
                           learning_rate=0.0, early_stop_patience=2)
         _, hist = train_score_model([rung], [rung], cfg)
         assert len(hist) < 50
+
+
+class TestPhysicsScoreBlend:
+    def test_exact_score_matches_autograd(self):
+        from diffusion.pipeline.ladder import wilson_exact_score
+
+        torch.manual_seed(7)
+        beta = 14.0
+        theta = wrap(torch.randn(3, 2, 8, 8, dtype=torch.float64) * 0.3)
+        theta.requires_grad_(True)
+        log_p = beta * torch.cos(plaquette_angles(theta)).sum()
+        (autograd_score,) = torch.autograd.grad(log_p, theta)
+        with torch.no_grad():
+            analytic = wilson_exact_score(theta, beta)
+        assert torch.allclose(analytic, autograd_score, atol=1e-10)
+
+    def test_exact_score_is_gauge_invariant(self):
+        from diffusion.pipeline.ladder import wilson_exact_score
+
+        torch.manual_seed(8)
+        theta = wrap(torch.randn(2, 2, 8, 8) * 0.5)
+        gen = torch.Generator().manual_seed(3)
+        transformed = random_gauge_transform(theta, generator=gen)
+        s_orig = wilson_exact_score(theta, 5.0)
+        s_trans = wilson_exact_score(transformed, 5.0)
+        plaq = plaquette_angles(theta)
+        plaq_t = plaquette_angles(transformed)
+        assert torch.allclose(plaq, plaq_t, atol=1e-5)
+        assert torch.allclose(s_orig, s_trans, atol=1e-5)
+
+    def test_blend_weight_limits(self):
+        beta = 200.0
+        coef = 1.0
+        sigma_c = coef / math.sqrt(beta)
+        for sigma, expect_high in [(sigma_c / 10, True), (sigma_c * 10, False)]:
+            w = 1.0 / (1.0 + (sigma / sigma_c) ** 2)
+            assert (w > 0.98) if expect_high else (w < 0.02)

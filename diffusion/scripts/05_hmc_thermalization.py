@@ -173,6 +173,14 @@ OBS_LABEL = {"plaquette": "plaquette", "wilson_2x2": r"$W(2\times2)$",
              "wilson_4x4": r"$W(4\times4)$", "Q^2": r"$Q^2$"}
 
 
+def _rolling_median(y: np.ndarray, window: int = 7) -> np.ndarray:
+    if len(y) < window:
+        return y
+    pad = window // 2
+    padded = np.pad(y, pad, mode="edge")
+    return np.median(np.lib.stride_tricks.sliding_window_view(padded, window), axis=-1)
+
+
 def plot_relaxation(
     all_series: dict[str, dict[str, np.ndarray]],
     targets: dict[str, float],
@@ -232,7 +240,9 @@ def plot_relaxation(
                              mec="white", mew=0.7, ls="none", zorder=6)
             z = np.maximum(np.abs(ensemble_z_series(data, targets[name])), 1e-2)
             z_max = max(z_max, float(z.max()))
-            ax_z.plot(np.arange(len(z)), z, lw=0.9, color=color, alpha=0.9)
+            ax_z.plot(np.arange(len(z)), z, lw=0.6, color=color, alpha=0.22)
+            ax_z.plot(np.arange(len(z)), _rolling_median(z), lw=1.4, color=color,
+                      alpha=0.95)
 
         ax_zoom.axhline(targets[name], color=INK, ls="--", lw=1.1)
         ax_zoom.set_xlim(-0.02 * x_zoom, x_zoom)
@@ -249,8 +259,6 @@ def plot_relaxation(
 
         ax_z.axhspan(1e-2, 2.0, color=GRID_COLOR, alpha=0.55, zorder=0)
         ax_z.axhline(2.0, color=INK, ls=":", lw=1.0)
-        if tau_int is not None and name in tau_int:
-            ax_z.axvline(2.0 * tau_int[name][0], color=MUTED_BAR, ls=(0, (1, 1)), lw=1.5)
         ax_z.set_yscale("log")
         ax_z.set_ylim(5e-2, min(z_max * 1.8, 5e3))
         ax_z.set_xscale("symlog", linthresh=10)
@@ -279,36 +287,30 @@ def plot_relaxation(
         mlines.Line2D([], [], color=MUTED_BAR, marker="v", ls="none", ms=7,
                       label=r"$t_{\mathrm{therm}}$ (first sustained $|z| \leq 2$)"),
     ]
-    if tau_int:
-        handles.append(mlines.Line2D([], [], color=MUTED_BAR, ls=(0, (1, 1)), lw=1.5,
-                                     label=r"standard-HMC interval $2\,\tau_{\mathrm{int}}$"))
     fig.legend(handles=handles, ncol=4, loc="upper center",
                bbox_to_anchor=(0.5, 0.965), fontsize=8.5, frameon=False)
     fig.suptitle(f"{label}: thermalization under plain HMC", fontsize=13, y=0.995)
     fig.text(
         0.01, 0.002,
-        "How to read: LEFT -- ensemble mean over chains (band: +-1 SEM) during the first "
-        "trajectories, with the fitted exponential relaxation per start (dashed; "
-        "characteristic times in the box).\n"
-        "Triangles mark t_therm on the exact line. RIGHT -- how many SEMs the ensemble mean "
-        "sits from the exact value over the whole run (y capped at 5000; the t=0 spike of "
-        "identical fresh starts is an SEM~0 artifact):\n"
-        "a start is thermalized once its curve enters and stays inside the shaded |z| <= 2 "
-        "band; a curve that plateaus above the band never thermalizes (stuck or biased "
-        "topological sector).",
+        "How to read: LEFT -- ensemble mean over chains (+-1 SEM band) with the fitted "
+        "exponential per start (dashed); triangles mark t_therm on the exact line.\n"
+        "RIGHT -- SEM-units distance from exact (thick: rolling median; faint: raw). "
+        "Thermalized = curve stays inside the shaded |z| <= 2 band; a plateau above it "
+        "never thermalizes.",
         fontsize=7.5, color="#6b6963", va="bottom",
     )
-    fig.tight_layout(rect=(0, 0.055, 1, 0.94))
+    fig.tight_layout(rect=(0, 0.045, 1, 0.94))
     fig.savefig(out_path, dpi=130)
     plt.close(fig)
 
 
 def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     """The headline figure: per beta, the trajectories needed to obtain one new
-    thermalized, independent configuration -- diffusion seed vs the standard chain's
-    own interval (2 tau_int) vs fresh-start burn-in. Non-topological observables
-    only (Wilson loops / plaquette); topology is called out separately since fresh
-    chains never reach the right sector at large beta."""
+    thermalized configuration -- diffusion seed vs fresh hot/cold-start standard
+    HMC (the 2 tau_int interval stays in the report tables but is not plotted:
+    an "equilibrated" chain at large beta has frozen topology, so plotting its
+    steady-state cost as a baseline would flatter HMC misleadingly).
+    Non-topological observables only (Wilson loops / plaquette)."""
     wilson_obs = ("plaquette", "wilson_2x2", "wilson_4x4")
 
     def slowest(summary, start):
@@ -317,62 +319,70 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     bars = [
         ("diffusion seed: t_therm", GEN_COLOR,
          lambda s: slowest(s, "diffusion seed")),
-        ("standard HMC interval: 2 tau_int", MUTED_BAR,
-         lambda s: s["hmc_interval_trajectories"]),
         ("fresh hot start: burn-in", HOT_COLOR,
          lambda s: slowest(s, "hot start")),
         ("fresh cold start: burn-in", COLD_COLOR,
          lambda s: slowest(s, "cold start")),
     ]
     n_group = len(bars)
-    height = 0.17
-    fig, ax = plt.subplots(figsize=(9.5, 1.1 + 1.35 * len(summaries)))
-    x_cap = max(s["n_traj_baseline"] for s in summaries)
-    for i, s in enumerate(summaries):
-        for j, (name, color, getter) in enumerate(bars):
-            y = i + (j - (n_group - 1) / 2) * (height + 0.035)
-            value = getter(s)
-            if math.isinf(value):
-                ax.barh(y, x_cap, height=height, color=color, alpha=0.45,
-                        hatch="///", edgecolor="white", lw=0)
-                ax.annotate(f"never (> {s['n_traj_baseline']})", (x_cap, y),
-                            xytext=(-4, 0), textcoords="offset points",
-                            va="center", ha="right", fontsize=8, color=INK)
-            elif value == 0:
-                ax.plot([0], [y], marker="|", ms=14, mew=2.4, color=color)
-                ax.annotate("0 — already thermalized", (0, y), xytext=(6, 0),
-                            textcoords="offset points", va="center", fontsize=8, color=INK)
-            else:
-                ax.barh(y, value, height=height, color=color, edgecolor="white", lw=0)
-                ax.annotate(f"{value:.0f}" if value >= 3 else f"{value:.1f}",
-                            (value, y), xytext=(4, 0), textcoords="offset points",
-                            va="center", fontsize=8, color=INK)
-            if i == 0:
-                ax.barh(np.nan, np.nan, color=color, label=name)
-    ax.set_yticks(range(len(summaries)))
-    ax.set_yticklabels(
-        [f"L={s['lattice_size']}, beta={s['beta']:g}" for s in summaries], fontsize=9
-    )
-    ax.invert_yaxis()
-    ax.set_xlim(0, x_cap * 1.02)
-    ax.set_xlabel("HMC trajectories per new thermalized, independent config "
-                  "(Wilson-loop observables)", fontsize=9)
-    ax.legend(fontsize=8, frameon=False, loc="upper center",
-              bbox_to_anchor=(0.5, -0.16), ncol=2)
-    ax.grid(axis="x", color=GRID_COLOR, lw=0.7)
-    ax.set_axisbelow(True)
-    for spine in ax.spines.values():
-        spine.set_color(GRID_COLOR)
-    ax.set_title("Cost of one new config: diffusion seed vs standard HMC", fontsize=11, color=INK)
+    height = 0.19
+    budget = max(s["n_traj_baseline"] for s in summaries)
+    n_cols = 2 if len(summaries) > 12 else 1
+    per_col = math.ceil(len(summaries) / n_cols)
+    chunks = [summaries[c * per_col:(c + 1) * per_col] for c in range(n_cols)]
+    fig, axes = plt.subplots(1, n_cols, figsize=(6.4 * n_cols, 1.8 + 0.68 * per_col),
+                             squeeze=False)
+    for ax, chunk in zip(axes[0], chunks):
+        for i, s in enumerate(chunk):
+            for j, (name, color, getter) in enumerate(bars):
+                y = i + (j - (n_group - 1) / 2) * (height + 0.03)
+                value = getter(s)
+                if math.isinf(value):
+                    ax.plot([budget], [y], marker="x", ms=5.5, mew=1.7, color=color,
+                            alpha=0.85, ls="none")
+                    ax.annotate("never", (budget, y), xytext=(7, 0),
+                                textcoords="offset points", va="center",
+                                fontsize=7, color=MUTED_BAR)
+                elif value == 0:
+                    ax.plot([0], [y], marker="|", ms=10, mew=2.2, color=color)
+                    ax.annotate("0", (0, y), xytext=(5, 0), textcoords="offset points",
+                                va="center", fontsize=7.5, color=INK)
+                else:
+                    ax.barh(y, value, height=height, color=color, edgecolor="white", lw=0)
+                    ax.annotate(f"{value:.0f}" if value >= 3 else f"{value:.1f}",
+                                (value, y), xytext=(4, 0), textcoords="offset points",
+                                va="center", fontsize=7.5, color=INK)
+        ax.axvline(budget, color=MUTED_BAR, ls="--", lw=1.0)
+        ax.set_yticks(range(len(chunk)))
+        ax.set_yticklabels(
+            [f"L={s['lattice_size']}, β={s['beta']:g}" for s in chunk], fontsize=8.5
+        )
+        ax.set_ylim(len(chunk) - 0.5, -0.5)
+        ax.set_xlim(0, budget * 1.14)
+        ax.grid(axis="x", color=GRID_COLOR, lw=0.7)
+        ax.set_axisbelow(True)
+        for spine in ax.spines.values():
+            spine.set_color(GRID_COLOR)
+        ax.tick_params(labelsize=8)
+    handles = [mlines.Line2D([], [], color=c, lw=6, label=n) for n, c, _ in bars]
+    handles.append(mlines.Line2D([], [], color=MUTED_BAR, marker="x", ls="none",
+                                 ms=6, mew=1.7,
+                                 label=f"never thermalized within the {budget}-trajectory budget"))
+    fig.legend(handles=handles, fontsize=8, frameon=False, loc="lower center",
+               bbox_to_anchor=(0.5, -0.005), ncol=3)
+    fig.supxlabel("HMC trajectories per new thermalized, independent config "
+                  "(slowest Wilson-loop observable)", fontsize=9, y=0.045)
+    fig.suptitle("Cost of one new config: diffusion seed vs standard HMC",
+                 fontsize=12, color=INK)
+    fig.tight_layout(rect=(0, 0.055, 1, 0.97))
     fig.savefig(out_path, dpi=130, bbox_inches="tight")
     plt.close(fig)
 
 
 def plot_beta_scan(summaries: list[dict], out_path: Path) -> None:
-    """Trajectories per new thermalized, independent config vs beta, across the
-    matched-pair scan: the same four timescales as plot_timescales, but as a
-    function of coupling so the crossover where fresh HMC stops thermalizing is
-    visible in one panel."""
+    """Trajectories per new thermalized config vs beta, across the matched-pair
+    scan: the same timescales as plot_timescales as a function of coupling, so
+    the crossover where fresh HMC stops thermalizing is visible in one panel."""
     wilson_obs = ("plaquette", "wilson_2x2", "wilson_4x4")
 
     def slowest(summary, start):
@@ -381,55 +391,76 @@ def plot_beta_scan(summaries: list[dict], out_path: Path) -> None:
     series = [
         ("diffusion seed: t_therm", GEN_COLOR, "o",
          lambda s: slowest(s, "diffusion seed")),
-        ("standard HMC interval: 2 tau_int", MUTED_BAR, "s",
-         lambda s: s["hmc_interval_trajectories"]),
         ("fresh hot start: burn-in", HOT_COLOR, "^",
          lambda s: slowest(s, "hot start")),
         ("fresh cold start: burn-in", COLD_COLOR, "D",
          lambda s: slowest(s, "cold start")),
     ]
+    sizes = [int(s["lattice_size"]) for s in summaries]
+    scan_L = max(set(sizes), key=sizes.count)
+    summaries = [s for s in summaries if int(s["lattice_size"]) == scan_L]
     betas = np.array([s["beta"] for s in summaries], dtype=float)
     budget = max(s["n_traj_baseline"] for s in summaries)
-    cap = budget * 1.8
-    fig, ax = plt.subplots(figsize=(9.5, 5.8))
-    ax.axhspan(budget, cap * 1.6, color=GRID_COLOR, alpha=0.55, zorder=0)
-    ax.annotate(f"never thermalized within the {budget}-trajectory baseline budget "
-                "(hollow markers)", xy=(0.985, budget * 1.28),
-                xycoords=("axes fraction", "data"), ha="right", va="bottom",
-                fontsize=8, color=INK)
-    for k, (name, color, marker, getter) in enumerate(series):
-        vals = np.array([getter(s) for s in summaries])
-        finite = np.isfinite(vals)
-        y = np.where(finite, vals, cap * (1.0 + 0.08 * k))
-        ax.plot(betas[finite], y[finite], marker=marker, color=color,
-                lw=1.5, ms=6, label=name, zorder=3)
-        if (~finite).any():
-            ax.plot(betas[~finite], y[~finite], marker=marker, color=color,
-                    ls="none", ms=7, mfc="none", mew=1.6, zorder=3)
+
+    fig = plt.figure(figsize=(10.0, 6.6))
+    gs = fig.add_gridspec(2, 1, height_ratios=[1.0, 3.6], hspace=0.07)
+    ax_top = fig.add_subplot(gs[0])
+    ax = fig.add_subplot(gs[1], sharex=ax_top)
+
+    lanes = []
     frozen = np.array([bool(s["q_freezing"]["frozen"]) for s in summaries])
     if frozen.any():
-        ax.plot(betas[frozen], np.full(frozen.sum(), cap * 1.42), marker="x",
-                color=INK, ls="none", ms=7, mew=1.8,
-                label="Q frozen (hot-start chain)", zorder=3)
+        lanes.append(("Q frozen (hot chain)", betas[frozen], "x", INK))
+    for name, color, marker, getter in series:
+        vals = np.array([getter(s) for s in summaries])
+        never = ~np.isfinite(vals)
+        if never.any():
+            lanes.append((f"{name.split(':')[0]}: never", betas[never], marker, color))
+    for row, (lane_label, xs, marker, color) in enumerate(lanes):
+        ax_top.plot(xs, np.full(len(xs), row), marker=marker, color=color, ls="none",
+                    ms=6, mfc="none" if marker != "x" else color, mew=1.5, zorder=3)
+    ax_top.set_yticks(range(len(lanes)))
+    ax_top.set_yticklabels([lane for lane, *_ in lanes], fontsize=8, color=INK)
+    ax_top.set_ylim(len(lanes) - 0.4, -0.6)
+    ax_top.set_title(f"never thermalized within the {budget}-trajectory budget",
+                     fontsize=9, color=INK, loc="left")
+    plt.setp(ax_top.get_xticklabels(), visible=False)
+    ax_top.tick_params(axis="x", length=0)
+
+    for name, color, marker, getter in series:
+        vals = np.array([getter(s) for s in summaries])
+        finite = np.isfinite(vals)
+        ax.plot(betas[finite], vals[finite], marker=marker, color=color,
+                lw=1.5, ms=5.5, label=name, zorder=3)
+    ax.axhline(budget, color=MUTED_BAR, ls="--", lw=1.0, zorder=1)
+
+    labeled, last = [], None
+    for b in sorted(set(betas)):
+        if last is None or math.log10(b / last) >= 0.09:
+            labeled.append(b)
+            last = b
     ax.set_xscale("log")
     ax.xaxis.set_minor_locator(matplotlib.ticker.NullLocator())
-    ax.set_xticks(betas)
-    ax.set_xticklabels([f"{b:.3g}" for b in betas], fontsize=7, rotation=45)
+    ax.set_xticks(labeled)
+    ax.set_xticklabels([f"{b:.3g}" for b in labeled], fontsize=7.5, rotation=35)
     ax.set_yscale("symlog", linthresh=1)
-    ax.set_ylim(-0.3, cap * 1.6)
+    ax.set_ylim(-0.3, budget * 1.25)
     ax.set_yticks([0, 1, 10, 100, budget])
     ax.set_yticklabels(["0", "1", "10", "100", f"{budget} (budget)"], fontsize=8)
-    ax.set_xlabel(r"fine coupling $\beta_f$ (matched pair, L=32)", fontsize=10, color=INK)
+    ax.set_xlabel(rf"fine coupling $\beta_f$ (matched pair, L={scan_L})",
+                  fontsize=10, color=INK)
     ax.set_ylabel("HMC trajectories per new thermalized,\nindependent config",
                   fontsize=9, color=INK)
-    ax.grid(color=GRID_COLOR, lw=0.7)
-    ax.set_axisbelow(True)
-    for spine in ax.spines.values():
-        spine.set_color(GRID_COLOR)
+    for a in (ax_top, ax):
+        a.grid(color=GRID_COLOR, lw=0.7)
+        a.set_axisbelow(True)
+        for spine in a.spines.values():
+            spine.set_color(GRID_COLOR)
     ax.legend(fontsize=8, frameon=False, loc="upper center",
-              bbox_to_anchor=(0.5, -0.18), ncol=3)
-    ax.set_title("Diffusion seed vs standard HMC across the matched beta scan",
-                 fontsize=11, color=INK)
+              bbox_to_anchor=(0.5, -0.20), ncol=4)
+    ax_top.set_zorder(1)
+    fig.suptitle("Diffusion seed vs standard HMC across the matched beta scan",
+                 fontsize=12, color=INK, y=0.97)
     fig.savefig(out_path, dpi=130, bbox_inches="tight")
     plt.close(fig)
 
@@ -457,6 +488,28 @@ def fmt_t(t: float) -> str:
     return "never" if math.isinf(t) else f"{t:.0f}"
 
 
+def _load_baseline_cache(case_dir: Path, n_traj_base: int, n_chains_base: int):
+    """Hot/cold baseline series from a previous benchmark of the same (L, beta)
+    case: fresh plain-HMC chains are statistically identical regardless of how
+    the diffusion seeds were sampled, so re-running them is pure waste."""
+    series_paths = sorted(case_dir.glob("*_series.npz"))
+    summary_paths = sorted(case_dir.glob("*_summary.json"))
+    if not series_paths or not summary_paths:
+        return None
+    s = json.loads(summary_paths[0].read_text(encoding="utf-8"))
+    if (int(s.get("n_traj_baseline", -1)) != n_traj_base
+            or int(s.get("n_baseline_chains", -1)) != n_chains_base):
+        return None
+    data = np.load(series_paths[0])
+    hot = {k.split("|", 1)[1]: data[k] for k in data.files if k.startswith("hot start|")}
+    cold = {k.split("|", 1)[1]: data[k] for k in data.files if k.startswith("cold start|")}
+    if "Q" not in hot or "Q" not in cold:
+        return None
+    acc = s["hmc"]["acceptance"]
+    return (hot, cold, float(acc["hot"]), float(acc["cold"]),
+            float(s["hmc"]["sec_per_traj_baseline_batch"]))
+
+
 def run_rung(
     index: int,
     meta: dict,
@@ -467,6 +520,7 @@ def run_rung(
     device: str,
     out_dir: Path,
     label: str | None = None,
+    baseline_cache: Path | None = None,
 ) -> dict:
     """seed_configs must be the RAW conditional-diffusion samples (pre-retherm):
     every sweep of equilibration the seeds need is charged here, in HMC units."""
@@ -492,17 +546,24 @@ def run_rung(
     gen_raw, gen_final, gen_acc, gen_spt = run_relaxation(
         lattice_size, action, seed_configs, n_traj_gen, step_size, n_steps, device
     )
-    baseline_sampler = BatchedHMC(lattice_size, action, n_chains=n_chains_base, device=device)
-    print(f"hot start: {n_chains_base} chains x {n_traj_base} trajectories")
-    hot_raw, _, hot_acc, hot_spt = run_relaxation(
-        lattice_size, action, baseline_sampler.initialize(hot=True),
-        n_traj_base, step_size, n_steps, device,
-    )
-    print(f"cold start: {n_chains_base} chains x {n_traj_base} trajectories")
-    cold_raw, _, cold_acc, _ = run_relaxation(
-        lattice_size, action, baseline_sampler.initialize(hot=False),
-        n_traj_base, step_size, n_steps, device,
-    )
+    cached_baselines = None
+    if baseline_cache is not None:
+        cached_baselines = _load_baseline_cache(baseline_cache, n_traj_base, n_chains_base)
+    if cached_baselines is not None:
+        hot_raw, cold_raw, hot_acc, cold_acc, hot_spt = cached_baselines
+        print(f"baselines: reused from {baseline_cache}")
+    else:
+        baseline_sampler = BatchedHMC(lattice_size, action, n_chains=n_chains_base, device=device)
+        print(f"hot start: {n_chains_base} chains x {n_traj_base} trajectories")
+        hot_raw, _, hot_acc, hot_spt = run_relaxation(
+            lattice_size, action, baseline_sampler.initialize(hot=True),
+            n_traj_base, step_size, n_steps, device,
+        )
+        print(f"cold start: {n_chains_base} chains x {n_traj_base} trajectories")
+        cold_raw, _, cold_acc, _ = run_relaxation(
+            lattice_size, action, baseline_sampler.initialize(hot=False),
+            n_traj_base, step_size, n_steps, device,
+        )
 
     all_series = {
         "diffusion seed": build_series_dict(gen_raw),
@@ -846,6 +907,26 @@ def replot_relaxations(out_dir: Path, action_type: str) -> None:
         print(case_dir / f"{label}_relaxation.png", flush=True)
 
 
+def load_scan_summaries(out_dir: Path) -> list[dict]:
+    """Cached per-case summaries under out_dir's L*_beta*/ subfolders, sorted by
+    (lattice size, beta), deduplicated per case."""
+    seen: dict[tuple[int, float], dict] = {}
+    for sp in sorted(out_dir.glob("L*_beta*/*_summary.json")):
+        s = json.loads(sp.read_text(encoding="utf-8"))
+        seen.setdefault((int(s["lattice_size"]), float(s["beta"])), s)
+    return [seen[k] for k in sorted(seen)]
+
+
+def replot_scan_figures(out_dir: Path) -> None:
+    summaries = load_scan_summaries(out_dir)
+    if not summaries:
+        return
+    plot_timescales(summaries, out_dir / "timescales.png")
+    plot_beta_scan(summaries, out_dir / "beta_scan.png")
+    print(out_dir / "timescales.png", flush=True)
+    print(out_dir / "beta_scan.png", flush=True)
+
+
 def run_generalization_scan(args, config: dict, device: str) -> None:
     """Thermalization benchmark over the generalization study's matched-pair
     scan: raw diffusion seeds are (re)generated from the cached coarse bases
@@ -874,6 +955,7 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
     out_dir = Path(args.out) if args.out else gen_dir.parent / "thermalization" / "generalization"
     if args.replot:
         replot_relaxations(out_dir, action_type)
+        replot_scan_figures(out_dir)
         return
     out_dir.mkdir(parents=True, exist_ok=True)
     print(f"{len(cases)} matched-pair cases, output -> {out_dir}", flush=True)
@@ -894,12 +976,20 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
             base = load_ensemble(base_path)[0][: int(record["n_configs"])]
             if model_schedule is None:
                 model_schedule = load_checkpoint(args.checkpoint, device)
+                if args.sigma_floor_coef is not None:
+                    from diffusion.model.schedule import GeometricNoiseSchedule
+
+                    model_schedule = (model_schedule[0], GeometricNoiseSchedule(
+                        model_schedule[1].sigma_min, model_schedule[1].sigma_max,
+                        sigma_min_beta_coef=args.sigma_floor_coef,
+                    ))
             print(f"{label}: sampling {base.shape[0]} raw seeds from {base_path.name}", flush=True)
             t0 = time.time()
             seed_configs = generate_fine_from_coarse(
                 model_schedule[0], model_schedule[1], base, beta_f,
                 n_sampler_steps=200, n_corrector_steps=1, batch_size=32,
                 device=device, consistency_weight=1.0, enforce_coarse_charge=True,
+                physics_blend_coef=args.physics_blend,
             )
             save_ensemble(raw_path, seed_configs, {
                 "beta": beta_f, "lattice_size": fine_size, "action_type": action_type,
@@ -918,8 +1008,12 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
                 print(f"{label}: benchmark cached, reusing series/summary", flush=True)
                 results.append(cached)
                 continue
+        baseline_cache = None
+        if args.reuse_baselines:
+            baseline_cache = Path(args.reuse_baselines) / f"L{fine_size}_beta{beta_f:g}"
         results.append(run_rung(index, meta, seed_configs, reference, config, args,
-                                device, out_dir, label=label))
+                                device, out_dir, label=label,
+                                baseline_cache=baseline_cache))
 
     summaries = [res["summary"] for res in results]
     plot_timescales(summaries, out_dir / "timescales.png")
@@ -953,6 +1047,16 @@ def main() -> None:
                         help="generalization mode: comma-separated target-beta filter")
     parser.add_argument("--checkpoint", default="out/diffusion/demo/checkpoints/score_net.pt",
                         help="generalization mode: score-net checkpoint for raw-seed sampling")
+    parser.add_argument("--physics-blend", type=float, default=0.0, dest="physics_blend",
+                        help="generalization mode: exact-score blend coefficient for "
+                        "raw-seed sampling (0 = off)")
+    parser.add_argument("--sigma-floor-coef", type=float, default=None, dest="sigma_floor_coef",
+                        help="generalization mode: override the checkpoint schedule's "
+                        "beta-aware noise floor coefficient for raw-seed sampling")
+    parser.add_argument("--reuse-baselines", default=None, dest="reuse_baselines",
+                        help="path to a previous thermalization output dir: reuse its "
+                        "hot/cold baseline chains and rerun only the diffusion-seed "
+                        "chains (baselines are seed-independent plain HMC)")
     parser.add_argument("--skip-cached", action="store_true", dest="skip_cached",
                         help="generalization mode: reuse completed cases' saved "
                         "benchmark outputs (series/summary/after_hmc) instead of "
@@ -977,6 +1081,7 @@ def main() -> None:
     out_dir = Path(args.out) if args.out else generated_dir.parent / "thermalization"
     if args.replot:
         replot_relaxations(out_dir, action_type)
+        replot_scan_figures(out_dir)
         return
     out_dir.mkdir(parents=True, exist_ok=True)
 

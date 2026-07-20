@@ -1,0 +1,101 @@
+{
+  "label": "E_bc3.4_L32_beta11.6638",
+  "beta": 11.663837876039215,
+  "lattice_size": 32,
+  "n_gen_chains": 128,
+  "n_baseline_chains": 32,
+  "n_traj_gen": 96,
+  "n_traj_baseline": 640,
+  "hmc": {
+    "step_size": 0.11712220879491804,
+    "n_steps": 9,
+    "acceptance": {
+      "generated": 0.983642578125,
+      "hot": 0.98310546875,
+      "cold": 0.98642578125
+    },
+    "sec_per_traj_gen_batch": 0.08728295316298802,
+    "sec_per_traj_baseline_batch": 0.08540847115218639
+  },
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 274.0,
+      "wilson_2x2": 289.0,
+      "wilson_4x4": 300.0,
+      "wilson_6x6": 126.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 176.0,
+      "wilson_2x2": 112.0,
+      "wilson_4x4": 93.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    }
+  },
+  "t_therm_generated_full_batch": {
+    "plaquette": 8.0,
+    "wilson_2x2": 6.0,
+    "wilson_4x4": 6.0,
+    "wilson_6x6": 6.0,
+    "Q^2": 0.0
+  },
+  "t_therm_subsample_size": 32,
+  "final_abs_z": {
+    "diffusion seed": {
+      "plaquette": 1.046581745147705,
+      "wilson_2x2": 0.9123121500015259,
+      "wilson_4x4": 0.6099599599838257,
+      "wilson_6x6": 0.5875606536865234,
+      "Q^2": 0.09793386608362198
+    },
+    "hot start": {
+      "plaquette": 1.1053440570831299,
+      "wilson_2x2": 1.0711642503738403,
+      "wilson_4x4": 2.1776437759399414,
+      "wilson_6x6": 2.4436352252960205,
+      "Q^2": 2.806089162826538
+    },
+    "cold start": {
+      "plaquette": 0.3869940936565399,
+      "wilson_2x2": 0.5525410771369934,
+      "wilson_4x4": 0.9893523454666138,
+      "wilson_6x6": 1.1902388334274292,
+      "Q^2": 2329518014464.0
+    }
+  },
+  "tau_int": {
+    "plaquette": {
+      "value": 4.797873256230239,
+      "error": 0.6134140913962667
+    },
+    "wilson_2x2": {
+      "value": 3.771527876788609,
+      "error": 0.42412832893859465
+    },
+    "wilson_4x4": {
+      "value": 2.3891064016117602,
+      "error": 0.31360479877183706
+    },
+    "wilson_6x6": {
+      "value": 0.9157711800689066,
+      "error": 0.055992255894757495
+    }
+  },
+  "hmc_interval_trajectories": 9.595746512460478,
+  "q_freezing": {
+    "label": "hot-start HMC L=32 beta=11.6638",
+    "frozen": true,
+    "n_tunnelings": 0,
+    "window_length": 321,
+    "n_chains": 32,
+    "tau_int_Q": 321.0
+  }
+}

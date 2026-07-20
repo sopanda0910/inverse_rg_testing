@@ -1,0 +1,370 @@
+[Sun 07/19/2026 13:37:53.51] BLEND_CHAIN_START 
+STAGE_CACHECOPY
+STAGE_STUDY (2 shards)
+[13:37:53] start study-shard1: diffusion/scripts/06_generalization_study.py --out-dir c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend --checkpoint out/diffusion/demo_v6/checkpoints/score_net.pt --seed 20260718 --physics-blend 1.0 --sigma-floor-coef 0.1 --cases A_bc0.25,A_bc0.5,A_bc0.75,A_bc1,A_bc1.5,A_bc2,A_bc3,A_bc4,A_bc5,A_bc6,A_bc8,D_bc14.1464,D_bc20,D_bc30,D_bc40,D_bc55.0237,B_bt6,B_bt10,B_bt16,B_bt20,B_bt30,B_bt55.0237,B_bc2_bt8
+[13:37:53] start study-shard2: diffusion/scripts/06_generalization_study.py --out-dir c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_shard2 --checkpoint out/diffusion/demo_v6/checkpoints/score_net.pt --seed 20260718 --physics-blend 1.0 --sigma-floor-coef 0.1 --cases E_bc1.2,E_bc2.7,E_bc3.4,E_bc4.5,E_bc5.8,E_bc9,E_bc11.8,E_bc18,E_bc35,E_bc45,F_L32_bc100,F_L32_bc218.58,F_L64_bc55.0237,C_L64,C_L128
+L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 624s
+    case done in 646s
+[2/23] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 899s
+    case done in 922s
+[3/23] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 895s
+    case done in 919s
+[4/23] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 885s
+    case done in 910s
+[5/23] A_bc1.5: base L=16 beta=1.5 -> L=32 beta=4.44493 (matched pair 1.5 -> 4.4449)
+    generated 128 configs L=32 beta=4.44493 in 532s
+    case done in 542s
+[6/23] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 286s
+    case done in 299s
+[7/23] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 364s
+    case done in 376s
+[8/23] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 343s
+    case done in 360s
+[9/23] A_bc5: base L=16 beta=5 -> L=32 beta=18.2524 (matched pair 5 -> 18.2524)
+    generated 128 configs L=32 beta=18.2524 in 312s
+    case done in 325s
+[10/23] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 324s
+    case done in 338s
+[11/23] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 330s
+    case done in 347s
+[12/23] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 540s
+    case done in 558s
+[13/23] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    generated 128 configs L=32 beta=78.4578 in 460s
+    case done in 474s
+[14/23] D_bc30: base L=16 beta=30 -> L=32 beta=118.473 (matched pair 30 -> 118.4726 (beyond training range))
+    generated 128 configs L=32 beta=118.473 in 413s
+    case done in 432s
+[15/23] D_bc40: base L=16 beta=40 -> L=32 beta=158.48 (matched pair 40 -> 158.4797 (beyond training range))
+    generated 128 configs L=32 beta=158.48 in 546s
+    case done in 558s
+[16/23] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 546s
+    case done in 558s
+[17/23] B_bt6: base L=16 beta=4 -> L=32 beta=6 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=6 in 497s
+    case done in 519s
+[18/23] B_bt10: base L=16 beta=4 -> L=32 beta=10 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=10 in 317s
+    case done in 327s
+[19/23] B_bt16: base L=16 beta=4 -> L=32 beta=16 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=16 in 157s
+    case done in 166s
+[20/23] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=20 in 157s
+    case done in 165s
+[21/23] B_bt30: base L=16 beta=4 -> L=32 beta=30 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=30 in 156s
+    case done in 165s
+[22/23] B_bt55.0237: base L=16 beta=4 -> L=32 beta=55.0237 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=55.0237 in 158s
+    case done in 167s
+[23/23] B_bc2_bt8: base L=16 beta=2 -> L=32 beta=8 (tree-level beta_f = 4 beta_c; matched target is 6.1052)
+    generated 128 configs L=32 beta=8 in 159s
+    case done in 167s
+summary: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\summary.json
+tables:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\summary_tables.md
+[16:28:38] done study-shard1
+15 cases, output -> c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_shard2
+[1/15] E_bc1.2: base L=16 beta=1.2 -> L=32 beta=3.6012 (out-of-sample matched pair 1.2 -> 3.6012)
+    generated 128 configs L=32 beta=3.6012 in 627s
+    case done in 650s
+[2/15] E_bc2.7: base L=16 beta=2.7 -> L=32 beta=8.79549 (out-of-sample matched pair 2.7 -> 8.7955)
+    generated 128 configs L=32 beta=8.79549 in 899s
+    case done in 923s
+[3/15] E_bc3.4: base L=16 beta=3.4 -> L=32 beta=11.6638 (out-of-sample matched pair 3.4 -> 11.6638)
+    generated 128 configs L=32 beta=11.6638 in 895s
+    case done in 919s
+[4/15] E_bc4.5: base L=16 beta=4.5 -> L=32 beta=16.2057 (out-of-sample matched pair 4.5 -> 16.2057)
+    generated 128 configs L=32 beta=16.2057 in 886s
+    case done in 909s
+[5/15] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    generated 128 configs L=32 beta=21.5051 in 533s
+    case done in 543s
+[6/15] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    generated 128 configs L=32 beta=34.3944 in 289s
+    case done in 301s
+[7/15] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    generated 128 configs L=32 beta=45.6238 in 357s
+    case done in 368s
+[8/15] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    generated 128 configs L=32 beta=70.4526 in 356s
+    case done in 366s
+[9/15] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    generated 128 configs L=32 beta=138.477 in 315s
+    case done in 327s
+[10/15] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    generated 128 configs L=32 beta=178.482 in 330s
+    case done in 345s
+[11/15] F_L32_bc100: base L=16 beta=100 -> L=32 beta=398.492 (extrapolation demo 100 -> 398.4921 at L=32)
+    generated 64 configs L=32 beta=398.492 in 177s
+    case done in 188s
+[12/15] F_L32_bc218.58: base L=16 beta=218.58 -> L=32 beta=872.816 (extrapolation demo 218.58 -> 872.8164 at L=32)
+    generated 64 configs L=32 beta=872.816 in 162s
+    case done in 173s
+[13/15] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    generated 64 configs L=64 beta=218.58 in 558s
+    case done in 589s
+[14/15] C_L64: base L=32 beta=4 -> L=64 beta=14.1464 (size scan rung)
+    generated 96 configs L=64 beta=14.1464 in 754s
+    case done in 792s
+[15/15] C_L128: base L=64 beta=4 -> L=128 beta=14.1464 (size scan rung)
+    generated 64 configs L=128 beta=14.1464 in 1880s
+    case done in 1964s
+summary: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_shard2\summary.json
+tables:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_shard2\summary_tables.md
+[16:28:38] done study-shard2
+STAGE_MERGE
+[16:28:38] start study-report: diffusion/scripts/06_generalization_study.py --out-dir c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend --report-only
+summary: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\summary.json
+tables:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\summary_tables.md
+[16:28:44] done study-report
+STAGE_S2_AND_THERM (parallel)
+[16:28:44] start study-s2: diffusion/scripts/06_generalization_study.py --out-dir c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\seeds\s2 --checkpoint out/diffusion/demo_v6/checkpoints/score_net.pt --seed 314159 --physics-blend 1.0 --sigma-floor-coef 0.1 --cases E_bc1.2,E_bc2.7,E_bc3.4,E_bc4.5,E_bc5.8,E_bc9,E_bc11.8,E_bc18,E_bc35,E_bc45,F_L32_bc100,F_L32_bc218.58,F_L64_bc55.0237
+[16:28:44] start therm: diffusion/scripts/05_hmc_thermalization.py --config diffusion/configs/demo_v6.yaml --generalization c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend --parts A,D,E,F --checkpoint out/diffusion/demo_v6/checkpoints/score_net.pt --physics-blend 1.0 --sigma-floor-coef 0.1 --reuse-baselines c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization\thermalization --out c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\thermalization
+13 cases, output -> c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\seeds\s2
+[1/13] E_bc1.2: base L=16 beta=1.2 -> L=32 beta=3.6012 (out-of-sample matched pair 1.2 -> 3.6012)
+    generated 128 configs L=32 beta=3.6012 in 343s
+    case done in 354s
+[2/13] E_bc2.7: base L=16 beta=2.7 -> L=32 beta=8.79549 (out-of-sample matched pair 2.7 -> 8.7955)
+    generated 128 configs L=32 beta=8.79549 in 321s
+    case done in 334s
+[3/13] E_bc3.4: base L=16 beta=3.4 -> L=32 beta=11.6638 (out-of-sample matched pair 3.4 -> 11.6638)
+    generated 128 configs L=32 beta=11.6638 in 299s
+    case done in 311s
+[4/13] E_bc4.5: base L=16 beta=4.5 -> L=32 beta=16.2057 (out-of-sample matched pair 4.5 -> 16.2057)
+    generated 128 configs L=32 beta=16.2057 in 311s
+    case done in 322s
+[5/13] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    generated 128 configs L=32 beta=21.5051 in 366s
+    case done in 381s
+[6/13] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    generated 128 configs L=32 beta=34.3944 in 380s
+    case done in 394s
+[7/13] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    generated 128 configs L=32 beta=45.6238 in 338s
+    case done in 353s
+[8/13] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    generated 128 configs L=32 beta=70.4526 in 297s
+    case done in 310s
+[9/13] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    generated 128 configs L=32 beta=138.477 in 286s
+    case done in 298s
+[10/13] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    generated 128 configs L=32 beta=178.482 in 275s
+    case done in 288s
+[11/13] F_L32_bc100: base L=16 beta=100 -> L=32 beta=398.492 (extrapolation demo 100 -> 398.4921 at L=32)
+    generated 64 configs L=32 beta=398.492 in 136s
+    case done in 146s
+[12/13] F_L32_bc218.58: base L=16 beta=218.58 -> L=32 beta=872.816 (extrapolation demo 218.58 -> 872.8164 at L=32)
+    generated 64 configs L=32 beta=872.816 in 125s
+    case done in 132s
+[13/13] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    generated 64 configs L=64 beta=218.58 in 296s
+    case done in 312s
+summary: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\seeds\s2\summary.json
+tables:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\seeds\s2\summary_tables.md
+[17:34:23] done study-s2
+
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 547.0,
+      "wilson_2x2": 279.0,
+      "wilson_4x4": 279.0,
+      "wilson_6x6": 142.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 82.39624282157214
+}
+{
+  "label": "D_bc40_L32_beta158.48",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 12.0,
+      "wilson_6x6": 12.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 429.0,
+      "wilson_2x2": 410.0,
+      "wilson_4x4": 156.0,
+      "wilson_6x6": 27.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 64.78624236853646
+}
+{
+  "label": "E_bc45_L32_beta178.482",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 282.0,
+      "wilson_2x2": 282.0,
+      "wilson_4x4": 120.0,
+      "wilson_6x6": 23.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 47.61032268967505
+}
+{
+  "label": "D_bc55.0237_L32_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 544.0,
+      "wilson_4x4": 85.0,
+      "wilson_6x6": 83.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 19.216494566628395
+}
+{
+  "label": "F_L32_bc100_L32_beta398.492",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 336.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 401.0,
+      "wilson_4x4": 120.0,
+      "wilson_6x6": 23.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 65.10446563588769
+}
+{
+  "label": "F_L32_bc218.58_L32_beta872.816",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 607.0,
+      "wilson_4x4": 32.0,
+      "wilson_6x6": 24.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 1.1253510196670107
+}
+{
+  "label": "F_L64_bc55.0237_L64_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 179.0,
+      "wilson_6x6": 171.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 74.51780941521392
+}
+[18:28:16] done therm
+STAGE_VERDICT
+[18:28:17] start verdict: diffusion/scripts/12_campaign_verdict.py --study c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend --train-range 1:60 --baseline c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization
+verdict: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\verdict.md
+figure:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend\showcase.png
+[18:28:29] done verdict
+BLEND_CHAIN_DONE
+[Sun 07/19/2026 18:28:29.89] BLEND_CHAIN_DONE_SENTINEL 
