@@ -1,5 +1,6 @@
 import math
 
+import numpy as np
 import pytest
 import torch
 
@@ -400,3 +401,38 @@ class TestPhysicsScoreBlend:
         for sigma, expect_high in [(sigma_c / 10, True), (sigma_c * 10, False)]:
             w = 1.0 / (1.0 + (sigma / sigma_c) ** 2)
             assert (w > 0.98) if expect_high else (w < 0.02)
+
+
+class TestQDisplayWindow:
+    def test_narrow_for_peaked_distribution(self):
+        from diffusion.validate.report import _q_display_window
+
+        q_values = np.arange(-30, 31)
+        q_probs = np.exp(-0.5 * (q_values / 1.5) ** 2)
+        q_probs /= q_probs.sum()
+        lo, hi = _q_display_window(q_values, q_probs, np.array([0.0, 1.0, -1.0]), None)
+        assert hi < 15
+        assert -lo == hi
+
+    def test_widens_to_cover_outlier_samples(self):
+        from diffusion.validate.report import _q_display_window
+
+        q_values = np.arange(-30, 31)
+        q_probs = np.exp(-0.5 * (q_values / 1.5) ** 2)
+        q_probs /= q_probs.sum()
+        charges = np.array([0.0, 1.0, -1.0])
+        ref_charges = np.array([-9.0, 2.0, 5.0])
+        lo, hi = _q_display_window(q_values, q_probs, charges, ref_charges)
+        assert lo <= -9.0
+        assert hi >= 5.0
+
+    def test_reference_label_reaches_the_legend(self, tmp_path):
+        from diffusion.validate.report import validate_ensemble
+
+        fine = random_field(batch=8, size=8, seed=41)
+        ref = random_field(batch=8, size=8, seed=42)
+        validate_ensemble(fine, 5.0, "wilson", reference_configs=ref, label="lbl",
+                          output_dir=tmp_path, make_plots=True,
+                          reference_label="plain HMC (hot start, no Q-hops)")
+        assert (tmp_path / "lbl.png").exists()
+        assert (tmp_path / "lbl_wilson_dists.png").exists()

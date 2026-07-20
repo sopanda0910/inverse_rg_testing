@@ -99,6 +99,7 @@ def load_therm(study: Path) -> list[dict]:
             "beta_f": float(s["beta"]), "L": int(s["lattice_size"]),
             "t_therm": None if never else max(vals),
             "interval": float(s["hmc_interval_trajectories"]),
+            "budget": int(s.get("n_traj_baseline", 640)),
         })
     return sorted(rows, key=lambda r: (r["L"], r["beta_f"]))
 
@@ -190,17 +191,19 @@ def make_figure(cases, therm, train_range, out_path: Path) -> None:
 
     if therm:
         ax = axes[2]
+        budget = max((r.get("budget", 640) for r in therm), default=640)
         for r in therm:
             color = PART_COLORS.get(r["part"], MUTED)
             marker = PART_MARKERS.get(r["part"], "o")
             if r["t_therm"] is None:
-                ax.plot([r["beta_f"]], [r["interval"] * 3], marker, color=color,
+                ax.plot([r["beta_f"]], [budget], marker, color=color,
                         mfc="none", ms=6, alpha=0.7)
             else:
                 ax.plot([r["beta_f"]], [max(r["t_therm"], 0.5)], marker, color=color, ms=5)
-            ax.plot([r["beta_f"]], [r["interval"]], "_", color=INK, ms=9, mew=1.4)
+        ax.axhline(budget, color=MUTED, ls="--", lw=1.0, zorder=1)
         ax.set_yscale("log")
-        ax.set_title("t_therm (marker) vs HMC interval (dash);\nopen = never", fontsize=9, color=INK)
+        ax.set_title("raw-seed t_therm (HMC trajectories);\nopen marker at budget = never",
+                     fontsize=9, color=INK)
         style(ax)
 
     fig.suptitle("One model across the coupling track (shaded = training range)", fontsize=11)

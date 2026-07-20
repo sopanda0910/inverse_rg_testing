@@ -1,6 +1,6 @@
 # Campaign verdict
 
-Baseline raw Q^2 excess (c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization): A: 2.30 (n=11); B: 2.95 (n=7); C: 26.44 (n=2); D: 3.11 (n=5); E: 2.56 (n=20); F: 7.01 (n=6)
+Baseline raw Q^2 excess (out/diffusion/demo_v6/generalization): A: 2.30 (n=11); B: 2.95 (n=7); C: 26.44 (n=2); D: 3.11 (n=5); E: 2.56 (n=20); F: 7.01 (n=6)
 
 ## Pipeline observables vs exact (mean over seeds, per-seed in parentheses)
 
