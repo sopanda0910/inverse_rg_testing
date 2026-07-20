@@ -48,6 +48,33 @@ def _q_histogram(charges: np.ndarray, q_values: np.ndarray) -> np.ndarray:
     return counts
 
 
+def _q_display_window(
+    q_values: np.ndarray, q_probs: np.ndarray, charges: np.ndarray,
+    ref_charges: np.ndarray | None, mass: float = 0.995, pad: float = 1.5,
+) -> tuple[float, float]:
+    """P(Q) is plotted over the full numerically-conservative q_max (6 sigma) so
+    the closed-form PMF integrates cleanly, but at low beta that leaves the
+    visible bars stretched thin across dozens of mostly-empty integer bins with
+    only O(100) samples -- a noisy comb instead of a legible histogram. Crop the
+    x-axis to the smallest symmetric window holding `mass` of the exact
+    probability, WIDENED to always cover the full empirical range of both
+    ensembles (never crop away a populated bin, e.g. a frozen chain's spurious
+    sector -- that is exactly the signal these plots exist to show)."""
+    order = np.argsort(-q_probs)
+    cum = np.cumsum(q_probs[order])
+    keep = order[: max(3, int(np.searchsorted(cum, mass)) + 1)]
+    q_lo, q_hi = q_values[keep].min(), q_values[keep].max()
+    samples = [charges]
+    if ref_charges is not None:
+        samples.append(ref_charges)
+    all_q = np.round(np.concatenate(samples))
+    if all_q.size:
+        q_lo = min(q_lo, all_q.min())
+        q_hi = max(q_hi, all_q.max())
+    half = max(abs(q_lo), abs(q_hi), 3) + pad
+    return -half, half
+
+
 def validate_ensemble(
     configs: torch.Tensor,
     beta: float,
@@ -56,8 +83,14 @@ def validate_ensemble(
     label: str = "ensemble",
     output_dir: str | Path | None = None,
     make_plots: bool = True,
+    reference_label: str = "reference HMC",
 ) -> list[dict]:
     """Compare an ensemble against exact formulas and (optionally) a reference ensemble.
+
+    reference_label: legend text for reference_configs in the plots -- defaults
+    to the Q-hop-enabled unbiased reference used throughout the project, but
+    should be overridden (e.g. "plain HMC (hot start)") when reference_configs
+    is a biased/frozen ensemble used deliberately to illustrate that bias.
 
     Returns a list of row dicts: observable, value, error, exact, z_exact,
     reference, ref_error, z_ref, ks_p (two-sample vs reference where defined).
@@ -158,13 +191,16 @@ def validate_ensemble(
     if output_dir is not None and make_plots:
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
-        _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, label, output_dir)
-        _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label, output_dir)
+        _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, label,
+                   output_dir, reference_label)
+        _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label,
+                                   output_dir, reference_label)
 
     return rows
 
 
-def _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label, output_dir):
+def _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label, output_dir,
+                               reference_label="reference HMC"):
     """One histogram panel per loop size: per-config loop averages, generated vs
     reference HMC, with the exact expectation marked."""
     keys = _sorted_wilson_keys(meas)
@@ -188,7 +224,7 @@ def _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label
         ax.hist(vals, bins=bins, density=True, color=GEN_COLOR, alpha=0.55, label="generated")
         if ref is not None and key in ref:
             ax.hist(rvals, bins=bins, density=True, histtype="step", lw=1.6,
-                    color=REF_COLOR, label="reference HMC")
+                    color=REF_COLOR, label=reference_label)
         ax.axvline(w_exact, color=INK, ls="--", lw=1.2, label="exact mean")
         ax.set_title(f"$W({r}\\times{t})$  (area {r * t})", fontsize=9, color=INK)
         ax.set_yticks([])
@@ -207,7 +243,8 @@ def _plot_wilson_distributions(meas, ref, beta, action_type, lattice_size, label
     plt.close(fig)
 
 
-def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, label, output_dir):
+def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, label, output_dir,
+                reference_label="reference HMC"):
     grid = np.linspace(-math.pi, math.pi, 601)
     density = exact.plaquette_angle_density(grid, beta, action_type)
 
@@ -217,7 +254,7 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     ax.hist(meas["plaq_angles"], bins=80, density=True, alpha=0.55, label="generated")
     if ref is not None:
         ax.hist(
-            ref["plaq_angles"], bins=80, density=True, histtype="step", lw=1.6, label="reference HMC"
+            ref["plaq_angles"], bins=80, density=True, histtype="step", lw=1.6, label=reference_label
         )
     ax.plot(grid, density, "k--", lw=1.2, label="exact (inf. volume)")
     ax.set_xlabel(r"plaquette angle $\theta_p$")
@@ -228,15 +265,17 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     ax = axes[0, 1]
     charges = meas["topological_charge"]
     centers = q_values.astype(float)
-    width = 0.38
+    width = 0.42
     gen_hist = _q_histogram(charges, q_values) / max(len(charges), 1)
     ax.bar(centers - width / 2, gen_hist, width=width, alpha=0.7, label="generated")
     if ref is not None:
         ref_hist = _q_histogram(ref["topological_charge"], q_values) / max(
             len(ref["topological_charge"]), 1
         )
-        ax.bar(centers + width / 2, ref_hist, width=width, alpha=0.7, label="reference HMC")
+        ax.bar(centers + width / 2, ref_hist, width=width, alpha=0.7, label=reference_label)
     ax.plot(centers, q_probs, "k.--", lw=1.2, ms=8, label="exact P(Q)")
+    ax.set_xlim(*_q_display_window(q_values, q_probs, charges,
+                                   ref["topological_charge"] if ref is not None else None))
     ax.set_xlabel("Q")
     ax.set_ylabel("P(Q)")
     ax.set_title("Topological charge distribution")
@@ -272,7 +311,7 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
         if ref_pts:
             ax.errorbar([p[0] for p in ref_pts], [-math.log(p[1]) for p in ref_pts],
                         yerr=[p[2] / p[1] for p in ref_pts], fmt="s", ms=5, mfc="none",
-                        color=REF_COLOR, capsize=2, label="reference HMC", zorder=3)
+                        color=REF_COLOR, capsize=2, label=reference_label, zorder=3)
     line_areas = sorted(p[0] for p in gen_pts) or sorted(exact_w)
     ax.plot(line_areas, [-math.log(exact_w[a]) for a in line_areas], "--", color=INK,
             lw=1.2, label="exact area law", zorder=2)
@@ -298,7 +337,8 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     ax.plot(dists, np.abs(corr), "o-", label="generated |C(d)|")
     if ref is not None:
         rcorr = ref["plaq_correlator"]
-        ax.plot(np.arange(1, len(rcorr) + 1), np.abs(rcorr), "s--", mfc="none", label="reference |C(d)|")
+        ax.plot(np.arange(1, len(rcorr) + 1), np.abs(rcorr), "s--", mfc="none",
+                label=f"{reference_label} |C(d)|")
     ax.set_yscale("log")
     ax.set_xlabel("distance d")
     ax.set_ylabel(r"$|\langle \cos\theta_p(0) \cos\theta_p(d) \rangle_c|$")

@@ -10,17 +10,17 @@
     "step_size": 0.029940752709510368,
     "n_steps": 33,
     "acceptance": {
-      "generated": 0.9783528645833334,
-      "hot": 0.9740234375,
-      "cold": 0.976806640625
+      "generated": 0.9759928385416666,
+      "hot": 0.97158203125,
+      "cold": 0.97744140625
     },
-    "sec_per_traj_gen_batch": 0.14174249519904455,
-    "sec_per_traj_baseline_batch": 0.22481149509549142
+    "sec_per_traj_gen_batch": 0.24957569191853204,
+    "sec_per_traj_baseline_batch": 0.14408585093915463
   },
   "t_therm": {
     "diffusion seed": {
       "plaquette": 0.0,
-      "wilson_2x2": 0.0,
+      "wilson_2x2": 2.0,
       "wilson_4x4": 0.0,
       "wilson_6x6": 0.0,
       "Q^2": 0.0
@@ -33,10 +33,10 @@
       "Q^2": Infinity
     },
     "cold start": {
-      "plaquette": 282.0,
-      "wilson_2x2": 282.0,
-      "wilson_4x4": 120.0,
-      "wilson_6x6": 23.0,
+      "plaquette": 334.0,
+      "wilson_2x2": 290.0,
+      "wilson_4x4": 82.0,
+      "wilson_6x6": 32.0,
       "Q^2": Infinity
     }
   },
@@ -50,46 +50,46 @@
   "t_therm_subsample_size": 32,
   "final_abs_z": {
     "diffusion seed": {
-      "plaquette": 0.8217191696166992,
-      "wilson_2x2": 1.041748285293579,
-      "wilson_4x4": 1.0338270664215088,
-      "wilson_6x6": 0.8509442210197449,
+      "plaquette": 0.9166327714920044,
+      "wilson_2x2": 0.6982053518295288,
+      "wilson_4x4": 0.8087237477302551,
+      "wilson_6x6": 0.6138887405395508,
       "Q^2": 0.629533588886261
     },
     "hot start": {
-      "plaquette": 7.679875373840332,
-      "wilson_2x2": 5.4449663162231445,
-      "wilson_4x4": 4.153807640075684,
-      "wilson_6x6": 4.6148681640625,
-      "Q^2": 4.076899528503418
+      "plaquette": 7.4761457443237305,
+      "wilson_2x2": 5.588855743408203,
+      "wilson_4x4": 4.1223039627075195,
+      "wilson_6x6": 4.472053050994873,
+      "Q^2": 4.07338285446167
     },
     "cold start": {
-      "plaquette": 1.600874900817871,
-      "wilson_2x2": 0.7606543898582458,
-      "wilson_4x4": 0.7013760209083557,
-      "wilson_6x6": 0.6120277643203735,
+      "plaquette": 1.3123047351837158,
+      "wilson_2x2": 0.9457213282585144,
+      "wilson_4x4": 0.7901480793952942,
+      "wilson_6x6": 1.056165099143982,
       "Q^2": 60793004032.0
     }
   },
   "tau_int": {
     "plaquette": {
-      "value": 23.805161344837526,
-      "error": 1.9698822012401065
+      "value": 21.25430198123066,
+      "error": 1.9272325535869659
     },
     "wilson_2x2": {
-      "value": 19.59669425185187,
-      "error": 1.8583356394158919
+      "value": 18.477188131412,
+      "error": 1.9408399815406199
     },
     "wilson_4x4": {
-      "value": 3.2839410463020613,
-      "error": 0.5165635018987905
+      "value": 4.607095885991551,
+      "error": 0.6627297857607437
     },
     "wilson_6x6": {
-      "value": 3.600879060785572,
-      "error": 0.5945142703598595
+      "value": 3.705694502561668,
+      "error": 0.4380929877589829
     }
   },
-  "hmc_interval_trajectories": 47.61032268967505,
+  "hmc_interval_trajectories": 42.50860396246132,
   "q_freezing": {
     "label": "hot-start HMC L=32 beta=178.482",
     "frozen": true,

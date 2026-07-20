@@ -555,14 +555,26 @@ def run_rung(
     else:
         baseline_sampler = BatchedHMC(lattice_size, action, n_chains=n_chains_base, device=device)
         print(f"hot start: {n_chains_base} chains x {n_traj_base} trajectories")
-        hot_raw, _, hot_acc, hot_spt = run_relaxation(
+        hot_raw, hot_final, hot_acc, hot_spt = run_relaxation(
             lattice_size, action, baseline_sampler.initialize(hot=True),
             n_traj_base, step_size, n_steps, device,
         )
         print(f"cold start: {n_chains_base} chains x {n_traj_base} trajectories")
-        cold_raw, _, cold_acc, _ = run_relaxation(
+        cold_raw, cold_final, cold_acc, _ = run_relaxation(
             lattice_size, action, baseline_sampler.initialize(hot=False),
             n_traj_base, step_size, n_steps, device,
+        )
+        save_ensemble(
+            case_dir / f"{label}_hot_final.pt", hot_final.cpu(),
+            {"beta": beta, "lattice_size": lattice_size, "action_type": action_type,
+             "provenance": f"plain HMC (no Q-hops), hot start, {n_traj_base} trajectories "
+                           "-- standard-practice equilibrium ensemble, biased in Q above "
+                           "the topological-freezing threshold"},
+        )
+        save_ensemble(
+            case_dir / f"{label}_cold_final.pt", cold_final.cpu(),
+            {"beta": beta, "lattice_size": lattice_size, "action_type": action_type,
+             "provenance": f"plain HMC (no Q-hops), cold start, {n_traj_base} trajectories"},
         )
 
     all_series = {

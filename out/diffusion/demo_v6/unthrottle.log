@@ -1,14 +1,9 @@
-﻿[7/19/2026 2:51:07 PM] watcher start
-[7/19/2026 2:51:07 PM] pid 11084: unthrottled=True
-[7/19/2026 2:51:07 PM] pid 11824: unthrottled=True
-[7/19/2026 2:51:07 PM] pid 16692: unthrottled=True
-[7/19/2026 2:51:07 PM] pid 29080: unthrottled=True
-[7/19/2026 2:51:07 PM] pid 30632: unthrottled=True
-[7/19/2026 2:51:07 PM] pid 39600: unthrottled=True
-[7/19/2026 4:29:00 PM] pid 7408: unthrottled=True
-[7/19/2026 4:29:00 PM] pid 12568: unthrottled=True
-[7/19/2026 4:29:00 PM] pid 15928: unthrottled=True
-[7/19/2026 4:29:00 PM] pid 30736: unthrottled=True
-[7/19/2026 4:53:37 PM] pid 8684: unthrottled=True
-[7/19/2026 4:53:37 PM] pid 13716: unthrottled=True
-[7/19/2026 7:11:40 PM] watcher exit
+﻿[7/20/2026 1:01:45 PM] watcher start
+[7/20/2026 1:01:45 PM] pid 16516: unthrottled=True
+[7/20/2026 1:01:45 PM] pid 28368: unthrottled=True
+[7/20/2026 1:06:45 PM] pid 14196: unthrottled=True
+[7/20/2026 1:06:46 PM] pid 21260: unthrottled=True
+[7/20/2026 1:36:29 PM] pid 35196: unthrottled=True
+[7/20/2026 1:36:29 PM] pid 37640: unthrottled=True
+[7/20/2026 2:19:47 PM] pid 10232: unthrottled=True
+[7/20/2026 2:19:47 PM] pid 27432: unthrottled=True

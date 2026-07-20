@@ -1,0 +1,933 @@
+[Mon 07/20/2026 13:01:45.07] THERM_RERUN_START 
+29 matched-pair cases, output -> out\diffusion\demo_v6\generalization_blend\thermalization
+
+=== A_bc0.25_L32_beta1.4892: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc0.5_L32_beta2.02441: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc0.75_L32_beta2.5435: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc1_L32_beta3.10399: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc1.2_L32_beta3.6012: step_size=0.2000, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc1.5_L32_beta4.44493: step_size=0.1897, n_steps=5 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc2_L32_beta6.10518: step_size=0.1619, n_steps=6 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc2.7_L32_beta8.79549: step_size=0.1349, n_steps=7 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc3_L32_beta10.015: step_size=0.1264, n_steps=8 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc3.4_L32_beta11.6638: step_size=0.1171, n_steps=9 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc4_L32_beta14.1464: step_size=0.1063, n_steps=9 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc4.5_L32_beta16.2057: step_size=0.0994, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc5_L32_beta18.2524: step_size=0.0936, n_steps=11 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc5.8_L32_beta21.5051: step_size=0.0863, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc6_L32_beta22.3151: step_size=0.0847, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== A_bc8_L32_beta30.3772: step_size=0.0726, n_steps=14 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc9_L32_beta34.3944: step_size=0.0682, n_steps=15 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc11.8_L32_beta45.6238: step_size=0.0592, n_steps=17 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== D_bc14.1464_L32_beta55.0237: step_size=0.0539, n_steps=19 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc18_L32_beta70.4526: step_size=0.0477, n_steps=21 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== D_bc20_L32_beta78.4578: step_size=0.0452, n_steps=22 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== D_bc30_L32_beta118.473: step_size=0.0367, n_steps=27 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc35_L32_beta138.477: step_size=0.0340, n_steps=29 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== D_bc40_L32_beta158.48: step_size=0.0318, n_steps=31 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== E_bc45_L32_beta178.482: step_size=0.0299, n_steps=33 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== D_bc55.0237_L32_beta218.58: step_size=0.0271, n_steps=37 ===
+diffusion seed: 128 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== F_L32_bc100_L32_beta398.492: step_size=0.0200, n_steps=50 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== F_L32_bc218.58_L32_beta872.816: step_size=0.0135, n_steps=74 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 32 chains x 640 trajectories
+cold start: 32 chains x 640 trajectories
+
+=== F_L64_bc55.0237_L64_beta218.58: step_size=0.0271, n_steps=37 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 16 chains x 640 trajectories
+cold start: 16 chains x 640 trajectories
+
+report: out\diffusion\demo_v6\generalization_blend\thermalization\report.md
+{
+  "label": "A_bc0.25_L32_beta1.4892",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 3.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "hot start": {
+      "plaquette": 7.0,
+      "wilson_2x2": 7.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 1.0
+    },
+    "cold start": {
+      "plaquette": 9.0,
+      "wilson_2x2": 7.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 4.0
+    }
+  },
+  "hmc_interval_trajectories": 3.0290926946338974
+}
+{
+  "label": "A_bc0.5_L32_beta2.02441",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 15.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 6.0
+    },
+    "hot start": {
+      "plaquette": 25.0,
+      "wilson_2x2": 12.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 2.0
+    },
+    "cold start": {
+      "plaquette": 24.0,
+      "wilson_2x2": 14.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 5.0
+    }
+  },
+  "hmc_interval_trajectories": 4.897632835882621
+}
+{
+  "label": "A_bc0.75_L32_beta2.5435",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 16.0,
+      "wilson_2x2": 8.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 26.0,
+      "wilson_2x2": 19.0,
+      "wilson_4x4": 8.0,
+      "wilson_6x6": 7.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 35.0,
+      "wilson_2x2": 31.0,
+      "wilson_4x4": 11.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 12.0
+    }
+  },
+  "hmc_interval_trajectories": 6.593490642055372
+}
+{
+  "label": "A_bc1_L32_beta3.10399",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 27.0,
+      "wilson_2x2": 14.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 47.0,
+      "wilson_2x2": 27.0,
+      "wilson_4x4": 16.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 8.0
+    },
+    "cold start": {
+      "plaquette": 34.0,
+      "wilson_2x2": 26.0,
+      "wilson_4x4": 23.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 15.0
+    }
+  },
+  "hmc_interval_trajectories": 8.42372015999696
+}
+{
+  "label": "E_bc1.2_L32_beta3.6012",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 27.0,
+      "wilson_2x2": 13.0,
+      "wilson_4x4": 10.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 46.0,
+      "wilson_2x2": 39.0,
+      "wilson_4x4": 25.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 6.0
+    },
+    "cold start": {
+      "plaquette": 49.0,
+      "wilson_2x2": 39.0,
+      "wilson_4x4": 20.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 26.0
+    }
+  },
+  "hmc_interval_trajectories": 8.674586034687767
+}
+{
+  "label": "A_bc1.5_L32_beta4.44493",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 30.0,
+      "wilson_2x2": 14.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 56.0,
+      "wilson_2x2": 61.0,
+      "wilson_4x4": 23.0,
+      "wilson_6x6": 13.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 57.0,
+      "wilson_2x2": 55.0,
+      "wilson_4x4": 16.0,
+      "wilson_6x6": 12.0,
+      "Q^2": 65.0
+    }
+  },
+  "hmc_interval_trajectories": 7.886262709936384
+}
+{
+  "label": "A_bc2_L32_beta6.10518",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 7.0,
+      "wilson_2x2": 7.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 146.0,
+      "wilson_2x2": 168.0,
+      "wilson_4x4": 52.0,
+      "wilson_6x6": 42.0,
+      "Q^2": 38.0
+    },
+    "cold start": {
+      "plaquette": 97.0,
+      "wilson_2x2": 85.0,
+      "wilson_4x4": 15.0,
+      "wilson_6x6": 19.0,
+      "Q^2": 595.0
+    }
+  },
+  "hmc_interval_trajectories": 9.084283447806742
+}
+{
+  "label": "E_bc2.7_L32_beta8.79549",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 4.0,
+      "wilson_2x2": 6.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 255.0,
+      "wilson_2x2": 368.0,
+      "wilson_4x4": 406.0,
+      "wilson_6x6": 169.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 142.0,
+      "wilson_2x2": 118.0,
+      "wilson_4x4": 68.0,
+      "wilson_6x6": 28.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 7.605709332979313
+}
+{
+  "label": "A_bc3_L32_beta10.015",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 5.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 520.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 250.0,
+      "wilson_2x2": 192.0,
+      "wilson_4x4": 138.0,
+      "wilson_6x6": 16.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 15.288624137575278
+}
+{
+  "label": "E_bc3.4_L32_beta11.6638",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 6.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 251.0,
+      "wilson_2x2": 249.0,
+      "wilson_4x4": 259.0,
+      "wilson_6x6": 230.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 119.0,
+      "wilson_2x2": 88.0,
+      "wilson_4x4": 76.0,
+      "wilson_6x6": 26.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 10.1209742439103
+}
+{
+  "label": "A_bc4_L32_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 6.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 402.0,
+      "wilson_2x2": 511.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 190.0,
+      "wilson_2x2": 129.0,
+      "wilson_4x4": 107.0,
+      "wilson_6x6": 22.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 8.931715663567715
+}
+{
+  "label": "E_bc4.5_L32_beta16.2057",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 8.0,
+      "wilson_2x2": 7.0,
+      "wilson_4x4": 11.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 321.0,
+      "wilson_2x2": 508.0,
+      "wilson_4x4": 325.0,
+      "wilson_6x6": 179.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 21.403425178185138
+}
+{
+  "label": "A_bc5_L32_beta18.2524",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 490.0,
+      "wilson_2x2": 550.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 192.0,
+      "wilson_2x2": 208.0,
+      "wilson_4x4": 141.0,
+      "wilson_6x6": 134.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 11.975299541938588
+}
+{
+  "label": "E_bc5.8_L32_beta21.5051",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 272.0,
+      "wilson_2x2": 79.0,
+      "wilson_4x4": 75.0,
+      "wilson_6x6": 75.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 19.30759545125483
+}
+{
+  "label": "A_bc6_L32_beta22.3151",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 15.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 237.0,
+      "wilson_2x2": 131.0,
+      "wilson_4x4": 90.0,
+      "wilson_6x6": 55.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 17.64447693305
+}
+{
+  "label": "A_bc8_L32_beta30.3772",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 6.0,
+      "wilson_2x2": 24.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 407.0,
+      "wilson_2x2": 599.0,
+      "wilson_4x4": 212.0,
+      "wilson_6x6": 179.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 28.74625374289441
+}
+{
+  "label": "E_bc9_L32_beta34.3944",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 549.0,
+      "wilson_2x2": 306.0,
+      "wilson_4x4": 41.0,
+      "wilson_6x6": 44.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 16.265870287907624
+}
+{
+  "label": "E_bc11.8_L32_beta45.6238",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 273.0,
+      "wilson_2x2": 175.0,
+      "wilson_4x4": 73.0,
+      "wilson_6x6": 73.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 26.542505642679405
+}
+{
+  "label": "D_bc14.1464_L32_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 336.0,
+      "wilson_2x2": 225.0,
+      "wilson_4x4": 210.0,
+      "wilson_6x6": 86.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 25.115072565466413
+}
+{
+  "label": "E_bc18_L32_beta70.4526",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 391.0,
+      "wilson_2x2": 210.0,
+      "wilson_4x4": 142.0,
+      "wilson_6x6": 122.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 30.715626721794543
+}
+{
+  "label": "D_bc20_L32_beta78.4578",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 15.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 8.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 347.0,
+      "wilson_2x2": 223.0,
+      "wilson_4x4": 68.0,
+      "wilson_6x6": 88.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 14.714053492652305
+}
+{
+  "label": "D_bc30_L32_beta118.473",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 211.0,
+      "wilson_2x2": 197.0,
+      "wilson_4x4": 197.0,
+      "wilson_6x6": 200.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 40.826362283759025
+}
+{
+  "label": "E_bc35_L32_beta138.477",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 634.0,
+      "wilson_2x2": 591.0,
+      "wilson_4x4": 304.0,
+      "wilson_6x6": 197.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 85.56517289331299
+}
+{
+  "label": "D_bc40_L32_beta158.48",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 5.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 372.0,
+      "wilson_2x2": 248.0,
+      "wilson_4x4": 144.0,
+      "wilson_6x6": 37.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 70.71624447489373
+}
+{
+  "label": "E_bc45_L32_beta178.482",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 334.0,
+      "wilson_2x2": 290.0,
+      "wilson_4x4": 82.0,
+      "wilson_6x6": 32.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 42.50860396246132
+}
+{
+  "label": "D_bc55.0237_L32_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 541.0,
+      "wilson_4x4": 56.0,
+      "wilson_6x6": 51.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 23.968910031373632
+}
+{
+  "label": "F_L32_bc100_L32_beta398.492",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 624.0,
+      "wilson_2x2": 331.0,
+      "wilson_4x4": 78.0,
+      "wilson_6x6": 25.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 69.7742384186925
+}
+{
+  "label": "F_L32_bc218.58_L32_beta872.816",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 11.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 474.0,
+      "wilson_4x4": 37.0,
+      "wilson_6x6": 11.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 4.555486492656804
+}
+{
+  "label": "F_L64_bc55.0237_L64_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 524.0,
+      "wilson_2x2": 555.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 297.0,
+      "wilson_6x6": 180.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 79.36141860334257
+}
+[Mon 07/20/2026 14:03:05.98] THERM_RERUN_DONE 
