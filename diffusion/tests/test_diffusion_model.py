@@ -436,3 +436,38 @@ class TestQDisplayWindow:
                           reference_label="plain HMC (hot start, no Q-hops)")
         assert (tmp_path / "lbl.png").exists()
         assert (tmp_path / "lbl_wilson_dists.png").exists()
+
+
+class TestPlaquetteDisplayWindow:
+    def test_narrow_for_peaked_density(self):
+        from diffusion.validate.report import _plaquette_display_window
+
+        grid = np.linspace(-math.pi, math.pi, 601)
+        density = np.exp(-0.5 * (grid / 0.02) ** 2)
+        density /= np.trapezoid(density, grid)
+        angles = np.array([0.0, 0.01, -0.015])
+        lo, hi = _plaquette_display_window(grid, density, angles, None)
+        assert hi < 0.5
+        assert -lo == hi
+
+    def test_widens_to_cover_outlier_samples(self):
+        from diffusion.validate.report import _plaquette_display_window
+
+        grid = np.linspace(-math.pi, math.pi, 601)
+        density = np.exp(-0.5 * (grid / 0.02) ** 2)
+        density /= np.trapezoid(density, grid)
+        angles = np.array([0.0, 0.01, -0.015])
+        ref_angles = np.array([1.2, -0.9])
+        lo, hi = _plaquette_display_window(grid, density, angles, ref_angles)
+        assert lo <= -0.9
+        assert hi >= 1.2
+
+    def test_never_exceeds_domain(self):
+        from diffusion.validate.report import _plaquette_display_window
+
+        grid = np.linspace(-math.pi, math.pi, 601)
+        density = np.ones_like(grid)
+        density /= np.trapezoid(density, grid)
+        angles = np.array([math.pi - 0.01, -math.pi + 0.01])
+        lo, hi = _plaquette_display_window(grid, density, angles, None)
+        assert lo >= -math.pi and hi <= math.pi

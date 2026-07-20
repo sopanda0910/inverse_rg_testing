@@ -10,7 +10,7 @@ the instanton move is this pipeline's own ergodicity fix. All z-scores are
 against the exact 2D compact U(1) character-expansion result (closed-form
 Wilson loops, P(Q), χ_top at finite volume). All figures at 130 dpi, PNG.
 
-Numbering is `S1`–`S20`; filenames in this folder match. Reproduction command
+Numbering is `S1`–`S25`; filenames in this folder match. Reproduction command
 for the study itself:
 
 ```
@@ -341,3 +341,77 @@ wrong topological sector. This is the clearest single illustration in the
 campaign of the qualitative gap between the pipeline and standard HMC at high
 coupling: it is not that the diffusion route is faster, it is that plain HMC
 does not reach the right answer at all within any practical budget.
+
+---
+
+## S21–S25. Per-case topological freezing across the coupling range: diffusion output vs. this case's own plain-HMC ensemble
+
+These five figures use the same full 4-panel validation layout as everywhere
+else in this appendix (plaquette-angle distribution, P(Q), Wilson-loop area
+law, connected correlator), with two changes specific to this set. First, the
+reference series is not the Q-hop-enabled unbiased reference used in Figures
+S1–S13 — it is *this case's own* plain HMC: 32 independent hot-start chains
+(16 at L=64), no Q-hops, one final configuration per chain, run to the same
+640-trajectory budget used throughout the thermalization study (Figs.
+S14–S18) — exactly the ensemble a practitioner following standard practice
+would build. Second, the P(Q) panel's display window is sized to the smallest
+range holding 99.5% of the exact mass, then widened to cover the full
+empirical range of *both* series, so a genuinely biased or frozen sample is
+never cropped out of view (the fix behind the "discrete-looking" P(Q) panels
+in earlier drafts of this figure set). Five couplings are shown, in increasing
+β_f, to trace the freezing failure from absent to catastrophic. "Generated" is
+the raw, pre-rethermalization diffusion output — the same honest baseline used
+in Figures S16–S18, not the fully-corrected pipeline output of Figs. S1–S13.
+⟨Q²⟩ and its z-score against exact are computed the same way as Figure S19,
+from one sample per independent chain.
+
+![S21](S21_therm_case_beta1.png)
+
+**Figure S21. β_f = 1.49, L=32 — no freezing (baseline).** Exact ⟨Q²⟩ =
+28.52. Generated: 15.00 ± 2.00 (z = −6.8 — sampling noise from a modest raw
+batch, not bias; see Figure S16 for this same case's relaxation trace). Hot-
+start plain HMC: 23.66 ± 6.23 (z = −0.78) — genuinely fine, because tunneling
+is still fast at this coupling and every chain explores many sectors before
+the ensemble is built. Q sectors for both series span a wide, overlapping
+range (roughly −14 to +11). Included as the honest floor: standard HMC needs
+no fixing here.
+
+![S22](S22_therm_case_beta10.png)
+
+**Figure S22. β_f = 10.0, L=32 — onset.** Exact ⟨Q²⟩ = 2.74. Generated:
+2.93 ± 0.27 (z = +0.72). Hot-start plain HMC: 15.22 ± 3.35 (z = +3.72) —
+already more than 5× the true value. Individual hot chains are starting to
+freeze into whatever sector they happened to occupy when tunneling shut off,
+so the *ensemble* variance is inflated well above the true equilibrium value;
+sectors as far out as ±8 appear in the reference histogram, each contributed
+by a single frozen chain.
+
+![S23](S23_therm_case_beta55.png)
+
+**Figure S23. β_f = 55.0, L=32 — established freezing.** Exact ⟨Q²⟩ =
+0.474. Generated: 0.484 ± 0.056 (z = +0.18, matches almost exactly). Hot-start
+plain HMC: 11.19 ± 1.76 (z = +6.09) — 23× the true value, comfortably outside
+any reasonable tolerance. The P(Q) panel shows the mechanism directly:
+generated mass sits tightly on Q ∈ {−2,…,2}, matching exact, while the frozen
+hot ensemble is smeared nearly flat across Q ∈ {−7,…,5} with no extra weight
+at Q=0 where the true distribution actually peaks.
+
+![S24](S24_therm_case_beta218_L32.png)
+
+**Figure S24. β_f = 218.6, L=32.** Exact ⟨Q²⟩ = 0.029 — the true
+distribution now puts essentially all its mass on Q ∈ {−1, 0, 1}. Generated:
+0.047 ± 0.021 (z = +0.85). Hot-start plain HMC: 7.69 ± 2.03 (z = +3.77) — 265×
+the true value; not one of the 32 frozen hot chains landed at Q=0, the
+overwhelmingly most likely sector.
+
+![S25](S25_therm_case_beta218_L64.png)
+
+**Figure S25. β_f = 218.6, L=64 — coupling and volume stress simultaneously
+(same case as Figures S10, S11, S18).** Exact ⟨Q²⟩ = 0.474. Generated:
+0.391 ± 0.061 (z = −1.37, correct sector structure — see also Figure S18, top
+three rows). Hot-start plain HMC: 52.19 ± 22.35 (z = only +2.31, because the
+error bar itself is huge: 16 independent frozen chains land in wildly
+different sectors, from Q=−16 to Q=+6, and that chain-to-chain scatter masks
+just how wrong the mean is). The raw number is the honest headline here: a
+mean ⟨Q²⟩ over 100× the true value, from an ensemble built exactly the way
+standard practice would build one.

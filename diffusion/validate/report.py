@@ -75,6 +75,34 @@ def _q_display_window(
     return -half, half
 
 
+def _plaquette_display_window(
+    grid: np.ndarray, density: np.ndarray, plaq_angles: np.ndarray,
+    ref_angles: np.ndarray | None, mass: float = 0.995, pad: float = 1.35,
+) -> tuple[float, float]:
+    """The exact plaquette-angle density is always plotted over the full
+    (-pi, pi] domain so the x-axis auto-scales to include it -- but at large
+    beta the true distribution collapses to a narrow spike near 0, and that
+    full-domain axis squashes the actual peak into an unreadable sliver. Crop
+    to the smallest symmetric window holding `mass` of the exact density,
+    WIDENED to always cover the full empirical range of both ensembles (never
+    crop away real tails/outliers -- only the empty full-domain padding)."""
+    dx = grid[1] - grid[0]
+    order = np.argsort(-density)
+    cum = np.cumsum(density[order]) * dx
+    total = cum[-1] if cum[-1] > 0 else 1.0
+    keep = order[: max(3, int(np.searchsorted(cum / total, mass)) + 1)]
+    lo, hi = grid[keep].min(), grid[keep].max()
+    samples = [np.asarray(plaq_angles)]
+    if ref_angles is not None:
+        samples.append(np.asarray(ref_angles))
+    all_a = np.concatenate(samples)
+    if all_a.size:
+        lo = min(lo, all_a.min())
+        hi = max(hi, all_a.max())
+    half = min(max(abs(lo), abs(hi)) * pad, math.pi)
+    return -half, half
+
+
 def validate_ensemble(
     configs: torch.Tensor,
     beta: float,
@@ -257,6 +285,9 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
             ref["plaq_angles"], bins=80, density=True, histtype="step", lw=1.6, label=reference_label
         )
     ax.plot(grid, density, "k--", lw=1.2, label="exact (inf. volume)")
+    ax.set_xlim(*_plaquette_display_window(
+        grid, density, meas["plaq_angles"], ref["plaq_angles"] if ref is not None else None,
+    ))
     ax.set_xlabel(r"plaquette angle $\theta_p$")
     ax.set_ylabel("density")
     ax.set_title(f"Plaquette angle distribution ({label})")
