@@ -10,7 +10,7 @@ the instanton move is this pipeline's own ergodicity fix. All z-scores are
 against the exact 2D compact U(1) character-expansion result (closed-form
 Wilson loops, P(Q), χ_top at finite volume). All figures at 130 dpi, PNG.
 
-Numbering is `S1`–`S25`; filenames in this folder match. Reproduction command
+Numbering is `S1`–`S30`; filenames in this folder match. Reproduction command
 for the study itself:
 
 ```
@@ -415,3 +415,144 @@ different sectors, from Q=−16 to Q=+6, and that chain-to-chain scatter masks
 just how wrong the mean is). The raw number is the honest headline here: a
 mean ⟨Q²⟩ over 100× the true value, from an ensemble built exactly the way
 standard practice would build one.
+
+---
+
+## S26–S27. Diffusion output as an HMC seed: two different standard-HMC costs, and speedup
+
+Standard HMC has **two** distinct costs, and it matters which one a
+comparison uses:
+
+- **Burn-in** — the one-time cost of reaching equilibrium at all, starting
+  from a fresh hot or cold configuration.
+- **The sampling interval (2τ_int)** — once a chain is *already*
+  equilibrated, the number of further trajectories it must run and discard
+  before its next configuration is a statistically independent draw, not a
+  correlated repeat of the current one. This is the chain's real, ongoing,
+  per-sample cost, paid forever, and is a different quantity from burn-in —
+  a chain can have a short burn-in and still pay a large interval cost per
+  independent sample, or vice versa.
+
+Figure S26 compares the diffusion seed's thermalization time against
+*both*, side by side, so neither is mistaken for the other. Figure S27 turns
+the burn-in comparison into a single per-case speedup number. Both are built
+entirely from data already computed by `05_hmc_thermalization.py` for every
+case in Figures S14–S15 (no new HMC or diffusion sampling was run for these
+two figures); every case is labeled with its own hot-start Q-freezing status
+for context. The interval, like burn-in, is measured only on Wilson-loop-type
+observables (plaquette, W(2×2), W(4×4)) — see Figures S19–S25 for the
+separate, usually far worse, story of the chain's *topological* interval.
+
+![S26](S26_interval_vs_seed.png)
+
+**Figure S26. Diffusion-seed thermalization time vs. two different
+standard-HMC costs, full β_f range, Wilson-loop observables.** *Left panel:*
+t_therm of the raw diffusion seed (blue) against fresh hot-start (red) and
+fresh cold-start (purple) burn-in — open markers once a fresh chain fails to
+reach tolerance inside the 640-trajectory budget. *Right panel:* the same
+diffusion-seed curve (blue) against the hot-start chain's own steady-state
+sampling interval 2τ_int (gold) — the trajectories it must discard between
+two of its *own* independent draws, once already equilibrated. The strip on
+top marks whether that case's hot-start chain's topological charge tunneled
+at all in its equilibrated window (green) or was completely frozen (red,
+zero tunneling events). Below β_f ≈ 8 (green strip) all quantities are
+broadly comparable, single digits to several tens of trajectories — standard
+HMC is genuinely fine here, on both counts. Above β_f ≈ 8 (red strip, the
+great majority of the range): in the left panel, fresh hot-start burn-in
+diverges outright (open red markers) and fresh cold-start burn-in grows into
+the hundreds, eventually also failing within budget (open purple markers,
+β_f ≳ 218); in the right panel, the sampling interval itself keeps growing
+too — into the tens, reaching 70–90 trajectories at the hardest couplings
+tested — meaning even a hot-start chain that has *already* paid its burn-in
+cost still needs that many more trajectories for its *next* independent
+Wilson-loop sample. The diffusion seed's t_therm (blue) stays at single
+digits to low tens of trajectories across the entire three-decade β range in
+both panels, at or below either standard-HMC cost at nearly every coupling
+tested — before even counting that a chain in this regime is also stuck in
+the wrong topological sector regardless of which of these two costs it has
+paid (Figs. S19–S25).
+
+![S27](S27_seeding_speedup.png)
+
+**Figure S27. Trajectories saved by seeding an HMC chain with a diffusion
+sample instead of starting fresh, one pair of bars per case.** Bar height is
+burn-in(fresh start) / t_therm(diffusion seed), log scale — red bars against
+a fresh hot start, purple against a fresh cold start. The shaded region
+marks couplings where the hot-start chain's topology is frozen. Below the
+freezing threshold, seeding with a diffusion sample already saves a modest
+1.3–3×. Above it (shaded, most of the range tested), fresh-start burn-in
+often never reaches tolerance within the 640-trajectory budget — every such
+bar is marked ≥ (a **lower bound**, using the budget cap as the numerator);
+the true speedup is higher still, since a chain that hasn't thermalized in
+640 trajectories would need to keep running indefinitely. Measured lower
+bounds run from about 11× (cold start, β_f ≈ 11.7) up to >1000× at several
+couplings where the diffusion seed's raw t_therm rounds to zero measurable
+trajectories — its ensemble mean is already inside the |z| ≤ 2 tolerance
+band on every Wilson-loop observable at t = 0, before any HMC continuation
+at all. Cold starts are consistently the less-bad fresh baseline (lower bars
+than hot start almost everywhere they can both be measured), but neither
+approaches the diffusion seed's cost once β_f moves a few multiples past the
+onset of freezing.
+
+---
+
+## S28–S30. Before vs. after a short HMC polish: what the continuation buys, at a fraction of the standard interval
+
+The pipeline does not stop at the raw diffusion output — every seed is
+carried forward by a short HMC continuation (n_traj_gen = 96 trajectories
+here, batched, plain HMC, no topological updates) before being handed to
+downstream measurement. These three figures show that continuation's effect
+directly: the same case's raw seed ("before", already shown in Figs.
+S21/S23/S25) against the seed plus its 96-trajectory tail ("after"), using
+the same case's own plain hot-start HMC ensemble as reference throughout.
+The point is **not** that every observable improves monotonically — at low
+and moderate β the seed is often already inside tolerance almost
+immediately (t_therm = 0–3 trajectories, Figs. S21/S23), so 96 trajectories
+of continuation mostly just add sampling noise on top of an already-correct
+answer. The point is the budget: 96 trajectories is a small fraction of
+what a fresh hot start needs even to *burn in* at these couplings (7 to
+never, Fig. S26–S27), and the seed's topological sector — set structurally,
+not by chain tunneling — does not need fixing by the continuation at all.
+
+![S28](S28_therm_case_beta1_after_hmc.png)
+
+**Figure S28. β_f = 1.49, L=32, after 96 trajectories (companion to Figure
+S21).** z-scores move from plaquette −48.3 → −0.6, W(2×2) +6.8 → −0.8,
+⟨Q²⟩ −6.8 → +0.8. This is the one case in this trio where the standard
+chain's own burn-in (hot: 7 traj, cold: 9 traj) is actually *shorter* than
+the 96-trajectory continuation used here — at this coupling standard HMC
+needs no help, and the continuation is doing more than necessary, tightening
+already-good raw-batch statistics further (see Fig. S16 for the same case's
+full relaxation trace).
+
+![S29](S29_therm_case_beta55_after_hmc.png)
+
+**Figure S29. β_f = 55.0, L=32, after 96 trajectories (companion to Figure
+S23).** z-scores move from plaquette −2.3 → −0.3, W(2×2) −0.7 → +1.6,
+W(4×4) −0.01 → +1.2, ⟨Q²⟩ unchanged at +0.18 (the topological sector does
+not move in 96 trajectories at this coupling — nor does it need to, it was
+already correct). The Wilson-loop z-scores here move around within the
+passing band rather than improving monotonically — the raw seed's t_therm
+was already 0 on every Wilson-loop observable (Fig. S1/S14), so there is
+nothing left to fix; the fluctuation is sampling noise on an already-correct
+ensemble, not drift. Contrast with the standard hot-start chain, which is
+completely frozen at this coupling (Fig. S14, S19) and whose *cold*-start
+counterpart alone needs 336 trajectories just to burn in.
+
+![S30](S30_therm_case_beta218_L64_after_hmc.png)
+
+**Figure S30. β_f = 218.6, L=64, after 96 trajectories (companion to Figure
+S25, same case as Figs. S10, S11, S18).** The cleanest improvement story of
+the three: z-scores move from plaquette −7.7 → +1.4, W(2×2) −10.4 → +1.6,
+W(4×4) −12.7 → +1.4 — all three observables cross from clear outliers into
+the passing band inside a continuation costing 96 trajectories, versus a
+fresh hot- *or* cold-start chain that never reaches tolerance within the
+640-trajectory budget at this coupling and volume at all (Fig. S26–S27).
+⟨Q²⟩ is unchanged at z = −1.37 (already passing, and again not expected to
+move — see Fig. S18 bottom row for the frozen hot-start chain's Q² over the
+same 640-trajectory window it never escapes). Note that this improvement is
+concentrated in the small-loop precision (W(2×2), W(4×4)) that drives the
+z-scores; the larger loops in the area-law panel are dominated by
+Monte Carlo noise at both couplings and look visually similar before and
+after, as they should — the panel is not the right place to look for this
+particular gain.
