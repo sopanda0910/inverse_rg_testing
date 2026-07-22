@@ -1,18 +1,46 @@
 """Generalization diagnostic for the inverse-RG conditional diffusion model.
 
-Probes whether the demo checkpoint (trained only on L=16 Wilson ensembles at
-beta in {1, 2, 4, 8, 14.1464, 55.0237}) transfers across coupling scale and
-lattice size:
+As of the v6 checkpoint (diffusion/configs/demo_v6.yaml), training couplings
+are drawn continuously (log-uniform, `data.random_rungs`, see
+`diffusion.utils.expand_rungs`), not from a fixed discrete grid: 64 rungs at
+L=16 spanning beta in [1.0, 57.2], 12 at L=32 spanning [2.2, 52.6], 6 at L=8
+spanning [1.4, 2.5], plus 4 fixed sector-augmented anchors at L=16 (beta =
+14.1464, 25, 40, 55.0237). Inside that coverage, "off-grid" no longer exists
+in the old sense -- any beta in ~[1, 60] sits close to some training draw.
+Genuine generalization now means either beta > ~60 (past every training
+draw) or a lattice size never trained on at all (L=64, L=128). Below, "in
+range" means beta_f is inside the trained L=16 span; it does NOT mean the
+target lattice size was densely trained -- L=32 only got 12 rungs vs L=16's
+64.
 
   Part A -- matched-pair beta scan at fixed geometry L=16 -> L=32: base HMC at
             coarse beta_c, generate at beta_f = approx_matched_fine_beta(beta_c).
+            beta_f in [1.49, 30.4] here -- fully inside the training range, so
+            this is interpolation, useful as a baseline rather than a
+            generalization claim.
   Part B -- target-beta mismatch scan from a fixed base (L=16, beta=4): generate
             at betas above/below the matched value 14.1464 to find where the
             conditional model degrades (includes the tree-level beta=2 -> 8 case).
+            Targets stay inside the training range throughout; this probes an
+            intentionally wrong coarse/fine pairing, not an unseen coupling.
   Part C -- lattice-size scan at the fixed coupling pair 4 -> 14.1464: base
-            lattices 16, 32, 64 generating 32, 64, 128.
+            lattices 16, 32, 64 generating 32, 64, 128. The coupling pair is
+            in-range, but L=64/L=128 were never trained on at any coupling --
+            this is the volume-extrapolation track, orthogonal to beta.
   Part D -- upper-coupling continuation of Part A, ending at beta_c = 55.0237 ->
-            beta_f = 218.58, fully outside the training coupling range.
+            beta_f = 218.58: the first point (beta_f=55.0) is still inside the
+            training range, the rest (78.5 upward) cross fully outside it.
+  Part E -- originally designed as an off-grid probe between the OLD discrete
+            training anchors; under continuous training the lower couplings
+            here (beta_f up to ~45.6) are now redundant with Part A
+            (interpolation, not off-grid). The upper couplings (bc=18/35/45 ->
+            beta_f = 70.5/138.5/178.5) do sit past the training edge, in the
+            same regime as Part D.
+  Part F -- the one-model demonstration: matched pairs far beyond any training
+            coupling (beta_f ~ 398.5 and ~872.8, i.e. ~7x and ~15x the training
+            maximum) plus a rung that is simultaneously large-beta and
+            large-volume (beta_f=218.6 at L=64). This is the only track built
+            to demonstrate generalization well past anything trained.
 
 Unlike 04_validate.py (whose reference HMC is deliberately topology-frozen to
 demonstrate freezing), every reference ensemble here runs WITH instanton Q-hop
@@ -58,9 +86,13 @@ ACTION_TYPE = "wilson"
 
 A_COARSE_BETAS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]
 D_COARSE_BETAS = [14.1464, 20.0, 30.0, 40.0, 55.0237]
-# Out-of-sample matched track: every base AND matched target sits mid-gap between
-# training couplings (both >= ~10% log-distance from all trained rungs), so this
-# part measures genuine off-grid generalization, not in-sample recall.
+# Originally an off-grid probe against the OLD discrete training anchors
+# {1, 2, 4, 8, 14.1464, 55.0237}. Under v6's continuous-beta training this no
+# longer measures off-grid generalization for the lower entries (bc <= 11.8,
+# beta_f <= 21.5): the training draws now densely cover that whole span, so
+# those cases are interpolation, redundant with Part A. Only the upper entries
+# (bc=18/35/45 -> beta_f=70.5/138.5/178.5) sit past the trained beta_f range --
+# see the module docstring for the full breakdown.
 E_COARSE_BETAS = [1.2, 2.7, 3.4, 4.5, 5.8, 9.0, 11.8, 18.0, 35.0, 45.0]
 # Part F: the one-model demonstration — matched pairs far beyond any training
 # coupling (targets ~7x and ~15x the training maximum) plus a rung that is
