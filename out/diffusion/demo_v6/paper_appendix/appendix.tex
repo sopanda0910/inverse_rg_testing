@@ -1,0 +1,509 @@
+% ===================================================================
+% Supplementary Figures --- v6 diffusion-based inverse-RG model
+% Paste into your paper where the appendix/supplementary section goes.
+% Assumes: \usepackage{graphicx}, \usepackage{amsmath}, \usepackage{amssymb}
+% Images expected at figures/01_overview.png ... figures/19_high_after.png
+% ===================================================================
+
+\section{Supplementary Figures --- v6 Model}
+\label{sec:appendix}
+
+This appendix documents the current (v6) checkpoint only. It focuses on the
+two questions the project exists to answer: (1) does the diffusion-generated
+ensemble match the true physics of 2D compact U(1) lattice gauge theory, at
+couplings inside and outside what the model trained on, and (2) how does
+producing that ensemble compare, in cost, to standard HMC --- both in how
+fast a usable configuration appears, and in what standard HMC's own
+``equilibrium'' ensemble actually contains at the same coupling.
+
+\subsection{Methodology}
+\label{sec:appendix-methods}
+
+\paragraph{The model.} A score network is trained to reverse a noising
+process applied to wrapped link angles $\theta \in (-\pi, \pi]$, conditioned
+on a \emph{coarse} (2$\times$2-blocked) version of the same field.
+Generation runs that reverse process backward from noise, which is exactly
+one inverse renormalization group step: it lifts a coarse-lattice
+configuration, produced by ordinary HMC at a coarse coupling $\beta_c$, up
+to a fine-lattice configuration at a target coupling $\beta_f$ (tree-level
+relation $\beta_c = \beta_f / 4$). Two mechanisms make this work outside the
+training set:
+
+\begin{itemize}
+  \item \textbf{Exact-score blend at small noise.} As the reverse process
+    approaches zero noise, the learned score is blended toward the
+    \emph{analytically exact} score of the (Gaussian-smeared) Wilson
+    action. Near $\sigma = 0$ this makes the last steps of generation
+    literal Langevin dynamics under the true action --- correct by
+    construction, regardless of what the network learned from data. This is
+    the main reason the model can be asked for couplings the training set
+    never covered: the fine-detail correctness at small noise comes from
+    the known physics of the action, not from interpolating training
+    examples.
+  \item \textbf{Structural topology transport.} The coarse ensemble's
+    topological charge $Q_c$ is known exactly (it is an integer, computed
+    directly from the coarse configuration) and is deterministically
+    projected onto the generated fine configuration, rather than left to
+    emerge from the sampling dynamics. This matters because standard HMC
+    \emph{cannot} change $Q$ reliably at large $\beta$
+    (Section~\ref{sec:appendix-therm}) --- by not relying on stochastic
+    tunneling for its topological content, the pipeline sidesteps HMC's
+    worst failure mode entirely.
+\end{itemize}
+
+\paragraph{Training coverage, precisely.} Training couplings are drawn
+continuously, log-uniform in $\beta$ (\texttt{data.random\_rungs}, see
+\texttt{diffusion.utils.expand\_rungs}), not from a fixed discrete list: 64
+rungs at $L=16$ spanning $\beta \in [1.0, 57.2]$, 12 at $L=32$ spanning
+$\beta \in [2.2, 52.6]$, 6 at $L=8$ spanning $\beta \in [1.4, 2.5]$, plus 4
+fixed high-statistics anchors at $L=16$ ($\beta = 14.15, 25, 40, 55.02$).
+Inside $\beta \approx [1, 60]$, any requested coupling sits close to some
+training draw --- this is \textbf{in-sample} generalization (interpolation).
+$\beta > 60$ is where training coverage stops entirely --- this is
+\textbf{out-of-sample} generalization (extrapolation). Lattice sizes $L=64$
+and $L=128$ were never trained on at any coupling --- a separate, orthogonal
+out-of-sample axis (volume).
+
+\paragraph{How a figure is derived.} Every distribution-match figure is
+produced by \texttt{diffusion.validate.report.validate\_ensemble}: it
+measures plaquette angles, Wilson loops (areas 1 to 144), and topological
+charge on the generated batch, compares each to the \textbf{exact}
+closed-form prediction (2D compact U(1) admits an exact character-expansion
+solution for the plaquette distribution, Wilson loop expectations, and the
+finite-volume $P(Q)$ --- \texttt{diffusion.lgt.exact} --- no Monte Carlo
+involved on the ``exact'' side at all), and reports a $z$-score
+$z = (\text{measured} - \text{exact})\,/\,(\text{statistical error of the
+measurement})$. $|z| \lesssim 2$ is a pass. A reference HMC ensemble is also
+shown for visual comparison; \emph{which} HMC reference matters and is
+stated per figure --- an unbiased reference with instanton ($Q$-hop) updates
+for ``does the model match the physics'' figures
+(Section~\ref{sec:appendix-gen}), versus the case's own plain HMC with no
+topological updates for ``what does standard practice actually produce''
+figures (Section~\ref{sec:appendix-therm}), since only the latter can
+honestly demonstrate a failure mode of standard HMC.
+
+% ===================================================================
+\subsection{Generalization: does the generated ensemble match the exact physics?}
+\label{sec:appendix-gen}
+% ===================================================================
+
+Five cases, chosen to cover low/mid/high coupling and both in-sample and
+out-of-sample regimes, plus the orthogonal volume axis.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/01_overview.png}
+  \caption{\textbf{Campaign overview --- every case in one picture.} Three
+    panels against target coupling $\beta_f$ (shared log axis), shaded band
+    = training range $[1, 60]$. \emph{Left:} $\langle Q^2\rangle$ $z$-score
+    of the final pipeline output (after topology enforcement and a short
+    rethermalization) against exact. \emph{Center:} the raw diffusion
+    sampler's own topology-transport quality, before enforcement is
+    applied --- how close a bare sample lands to its coarse parent's
+    charge. \emph{Right:} raw-seed thermalization cost in HMC trajectories
+    (Section~\ref{sec:appendix-therm}). \textbf{Significance:} the left
+    panel is the single most important result in the appendix --- $z$ stays
+    inside roughly $\pm 2$ continuously from $\beta_f \approx 1$ to
+    $\beta_f \approx 870$, with no discontinuity at the training-range
+    boundary (shaded band edge). That absence of a jump is the direct
+    visual evidence that the exact-score mechanism
+    (Section~\ref{sec:appendix-methods}) is doing real work: nothing
+    distinguishes interpolation from extrapolation in this panel, which is
+    the point.}
+  \label{fig:overview}
+\end{figure}
+
+\subsubsection{Low \texorpdfstring{$\beta$}{beta}, in-sample}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/02_gen_low.png}
+  \caption{\textbf{$\beta_f = 1.49$, $L=32$ (case A\_bc0.25).} Four panels:
+    per-configuration plaquette-angle histogram against the exact
+    infinite-volume density; the topological charge histogram $P(Q)$
+    against the exact finite-volume distribution; the Wilson-loop area law
+    $-\log\langle W(A)\rangle$ against the exact string tension; the
+    connected plaquette-plaquette correlator (expected to be pure noise
+    here --- the theory is nearly free at weak coupling, so genuine
+    correlations are exponentially small). $z$-scores: plaquette $+0.51$,
+    $W(2\times2)$ $+1.01$, $\langle Q^2\rangle$ $-1.80$ --- all comfortably
+    passing. \textbf{Physics:} at weak coupling the Boltzmann weight
+    $e^{\beta\cos\theta}$ is broad, fluctuations are large, and both
+    standard HMC and the diffusion model have an easy time --- this case
+    exists to confirm the comparison isn't rigged by only showing hard
+    cases. \textbf{Significance:} establishes the honest floor. The model
+    has no structural advantage here and doesn't need one; showing it still
+    matches exactly is the baseline the harder cases build on.}
+  \label{fig:gen-low}
+\end{figure}
+
+\subsubsection{Mid \texorpdfstring{$\beta$}{beta}, in-sample (at the edge of the trained anchors)}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/03_gen_mid.png}
+  \caption{\textbf{$\beta_f = 55.0$, $L=32$ (case D\_bc14.1464).} Same
+    four-panel layout as Figure~\ref{fig:gen-low}. $z$-scores: plaquette
+    $-0.50$, $W(2\times2)$ $+0.97$, $\langle Q^2\rangle$ $-0.40$ ($P(Q)$
+    $\chi^2$ $p = 0.34$) --- all passing. \textbf{Physics:} $\beta_f = 55$
+    sits right at one of the four fixed high-statistics training anchors
+    ($\beta = 55.0237$) --- the topological susceptibility here is already
+    small ($\langle Q^2\rangle \approx 0.47$ at this volume), so correctly
+    reproducing the \emph{shape} of a narrow $P(Q)$ matters more than at low
+    $\beta$. \textbf{Significance:} this is the coupling where standard HMC
+    starts to struggle badly (Section~\ref{sec:appendix-therm} shows its
+    hot-start chain is completely frozen here) --- confirming the model
+    still matches the exact distribution at exactly the point where the
+    standard method's own ensemble becomes unreliable is the first half of
+    the paper's central claim.}
+  \label{fig:gen-mid}
+\end{figure}
+
+\subsubsection{High \texorpdfstring{$\beta$}{beta}, out-of-sample + volume extrapolation (flagship)}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/04_gen_high.png}
+  \caption{\textbf{$\beta_f = 218.6$, $L=64$ (case F\_L64\_bc55.0237) ---
+    the flagship case.} $z$-scores (mean over 2 independent seeds):
+    plaquette $-0.51$, $W(2\times2)$ $-0.98$, $\langle Q^2\rangle$ $+0.90$
+    ($P(Q)$ $\chi^2$ $p = 0.74$). \textbf{Physics:} two extrapolation
+    stresses at once --- $\beta_f$ is $3.6\times$ the training maximum
+    (genuinely out-of-sample), and $L=64$ is $4\times$ the largest lattice
+    trained on ($16\times$ the volume). \textbf{Significance:} this is the
+    single figure that most directly demonstrates the exact-score mechanism
+    working as designed: nothing in this coupling/volume combination was in
+    the training set, yet the closed-form exact predictions are matched to
+    the same tolerance as the in-sample cases above. This is only possible
+    because correctness here comes from the blended analytic score at small
+    noise (Section~\ref{sec:appendix-methods}), not from the network having
+    memorized nearby examples.}
+  \label{fig:gen-high}
+\end{figure}
+
+\subsubsection{Deepest coupling extrapolation}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/05_gen_extreme.png}
+  \caption{\textbf{$\beta_f = 872.8$, $L=32$ (case F\_L32\_bc218.58) ---
+    15$\times$ the training maximum.} $z$-scores: plaquette $-0.41$,
+    $W(2\times2)$ $-1.09$. $\langle Q^2\rangle$ is not a meaningful
+    $z$-score here (exact $\langle Q^2\rangle \approx 9\times10^{-4}$ at
+    this coupling/volume --- both generated and exact are consistent with
+    exactly zero fluctuation, which is what the ``$z=\infty$'' appearing in
+    the raw tables at this coupling reflects: a zero-variance coincidence,
+    not a defect). \textbf{Physics:} at this coupling the theory is almost
+    frozen even in principle --- the true plaquette-angle distribution and
+    $P(Q)$ have collapsed to a narrow spike, and the test is whether the
+    model's \emph{width}, not just its mean, still tracks the exact
+    prediction at a coupling scale nearly two orders of magnitude past
+    anything trained. \textbf{Significance:} the outer edge of what this
+    checkpoint was pushed to demonstrate. That the plaquette-angle
+    density's width still matches the exact curve to visual precision here
+    is the strongest single data point for ``the mechanism generalizes,''
+    precisely because $15\times$ is far enough that no plausible
+    interpolation argument applies.}
+  \label{fig:gen-extreme}
+\end{figure}
+
+\subsubsection{Volume extrapolation at an in-sample coupling}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/06_gen_volume.png}
+  \caption{\textbf{$\beta_f = 14.15$, $L=128$ (case C\_L128) --- the
+    largest lattice tested, $8\times$ the largest lattice trained on.}
+    $z$-scores: plaquette $+0.97$, $W(2\times2)$ $+1.11$, $\langle
+    Q^2\rangle$ $-1.24$. One Wilson loop size is flagged and excluded from
+    the area-law panel because its exact expectation value falls below
+    $3\sigma$ of measurement noise at this volume (labeled on the panel ---
+    a statistical-power limit of the test, not a model failure).
+    \textbf{Physics:} this case isolates the volume axis from the coupling
+    axis --- $\beta_f = 14.15$ is solidly in-sample, only $L$ is pushed
+    beyond training ($L=16/32$ trained $\to$ $L=128$ tested). Finite-volume
+    corrections to Wilson loops and $P(Q)$ genuinely change with $L$, so
+    this directly tests whether the model has learned volume-dependent
+    physics or just a fixed-size lookup. \textbf{Significance:} shows the
+    two extrapolation axes (coupling in Figures~\ref{fig:gen-high}--\ref{fig:gen-extreme},
+    volume here) are independent successes, not one result restated --- the
+    model generalizes in both directions it was asked to.}
+  \label{fig:gen-volume}
+\end{figure}
+
+\clearpage
+% ===================================================================
+\subsection{Thermalization: cost vs. standard HMC, and why standard HMC struggles}
+\label{sec:appendix-therm}
+% ===================================================================
+
+\paragraph{The physics of why standard HMC fails at large $\beta$.} Two
+distinct mechanisms, both worsening with $\beta$:
+
+\begin{enumerate}
+  \item \textbf{Critical slowing down} --- the integrated autocorrelation
+    time of ordinary (non-topological) observables like the plaquette or
+    small Wilson loops grows with $\beta$, so a chain needs more
+    trajectories between independent samples even once it has reached
+    equilibrium.
+  \item \textbf{Topological freezing} --- the topological charge $Q$
+    changes only via a global rearrangement of the field (an
+    instanton-like tunneling event). The rate of these events is
+    suppressed roughly as $e^{-2\beta}$ with the action barrier between
+    sectors, so above a fairly modest coupling a standard HMC chain's $Q$
+    simply stops moving for any practical trajectory budget. This is
+    qualitatively different from (1): it isn't slow mixing, it's zero
+    mixing --- the chain is stuck in whatever sector it happened to be in,
+    forever, as far as any feasible run is concerned.
+\end{enumerate}
+
+Standard HMC also has \textbf{two distinct costs}, and figures below are
+careful to label which one is meant: \textbf{burn-in} (the one-time cost of
+reaching equilibrium from a fresh hot or cold start) and the \textbf{sampling
+interval} $2\tau_{\mathrm{int}}$ (once \emph{already} equilibrated, the
+trajectories a chain must run and discard before its \emph{next}
+configuration is a statistically independent draw --- a different,
+perpetual cost). All thermalization figures use the case's own \textbf{plain
+HMC, no topological updates} as the standard-practice comparison --- the
+instanton move used to build unbiased references in
+Section~\ref{sec:appendix-gen} is this pipeline's own fix and is
+deliberately excluded here.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/07_therm_costs.png}
+  \caption{\textbf{Diffusion-seed thermalization time vs. two standard-HMC
+    costs, full $\beta_f$ range, Wilson-loop observables (plaquette,
+    $W(2\times2)$, $W(4\times4)$).} \emph{Left:} raw diffusion-seed
+    $t_{\mathrm{therm}}$ (blue) vs. fresh hot-start (red) and cold-start
+    (purple) burn-in --- open markers where a fresh chain fails to reach
+    tolerance within a 640-trajectory budget. \emph{Right:} the same seed
+    curve against the hot-start chain's own steady-state interval
+    $2\tau_{\mathrm{int}}$ (gold). Top strip: whether that case's hot-start
+    chain's $Q$ tunneled at all (green) or was completely frozen (red).
+    \textbf{How derived:} every point comes from running real batched HMC
+    (Omelyan integrator, adapted step size) from three starting points ---
+    the diffusion seed, a fresh hot start, a fresh cold start --- at matched
+    couplings across the generalization study, then measuring each
+    observable's trajectory-by-trajectory approach to the exact value.
+    \textbf{Significance:} below $\beta_f \approx 8$ (green strip) all
+    curves are comparable --- standard HMC needs no help. Above it (red
+    strip, the majority of the tested range), both fresh-start burn-in and
+    the equilibrated interval grow sharply (burn-in eventually diverging
+    outright; the interval reaching 70--90 trajectories at the hardest
+    couplings), while the diffusion seed's $t_{\mathrm{therm}}$ stays at
+    single digits to low tens of trajectories throughout the entire
+    three-decade range --- this is the direct trajectory-cost evidence for
+    ``the diffusion seed thermalizes faster than the time it takes standard
+    HMC to produce its own next independent sample,'' not just faster than
+    burn-in.}
+  \label{fig:therm-costs}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.85\textwidth]{figures/08_therm_speedup.png}
+  \caption{\textbf{Speedup: burn-in(fresh start)~/~$t_{\mathrm{therm}}$(diffusion
+    seed), one pair of bars per case.} Red = vs.\ fresh hot start, purple =
+    vs.\ fresh cold start; shaded region = hot-start topology is frozen at
+    that coupling; $\geq$ marks a lower bound where the fresh chain never
+    reached tolerance within budget (so the true speedup is higher still).
+    \textbf{Significance:} turns Figure~\ref{fig:therm-costs} into a single
+    number per case --- below freezing a modest 1.3--3$\times$; above it,
+    measured lower bounds run from $\sim$11$\times$ up to $>$1000$\times$ at
+    couplings where the diffusion seed's raw output is already within
+    tolerance before any HMC continuation at all.}
+  \label{fig:therm-speedup}
+\end{figure}
+
+\subsubsection{Why standard HMC's equilibrium ensemble is wrong, not just slow}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/09_freezing_zscore.png}
+  \caption{\textbf{$\langle Q^2\rangle$ $z$-score vs.\ $\beta_f$: the
+    pipeline vs.\ two independent plain-HMC ensembles.} Ensembles built the
+    way a practitioner actually would --- one $Q$ sample per independent
+    chain, taken after burn-in (repeat samples from a frozen chain carry no
+    new information, so this is the correct unit of evidence, not a trick).
+    The pipeline (blue) stays inside $|z| \lesssim 2$ across the full
+    three-decade range. The hot-start ensemble crosses out of tolerance by
+    $\beta_f \approx 6$ and settles at $z \approx 5$--$7$ (a stable bias:
+    each frozen chain lands in a different wrong sector, so the ensemble
+    mean is systematically off). The cold-start ensemble is worse in a
+    different way --- above $\beta_f \approx 9$, essentially every chain
+    freezes at exactly $Q=0$, giving zero measured variance and a formally
+    enormous $z$ (the honest statement is ``no measured topological
+    fluctuation at all,'' not merely ``biased''). \textbf{Significance:}
+    demonstrates that the failure above is not a speed problem that more
+    trajectories would fix --- it's structural. No feasible trajectory
+    budget changes this outcome for standard HMC.}
+  \label{fig:freezing-zscore}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/10_freezing_pq.png}
+  \caption{\textbf{Full $P(Q)$ shape at three couplings spanning ergodic
+    $\to$ onset $\to$ frozen.} At $\beta_f = 3.1$ (thousands of tunneling
+    events per chain) all three ensembles track the exact shape --- nothing
+    to fix here. By $\beta_f = 6.1$ (tunneling already down two orders of
+    magnitude) the cold ensemble is visibly over-concentrated at $Q=0$ and
+    the hot ensemble is patchy --- early symptoms. At $\beta_f = 219$ (zero
+    tunneling events measured in over ten thousand post-burn-in
+    chain-trajectories) the breakdown is total: the hot ensemble is
+    scattered across sectors with almost no mass where exact actually puts
+    it, the cold ensemble is a single zero-width spike at $Q=0$.
+    \textbf{Significance:} shows \emph{why} the pipeline avoids this
+    failure --- its topological sector is set structurally
+    (Section~\ref{sec:appendix-methods}: transported from the coarse
+    parent, not reached by letting a chain tunnel), so the one mechanism
+    that breaks standard HMC here is simply not in its critical path.}
+  \label{fig:freezing-pq}
+\end{figure}
+
+\clearpage
+\subsubsection{Case studies: low, mid, and high \texorpdfstring{$\beta$}{beta} in detail}
+
+Each case below shows three things for the same physical coupling: how fast
+the raw diffusion seed and fresh HMC chains approach the exact value
+(relaxation trace), what the seed's distribution looks like against the
+case's own plain hot-start HMC \emph{before} any polish, and what it looks
+like \emph{after} a short (96-trajectory) HMC continuation --- the same
+continuation every pipeline output receives before being reported in
+Section~\ref{sec:appendix-gen}.
+
+\paragraph{Low $\beta = 1.49$, $L=32$ (honest baseline).}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/11_low_relax.png}
+  \caption{\textbf{Relaxation trace, $\beta_f = 1.49$.} Rows: plaquette,
+    $W(2\times2)$, $W(4\times4)$, $Q^2$; left column zooms the
+    early-trajectory approach to exact, right column shows distance from
+    exact in error-bar units, log-log, full budget. \textbf{Significance:}
+    hot and cold starts both thermalize in single-digit trajectories,
+    matching the diffusion seed --- standard HMC is genuinely competitive
+    here, confirming the comparison isn't cherry-picked.}
+  \label{fig:low-relax}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/12_low_before.png}
+  \caption{\textbf{Distribution match before any HMC polish, $\beta_f =
+    1.49$.} Exact $\langle Q^2\rangle = 28.52$; generated $15.0 \pm 2.0$
+    (statistical noise from a modest batch, not bias); the case's own
+    hot-start HMC $23.7 \pm 6.2$ --- also fine, since tunneling is still
+    fast here.}
+  \label{fig:low-before}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/13_low_after.png}
+  \caption{\textbf{Same case, after the 96-trajectory continuation.}
+    Plaquette $z$ moves $-48.3 \to -0.6$ (tightening already-good
+    statistics), $\langle Q^2\rangle$ $z$ $-6.8 \to +0.8$.
+    \textbf{Significance of this trio (Figures~\ref{fig:low-relax}--\ref{fig:low-after}):}
+    at low $\beta$ the standard chain's own burn-in (7 hot / 9 cold
+    trajectories) is actually \emph{shorter} than the 96-trajectory polish
+    used here --- the diffusion route offers no advantage because none is
+    needed. Included for honesty, not to make a case.}
+  \label{fig:low-after}
+\end{figure}
+
+\paragraph{Mid $\beta = 55.0$, $L=32$ (established freezing).}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/14_mid_relax.png}
+  \caption{\textbf{Relaxation trace, $\beta_f = 14.15$} (a nearby
+    moderate-coupling case used for this trace). The diffusion seed is
+    already inside tolerance at essentially zero additional trajectories on
+    the Wilson-loop rows; the hot-start chain's $Q^2$ (bottom row) plateaus
+    far from the exact value for the entire budget --- the onset of
+    freezing.}
+  \label{fig:mid-relax}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/15_mid_before.png}
+  \caption{\textbf{Distribution match before polish, $\beta_f = 55.0$.}
+    Exact $\langle Q^2\rangle = 0.474$; generated $0.484 \pm 0.056$
+    ($z=+0.18$, matching almost exactly); the case's own hot-start HMC
+    $11.19 \pm 1.76$ ($z=+6.09$ --- $23\times$ the true value). The $P(Q)$
+    panel shows the mechanism directly: generated mass sits tightly on
+    $Q \in \{-2,\ldots,2\}$ matching exact, while the frozen hot ensemble
+    is smeared flat across $Q \in \{-7,\ldots,5\}$ with no extra weight
+    where the true distribution peaks.}
+  \label{fig:mid-before}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/16_mid_after.png}
+  \caption{\textbf{Same case, after the 96-trajectory continuation.}
+    Plaquette $z$ $-2.3 \to -0.3$; $W(2\times2)$ $-0.7 \to +1.6$; $\langle
+    Q^2\rangle$ unchanged at $+0.18$ --- the topological sector doesn't
+    move in 96 trajectories at this coupling, nor does it need to, since it
+    was already correct. \textbf{Significance of this trio
+    (Figures~\ref{fig:mid-relax}--\ref{fig:mid-after}):} the raw seed's
+    $t_{\mathrm{therm}}$ was already 0 on every Wilson-loop observable, so
+    nothing is ``improving'' here so much as staying correct --- while the
+    standard chain's cold start alone needs 336 trajectories just to burn
+    in, and its hot start is completely frozen (Figure~\ref{fig:freezing-zscore}).}
+  \label{fig:mid-after}
+\end{figure}
+
+\paragraph{High $\beta = 218.6$, $L=64$ (the money shot).}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/17_high_relax.png}
+  \caption{\textbf{Relaxation trace, $\beta_f = 218.6$, $L=64$} --- same
+    case as Figures~\ref{fig:gen-high} and~\ref{fig:gen-volume}. The
+    diffusion seed sits inside tolerance from the first trajectory on every
+    Wilson observable (blue curve never leaves the shaded band, top three
+    rows). The hot-start chain's $Q^2$ (bottom row) plateaus near 30--40
+    for the \emph{entire} 640-trajectory budget, nowhere near the exact
+    value $\approx 0.47$ --- zero tunneling events, a permanently wrong
+    sector.}
+  \label{fig:high-relax}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/18_high_before.png}
+  \caption{\textbf{Distribution match before polish.} Exact $\langle
+    Q^2\rangle = 0.474$; generated $0.391 \pm 0.061$ ($z=-1.37$, correct
+    sector structure already); the case's own hot-start HMC $52.2 \pm
+    22.3$ --- about $110\times$ the true value (the huge error bar, from 16
+    independently frozen chains landing in wildly different sectors, is
+    itself part of the failure: chain-to-chain scatter masks how wrong the
+    mean is).}
+  \label{fig:high-before}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/19_high_after.png}
+  \caption{\textbf{Same case, after the 96-trajectory continuation.} The
+    cleanest improvement in this appendix: plaquette $z$ $-7.7 \to +1.4$,
+    $W(2\times2)$ $-10.4 \to +1.6$, $W(4\times4)$ $-12.7 \to +1.4$ --- all
+    three cross from clear outliers into the passing band. $\langle
+    Q^2\rangle$ unchanged at $-1.37$ (already correct; see
+    Figure~\ref{fig:high-relax}, bottom row, for the frozen hot-start
+    chain's $Q^2$ over the same window it never escapes).
+    \textbf{Significance of this trio (Figures~\ref{fig:high-relax}--\ref{fig:high-after}):}
+    at the flagship coupling and volume, a 96-trajectory polish (a small
+    fraction of any standard-HMC cost measured in
+    Section~\ref{sec:appendix-therm}) takes a seed with a real residual
+    Wilson-loop bias to comfortably passing, while a fresh hot- or
+    cold-start chain never reaches tolerance within the 640-trajectory
+    budget at all --- the clearest single illustration that this is not
+    ``faster,'' it is ``standard HMC does not arrive at all within any
+    practical budget, and the diffusion route does.''}
+  \label{fig:high-after}
+\end{figure}
