@@ -376,3 +376,67 @@ comfortably passing, while a fresh hot- or cold-start chain never reaches
 tolerance within the 640-trajectory budget at all — the clearest single
 illustration that this is not "faster," it is "standard HMC does not arrive
 at all within any practical budget, and the diffusion route does."
+
+---
+
+## Section 3. Autocorrelation: fast vs. slow modes, over a window of separations
+
+Everywhere above, "thermalization" and "tunneling" were described in terms
+of a single summary number (t_therm, τ_int, tunneling counts). This section
+shows the underlying curve those numbers are extracted from: the normalized
+autocorrelation function Γ(δ) of an observable as a function of separation δ
+(in HMC trajectories), computed on the equilibrated window of each chain
+(post-t_therm, or the second half of the run for a start that never
+thermalizes), averaged over chains with SEM error bars. Γ(0) = 1 by
+construction; a well-mixing chain decays toward Γ(δ) ≈ 0 as δ grows, and a
+flat Γ(δ) that never decays is the direct signature of a mode the chain
+cannot move at all within the window tested. **How derived:** both figures
+below reuse `diffusion.validate.stats.normalized_autocorrelation` and the
+per-trajectory series already saved by the thermalization benchmark
+(`{label}_series.npz`) — no new HMC was run for this section, only new
+plots (`diffusion/scripts/11_autocorrelation.py`) over data already used
+elsewhere in this appendix (same three cases as Figures 11–19: β_f = 1.49,
+55.0, and 218.6/L=64).
+
+![20](20_autocorr_modes.png)
+
+**Figure 20. Fast modes (Wilson loops, blue) vs. slow modes (topology, red)
+side by side, for all three starts (rows) and all three couplings
+(columns).** **Physics:** the plaquette is a local, fast-mixing observable —
+it only requires a few nearby link angles to change to decorrelate — while
+the topological charge is a genuinely global mode: changing it requires an
+instanton-like rearrangement of the whole field, which plain HMC (no
+Q-hops) simply does not do at appreciable coupling. **What the panels show:**
+at β_f = 1.49 (left column) both modes decorrelate within about 5
+trajectories for every start — weak coupling, nothing frozen. At β_f = 55.0
+and 218.6 (center, right columns), the blue (plaquette) curves still decay
+toward zero for every start, just more slowly at higher β — ordinary
+critical slowing down. The red (Q) curves, by contrast, sit pinned at
+Γ(δ) = 1.000 out to the full 30-trajectory window tested, for **every**
+start including the diffusion seed's own post-generation continuation.
+**Significance:** this is not a defect in the diffusion route — once
+generation is done, the seed is handed to the same plain-HMC continuation
+used everywhere in this appendix (no Q-hops), so of course its topological
+charge cannot move during that continuation either; nothing here relies on
+it moving. The correctness demonstrated in Section 1 and Figures 9–10 comes
+from the sector being set correctly at generation time (structural
+transport, Section 0), not from letting it mix afterward. What this figure
+adds is the direct visual proof that the flat-red/decaying-blue pattern is a
+real, measured property of the dynamics — not an inference from a single
+τ_int number — and that it is identical in kind for all three starts:
+plain HMC's topological mode simply does not move at these couplings,
+regardless of where the chain began.
+
+![21](21_autocorr_fastmode.png)
+
+**Figure 21. Plaquette (fast-mode) autocorrelation only, by start, at the
+same three couplings.** **Significance:** isolates the critical-slowing-down
+claim from Section 2 on its own axis. At β_f = 1.49 all three starts decay
+together. At β_f = 55.0 and 218.6, the diffusion seed's continuation (blue)
+still decays to Γ(δ) ≈ 0 within about 10 trajectories, while the fresh
+hot-start chain (red) decays far more slowly and plateaus at a substantial
+residual correlation (≈ 0.1–0.4) even after 30 trajectories — direct,
+window-resolved evidence for the τ_int growth quoted as a single number in
+Figure 7's right panel: the fresh chain is still meaningfully correlated
+with itself at a separation where the diffusion-seeded continuation has
+already forgotten its own recent history.
