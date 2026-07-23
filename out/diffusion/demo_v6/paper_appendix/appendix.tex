@@ -507,3 +507,85 @@ Section~\ref{sec:appendix-gen}.
     practical budget, and the diffusion route does.''}
   \label{fig:high-after}
 \end{figure}
+
+\clearpage
+% ===================================================================
+\subsection{Autocorrelation: fast vs.\ slow modes, over a window of separations}
+\label{sec:appendix-autocorr}
+% ===================================================================
+
+Everywhere above, ``thermalization'' and ``tunneling'' were described in
+terms of a single summary number ($t_{\mathrm{therm}}$, $\tau_{\mathrm{int}}$,
+tunneling counts). This section shows the underlying curve those numbers are
+extracted from: the normalized autocorrelation function $\Gamma(\delta)$ of
+an observable as a function of separation $\delta$ (in HMC trajectories),
+computed on the equilibrated window of each chain (post-$t_{\mathrm{therm}}$,
+or the second half of the run for a start that never thermalizes), averaged
+over chains with SEM error bars. $\Gamma(0) = 1$ by construction; a
+well-mixing chain decays toward $\Gamma(\delta) \approx 0$ as $\delta$ grows,
+and a flat $\Gamma(\delta)$ that never decays is the direct signature of a
+mode the chain cannot move at all within the window tested. \textbf{How
+derived:} both figures below reuse
+\texttt{diffusion.validate.stats.normalized\_autocorrelation} and the
+per-trajectory series already saved by the thermalization benchmark
+(\texttt{\{label\}\_series.npz}) --- no new HMC was run for this section,
+only new plots (\texttt{diffusion/scripts/11\_autocorrelation.py}) over data
+already used elsewhere in this appendix (same three cases as
+Figures~\ref{fig:low-relax}--\ref{fig:high-after}: $\beta_f = 1.49$, $55.0$,
+and $218.6/L{=}64$).
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/20_autocorr_modes.png}
+  \caption{\textbf{Fast modes (Wilson loops, blue) vs.\ slow modes
+    (topology, red) side by side, for all three starts (rows) and all three
+    couplings (columns).} \textbf{Physics:} the plaquette is a local,
+    fast-mixing observable --- it only requires a few nearby link angles to
+    change to decorrelate --- while the topological charge is a genuinely
+    global mode: changing it requires an instanton-like rearrangement of
+    the whole field, which plain HMC (no $Q$-hops) simply does not do at
+    appreciable coupling. \textbf{What the panels show:} at $\beta_f = 1.49$
+    (left column) both modes decorrelate within about 5 trajectories for
+    every start --- weak coupling, nothing frozen. At $\beta_f = 55.0$ and
+    $218.6$ (center, right columns), the blue (plaquette) curves still
+    decay toward zero for every start, just more slowly at higher $\beta$
+    --- ordinary critical slowing down. The red ($Q$) curves, by contrast,
+    sit pinned at $\Gamma(\delta) = 1.000$ out to the full 30-trajectory
+    window tested, for \textbf{every} start including the diffusion seed's
+    own post-generation continuation. \textbf{Significance:} this is not a
+    defect in the diffusion route --- once generation is done, the seed is
+    handed to the same plain-HMC continuation used everywhere in this
+    appendix (no $Q$-hops), so of course its topological charge cannot move
+    during that continuation either; nothing here relies on it moving. The
+    correctness demonstrated in Section~\ref{sec:appendix-gen} and
+    Figures~\ref{fig:freezing-zscore}--\ref{fig:freezing-pq} comes from the
+    sector being set correctly at generation time (structural transport,
+    Section~\ref{sec:appendix-methods}), not from letting it mix
+    afterward. What this figure adds is the direct visual proof that the
+    flat-red/decaying-blue pattern is a real, measured property of the
+    dynamics --- not an inference from a single $\tau_{\mathrm{int}}$
+    number --- and that it is identical in kind for all three starts:
+    plain HMC's topological mode simply does not move at these couplings,
+    regardless of where the chain began.}
+  \label{fig:autocorr-modes}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/21_autocorr_fastmode.png}
+  \caption{\textbf{Plaquette (fast-mode) autocorrelation only, by start, at
+    the same three couplings.} \textbf{Significance:} isolates the
+    critical-slowing-down claim from Section~\ref{sec:appendix-therm} on
+    its own axis. At $\beta_f = 1.49$ all three starts decay together. At
+    $\beta_f = 55.0$ and $218.6$, the diffusion seed's continuation (blue)
+    still decays to $\Gamma(\delta) \approx 0$ within about 10 trajectories,
+    while the fresh hot-start chain (red) decays far more slowly and
+    plateaus at a substantial residual correlation ($\approx 0.1$--$0.4$)
+    even after 30 trajectories --- direct, window-resolved evidence for the
+    $\tau_{\mathrm{int}}$ growth quoted as a single number in
+    Figure~\ref{fig:therm-costs}'s right panel: the fresh chain is still
+    meaningfully correlated with itself at a separation where the
+    diffusion-seeded continuation has already forgotten its own recent
+    history.}
+  \label{fig:autocorr-fastmode}
+\end{figure}
