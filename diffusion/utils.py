@@ -30,7 +30,9 @@ def set_seed(seed: int) -> None:
 def save_ensemble(path: str | Path, configs: torch.Tensor, metadata: dict) -> None:
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    torch.save({"configs": configs.cpu(), "metadata": metadata}, path)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    torch.save({"configs": configs.cpu(), "metadata": metadata}, tmp)
+    tmp.replace(path)
 
 
 def load_ensemble(path: str | Path) -> tuple[torch.Tensor, dict]:
@@ -43,9 +45,14 @@ def ensemble_path(out_dir: str | Path, action_type: str, lattice_size: int, beta
 
 
 def save_json(path: str | Path, payload) -> None:
+    """Write via a temp file + atomic rename so a kill mid-write can never leave a
+    truncated/corrupt JSON file behind -- callers use this file's presence/validity
+    to decide what's already done, so a torn write would silently break resume."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    tmp.replace(path)
 
 
 def expand_rungs(data_cfg: dict, seed: int) -> list[dict]:

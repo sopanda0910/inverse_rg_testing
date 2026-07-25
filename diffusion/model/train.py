@@ -49,6 +49,7 @@ class TrainConfig:
     early_stop_patience: int = 0
     resume: bool = False
     snapshot_every: int = 10
+    grad_clip_norm: float | None = 1.0
 
 
 def soft_topological_charge(field: torch.Tensor) -> torch.Tensor:
@@ -187,6 +188,8 @@ def train_score_model(
             )
             topo_losses.append(float(topo.detach()))
             loss.backward()
+            if config.grad_clip_norm is not None:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), config.grad_clip_norm)
             optimizer.step()
             if lr_schedule is not None:
                 lr_schedule.step()

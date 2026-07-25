@@ -1,0 +1,232 @@
+[Fri 07/24/2026 18:40:55.08] RESUME_CHAIN_START 
+STAGE_S2_AND_THERM_RESUME (reverted to single therm process -- the 3-way split drove sustained CPU to 100% for 12+s, worse than the validated 2-process baseline, so it was abandoned)
+[18:40:55] start study-s2 (torch_threads=5): diffusion/scripts/06_generalization_study.py --out-dir c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\seeds\s2 --checkpoint out/diffusion/demo_v6/checkpoints/score_net.pt --seed 314159 --physics-blend 1.0 --sigma-floor-coef 0.1 --cases E_bc1.2,E_bc2.7,E_bc3.4,E_bc4.5,E_bc5.8,E_bc9,E_bc11.8,E_bc18,E_bc35,E_bc45,F_L32_bc100,F_L32_bc218.58,F_L64_bc55.0237
+[18:40:55] start therm (torch_threads=5): diffusion/scripts/05_hmc_thermalization.py --config diffusion/configs/demo_v6.yaml --generalization c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify --parts A,D,E,F --checkpoint out/diffusion/demo_v6/checkpoints/score_net.pt --physics-blend 1.0 --sigma-floor-coef 0.1 --skip-cached --out c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization
+13 cases, output -> c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\seeds\s2
+[1/13] E_bc1.2: already done, skipping
+[2/13] E_bc2.7: already done, skipping
+[3/13] E_bc3.4: already done, skipping
+[4/13] E_bc4.5: already done, skipping
+[5/13] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    generated 128 configs L=32 beta=21.5051 in 316s
+    case done in 327s
+[6/13] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    generated 128 configs L=32 beta=34.3944 in 288s
+    case done in 299s
+[7/13] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    generated 128 configs L=32 beta=45.6238 in 303s
+    case done in 315s
+[8/13] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    generated 128 configs L=32 beta=70.4526 in 339s
+    case done in 355s
+[9/13] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    generated 128 configs L=32 beta=138.477 in 365s
+    case done in 383s
+[10/13] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    generated 128 configs L=32 beta=178.482 in 399s
+    case done in 421s
+[11/13] F_L32_bc100: base L=16 beta=100 -> L=32 beta=398.492 (extrapolation demo 100 -> 398.4921 at L=32)
+    generated 64 configs L=32 beta=398.492 in 471s
+    case done in 496s
+[12/13] F_L32_bc218.58: base L=16 beta=218.58 -> L=32 beta=872.816 (extrapolation demo 218.58 -> 872.8164 at L=32)
+    generated 64 configs L=32 beta=872.816 in 517s
+    case done in 543s
+[13/13] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    generated 64 configs L=64 beta=218.58 in 1130s
+    case done in 1192s
+summary: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\seeds\s2\summary.json
+tables:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\seeds\s2\summary_tables.md
+[19:53:12] done study-s2
+ 2.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 364.0,
+      "wilson_2x2": 366.0,
+      "wilson_4x4": 306.0,
+      "wilson_6x6": 293.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 83.30365865297838
+}
+{
+  "label": "D_bc40_L32_beta158.48",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 424.0,
+      "wilson_2x2": 309.0,
+      "wilson_4x4": 135.0,
+      "wilson_6x6": 51.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 64.3224269568775
+}
+{
+  "label": "E_bc45_L32_beta178.482",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 361.0,
+      "wilson_2x2": 213.0,
+      "wilson_4x4": 114.0,
+      "wilson_6x6": 32.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 44.86774191773952
+}
+{
+  "label": "D_bc55.0237_L32_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 52.0,
+      "wilson_6x6": 50.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 23.181383380162995
+}
+{
+  "label": "F_L32_bc100_L32_beta398.492",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 396.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 362.0,
+      "wilson_4x4": 75.0,
+      "wilson_6x6": 24.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 64.47146615799124
+}
+{
+  "label": "F_L32_bc218.58_L32_beta872.816",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 8.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 412.0,
+      "wilson_4x4": 44.0,
+      "wilson_6x6": 12.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 2.858959003163937
+}
+{
+  "label": "F_L64_bc55.0237_L64_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 481.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 106.0,
+      "wilson_6x6": 106.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 80.18250351945497
+}
+[21:43:52] done therm
+STAGE_VERDICT
+[21:43:52] start verdict (torch_threads=5): diffusion/scripts/12_campaign_verdict.py --study c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify --train-range 1:60 --baseline c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend
+verdict: c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\verdict.md
+figure:  c:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\showcase.png
+[21:44:02] done verdict
+VERIFY_CHAIN_DONE
+[Fri 07/24/2026 21:44:02.58] RESUME_CHAIN_DONE_SENTINEL 

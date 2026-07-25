@@ -316,11 +316,13 @@ needed. Included for honesty, not to make a case.
 
 ![14](14_mid_relax.png)
 
-**Figure 14. Relaxation trace, β_f = 14.15** (a nearby moderate-coupling
-case used for this trace). The diffusion seed is already inside tolerance
-at essentially zero additional trajectories on the Wilson-loop rows; the
-hot-start chain's Q² (bottom row) plateaus far from the exact value for the
-entire budget — the onset of freezing.
+**Figure 14. Relaxation trace, β_f = 55.0** (case D_bc14.1464, same case as
+Figures 15–16). The diffusion seed is already inside tolerance at
+essentially zero additional trajectories on the plaquette, W(2×2), and
+W(4×4) rows (blue curve sits inside the shaded |z| ≤ 2 band from the first
+trajectory in the right-hand panels); the hot-start chain's Q² (bottom row)
+plateaus near 10–12, far from the exact value ≈ 0.47, for the entire
+640-trajectory budget — established freezing, not just onset.
 
 ![15](15_mid_before.png)
 

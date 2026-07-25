@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 
 from diffusion.lgt import make_action, run_hmc_ensemble
+from diffusion.model.schedule import GeometricNoiseSchedule
 from diffusion.model.train import load_checkpoint
 from diffusion.pipeline import generate_ladder
 from diffusion.utils import (
@@ -22,6 +23,12 @@ from diffusion.utils import (
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="diffusion/configs/default.yaml")
+    parser.add_argument("--physics-blend", type=float, default=None, dest="physics_blend",
+                        help="exact-score blend coefficient at sampling time (overrides "
+                        "ladder.physics_blend_coef in the config; 0.0 = off)")
+    parser.add_argument("--sigma-floor-coef", type=float, default=None, dest="sigma_floor_coef",
+                        help="beta-aware sigma_min coefficient at sampling time (overrides "
+                        "ladder.sigma_min_beta_coef in the config; safe when --physics-blend > 0)")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]) + 1)
@@ -63,6 +70,17 @@ def main() -> None:
         )
 
     model, schedule = load_checkpoint(config["train"]["checkpoint"], device)
+    sigma_floor_coef = args.sigma_floor_coef
+    if sigma_floor_coef is None:
+        sigma_floor_coef = ladder_cfg.get("sigma_min_beta_coef")
+    if sigma_floor_coef is not None:
+        schedule = GeometricNoiseSchedule(
+            schedule.sigma_min, schedule.sigma_max, sigma_min_beta_coef=sigma_floor_coef,
+        )
+    physics_blend_coef = args.physics_blend
+    if physics_blend_coef is None:
+        physics_blend_coef = float(ladder_cfg.get("physics_blend_coef", 0.0))
+
     results = generate_ladder(
         base_configs,
         [float(b) for b in ladder_cfg["beta_schedule"]],
@@ -77,6 +95,7 @@ def main() -> None:
         consistency_weight=float(ladder_cfg.get("consistency_weight", 1.0)),
         enforce_coarse_charge=bool(ladder_cfg.get("enforce_coarse_charge", True)),
         retherm_topological_updates=bool(ladder_cfg.get("retherm_topological_updates", False)),
+        physics_blend_coef=physics_blend_coef,
     )
 
     for i, rung in enumerate(results):
