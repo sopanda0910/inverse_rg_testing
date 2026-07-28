@@ -61,7 +61,11 @@ with instanton (Q-hop) updates for "does the model match the physics"
 figures (Section 1), versus the case's own plain HMC with no topological
 updates for "what does standard practice actually produce" figures
 (Section 2), since only the latter can honestly demonstrate a failure mode
-of standard HMC.
+of standard HMC. **One exception:** Section 4 is the one place in this
+appendix where the instanton move is evaluated as a method in its own right
+rather than only as a tool for building unbiased references — there, "HMC"
+and "instanton HMC" are both pure `diffusion.lgt.hmc.BatchedHMC` output, with
+no diffusion model involved at all.
 
 ---
 
@@ -442,3 +446,111 @@ window-resolved evidence for the τ_int growth quoted as a single number in
 Figure 7's right panel: the fresh chain is still meaningfully correlated
 with itself at a separation where the diffusion-seeded continuation has
 already forgotten its own recent history.
+
+---
+
+## Section 4. Instanton updates vs. standard HMC: fixing topological freezing at the source
+
+Sections 2–3 established *that* plain HMC's topological charge freezes and
+*why* (a global tunneling event whose rate collapses with β). This section
+isolates the fix on its own terms, independent of the diffusion pipeline
+entirely: **both ensembles below are pure HMC** — the same
+`diffusion.lgt.hmc.BatchedHMC` Omelyan integrator, same lattice (L=32), same
+coupling, same step size and trajectory count, same random hot start —
+differing in exactly one variable: whether each step also attempts the
+global instanton move (`diffusion.lgt.local_updates.topological_update`,
+which proposes adding a smooth Q → Q ± 1 configuration to the whole lattice,
+accepted with probability min(1, e^{−ΔS})). No score network, no checkpoint,
+no generation of any kind is involved in this section.
+
+**How derived.** 32 independent chains per method per coupling, 500 burn-in
++ 2000 recorded trajectories, β ∈ {2, 4, 8, 16, 32, 64, 128, 256}
+(`diffusion/scripts/13_instanton_vs_standard_hmc.py`). Because within-chain
+autocorrelation grows severely at high β (that is the whole phenomenon being
+measured), every mean and error bar below is computed from the 32 per-chain
+time-averages — the only unit that is rigorously independent regardless of
+how slowly an individual chain mixes — never by pooling all (time × chain)
+samples into one estimator, which would silently overstate precision.
+
+![22](22_instanton_tunneling.png)
+
+**Figure 22. Topological-charge tunneling count vs. β, log-log, both
+methods (2000 trajectories × 32 chains).** Standard HMC: 54,997 → 18,662 →
+18 → **0** tunnelings from β = 2 → 4 → 8 → 16, and stays at exactly zero
+through β = 256. Instanton HMC: 57,214 at β = 2, still 943 at β = 256 — four
+orders of magnitude more tunneling than standard HMC's zero, at the hardest
+coupling tested. **Physics:** the collapse from β = 4 to β = 8 is already a
+~1000× drop; continuing that trend puts the expected count at β = 16 well
+below 1 per 64,000 chain-trajectories, so landing on exactly 0 is the
+predicted outcome of exponential suppression, not a discontinuity or a
+counting artifact (confirmed directly: at β = 16 each of the 32 chains sits
+at a *different* frozen integer charge, ranging −7 to +7, matching their
+random hot start — each individually has exactly zero variance over the
+full 2000-trajectory window, the signature of real freezing rather than a
+degenerate all-collapse-to-zero bug). **Significance:** this is the
+controlled version of Figure 9 — same failure mode, but with the diffusion
+pipeline removed entirely, isolating the instanton move itself as the fix.
+
+![23](23_instanton_acceptance.png)
+
+**Figure 23. HMC step acceptance vs. instanton-move acceptance, vs. β.**
+The base Omelyan step's acceptance (≈0.96–0.98) is statistically identical
+whether or not the instanton move is enabled — it never touches the leapfrog
+trajectory, so this is the sanity check that adding it doesn't disturb the
+base sampler. The instanton move's own acceptance decays smoothly from 90.6%
+(β = 2) to 1.6% (β = 256). **Physics:** the instanton proposal is *global*
+(it adds a fixed smooth configuration to every link at once), so its action
+cost scales as ΔS ~ O(β/V) rather than the O(β) local-barrier cost that
+suppresses standard HMC's tunneling — the same β range that drives standard
+HMC's rate to exactly zero only drives the instanton move's acceptance down
+by a factor of ~57, not to zero. **Significance:** this is the mechanistic
+reason Figure 22 looks the way it does — a slowly-decaying global move
+against an exponentially-collapsing local one.
+
+![24](24_instanton_traces_standard.png)
+
+**Figure 24. Standard HMC: single representative chain's Q(t), all eight
+couplings stacked.** Direct visual counterpart to Figure 22's aggregate
+counts. Visibly active random walk at β = 2 and 4; by β = 8 the shown chain
+is already flat for its recorded window; from β = 16 through 256 every
+panel is a dead flat line — the chain never leaves its starting sector for
+2000 trajectories. **Significance:** removes any doubt that Figure 22's
+zeros are a summary-statistic artifact — the raw trace is visibly,
+unambiguously frozen.
+
+![25](25_instanton_traces_instanton.png)
+
+**Figure 25. Instanton HMC: the same single-chain view, same eight
+couplings.** Visibly active tunneling at every coupling shown, including
+β = 256 (24 tunnelings on this specific chain over the recorded window,
+consistent with the pooled 943 across all 32 chains in Figure 22).
+**Significance:** the qualitative contrast with Figure 24 at identical
+couplings is the clearest single picture in this section — same lattice,
+same β, same integrator, one move added, and a chain that was completely
+inert is now visibly alive.
+
+![26](26_instanton_distributions.png)
+
+**Figure 26. Full observable comparison at β = 64 (L=32): standard HMC vs.
+instanton HMC vs. exact.** ⟨Q²⟩: standard 22.8 ± 5.1 against an exact value
+of 0.404 — wrong by a factor of ~56, driven by 32 chains frozen at 32
+different, mostly-wrong sectors (visible directly in the P(Q) panel, top
+right: standard's mass is smeared across Q ∈ {−4,…,4} with almost none at
+the true peak). Instanton: 0.413 ± 0.004 — correct to within 2%. **A
+caveat on the other three panels:** plaquette and both Wilson loops show
+statistically large z-scores for *both* methods at this β (|z| up to ~15),
+but the underlying absolute numbers tell a more precise story — instanton's
+mean is consistently closer to exact than standard's at every observable
+(e.g. W(4×4): standard 0.671 vs. exact 0.882, 24% low; instanton 0.762 vs.
+0.882, 14% low), it is just that instanton's per-chain scatter is often
+tighter, which inflates its z-score for the same or smaller absolute error.
+The residual bias present in *both* methods at this β most likely reflects
+a shared limitation — the fixed 500-trajectory burn-in budget probably
+stops being fully sufficient for these observables too as β grows, a
+generic HMC cost independent of the instanton move — rather than something
+the instanton move itself introduces or fully cures. **Significance:** the
+topological story (Q, ⟨Q²⟩, P(Q)) is unambiguous and dramatic; the
+non-topological story is a smaller, genuine, and honestly-reported
+secondary effect — instanton HMC is consistently the better-matching
+ensemble even there, but by degree, not by a clean pass/fail line the way
+the topological observables show.

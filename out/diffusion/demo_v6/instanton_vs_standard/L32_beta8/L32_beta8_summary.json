@@ -1,0 +1,76 @@
+{
+  "label": "L32_beta8",
+  "lattice_size": 32,
+  "beta": 8.0,
+  "step_size": 0.14142135623730953,
+  "n_steps": 7,
+  "n_chains": 32,
+  "burn_in": 500,
+  "n_prod": 2000,
+  "discard_frac": 0.25,
+  "standard": {
+    "acceptance": 0.9742125,
+    "sec_per_traj": 0.026129533886909483,
+    "n_tunnelings": 18,
+    "window_length": 2001,
+    "n_chains": 32,
+    "frozen": false,
+    "tau_int_Q": 45.030351077184584
+  },
+  "instanton": {
+    "acceptance": 0.9759,
+    "instanton_move_acceptance": 0.78415,
+    "sec_per_traj": 0.02785414218902588,
+    "n_tunnelings": 50290,
+    "window_length": 2001,
+    "n_chains": 32,
+    "frozen": false,
+    "tau_int_Q": 7.9272255649188885
+  },
+  "observables": [
+    {
+      "observable": "plaquette",
+      "exact": 0.9352354935294387,
+      "standard_mean": 0.9350953102111816,
+      "standard_sem": 0.0001052406441885978,
+      "standard_z_exact": -1.3320264175296241,
+      "instanton_mean": 0.9352262616157532,
+      "instanton_sem": 7.510636351071298e-05,
+      "instanton_z_exact": -0.1229178628013025,
+      "z_standard_vs_instanton": -1.0128303759706339
+    },
+    {
+      "observable": "wilson_2x2",
+      "exact": 0.7650396115633765,
+      "standard_mean": 0.7632126808166504,
+      "standard_sem": 0.0009087934158742428,
+      "standard_z_exact": -2.01028167107555,
+      "instanton_mean": 0.7647346258163452,
+      "instanton_sem": 0.00038274488179013133,
+      "instanton_z_exact": -0.7968382114082375,
+      "z_standard_vs_instanton": -1.5433935471253852
+    },
+    {
+      "observable": "wilson_4x4",
+      "exact": 0.3425592420669266,
+      "standard_mean": 0.32967105507850647,
+      "standard_sem": 0.005678567569702864,
+      "standard_z_exact": -2.2696193767567574,
+      "instanton_mean": 0.3418949842453003,
+      "instanton_sem": 0.0012210836866870522,
+      "instanton_z_exact": -0.5439904151275133,
+      "z_standard_vs_instanton": -2.1045365256534097
+    },
+    {
+      "observable": "Q^2",
+      "exact": 3.480239765837119,
+      "standard_mean": 11.162933349609375,
+      "standard_sem": 3.527310848236084,
+      "standard_z_exact": 2.1780596931552463,
+      "instanton_mean": 3.5592522621154785,
+      "instanton_sem": 0.06787814944982529,
+      "instanton_z_exact": 1.1640343309118124,
+      "z_standard_vs_instanton": 2.1552604584524087
+    }
+  ]
+}

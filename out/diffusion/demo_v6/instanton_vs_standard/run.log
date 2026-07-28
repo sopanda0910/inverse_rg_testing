@@ -1,0 +1,12 @@
+[Mon 07/27/2026 16:03:51.27] INSTANTON_CHAIN_START 
+[1/8] L32_beta2: already done, skipping
+[2/8] L32_beta4: already done, skipping
+[3/8] L32_beta8: running matched standard/instanton chains (32 chains, 500+2000 trajectories each)
+    standard acceptance=0.974 tunnelings=18  |  instanton acceptance=0.976 instanton_move=0.784 tunnelings=50290
+[4/8] L32_beta16: running matched standard/instanton chains (32 chains, 500+2000 trajectories each)
+    standard acceptance=0.978 tunnelings=0  |  instanton acceptance=0.978 instanton_move=0.688 tunnelings=44160
+[5/8] L32_beta32: running matched standard/instanton chains (32 chains, 500+2000 trajectories each)
+    standard acceptance=0.983 tunnelings=0  |  instanton acceptance=0.982 instanton_move=0.558 tunnelings=35888
+[6/8] L32_beta64: running matched standard/instanton chains (32 chains, 500+2000 trajectories each)
+    standard acceptance=0.981 tunnelings=0  |  instanton acceptance=0.981 instanton_move=0.378 tunnelings=24236
+[7/8] L32_beta128: running matched standard/instanton chains (32 chains, 500+2000 trajectories each)

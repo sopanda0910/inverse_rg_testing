@@ -1,0 +1,76 @@
+{
+  "label": "L32_beta16",
+  "lattice_size": 32,
+  "beta": 16.0,
+  "step_size": 0.1,
+  "n_steps": 10,
+  "n_chains": 32,
+  "burn_in": 500,
+  "n_prod": 2000,
+  "discard_frac": 0.25,
+  "standard": {
+    "acceptance": 0.9780625,
+    "sec_per_traj": 0.032030187129974366,
+    "n_tunnelings": 0,
+    "window_length": 2001,
+    "n_chains": 32,
+    "frozen": true,
+    "tau_int_Q": 2001.0
+  },
+  "instanton": {
+    "acceptance": 0.97755,
+    "instanton_move_acceptance": 0.68805,
+    "sec_per_traj": 0.03188184726238251,
+    "n_tunnelings": 44160,
+    "window_length": 2001,
+    "n_chains": 32,
+    "frozen": false,
+    "tau_int_Q": 4.360826381553525
+  },
+  "observables": [
+    {
+      "observable": "plaquette",
+      "exact": 0.9682277554281598,
+      "standard_mean": 0.9676949977874756,
+      "standard_sem": 7.547753921244293e-05,
+      "standard_z_exact": -7.058492450113409,
+      "instanton_mean": 0.967978298664093,
+      "instanton_sem": 5.847385909873992e-05,
+      "instanton_z_exact": -4.266124519770429,
+      "z_standard_vs_instanton": -2.967184436246079
+    },
+    {
+      "observable": "wilson_2x2",
+      "exact": 0.8788406006911772,
+      "standard_mean": 0.8726441264152527,
+      "standard_sem": 0.0008289028191938996,
+      "standard_z_exact": -7.4755135734132585,
+      "instanton_mean": 0.8757966160774231,
+      "instanton_sem": 0.0004664961015805602,
+      "instanton_z_exact": -6.525209114161119,
+      "z_standard_vs_instanton": -3.314375704742508
+    },
+    {
+      "observable": "wilson_4x4",
+      "exact": 0.5965412075751353,
+      "standard_mean": 0.549502968788147,
+      "standard_sem": 0.007597657851874828,
+      "standard_z_exact": -6.19114991804757,
+      "instanton_mean": 0.5810155868530273,
+      "instanton_sem": 0.0022524406667798758,
+      "instanton_z_exact": -6.8927989762783035,
+      "z_standard_vs_instanton": -3.9766003538768846
+    },
+    {
+      "observable": "Q^2",
+      "exact": 1.675631246755205,
+      "standard_mean": 13.96875,
+      "standard_sem": 2.6256659030914307,
+      "standard_z_exact": 4.681905164998718,
+      "instanton_mean": 1.6628081798553467,
+      "instanton_sem": 0.02682648040354252,
+      "instanton_z_exact": -0.47800034544095554,
+      "z_standard_vs_instanton": 4.686544302049933
+    }
+  ]
+}

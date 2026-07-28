@@ -30,6 +30,7 @@ def adapted_hmc_params(
 @dataclass
 class HMCStats:
     acceptance_rate: float = 0.0
+    instanton_acceptance_rate: float | None = None
     plaquette_history: list[float] = field(default_factory=list)
     topological_charge_history: list[np.ndarray] = field(default_factory=list)
 
@@ -54,6 +55,7 @@ class BatchedHMC:
         self.device = torch.device(device)
         self.hot_start = hot_start
         self.topological_updates = topological_updates
+        self.last_instanton_accept: torch.Tensor | None = None
 
     def initialize(self, hot: bool | None = None) -> torch.Tensor:
         if hot is None:
@@ -92,10 +94,12 @@ class BatchedHMC:
         accept = torch.rand(theta.shape[0], device=self.device) < torch.exp(old_h - new_h)
         mask = accept.view(-1, 1, 1, 1)
         theta = torch.where(mask, theta_new, theta)
+        self.last_instanton_accept = None
         if self.topological_updates:
             from .local_updates import topological_update
 
-            theta, _ = topological_update(theta, self.action)
+            theta, instanton_accept = topological_update(theta, self.action)
+            self.last_instanton_accept = instanton_accept
         return theta, accept
 
     def sample(
@@ -115,17 +119,26 @@ class BatchedHMC:
         stats = HMCStats()
         accepted = 0
         total = 0
+        instanton_accepted = 0
+        instanton_total = 0
+
+        def _track(accept: torch.Tensor) -> None:
+            nonlocal accepted, total, instanton_accepted, instanton_total
+            accepted += int(accept.sum())
+            total += accept.numel()
+            if self.last_instanton_accept is not None:
+                instanton_accepted += int(self.last_instanton_accept.sum())
+                instanton_total += self.last_instanton_accept.numel()
+
         draws = []
         with torch.no_grad():
             for _ in range(burn_in):
                 theta, accept = self.metropolis_step(theta)
-                accepted += int(accept.sum())
-                total += accept.numel()
+                _track(accept)
             for _ in range(n_samples_per_chain):
                 for _ in range(thin):
                     theta, accept = self.metropolis_step(theta)
-                    accepted += int(accept.sum())
-                    total += accept.numel()
+                    _track(accept)
                 draws.append(theta.clone())
                 if record_history:
                     stats.plaquette_history.append(float(mean_plaquette(theta)))
@@ -133,6 +146,8 @@ class BatchedHMC:
                         topological_charge(theta).cpu().numpy()
                     )
         stats.acceptance_rate = accepted / max(total, 1)
+        if instanton_total > 0:
+            stats.instanton_acceptance_rate = instanton_accepted / instanton_total
         return torch.cat(draws, dim=0), stats
 
 
