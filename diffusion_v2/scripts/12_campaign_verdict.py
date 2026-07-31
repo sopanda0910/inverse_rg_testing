@@ -146,6 +146,7 @@ def write_tables(cases, therm, out_path: Path, baseline_note: str) -> None:
             lines.append(f"| {r['label']} | {r['L']} | {r['beta_f']:g} | {t} | "
                          f"{r['interval']:.1f} | {verdict} |")
         lines.append("")
+    out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text("\n".join(lines), encoding="utf-8")
 
 

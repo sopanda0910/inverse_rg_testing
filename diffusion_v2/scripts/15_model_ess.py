@@ -63,7 +63,8 @@ def run_case(model, schedule, case, args, action_type, device):
         batch_size=args.batch_size, device=device, seed=args.seed,
     )
     t_ode = time.time() - t0
-    diag = importance_ess(fine, log_q, fine_beta, action_type)
+    diag = importance_ess(fine, log_q, fine_beta, action_type,
+                          coarse=coarse, coarse_beta_matched=coarse_beta)
     diag.update({
         "fine_L": fine_L, "fine_beta": fine_beta,
         "coarse_L": coarse_L, "coarse_beta": coarse_beta,
@@ -119,16 +120,28 @@ def main() -> None:
         save_json(out_dir / "ess_results.json", results)
 
     lines = ["# Model ESS via probability-flow ODE likelihood", "",
-             "| L | beta_f | ESS/N | log-w std | n | gen s | ODE s |",
-             "|---|--------|-------|-----------|---|-------|-------|"]
+             "| L | beta_f | ESS/N (fiber) | log-w std (fiber) | ESS/N (joint) | n | gen s | ODE s |",
+             "|---|--------|---------------|-------------------|---------------|---|-------|-------|"]
     for r in results:
+        fib = r.get("ess_per_n_fiber")
+        fib_s = f"{fib:.3f}" if fib is not None else "--"
+        fstd = r.get("log_weight_std_fiber")
+        fstd_s = f"{fstd:.2f}" if fstd is not None else "--"
         lines.append(
-            f"| {r['fine_L']} | {r['fine_beta']:g} | {r['ess_per_n']:.3f} | "
-            f"{r['log_weight_std']:.2f} | {r['n']} | {r['seconds_generate']} | {r['seconds_ode']} |"
+            f"| {r['fine_L']} | {r['fine_beta']:g} | {fib_s} | {fstd_s} | "
+            f"{r['ess_per_n']:.3f} | {r['n']} | {r['seconds_generate']} | {r['seconds_ode']} |"
         )
-    lines += ["", "Raw model transport (no charge enforcement, no retherm); weights",
-              "w = exp(-S)/q(fine|coarse), self-normalized. Reference: Q-shift flows",
-              "report ESS/N ~ 0.5-0.7 flat in volume (Lattice 2026)."]
+    lines += [
+        "",
+        "Raw model transport (no charge enforcement, no retherm).",
+        "The FIBER column divides out the coarse level's density via the",
+        "matched-coupling Wilson action (the project's MLE approximation of the",
+        "blocked action) -- the per-level quantity multilevel-flow papers report;",
+        "compare it against Q-shift flows' ESS/N ~ 0.5-0.7 (Lattice 2026).",
+        "The JOINT column keeps the full coarse-fiber mass in the weights and is",
+        "~1/N even for a perfect conditional model; it is reported for",
+        "completeness, not comparison.",
+    ]
     (out_dir / "report.md").write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {out_dir / 'report.md'}")
 

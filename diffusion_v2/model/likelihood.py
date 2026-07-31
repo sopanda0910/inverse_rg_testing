@@ -150,30 +150,58 @@ def conditional_log_likelihood(
     return torch.cat(out, dim=0)
 
 
+def _ess_from_log_weights(log_w: torch.Tensor) -> tuple[float, float, float]:
+    log_w = log_w - log_w.max()
+    w = torch.exp(log_w)
+    n = w.numel()
+    ess = float(w.sum() ** 2 / (n * (w**2).sum()))
+    return ess, float(log_w.std()), float(log_w.max() - log_w.min())
+
+
 def importance_ess(
     fine: torch.Tensor,
     log_q: torch.Tensor,
     beta: float,
     action_type: str = "wilson",
+    coarse: torch.Tensor | None = None,
+    coarse_beta_matched: float | None = None,
 ) -> dict:
     """Self-normalized importance-sampling diagnostics against the Boltzmann target.
 
-    log w_i = -S(x_i) - log q_i up to the unknown log Z, which cancels in the
-    self-normalized ESS/N = (sum w)^2 / (N sum w^2). Also reports the weight
-    log-spread, a scale-free indicator of proposal quality.
+    Two estimators:
+
+    * joint (`ess_per_n`): log w = -S_f(x) - log q(x|c). Unbiased on the joint
+      (coarse, fine) space, but maximally conservative -- the weight spread
+      includes the full variability of the coarse fiber's probability mass, so
+      even a PERFECT conditional model scores ~1/N (w_perfect = p(x)/p(x|c) =
+      the blocked marginal p_c(B(x)), which fluctuates by O(e^V)).
+
+    * fiber-corrected (`ess_per_n_fiber`): log w' = -S_f(x) + S_matched(c)
+      - log q(x|c), where S_matched is the Wilson action at the matched coarse
+      coupling -- this project's MLE/min-KL approximation of the true blocked
+      action (see lgt.blocking). Dividing out the coarse level's density is
+      exactly what multilevel-flow papers do with their exact per-level
+      densities, so THIS is the number comparable to their reported ESS/N; the
+      residual spread mixes model error with the (small) matching residual.
     """
     action = make_action(action_type, float(beta))
     with torch.no_grad():
         neg_s = -action.per_config(fine.float())
     log_w = neg_s.cpu() - log_q.cpu()
-    log_w = log_w - log_w.max()
-    w = torch.exp(log_w)
-    n = w.numel()
-    ess = float(w.sum() ** 2 / (n * (w**2).sum()))
-    return {
-        "n": n,
+    ess, std, rng = _ess_from_log_weights(log_w)
+    out = {
+        "n": log_w.numel(),
         "ess_per_n": ess,
-        "log_weight_std": float(log_w.std()),
-        "log_weight_range": float(log_w.max() - log_w.min()),
-        "log_weights": log_w.tolist(),
+        "log_weight_std": std,
+        "log_weight_range": rng,
+        "log_weights": (log_w - log_w.max()).tolist(),
     }
+    if coarse is not None and coarse_beta_matched is not None:
+        coarse_action = make_action(action_type, float(coarse_beta_matched))
+        with torch.no_grad():
+            s_coarse = coarse_action.per_config(coarse.float())
+        log_w_fiber = log_w + s_coarse.cpu()
+        ess_f, std_f, rng_f = _ess_from_log_weights(log_w_fiber)
+        out.update(ess_per_n_fiber=ess_f, log_weight_std_fiber=std_f,
+                   log_weight_range_fiber=rng_f)
+    return out

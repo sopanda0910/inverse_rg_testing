@@ -756,3 +756,1525 @@ E_bc3.4_L32_beta11.6638: sampling 128 raw seeds from wilson_L16_beta3.4.pt
 diffusion seed: 128 chains x 96 trajectories
 baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta11.6638
 A_bc4_L32_beta14.1464: sampling 128 raw seeds from wilson_L16_beta4.pt
+    generated 64 configs L=32 beta=398.492 in 327s
+    case done in 333s
+[12/13] F_L32_bc218.58: base L=16 beta=218.58 -> L=32 beta=872.816 (extrapolation demo 218.58 -> 872.8164 at L=32)
+    generated 64 configs L=32 beta=872.816 in 311s
+    case done in 318s
+[13/13] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    sampled in 645s
+
+=== A_bc4_L32_beta14.1464: step_size=0.1063, n_steps=9 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta14.1464
+E_bc4.5_L32_beta16.2057: sampling 128 raw seeds from wilson_L16_beta4.5.pt
+    sampled in 649s
+
+=== E_bc4.5_L32_beta16.2057: step_size=0.0994, n_steps=10 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta16.2057
+A_bc5_L32_beta18.2524: sampling 128 raw seeds from wilson_L16_beta5.pt
+    generated 64 configs L=64 beta=218.58 in 1126s
+    case done in 1144s
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization\seeds\s2\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization\seeds\s2\summary_tables.md
+    sampled in 659s
+
+=== A_bc5_L32_beta18.2524: step_size=0.0936, n_steps=11 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta18.2524
+E_bc5.8_L32_beta21.5051: sampling 128 raw seeds from wilson_L16_beta5.8.pt
+    sampled in 658s
+
+=== E_bc5.8_L32_beta21.5051: step_size=0.0863, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta21.5051
+A_bc6_L32_beta22.3151: sampling 128 raw seeds from wilson_L16_beta6.pt
+    sampled in 576s
+
+=== A_bc6_L32_beta22.3151: step_size=0.0847, n_steps=12 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta22.3151
+A_bc8_L32_beta30.3772: sampling 128 raw seeds from wilson_L16_beta8.pt
+    sampled in 564s
+
+=== A_bc8_L32_beta30.3772: step_size=0.0726, n_steps=14 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta30.3772
+E_bc9_L32_beta34.3944: sampling 128 raw seeds from wilson_L16_beta9.pt
+    sampled in 563s
+
+=== E_bc9_L32_beta34.3944: step_size=0.0682, n_steps=15 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta34.3944
+E_bc11.8_L32_beta45.6238: sampling 128 raw seeds from wilson_L16_beta11.8.pt
+    sampled in 575s
+
+=== E_bc11.8_L32_beta45.6238: step_size=0.0592, n_steps=17 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta45.6238
+D_bc14.1464_L32_beta55.0237: sampling 128 raw seeds from wilson_L16_beta14.1464.pt
+    sampled in 611s
+
+=== D_bc14.1464_L32_beta55.0237: step_size=0.0539, n_steps=19 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta55.0237
+E_bc18_L32_beta70.4526: sampling 128 raw seeds from wilson_L16_beta18.pt
+    sampled in 617s
+
+=== E_bc18_L32_beta70.4526: step_size=0.0477, n_steps=21 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta70.4526
+D_bc20_L32_beta78.4578: sampling 128 raw seeds from wilson_L16_beta20.pt
+    sampled in 576s
+
+=== D_bc20_L32_beta78.4578: step_size=0.0452, n_steps=22 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta78.4578
+D_bc30_L32_beta118.473: sampling 128 raw seeds from wilson_L16_beta30.pt
+    sampled in 601s
+
+=== D_bc30_L32_beta118.473: step_size=0.0367, n_steps=27 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta118.473
+E_bc35_L32_beta138.477: sampling 128 raw seeds from wilson_L16_beta35.pt
+    sampled in 579s
+
+=== E_bc35_L32_beta138.477: step_size=0.0340, n_steps=29 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta138.477
+D_bc40_L32_beta158.48: sampling 128 raw seeds from wilson_L16_beta40.pt
+    sampled in 578s
+
+=== D_bc40_L32_beta158.48: step_size=0.0318, n_steps=31 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta158.48
+E_bc45_L32_beta178.482: sampling 128 raw seeds from wilson_L16_beta45.pt
+    sampled in 571s
+
+=== E_bc45_L32_beta178.482: step_size=0.0299, n_steps=33 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta178.482
+D_bc55.0237_L32_beta218.58: sampling 128 raw seeds from wilson_L16_beta55.0237.pt
+    sampled in 572s
+
+=== D_bc55.0237_L32_beta218.58: step_size=0.0271, n_steps=37 ===
+diffusion seed: 128 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta218.58
+F_L32_bc100_L32_beta398.492: sampling 64 raw seeds from wilson_L16_beta100.pt
+    sampled in 276s
+
+=== F_L32_bc100_L32_beta398.492: step_size=0.0200, n_steps=50 ===
+diffusion seed: 64 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta398.492
+F_L32_bc218.58_L32_beta872.816: sampling 64 raw seeds from wilson_L16_beta218.58.pt
+    sampled in 273s
+
+=== F_L32_bc218.58_L32_beta872.816: step_size=0.0135, n_steps=74 ===
+diffusion seed: 64 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L32_beta872.816
+F_L64_bc55.0237_L64_beta218.58: sampling 64 raw seeds from wilson_L32_beta55.0237.pt
+    sampled in 1016s
+
+=== F_L64_bc55.0237_L64_beta218.58: step_size=0.0271, n_steps=37 ===
+diffusion seed: 64 chains x 96 trajectories
+baselines: reused from C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion\demo_v6\generalization_blend_verify\thermalization\L64_beta218.58
+
+report: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\thermalization\report.md
+{
+  "label": "A_bc0.25_L32_beta1.4892",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 3.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 9.0
+    },
+    "hot start": {
+      "plaquette": 12.0,
+      "wilson_2x2": 7.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "cold start": {
+      "plaquette": 9.0,
+      "wilson_2x2": 8.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 9.0
+    }
+  },
+  "hmc_interval_trajectories": 2.722784169943121
+}
+{
+  "label": "A_bc0.5_L32_beta2.02441",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 5.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 16.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 7.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 20.0,
+      "wilson_2x2": 13.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 9.0
+    }
+  },
+  "hmc_interval_trajectories": 5.5270514145579135
+}
+{
+  "label": "A_bc0.75_L32_beta2.5435",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 15.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 29.0,
+      "wilson_2x2": 16.0,
+      "wilson_4x4": 8.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 4.0
+    },
+    "cold start": {
+      "plaquette": 24.0,
+      "wilson_2x2": 17.0,
+      "wilson_4x4": 9.0,
+      "wilson_6x6": 5.0,
+      "Q^2": 10.0
+    }
+  },
+  "hmc_interval_trajectories": 6.214193442039275
+}
+{
+  "label": "A_bc1_L32_beta3.10399",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 1.0
+    },
+    "hot start": {
+      "plaquette": 28.0,
+      "wilson_2x2": 23.0,
+      "wilson_4x4": 15.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 5.0
+    },
+    "cold start": {
+      "plaquette": 45.0,
+      "wilson_2x2": 26.0,
+      "wilson_4x4": 13.0,
+      "wilson_6x6": 9.0,
+      "Q^2": 27.0
+    }
+  },
+  "hmc_interval_trajectories": 8.441509599983632
+}
+{
+  "label": "E_bc1.2_L32_beta3.6012",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 21.0,
+      "wilson_2x2": 12.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 2.0,
+      "Q^2": 6.0
+    },
+    "hot start": {
+      "plaquette": 46.0,
+      "wilson_2x2": 33.0,
+      "wilson_4x4": 26.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 5.0
+    },
+    "cold start": {
+      "plaquette": 34.0,
+      "wilson_2x2": 32.0,
+      "wilson_4x4": 17.0,
+      "wilson_6x6": 8.0,
+      "Q^2": 34.0
+    }
+  },
+  "hmc_interval_trajectories": 8.53128722384281
+}
+{
+  "label": "A_bc1.5_L32_beta4.44493",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 4.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 66.0,
+      "wilson_2x2": 57.0,
+      "wilson_4x4": 37.0,
+      "wilson_6x6": 9.0,
+      "Q^2": 9.0
+    },
+    "cold start": {
+      "plaquette": 62.0,
+      "wilson_2x2": 62.0,
+      "wilson_4x4": 31.0,
+      "wilson_6x6": 11.0,
+      "Q^2": 104.0
+    }
+  },
+  "hmc_interval_trajectories": 6.287941242639681
+}
+{
+  "label": "A_bc2_L32_beta6.10518",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 11.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 130.0,
+      "wilson_2x2": 131.0,
+      "wilson_4x4": 28.0,
+      "wilson_6x6": 36.0,
+      "Q^2": 6.0
+    },
+    "cold start": {
+      "plaquette": 77.0,
+      "wilson_2x2": 138.0,
+      "wilson_4x4": 22.0,
+      "wilson_6x6": 10.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 7.255213551619046
+}
+{
+  "label": "E_bc2.7_L32_beta8.79549",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 289.0,
+      "wilson_2x2": 402.0,
+      "wilson_4x4": 305.0,
+      "wilson_6x6": 80.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 82.0,
+      "wilson_2x2": 169.0,
+      "wilson_4x4": 32.0,
+      "wilson_6x6": 8.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 8.671504833951296
+}
+{
+  "label": "A_bc3_L32_beta10.015",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 9.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": 306.0,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 144.0,
+      "wilson_2x2": 143.0,
+      "wilson_4x4": 96.0,
+      "wilson_6x6": 61.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 11.430194865798342
+}
+{
+  "label": "E_bc3.4_L32_beta11.6638",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 2.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 3.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 268.0,
+      "wilson_2x2": 304.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 209.0,
+      "wilson_2x2": 151.0,
+      "wilson_4x4": 111.0,
+      "wilson_6x6": 12.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 9.17858129009046
+}
+{
+  "label": "A_bc4_L32_beta14.1464",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 380.0,
+      "wilson_2x2": 383.0,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 186.0,
+      "wilson_2x2": 145.0,
+      "wilson_4x4": 145.0,
+      "wilson_6x6": 15.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 9.598329657412581
+}
+{
+  "label": "E_bc4.5_L32_beta16.2057",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 343.0,
+      "wilson_2x2": 509.0,
+      "wilson_4x4": 279.0,
+      "wilson_6x6": 202.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 20.48101823014312
+}
+{
+  "label": "A_bc5_L32_beta18.2524",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 422.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 162.0,
+      "wilson_2x2": 268.0,
+      "wilson_4x4": 104.0,
+      "wilson_6x6": 100.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 10.204386244543063
+}
+{
+  "label": "E_bc5.8_L32_beta21.5051",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 4.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 174.0,
+      "wilson_2x2": 139.0,
+      "wilson_4x4": 95.0,
+      "wilson_6x6": 96.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 20.158910356323133
+}
+{
+  "label": "A_bc6_L32_beta22.3151",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 11.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 219.0,
+      "wilson_2x2": 194.0,
+      "wilson_4x4": 73.0,
+      "wilson_6x6": 73.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 17.52283931211769
+}
+{
+  "label": "A_bc8_L32_beta30.3772",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 463.0,
+      "wilson_2x2": 370.0,
+      "wilson_4x4": 284.0,
+      "wilson_6x6": 188.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 28.753614761797433
+}
+{
+  "label": "E_bc9_L32_beta34.3944",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 13.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 471.0,
+      "wilson_2x2": 355.0,
+      "wilson_4x4": 60.0,
+      "wilson_6x6": 50.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 17.91161821527136
+}
+{
+  "label": "E_bc11.8_L32_beta45.6238",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 301.0,
+      "wilson_2x2": 137.0,
+      "wilson_4x4": 60.0,
+      "wilson_6x6": 51.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 25.38751228204044
+}
+{
+  "label": "D_bc14.1464_L32_beta55.0237",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 10.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 4.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 305.0,
+      "wilson_2x2": 167.0,
+      "wilson_4x4": 162.0,
+      "wilson_6x6": 162.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 25.85070837898116
+}
+{
+  "label": "E_bc18_L32_beta70.4526",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 7.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 297.0,
+      "wilson_2x2": 232.0,
+      "wilson_4x4": 174.0,
+      "wilson_6x6": 133.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 27.03284360602037
+}
+{
+  "label": "D_bc20_L32_beta78.4578",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 154.0,
+      "wilson_4x4": 52.0,
+      "wilson_6x6": 52.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 14.942237612161406
+}
+{
+  "label": "D_bc30_L32_beta118.473",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 7.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 9.0,
+      "wilson_6x6": 13.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 163.0,
+      "wilson_2x2": 182.0,
+      "wilson_4x4": 207.0,
+      "wilson_6x6": 145.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 41.826388365515
+}
+{
+  "label": "E_bc35_L32_beta138.477",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 1.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 4.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 364.0,
+      "wilson_2x2": 366.0,
+      "wilson_4x4": 306.0,
+      "wilson_6x6": 293.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 83.30365865297838
+}
+{
+  "label": "D_bc40_L32_beta158.48",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 1.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 3.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 424.0,
+      "wilson_2x2": 309.0,
+      "wilson_4x4": 135.0,
+      "wilson_6x6": 51.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 64.3224269568775
+}
+{
+  "label": "E_bc45_L32_beta178.482",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 361.0,
+      "wilson_2x2": 213.0,
+      "wilson_4x4": 114.0,
+      "wilson_6x6": 32.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 44.86774191773952
+}
+{
+  "label": "D_bc55.0237_L32_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 3.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 52.0,
+      "wilson_6x6": 50.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 23.181383380162995
+}
+{
+  "label": "F_L32_bc100_L32_beta398.492",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 396.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 362.0,
+      "wilson_4x4": 75.0,
+      "wilson_6x6": 24.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 64.47146615799124
+}
+{
+  "label": "F_L32_bc218.58_L32_beta872.816",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 7.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 1.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 412.0,
+      "wilson_4x4": 44.0,
+      "wilson_6x6": 12.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 2.858959003163937
+}
+{
+  "label": "F_L64_bc55.0237_L64_beta218.58",
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 11.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 1.0,
+      "wilson_6x6": 1.0,
+      "Q^2": 0.0
+    },
+    "hot start": {
+      "plaquette": 481.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": 106.0,
+      "wilson_6x6": 106.0,
+      "Q^2": Infinity
+    }
+  },
+  "hmc_interval_trajectories": 80.18250351945497
+}
+[2026-07-31 12:40:58] STAGE_THERM_DONE (297.5 min)
+[2026-07-31 12:40:58] STAGE_STUDY_S2_DONE (297.5 min)
+[2026-07-31 12:40:58] STAGE_HEADTOHEAD_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/14_diffusion_vs_instanton_hmc.py --config diffusion_v2/configs/v2.yaml
+case L=32 beta=4.44
+  instanton HMC: 32 chains, burn 500, prod 640
+  diffusion: base L=16 beta=1.4984, 128 configs
+  done in 313s
+case L=32 beta=14.1464
+  instanton HMC: 32 chains, burn 500, prod 640
+  diffusion: base L=16 beta=4.0000, 128 configs
+  done in 344s
+case L=32 beta=55.0237
+  instanton HMC: 32 chains, burn 500, prod 640
+  diffusion: base L=16 beta=14.1464, 128 configs
+  done in 377s
+case L=32 beta=118.5
+  instanton HMC: 32 chains, burn 500, prod 640
+  diffusion: base L=16 beta=30.0068, 128 configs
+  done in 453s
+case L=32 beta=218.58
+  instanton HMC: 32 chains, burn 500, prod 640
+  diffusion: base L=16 beta=55.0236, 128 configs
+  done in 462s
+report: out\diffusion_v2\v2\diffusion_vs_instanton\report.md
+[2026-07-31 13:13:33] STAGE_HEADTOHEAD_DONE (32.6 min)
+[2026-07-31 13:13:33] STAGE_ESS_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/15_model_ess.py --config diffusion_v2/configs/v2.yaml --cases 16:14.1464 16:55.0237 32:55.0237 32:218.58 --n-configs 64
+case L=16 beta=14.1464 ...
+  {"n": 64, "ess_per_n": 0.015625, "log_weight_std": 40.59659957885742, "log_weight_range": 214.9892578125, "fine_L": 16, "fine_beta": 14.1464, "coarse_L": 8, "coarse_beta": 3.9999887248909847, "seconds_hmc_base": 1.8, "seconds_generate": 43.3, "seconds_ode": 41.7}
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.015627052634954453, "log_weight_std": 40.08647918701172, "log_weight_range": 210.541015625, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "seconds_hmc_base": 8.2, "seconds_generate": 44.5, "seconds_ode": 85.1}
+case L=32 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.015625, "log_weight_std": 72.62858581542969, "log_weight_range": 366.03515625, "fine_L": 32, "fine_beta": 55.0237, "coarse_L": 16, "coarse_beta": 14.146404977472109, "seconds_hmc_base": 28.5, "seconds_generate": 465.2, "seconds_ode": 459.0}
+case L=32 beta=218.58 ...
+  {"n": 64, "ess_per_n": 0.015625, "log_weight_std": 152.9477996826172, "log_weight_range": 739.078125, "fine_L": 32, "fine_beta": 218.58, "coarse_L": 16, "coarse_beta": 55.02364659738549, "seconds_hmc_base": 154.7, "seconds_generate": 483.1, "seconds_ode": 485.2}
+wrote out\diffusion_v2\v2\model_ess\report.md
+[2026-07-31 13:51:56] STAGE_ESS_DONE (38.4 min)
+[2026-07-31 13:51:56] STAGE_AUTOCORR_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/11_autocorrelation.py --dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\thermalization
+A_bc0.25_L32_beta1.4892 (beta=1.4892, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.055 +- 0.012
+   plaquette | cold start    : Gamma(20) = -0.013 +- 0.009
+   plaquette | hot start     : Gamma(20) = -0.012 +- 0.010
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.049 +- 0.010
+  wilson_2x2 | cold start    : Gamma(20) = -0.018 +- 0.008
+  wilson_2x2 | hot start     : Gamma(20) = -0.013 +- 0.007
+  wilson_4x4 | diffusion seed: Gamma(20) = +0.002 +- 0.009
+  wilson_4x4 | cold start    : Gamma(20) = +0.011 +- 0.007
+  wilson_4x4 | hot start     : Gamma(20) = -0.016 +- 0.006
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.006 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.005 +- 0.008
+  wilson_6x6 | hot start     : Gamma(20) = -0.015 +- 0.008
+           Q | diffusion seed: Gamma(20) = -0.013 +- 0.014
+           Q | cold start    : Gamma(20) = -0.015 +- 0.008
+           Q | hot start     : Gamma(20) = +0.001 +- 0.007
+         Q^2 | diffusion seed: Gamma(20) = -0.005 +- 0.012
+         Q^2 | cold start    : Gamma(20) = -0.004 +- 0.007
+         Q^2 | hot start     : Gamma(20) = +0.002 +- 0.006
+A_bc0.5_L32_beta2.02441 (beta=2.02441, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.044 +- 0.013
+   plaquette | cold start    : Gamma(20) = -0.003 +- 0.010
+   plaquette | hot start     : Gamma(20) = -0.022 +- 0.011
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.021 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = -0.004 +- 0.007
+  wilson_2x2 | hot start     : Gamma(20) = +0.000 +- 0.007
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.003 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = -0.002 +- 0.009
+  wilson_4x4 | hot start     : Gamma(20) = +0.014 +- 0.008
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.023 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = -0.014 +- 0.007
+  wilson_6x6 | hot start     : Gamma(20) = -0.004 +- 0.007
+           Q | diffusion seed: Gamma(20) = -0.019 +- 0.017
+           Q | cold start    : Gamma(20) = +0.030 +- 0.010
+           Q | hot start     : Gamma(20) = -0.018 +- 0.015
+         Q^2 | diffusion seed: Gamma(20) = -0.039 +- 0.010
+         Q^2 | cold start    : Gamma(20) = +0.008 +- 0.009
+         Q^2 | hot start     : Gamma(20) = -0.023 +- 0.008
+A_bc0.75_L32_beta2.5435 (beta=2.5435, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.068 +- 0.014
+   plaquette | cold start    : Gamma(20) = -0.019 +- 0.011
+   plaquette | hot start     : Gamma(20) = +0.008 +- 0.010
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.026 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = -0.013 +- 0.009
+  wilson_2x2 | hot start     : Gamma(20) = -0.001 +- 0.007
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.015 +- 0.009
+  wilson_4x4 | cold start    : Gamma(20) = -0.004 +- 0.007
+  wilson_4x4 | hot start     : Gamma(20) = -0.016 +- 0.007
+  wilson_6x6 | diffusion seed: Gamma(20) = +0.017 +- 0.009
+  wilson_6x6 | cold start    : Gamma(20) = -0.011 +- 0.006
+  wilson_6x6 | hot start     : Gamma(20) = +0.012 +- 0.006
+           Q | diffusion seed: Gamma(20) = +0.042 +- 0.023
+           Q | cold start    : Gamma(20) = +0.048 +- 0.016
+           Q | hot start     : Gamma(20) = +0.023 +- 0.017
+         Q^2 | diffusion seed: Gamma(20) = -0.038 +- 0.012
+         Q^2 | cold start    : Gamma(20) = -0.009 +- 0.013
+         Q^2 | hot start     : Gamma(20) = -0.024 +- 0.010
+A_bc1_L32_beta3.10399 (beta=3.10399, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.073 +- 0.015
+   plaquette | cold start    : Gamma(20) = +0.016 +- 0.015
+   plaquette | hot start     : Gamma(20) = +0.033 +- 0.012
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.038 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = -0.002 +- 0.009
+  wilson_2x2 | hot start     : Gamma(20) = +0.012 +- 0.008
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.021 +- 0.010
+  wilson_4x4 | cold start    : Gamma(20) = +0.002 +- 0.006
+  wilson_4x4 | hot start     : Gamma(20) = +0.017 +- 0.008
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.003 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.001 +- 0.007
+  wilson_6x6 | hot start     : Gamma(20) = -0.007 +- 0.008
+           Q | diffusion seed: Gamma(20) = +0.139 +- 0.036
+           Q | cold start    : Gamma(20) = +0.239 +- 0.030
+           Q | hot start     : Gamma(20) = +0.232 +- 0.024
+         Q^2 | diffusion seed: Gamma(20) = -0.102 +- 0.014
+         Q^2 | cold start    : Gamma(20) = -0.008 +- 0.016
+         Q^2 | hot start     : Gamma(20) = +0.005 +- 0.017
+E_bc1.2_L32_beta3.6012 (beta=3.6012, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.088 +- 0.015
+   plaquette | cold start    : Gamma(20) = +0.032 +- 0.014
+   plaquette | hot start     : Gamma(20) = +0.035 +- 0.014
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.061 +- 0.013
+  wilson_2x2 | cold start    : Gamma(20) = +0.023 +- 0.011
+  wilson_2x2 | hot start     : Gamma(20) = +0.035 +- 0.011
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.030 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.010 +- 0.007
+  wilson_4x4 | hot start     : Gamma(20) = +0.017 +- 0.008
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.020 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = -0.005 +- 0.006
+  wilson_6x6 | hot start     : Gamma(20) = +0.002 +- 0.006
+           Q | diffusion seed: Gamma(20) = +0.531 +- 0.061
+           Q | cold start    : Gamma(20) = +0.521 +- 0.059
+           Q | hot start     : Gamma(20) = +0.437 +- 0.042
+         Q^2 | diffusion seed: Gamma(20) = -0.097 +- 0.018
+         Q^2 | cold start    : Gamma(20) = +0.148 +- 0.033
+         Q^2 | hot start     : Gamma(20) = +0.095 +- 0.027
+A_bc1.5_L32_beta4.44493 (beta=4.44493, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.069 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.022 +- 0.011
+   plaquette | hot start     : Gamma(20) = +0.045 +- 0.013
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.042 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = +0.017 +- 0.011
+  wilson_2x2 | hot start     : Gamma(20) = +0.021 +- 0.014
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.025 +- 0.010
+  wilson_4x4 | cold start    : Gamma(20) = -0.000 +- 0.010
+  wilson_4x4 | hot start     : Gamma(20) = +0.000 +- 0.007
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.021 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.008 +- 0.006
+  wilson_6x6 | hot start     : Gamma(20) = -0.002 +- 0.009
+           Q | diffusion seed: Gamma(20) = +0.797 +- 0.081
+           Q | cold start    : Gamma(20) = +0.845 +- 0.112
+           Q | hot start     : Gamma(20) = +0.840 +- 0.082
+         Q^2 | diffusion seed: Gamma(20) = -0.021 +- 0.022
+         Q^2 | cold start    : Gamma(20) = +0.508 +- 0.033
+         Q^2 | hot start     : Gamma(20) = +0.505 +- 0.027
+A_bc2_L32_beta6.10518 (beta=6.10518, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.029 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.049 +- 0.013
+   plaquette | hot start     : Gamma(20) = +0.048 +- 0.012
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.040 +- 0.015
+  wilson_2x2 | cold start    : Gamma(20) = +0.051 +- 0.014
+  wilson_2x2 | hot start     : Gamma(20) = +0.066 +- 0.014
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.000 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.005 +- 0.009
+  wilson_4x4 | hot start     : Gamma(20) = +0.004 +- 0.010
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.006 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = -0.000 +- 0.008
+  wilson_6x6 | hot start     : Gamma(20) = -0.007 +- 0.008
+           Q | diffusion seed: Gamma(20) = +0.994 +- 0.111 (84/128 chains frozen)
+           Q | cold start    : Gamma(20) = +0.961 +- 0.209 (never thermalizes, 4/32 chains frozen)
+           Q | hot start     : Gamma(20) = +0.989 +- 0.256
+         Q^2 | diffusion seed: Gamma(20) = +0.718 +- 0.036 (84/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +0.642 +- 0.050 (never thermalizes, 4/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +0.609 +- 0.058
+E_bc2.7_L32_beta8.79549 (beta=8.79549, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.037 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.094 +- 0.013
+   plaquette | hot start     : Gamma(20) = +0.035 +- 0.014
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.024 +- 0.013
+  wilson_2x2 | cold start    : Gamma(20) = +0.060 +- 0.011
+  wilson_2x2 | hot start     : Gamma(20) = +0.020 +- 0.015
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.014 +- 0.010
+  wilson_4x4 | cold start    : Gamma(20) = +0.010 +- 0.006
+  wilson_4x4 | hot start     : Gamma(20) = -0.003 +- 0.010
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.015 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.002 +- 0.009
+  wilson_6x6 | hot start     : Gamma(20) = +0.001 +- 0.009
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.118 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.220 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+A_bc3_L32_beta10.015 (beta=10.015, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.025 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.093 +- 0.014
+   plaquette | hot start     : Gamma(20) = +0.065 +- 0.019 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.031 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.047 +- 0.012
+  wilson_2x2 | hot start     : Gamma(20) = +0.076 +- 0.022 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.016 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.010 +- 0.010
+  wilson_4x4 | hot start     : Gamma(20) = +0.027 +- 0.015 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.014 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = -0.011 +- 0.009
+  wilson_6x6 | hot start     : Gamma(20) = -0.018 +- 0.011
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.136 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.254 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc3.4_L32_beta11.6638 (beta=11.6638, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.017 +- 0.011
+   plaquette | cold start    : Gamma(20) = +0.069 +- 0.016
+   plaquette | hot start     : Gamma(20) = +0.063 +- 0.016
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.008 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.059 +- 0.011
+  wilson_2x2 | hot start     : Gamma(20) = +0.050 +- 0.018
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.008 +- 0.010
+  wilson_4x4 | cold start    : Gamma(20) = +0.031 +- 0.008
+  wilson_4x4 | hot start     : Gamma(20) = +0.028 +- 0.015 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.021 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = -0.009 +- 0.008
+  wilson_6x6 | hot start     : Gamma(20) = -0.010 +- 0.011 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.134 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.249 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+A_bc4_L32_beta14.1464 (beta=14.1464, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.039 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.086 +- 0.016
+   plaquette | hot start     : Gamma(20) = +0.047 +- 0.022
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.031 +- 0.013
+  wilson_2x2 | cold start    : Gamma(20) = +0.064 +- 0.011
+  wilson_2x2 | hot start     : Gamma(20) = +0.056 +- 0.019
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.024 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.035 +- 0.011
+  wilson_4x4 | hot start     : Gamma(20) = +0.029 +- 0.013 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.017 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.003 +- 0.008
+  wilson_6x6 | hot start     : Gamma(20) = -0.000 +- 0.009 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.119 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.250 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc4.5_L32_beta16.2057 (beta=16.2057, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.026 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.023 +- 0.016
+   plaquette | hot start     : Gamma(20) = +0.107 +- 0.021 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.025 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.003 +- 0.018
+  wilson_2x2 | hot start     : Gamma(20) = +0.158 +- 0.028 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.028 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.047 +- 0.011
+  wilson_4x4 | hot start     : Gamma(20) = +0.102 +- 0.019 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.026 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.009 +- 0.009
+  wilson_6x6 | hot start     : Gamma(20) = +0.009 +- 0.012 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.137 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.271 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+A_bc5_L32_beta18.2524 (beta=18.2524, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.030 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.092 +- 0.016
+   plaquette | hot start     : Gamma(20) = +0.040 +- 0.015
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.019 +- 0.013
+  wilson_2x2 | cold start    : Gamma(20) = +0.089 +- 0.017
+  wilson_2x2 | hot start     : Gamma(20) = +0.071 +- 0.015 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.022 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.081 +- 0.018
+  wilson_4x4 | hot start     : Gamma(20) = +0.027 +- 0.015 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.028 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = +0.030 +- 0.013
+  wilson_6x6 | hot start     : Gamma(20) = -0.013 +- 0.011 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.119 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.181 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc5.8_L32_beta21.5051 (beta=21.5051, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.027 +- 0.014
+   plaquette | cold start    : Gamma(20) = +0.094 +- 0.018
+   plaquette | hot start     : Gamma(20) = +0.109 +- 0.023 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.023 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = +0.084 +- 0.015
+  wilson_2x2 | hot start     : Gamma(20) = +0.140 +- 0.027 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.016 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.058 +- 0.010
+  wilson_4x4 | hot start     : Gamma(20) = +0.073 +- 0.017 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.014 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = +0.017 +- 0.008
+  wilson_6x6 | hot start     : Gamma(20) = +0.027 +- 0.012 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.108 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.218 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+A_bc6_L32_beta22.3151 (beta=22.3151, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.061 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.111 +- 0.014
+   plaquette | hot start     : Gamma(20) = +0.125 +- 0.025 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.052 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = +0.086 +- 0.012
+  wilson_2x2 | hot start     : Gamma(20) = +0.123 +- 0.022 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.022 +- 0.010
+  wilson_4x4 | cold start    : Gamma(20) = +0.055 +- 0.013
+  wilson_4x4 | hot start     : Gamma(20) = +0.037 +- 0.017 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.017 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.021 +- 0.012
+  wilson_6x6 | hot start     : Gamma(20) = +0.024 +- 0.014 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.129 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.313 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+A_bc8_L32_beta30.3772 (beta=30.3772, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.002 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.049 +- 0.026
+   plaquette | hot start     : Gamma(20) = +0.173 +- 0.024 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.015 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.034 +- 0.020
+  wilson_2x2 | hot start     : Gamma(20) = +0.218 +- 0.030 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.015 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.053 +- 0.015
+  wilson_4x4 | hot start     : Gamma(20) = +0.175 +- 0.029 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.019 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.025 +- 0.013
+  wilson_6x6 | hot start     : Gamma(20) = +0.072 +- 0.020 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.136 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.208 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc9_L32_beta34.3944 (beta=34.3944, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.053 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.005 +- 0.017
+   plaquette | hot start     : Gamma(20) = +0.119 +- 0.026 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.044 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.019 +- 0.013
+  wilson_2x2 | hot start     : Gamma(20) = +0.077 +- 0.024 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.023 +- 0.013
+  wilson_4x4 | cold start    : Gamma(20) = +0.036 +- 0.013
+  wilson_4x4 | hot start     : Gamma(20) = +0.020 +- 0.013 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.018 +- 0.012
+  wilson_6x6 | cold start    : Gamma(20) = +0.020 +- 0.012
+  wilson_6x6 | hot start     : Gamma(20) = +0.010 +- 0.015 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.117 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.232 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc11.8_L32_beta45.6238 (beta=45.6238, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.003 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.024 +- 0.014
+   plaquette | hot start     : Gamma(20) = +0.205 +- 0.031 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.013 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = +0.080 +- 0.013
+  wilson_2x2 | hot start     : Gamma(20) = +0.188 +- 0.031 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.006 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.099 +- 0.014
+  wilson_4x4 | hot start     : Gamma(20) = +0.090 +- 0.015 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.004 +- 0.012
+  wilson_6x6 | cold start    : Gamma(20) = +0.122 +- 0.013
+  wilson_6x6 | hot start     : Gamma(20) = +0.078 +- 0.014 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.101 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.211 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+D_bc14.1464_L32_beta55.0237 (beta=55.0237, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.069 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.027 +- 0.016
+   plaquette | hot start     : Gamma(20) = +0.166 +- 0.029 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.032 +- 0.010
+  wilson_2x2 | cold start    : Gamma(20) = +0.082 +- 0.018
+  wilson_2x2 | hot start     : Gamma(20) = +0.206 +- 0.031 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.009 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.113 +- 0.019
+  wilson_4x4 | hot start     : Gamma(20) = +0.144 +- 0.025 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.002 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = +0.106 +- 0.017
+  wilson_6x6 | hot start     : Gamma(20) = +0.093 +- 0.021 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.120 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.253 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc18_L32_beta70.4526 (beta=70.4526, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.029 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.034 +- 0.015
+   plaquette | hot start     : Gamma(20) = +0.170 +- 0.024 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.044 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = +0.064 +- 0.017
+  wilson_2x2 | hot start     : Gamma(20) = +0.229 +- 0.027 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.043 +- 0.010
+  wilson_4x4 | cold start    : Gamma(20) = +0.053 +- 0.016
+  wilson_4x4 | hot start     : Gamma(20) = +0.097 +- 0.019 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.036 +- 0.010
+  wilson_6x6 | cold start    : Gamma(20) = +0.053 +- 0.014
+  wilson_6x6 | hot start     : Gamma(20) = +0.056 +- 0.018 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.131 (never thermalizes, 128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.219 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (never thermalizes, 128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+D_bc20_L32_beta78.4578 (beta=78.4578, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.011 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.032 +- 0.015 (never thermalizes)
+   plaquette | hot start     : Gamma(20) = +0.104 +- 0.020 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.006 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.049 +- 0.009
+  wilson_2x2 | hot start     : Gamma(20) = +0.086 +- 0.017 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.004 +- 0.011
+  wilson_4x4 | cold start    : Gamma(20) = +0.062 +- 0.010
+  wilson_4x4 | hot start     : Gamma(20) = +0.039 +- 0.016 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.012 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = +0.040 +- 0.010
+  wilson_6x6 | hot start     : Gamma(20) = +0.007 +- 0.012 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.160 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.242 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+D_bc30_L32_beta118.473 (beta=118.473, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.046 +- 0.013
+   plaquette | cold start    : Gamma(20) = +0.059 +- 0.013
+   plaquette | hot start     : Gamma(20) = +0.227 +- 0.027 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.025 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.098 +- 0.011
+  wilson_2x2 | hot start     : Gamma(20) = +0.342 +- 0.036 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.021 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.098 +- 0.016
+  wilson_4x4 | hot start     : Gamma(20) = +0.348 +- 0.037 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.023 +- 0.012
+  wilson_6x6 | cold start    : Gamma(20) = +0.130 +- 0.016
+  wilson_6x6 | hot start     : Gamma(20) = +0.265 +- 0.036 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.206 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.295 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc35_L32_beta138.477 (beta=138.477, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.034 +- 0.010
+   plaquette | cold start    : Gamma(20) = +0.035 +- 0.018
+   plaquette | hot start     : Gamma(20) = +0.378 +- 0.029 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.024 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.033 +- 0.018
+  wilson_2x2 | hot start     : Gamma(20) = +0.552 +- 0.031 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.002 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.066 +- 0.015
+  wilson_4x4 | hot start     : Gamma(20) = +0.652 +- 0.031 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = +0.008 +- 0.012
+  wilson_6x6 | cold start    : Gamma(20) = +0.085 +- 0.018
+  wilson_6x6 | hot start     : Gamma(20) = +0.654 +- 0.034 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.219 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.200 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+D_bc40_L32_beta158.48 (beta=158.48, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.014 +- 0.011
+   plaquette | cold start    : Gamma(20) = +0.028 +- 0.018
+   plaquette | hot start     : Gamma(20) = +0.358 +- 0.036 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.036 +- 0.011
+  wilson_2x2 | cold start    : Gamma(20) = +0.030 +- 0.013
+  wilson_2x2 | hot start     : Gamma(20) = +0.500 +- 0.037 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.017 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.030 +- 0.011
+  wilson_4x4 | hot start     : Gamma(20) = +0.370 +- 0.046 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.020 +- 0.011
+  wilson_6x6 | cold start    : Gamma(20) = +0.044 +- 0.012
+  wilson_6x6 | hot start     : Gamma(20) = +0.094 +- 0.027 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.400 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.183 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+E_bc45_L32_beta178.482 (beta=178.482, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.007 +- 0.010
+   plaquette | cold start    : Gamma(20) = +0.031 +- 0.014
+   plaquette | hot start     : Gamma(20) = +0.328 +- 0.032 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = +0.001 +- 0.012
+  wilson_2x2 | cold start    : Gamma(20) = +0.073 +- 0.015
+  wilson_2x2 | hot start     : Gamma(20) = +0.269 +- 0.032 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.019 +- 0.012
+  wilson_4x4 | cold start    : Gamma(20) = +0.038 +- 0.011
+  wilson_4x4 | hot start     : Gamma(20) = +0.038 +- 0.019 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.034 +- 0.013
+  wilson_6x6 | cold start    : Gamma(20) = -0.001 +- 0.011
+  wilson_6x6 | hot start     : Gamma(20) = -0.003 +- 0.017 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.400 (128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.175 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+D_bc55.0237_L32_beta218.58 (beta=218.58, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.017 +- 0.012
+   plaquette | cold start    : Gamma(20) = +0.051 +- 0.015 (never thermalizes)
+   plaquette | hot start     : Gamma(20) = +0.167 +- 0.023 (never thermalizes)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.018 +- 0.013
+  wilson_2x2 | cold start    : Gamma(20) = +0.057 +- 0.016 (never thermalizes)
+  wilson_2x2 | hot start     : Gamma(20) = +0.168 +- 0.020 (never thermalizes)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.024 +- 0.013
+  wilson_4x4 | cold start    : Gamma(20) = +0.127 +- 0.016
+  wilson_4x4 | hot start     : Gamma(20) = +0.103 +- 0.022 (never thermalizes)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.021 +- 0.014
+  wilson_6x6 | cold start    : Gamma(20) = +0.165 +- 0.020
+  wilson_6x6 | hot start     : Gamma(20) = +0.118 +- 0.027 (never thermalizes)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.494 (never thermalizes, 128/128 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.232 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (never thermalizes, 128/128 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+F_L64_bc55.0237_L64_beta218.58 (beta=218.58, L=64)
+   plaquette | diffusion seed: Gamma(20) = -0.054 +- 0.018
+   plaquette | cold start    : Gamma(20) = +0.048 +- 0.025 (never thermalizes)
+   plaquette | hot start     : Gamma(20) = +0.333 +- 0.079 (1/16 chains frozen)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.023 +- 0.016
+  wilson_2x2 | cold start    : Gamma(20) = +0.073 +- 0.023 (never thermalizes)
+  wilson_2x2 | hot start     : Gamma(20) = +0.701 +- 0.041 (never thermalizes, 1/16 chains frozen)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.011 +- 0.016
+  wilson_4x4 | cold start    : Gamma(20) = +0.087 +- 0.021
+  wilson_4x4 | hot start     : Gamma(20) = +0.660 +- 0.054 (never thermalizes, 1/16 chains frozen)
+  wilson_6x6 | diffusion seed: Gamma(20) = +0.006 +- 0.017
+  wilson_6x6 | cold start    : Gamma(20) = +0.089 +- 0.025
+  wilson_6x6 | hot start     : Gamma(20) = +0.708 +- 0.043 (never thermalizes, 1/16 chains frozen)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.168 (64/64 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 16/16 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.268 (never thermalizes, 16/16 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (64/64 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 16/16 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 16/16 chains frozen)
+F_L32_bc100_L32_beta398.492 (beta=398.492, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.003 +- 0.015
+   plaquette | cold start    : Gamma(20) = +0.051 +- 0.016 (never thermalizes)
+   plaquette | hot start     : Gamma(20) = +0.327 +- 0.043 (1/32 chains frozen)
+  wilson_2x2 | diffusion seed: Gamma(20) = +0.001 +- 0.016
+  wilson_2x2 | cold start    : Gamma(20) = +0.025 +- 0.013
+  wilson_2x2 | hot start     : Gamma(20) = +0.496 +- 0.042 (never thermalizes, 1/32 chains frozen)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.015 +- 0.014
+  wilson_4x4 | cold start    : Gamma(20) = +0.014 +- 0.011
+  wilson_4x4 | hot start     : Gamma(20) = +0.403 +- 0.049 (never thermalizes, 1/32 chains frozen)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.011 +- 0.015
+  wilson_6x6 | cold start    : Gamma(20) = +0.008 +- 0.009
+  wilson_6x6 | hot start     : Gamma(20) = +0.166 +- 0.048 (never thermalizes, 1/32 chains frozen)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.000 (never thermalizes, 64/64 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.255 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (never thermalizes, 64/64 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+F_L32_bc218.58_L32_beta872.816 (beta=872.816, L=32)
+   plaquette | diffusion seed: Gamma(20) = -0.047 +- 0.019
+   plaquette | cold start    : Gamma(20) = +0.069 +- 0.018 (never thermalizes)
+   plaquette | hot start     : Gamma(20) = +0.991 +- 0.009 (never thermalizes, 31/32 chains frozen)
+  wilson_2x2 | diffusion seed: Gamma(20) = -0.052 +- 0.018
+  wilson_2x2 | cold start    : Gamma(20) = -0.013 +- 0.019
+  wilson_2x2 | hot start     : Gamma(20) = +0.991 +- 0.009 (never thermalizes, 31/32 chains frozen)
+  wilson_4x4 | diffusion seed: Gamma(20) = -0.044 +- 0.017
+  wilson_4x4 | cold start    : Gamma(20) = +0.019 +- 0.010
+  wilson_4x4 | hot start     : Gamma(20) = +0.991 +- 0.009 (never thermalizes, 31/32 chains frozen)
+  wilson_6x6 | diffusion seed: Gamma(20) = -0.060 +- 0.017
+  wilson_6x6 | cold start    : Gamma(20) = +0.001 +- 0.012
+  wilson_6x6 | hot start     : Gamma(20) = +0.991 +- 0.009 (never thermalizes, 31/32 chains frozen)
+           Q | diffusion seed: Gamma(20) = +1.000 +- 0.000 (never thermalizes, 64/64 chains frozen)
+           Q | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+           Q | hot start     : Gamma(20) = +1.000 +- 0.224 (never thermalizes, 32/32 chains frozen)
+         Q^2 | diffusion seed: Gamma(20) = +1.000 +- 0.000 (never thermalizes, 64/64 chains frozen)
+         Q^2 | cold start    : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+         Q^2 | hot start     : Gamma(20) = +1.000 +- 0.000 (never thermalizes, 32/32 chains frozen)
+
+modes figure: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\thermalization\autocorrelation_modes.png
+[2026-07-31 13:53:56] STAGE_AUTOCORR_DONE (2.0 min)
+[2026-07-31 13:53:56] STAGE_VERDICT_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/12_campaign_verdict.py --study C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\verdict
+Traceback (most recent call last):
+  File "C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\12_campaign_verdict.py", line 252, in <module>
+    main()
+    ~~~~^^
+  File "C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\12_campaign_verdict.py", line 245, in main
+    write_tables(cases, therm, out / "verdict.md", baseline_note)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\12_campaign_verdict.py", line 149, in write_tables
+    out_path.write_text("\n".join(lines), encoding="utf-8")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 555, in write_text
+    return PathBase.write_text(self, data, encoding, errors, newline)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\AppData\Local\Programs\Python\Python313\Lib\pathlib\_abc.py", line 651, in write_text
+    with self.open(mode='w', encoding=encoding, errors=errors, newline=newline) as f:
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\AppData\Local\Programs\Python\Python313\Lib\pathlib\_local.py", line 537, in open
+    return io.open(self, mode, buffering, encoding, errors, newline)
+           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: 'C:\\Users\\ompan\\OneDrive\\Desktop\\Lattice QCD Research\\dev\\InverseRG\\out\\diffusion_v2\\v2\\verdict\\verdict.md'
+[2026-07-31 13:54:03] STAGE_VERDICT_FAILED rc=1 (0.1 min)
+[2026-07-31 13:54:03] CHAIN_DONE_WITH_ERRORS: ['VERDICT']
