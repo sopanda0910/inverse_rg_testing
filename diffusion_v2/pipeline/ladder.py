@@ -1,0 +1,281 @@
+"""Iterated inverse-RG generation: coarse ensemble -> fine ensemble, rung by rung.
+
+Each rung doubles the linear lattice size:
+    1. conditional diffusion sample  p_theta(fine | coarse invariants, beta_target)
+    2. short local rethermalization (heatbath/Metropolis + overrelaxation) at
+       beta_target -- mandatory at every rung to stop bias compounding; cheap
+       because only UV modes need fixing
+    3. the result becomes the coarse ensemble for the next rung.
+"""
+
+import math
+import time
+from dataclasses import dataclass, field
+
+import torch
+
+from ..lgt.actions import make_action
+from ..lgt.local_updates import retherm_sweeps, instanton_field
+from ..lgt.lattice import mean_plaquette, topological_charge, plaquette_angles, wrap
+from ..model.sampler import sample_ancestral
+from ..model.score_net import coarse_conditioning_channels, plaquette_curl
+
+
+def blocking_consistency_score(
+    theta: torch.Tensor, coarse_plaq: torch.Tensor, sigma: torch.Tensor
+) -> torch.Tensor:
+    """Reconstruction-guidance score pulling each 2x2 cell of fine plaquettes toward
+    its coarse plaquette angle (the constraint that transports topological charge).
+
+    Gradient of -(sum_cell theta_p - Theta_P)^2 / (2 lambda(sigma)) w.r.t. the
+    links, assembled through the same plaquette-curl head as the model score, so it
+    is exactly gauge covariant. lambda(sigma) ~ 8 sigma^2 accounts for the noise the
+    8 boundary links of a cell inject into the blocked plaquette at level sigma.
+
+    The residual is deliberately NOT wrapped: a wrapped residual is blind to a cell
+    sum landing 2 pi away from its coarse target, which lets spurious winding
+    defects freeze in during sampling and inflate <Q^2> at large beta. Pulling the
+    raw sum to the principal-branch target expels those defects; the probability of
+    suppressing a *legitimate* |cell sum| > pi event is exp-small for beta >~ 4
+    (e.g. ~0.2% per cell at beta = 4, ~4e-9 at beta = 14).
+    """
+    fine_plaq = plaquette_angles(theta)
+    cell_sum = (
+        fine_plaq[:, 0::2, 0::2]
+        + fine_plaq[:, 1::2, 0::2]
+        + fine_plaq[:, 0::2, 1::2]
+        + fine_plaq[:, 1::2, 1::2]
+    )
+    residual = cell_sum - coarse_plaq
+    lam = 8.0 * sigma**2 + 1e-3
+    h_cells = -residual / lam
+    h = h_cells.repeat_interleave(2, dim=-2).repeat_interleave(2, dim=-1)
+    return plaquette_curl(h.unsqueeze(1))
+
+
+def wilson_exact_score(theta: torch.Tensor, beta: torch.Tensor | float) -> torch.Tensor:
+    """Exact score of the Wilson target: grad_links log p = grad (beta sum cos theta_p),
+    assembled through the same plaquette-curl head as the model score."""
+    h = -beta * torch.sin(plaquette_angles(theta))
+    return plaquette_curl(h.unsqueeze(1))
+
+
+@dataclass
+class LadderRungResult:
+    beta: float
+    lattice_size: int
+    configs: torch.Tensor
+    observables: dict = field(default_factory=dict)
+    raw_configs: torch.Tensor | None = None
+
+
+def generate_fine_from_coarse(
+    model,
+    schedule,
+    coarse: torch.Tensor,
+    beta_target: float,
+    n_sampler_steps: int = 200,
+    n_corrector_steps: int = 1,
+    batch_size: int = 64,
+    device: str = "cpu",
+    consistency_weight: float = 1.0,
+    enforce_coarse_charge: bool = True,
+    charge_projection_sigma: float = 0.5,
+    charge_projection_interval: int = 10,
+    physics_blend_coef: float = 0.0,
+    physics_blend_beta_min: float = 0.0,
+    corrector_snr: float = 0.16,
+) -> torch.Tensor:
+    """Conditional diffusion sample of fine configs, one per coarse config.
+
+    enforce_coarse_charge: set each fine configuration's topological sector to
+    its coarse partner's by adding the smooth instanton difference (a
+    deterministic, gauge-covariant map using only the conditioning input).
+    Justification: the blocking preserves Q up to wrap events whose probability
+    is exp-small at the couplings where topology matters, while the Wilson
+    action's own preference between neighboring Q sectors is O(beta/V) -- far
+    too weak for the learned score to pin the sector reliably. Any curl-type
+    guidance provably cannot fix a wrong sector either (the total wrapped
+    plaquette sum is invariant under link deformations until a plaquette crosses
+    +-pi), so the sector is enforced structurally and rethermalization then
+    relaxes the tiny uniform strain (2 pi dQ / V per plaquette).
+
+    The projection is applied DURING the reverse SDE once sigma drops below
+    charge_projection_sigma (every charge_projection_interval steps, plus a final
+    exact pass): the sector freezes at sigma ~ O(1), and correcting it while
+    noise is still present lets the sampler relax the instanton strain instead of
+    leaving it all to rethermalization. Set charge_projection_interval <= 0 to
+    recover the old end-only behavior.
+
+    physics_blend_coef: blend the model score toward the analytic score of the
+    noised Wilson target as sigma -> 0, weight w(sigma) = 1/(1 + (sigma/sigma_c)^2)
+    with sigma_c = physics_blend_coef / sqrt(beta_target). The analytic score is
+    the Wilson curl at the smeared coupling beta_eff = beta / (1 + 4 beta sigma^2):
+    a plaquette angle carries 4 links' noise (variance 4 sigma^2), and in the
+    near-Gaussian regime (beta theta_p^2 fluctuations small) convolving precision
+    beta with that noise gives precision beta_eff exactly -- NOT beta exp(-2
+    sigma^2), which damps <cos> but overestimates the drift ~5x at sigma_c and
+    over-orders the field. The small-sigma endgame is then exact at ANY beta
+    regardless of training range; the model supplies only the large-sigma,
+    topology-carrying structure. Wilson action only; 0 = off.
+
+    physics_blend_beta_min: gate the blend off at small beta, where the harmonic
+    (near-Gaussian) limit behind beta_eff is poor and the v6 campaign measured no
+    gain. The blend weight is multiplied by g(beta) = 1 / (1 + (beta_min /
+    beta)^2): ~1 for beta >> beta_min, -> 0 below it. 0 = ungated."""
+    model.eval()
+    fine_size = coarse.shape[-1] * 2
+    sigmas = schedule.discrete_sigmas(n_sampler_steps, device=device, beta=beta_target)
+    cond_channels = getattr(model, "cond_channels", 4)
+    outputs = []
+    for start in range(0, coarse.shape[0], batch_size):
+        chunk = coarse[start : start + batch_size].to(device).float()
+        cond = coarse_conditioning_channels(chunk, fine_size, n_channels=cond_channels)
+        coarse_plaq = plaquette_angles(chunk)
+        beta = torch.full((chunk.shape[0],), float(beta_target), device=device)
+
+        def score_fn(theta, sigma):
+            sig = sigma.expand(theta.shape[0])
+            score = model.score(theta, sig, beta[: theta.shape[0]], cond[: theta.shape[0]])
+            if physics_blend_coef > 0:
+                sigma_c = physics_blend_coef / math.sqrt(beta_target)
+                w = 1.0 / (1.0 + (sigma / sigma_c) ** 2)
+                if physics_blend_beta_min > 0:
+                    w = w / (1.0 + (physics_blend_beta_min / beta_target) ** 2)
+                beta_eff = beta_target / (1.0 + 4.0 * beta_target * sigma**2)
+                score = (1.0 - w) * score + w * wilson_exact_score(theta, beta_eff)
+            if consistency_weight > 0:
+                score = score + consistency_weight * blocking_consistency_score(
+                    theta, coarse_plaq[: theta.shape[0]], sigma
+                )
+            return score
+
+        step_callback = None
+        if enforce_coarse_charge and charge_projection_interval > 0:
+            coarse_q = topological_charge(chunk)
+            counter = {"n": 0}
+
+            def step_callback(theta, sigma_next, coarse_q=coarse_q, counter=counter):
+                if sigma_next >= charge_projection_sigma:
+                    return theta
+                counter["n"] += 1
+                if counter["n"] % charge_projection_interval:
+                    return theta
+                return apply_coarse_charge(theta, coarse_q)
+
+        sample = sample_ancestral(
+            score_fn,
+            (chunk.shape[0], 2, fine_size, fine_size),
+            sigmas,
+            device=device,
+            n_corrector_steps=n_corrector_steps,
+            corrector_snr=corrector_snr,
+            step_callback=step_callback,
+        )
+        if enforce_coarse_charge:
+            sample = apply_coarse_charge(sample, topological_charge(chunk))
+        outputs.append(sample.cpu())
+    return torch.cat(outputs, dim=0)
+
+
+def apply_coarse_charge(sample: torch.Tensor, coarse_q: torch.Tensor) -> torch.Tensor:
+    """Set each configuration's topological sector to coarse_q by adding the smooth
+    instanton difference (the deterministic map generate_fine_from_coarse applies
+    when enforce_coarse_charge=True), iterated up to 3x for wrap-induced misses."""
+    inst = instanton_field(sample.shape[-1], device=sample.device, dtype=sample.dtype)
+    for _ in range(3):
+        delta_q = coarse_q.to(sample.device) - topological_charge(sample)
+        if not delta_q.any():
+            break
+        sample = wrap(sample + delta_q.view(-1, 1, 1, 1) * inst)
+    return sample
+
+
+def _rung_observables(configs: torch.Tensor) -> dict:
+    with torch.no_grad():
+        charge = topological_charge(configs)
+        return {
+            "plaquette": float(mean_plaquette(configs)),
+            "q_mean": float(charge.mean()),
+            "q_squared": float(charge.square().mean()),
+        }
+
+
+def generate_ladder(
+    coarse_ensemble: torch.Tensor,
+    beta_schedule: list[float],
+    model,
+    noise_schedule,
+    n_retherm_sweeps: int = 10,
+    action_type: str = "wilson",
+    n_sampler_steps: int = 200,
+    n_corrector_steps: int = 1,
+    batch_size: int = 64,
+    device: str = "cpu",
+    verbose: bool = True,
+    consistency_weight: float = 1.0,
+    enforce_coarse_charge: bool = True,
+    retherm_topological_updates: bool = False,
+    physics_blend_coef: float = 0.0,
+    physics_blend_beta_min: float = 0.0,
+    charge_projection_sigma: float = 0.5,
+    charge_projection_interval: int = 10,
+    corrector_snr: float = 0.16,
+) -> list[LadderRungResult]:
+    """Iterate conditional generation up the ladder.
+
+    coarse_ensemble: [N, 2, L0, L0] equilibrated at the coarsest rung.
+    beta_schedule: target couplings for successive fine rungs (each doubles L).
+    Returns one LadderRungResult per generated rung (observables logged at every
+    rung so drift/bias accumulation is visible).
+
+    retherm_topological_updates: include instanton Q-hop proposals in the
+    rethermalization at every rung. The smooth-instanton dS is O(beta / V), so
+    acceptance stays high even at couplings where local updates never tunnel;
+    this re-equilibrates P(Q) at each rung instead of freezing in the sector
+    inherited from the base ensemble. Leave off to test whether the model and
+    charge transport alone reproduce topology.
+    """
+    current = coarse_ensemble
+    results = []
+    for rung_index, beta_target in enumerate(beta_schedule):
+        t0 = time.time()
+        fine = generate_fine_from_coarse(
+            model,
+            noise_schedule,
+            current,
+            beta_target,
+            n_sampler_steps=n_sampler_steps,
+            n_corrector_steps=n_corrector_steps,
+            batch_size=batch_size,
+            device=device,
+            consistency_weight=consistency_weight,
+            enforce_coarse_charge=enforce_coarse_charge,
+            physics_blend_coef=physics_blend_coef,
+            physics_blend_beta_min=physics_blend_beta_min,
+            charge_projection_sigma=charge_projection_sigma,
+            charge_projection_interval=charge_projection_interval,
+            corrector_snr=corrector_snr,
+        )
+        obs_raw = _rung_observables(fine)
+        raw = fine.clone()
+        action = make_action(action_type, beta_target)
+        fine = retherm_sweeps(
+            fine, action, n_retherm_sweeps, topological_updates=retherm_topological_updates
+        )
+        obs = _rung_observables(fine)
+        obs["plaquette_pre_retherm"] = obs_raw["plaquette"]
+        obs["q_squared_pre_retherm"] = obs_raw["q_squared"]
+        result = LadderRungResult(
+            beta=beta_target, lattice_size=fine.shape[-1], configs=fine, observables=obs,
+            raw_configs=raw,
+        )
+        results.append(result)
+        if verbose:
+            print(
+                f"rung {rung_index}: L={fine.shape[-1]} beta={beta_target} "
+                f"plaq={obs['plaquette']:.4f} (pre-retherm {obs_raw['plaquette']:.4f}) "
+                f"<Q^2>={obs['q_squared']:.3f}  [{time.time()-t0:.0f}s]"
+            )
+        current = fine
+    return results

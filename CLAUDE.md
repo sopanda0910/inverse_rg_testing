@@ -10,7 +10,16 @@ configurations so that gauge-invariant observable distributions match direct HMC
 up a matched beta ladder reaches lattice sizes/couplings where direct HMC suffers from
 critical slowing down and topological freezing.
 
-All project code lives in `diffusion/`.
+Project code lives in two sibling packages: `diffusion/` (the frozen v6-era
+pipeline, kept working as the reference implementation) and `diffusion_v2/`
+(the active line: same layout plus symmetry augmentation, small-sigma
+oversampling at high beta, channel norm, global coarse FiLM, beta-gated
+exact-score blend, probability-flow ODE likelihood/ESS, the diffusion-vs-
+instanton-HMC head-to-head, and wall-clock thermalization accounting).
+New work goes in `diffusion_v2/`; do not modify `diffusion/` except for bug
+parity. The v2 campaign config is `diffusion_v2/configs/v2.yaml`; the chain
+driver is `diffusion_v2/scripts/run_campaign.py` (outputs under
+`out/diffusion_v2/v2/`, resumable via `campaign_state/` sentinels).
 
 ## Key Conventions
 
