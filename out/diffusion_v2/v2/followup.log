@@ -1,0 +1,40 @@
+================ followup launch Sat 08/01/2026 14:05:18.93 ================ 
+[2026-08-01 14:05:19] FOLLOWUP_START
+[2026-08-01 14:15:30] WAIT_DONE (10 min)
+[2026-08-01 14:15:30] STAGE_FU_PYTEST_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe -m pytest diffusion_v2/tests -q
+........................................................................ [ 84%]
+.............                                                            [100%]
+85 passed in 41.90s
+[2026-08-01 14:16:13] STAGE_FU_PYTEST_DONE (0.7 min)
+[2026-08-01 14:16:13] STAGE_FU_TAIL_ADAPT_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/18_pq_hmc_tail.py --gen-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization --max-traj 2000 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\pq_hmc_tail_adaptive
+case B_bt6
+  B_bt6: Q^2 1.92 -> 5.74 (exact 4.78); chi2 p 0.0005150703029800491 -> 0.47314726010804165; 150 traj; 5s
+case A_bc1.5
+  A_bc1.5: Q^2 5.1 -> 8.15 (exact 6.79); chi2 p 0.8716164000217158 -> 0.1707136121493461; 150 traj; 4s
+case E_bc11.8
+  E_bc11.8: Q^2 0.438 -> 0.492 (exact 0.575); chi2 p 0.31270765599755945 -> 0.7536009081420671; 150 traj; 11s
+case D_bc55.0237
+  D_bc55.0237: Q^2 0.0312 -> 0.0391 (exact 0.029); chi2 p None -> None; 200 traj; 30s
+case C_L64
+  C_L64: Q^2 6.43 -> 10.4 (exact 7.62); chi2 p 0.06647026204118743 -> 0.6974924220663467; 200 traj; 18s
+report: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\pq_hmc_tail_adaptive\report.md
+[2026-08-01 14:17:27] STAGE_FU_TAIL_ADAPT_DONE (1.2 min)
+[2026-08-01 14:17:27] STAGE_FU_SEED2_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 314159 --symmetrize-base --sector-mode exact --cases D_bc20 --out-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_seed2
+1 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_seed2
+[1/1] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    generated 128 configs L=32 beta=78.4578 in 276s
+    case done in 285s
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_seed2\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_seed2\summary_tables.md
+[2026-08-01 14:22:18] STAGE_FU_SEED2_DONE (4.8 min)
+[2026-08-01 14:22:18] STAGE_FU_PROBES_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/19_ode_reweighting.py --cases 16:14.1464 --n-configs 64 --n-probes 8 --ode-steps 240 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_probes8
+case L=16 beta=14.1464 ...
+  {"n": 64, "ess_per_n": 0.02607005462050438, "log_weight_std": 16.73590087890625, "log_weight_range": 68.6474609375, "ess_per_n_fiber": 0.021331584081053734, "log_weight_std_fiber": 15.567989349365234, "log_weight_range_fiber": 58.289306640625, "fine_L": 16, "fine_beta": 14.1464, "coarse_L": 8, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.07936507936507936, "seconds_hmc_base": 1.7, "seconds_ode_sample": 1165.0, "ode_steps": 240, "n_probes": 8}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_probes8\report.md
+[2026-08-01 14:41:48] STAGE_FU_PROBES_DONE (19.5 min)
+[2026-08-01 14:41:48] STAGE_FU_EASY_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/19_ode_reweighting.py --cases 16:4.44493 --n-configs 128 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_easy
+case L=16 beta=4.44493 ...
+  {"n": 128, "ess_per_n": 0.0280653927475214, "log_weight_std": 14.500894546508789, "log_weight_range": 69.23486328125, "ess_per_n_fiber": 0.007813425734639168, "log_weight_std_fiber": 13.422697067260742, "log_weight_range_fiber": 71.1966552734375, "fine_L": 16, "fine_beta": 4.44493, "coarse_L": 8, "coarse_beta": 1.4999984955246917, "imh_acceptance": 0.07086614173228346, "seconds_hmc_base": 2.2, "seconds_ode_sample": 334.9, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_easy\report.md
+[2026-08-01 14:47:28] STAGE_FU_EASY_DONE (5.7 min)
+[2026-08-01 14:47:28] FOLLOWUP_DONE

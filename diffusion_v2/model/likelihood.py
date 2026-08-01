@@ -33,7 +33,12 @@ Scope and honesty:
     computes the exact divergence for calibration on small lattices). With
     valid weights, self-normalized reweighting and independence Metropolis
     give asymptotically exact estimates -- the M-H/reweighting exactness route
-    diffusion models are usually said to lack.
+    diffusion models are usually said to lack. Caveat: Hutchinson noise is
+    unbiased in log q but exponentiation makes the WEIGHTS biased upward
+    (Jensen), and the trapezoid divergence integral approximates the discrete
+    Heun map's true log-Jacobian; both are biases that shrink with
+    probes/steps, not with sample count. Quote exactness results only after a
+    probe/step stability check (or with n_probes=0).
 """
 
 import math
@@ -387,8 +392,11 @@ def independence_metropolis(
 
     Proposals are iid draws from the (coarse, fine) proposal distribution, so
     accepting proposal i over current state c with prob min(1, w_i / w_c)
-    yields a chain whose stationary law is the target -- asymptotically exact
-    observables from the accepted trajectory, no reweighting variance caveats.
+    yields a chain whose stationary law is the target, GIVEN exact weights
+    (noisy Hutchinson weights leave a residual bias; see module docstring).
+    The chain autocorrelates through repeated states: at acceptance a the
+    effective sample count is ~ n a / (2 - a), so naive sems must be inflated
+    by sqrt((2 - a) / a).
     Returns (state index per step [n], acceptance rate over steps 1..n-1)."""
     gen = torch.Generator()
     if seed is not None:

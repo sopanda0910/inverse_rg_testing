@@ -89,11 +89,16 @@ def run_case(model, schedule, case, args, action_type, device):
     imh_idx, imh_accept = independence_metropolis(log_w, seed=args.seed)
 
     obs = per_config_observables(fine)
+    # Repeated i-MH states autocorrelate the chain: with acceptance a the
+    # naive sem understates by ~sqrt((2 - a) / a) (n_eff = n a / (2 - a)).
+    acc_floor = max(imh_accept, 1.0 / max(len(log_w), 2))
+    imh_err_factor = ((2.0 - acc_floor) / acc_floor) ** 0.5
     obs_out = {}
     for name, values in obs.items():
         raw_mu, raw_err = unweighted_mean(values)
         rw_mu, rw_err = reweighted_mean(values, log_w)
         imh_mu, imh_err = unweighted_mean(values[imh_idx])
+        imh_err *= imh_err_factor
         obs_out[name] = {
             "raw": [raw_mu, raw_err],
             "reweighted": [rw_mu, rw_err],
@@ -152,11 +157,18 @@ def format_report(results: list[dict]) -> str:
         "",
         "Samples drawn from the probability-flow ODE (no charge projection, no",
         "retherm); log q is the density of the ACTUAL samples, so the SNIS and",
-        "independence-Metropolis columns are asymptotically exact estimators of",
-        "the fine Wilson target. Errors: raw/i-MH naive sem (i-MH ignores chain",
-        "autocorrelation), reweighted linearized SNIS error. Low ESS/N or i-MH",
-        "acceptance means the exact estimators are noisy, not biased -- raw",
-        "columns stay the (biased) high-precision numbers.",
+        "independence-Metropolis columns are exact estimators of the fine Wilson",
+        "target in the n_steps -> inf, exact-divergence limit. At finite",
+        "settings two residual biases remain (they shrink with steps/probes,",
+        "NOT with more samples): the Heun trapezoid approximates the discrete",
+        "map's true log-Jacobian, and Hutchinson noise is unbiased in log q but",
+        "biases the exponentiated weights (Jensen). Check stability under",
+        "doubled --ode-steps and increased --n-probes (or --n-probes 0) before",
+        "quoting. Errors: raw naive sem; i-MH sem inflated by the",
+        "low-acceptance autocorrelation factor sqrt((2-a)/a); reweighted",
+        "linearized SNIS error. Low ESS/N or i-MH acceptance makes the exact",
+        "estimators noisy -- raw columns stay the (biased) high-precision",
+        "numbers.",
     ]
     return "\n".join(lines)
 
