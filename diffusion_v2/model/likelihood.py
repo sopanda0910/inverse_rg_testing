@@ -26,6 +26,14 @@ Scope and honesty:
     Q-hops). This is the per-level quantity multilevel flow papers report.
   * The stochastic sampler is not the ODE, so q is the flow's density for the
     shared marginals -- exact for a perfect score, a diagnostic otherwise.
+    `ode_sample_with_likelihood` / `conditional_ode_sample` close that gap:
+    sampling the probability-flow ODE itself yields the sample AND its density
+    in one pass, making the importance weights valid for the actual samples
+    (up to Heun discretization error and Hutchinson probe noise; n_probes=0
+    computes the exact divergence for calibration on small lattices). With
+    valid weights, self-normalized reweighting and independence Metropolis
+    give asymptotically exact estimates -- the M-H/reweighting exactness route
+    diffusion models are usually said to lack.
 """
 
 import math
@@ -47,6 +55,28 @@ def _divergence_hutchinson(score_fn, theta, sigma, n_probes: int = 1) -> torch.T
             (grad,) = torch.autograd.grad(sv, x)
         div = div + (grad * v).flatten(1).sum(dim=1)
     return div / n_probes
+
+
+def _divergence_exact(score_fn, theta, sigma) -> torch.Tensor:
+    """Exact trace of ds/dtheta per config, one vjp per degree of freedom."""
+    batch = theta.shape[0]
+    n_dof = theta[0].numel()
+    div = torch.zeros(batch, device=theta.device)
+    with torch.enable_grad():
+        x = theta.detach().requires_grad_(True)
+        s = score_fn(x, sigma).reshape(batch, -1)
+        for j in range(n_dof):
+            (grad,) = torch.autograd.grad(
+                s[:, j].sum(), x, retain_graph=(j < n_dof - 1)
+            )
+            div = div + grad.reshape(batch, -1)[:, j]
+    return div
+
+
+def _divergence(score_fn, theta, sigma, n_probes: int) -> torch.Tensor:
+    if n_probes <= 0:
+        return _divergence_exact(score_fn, theta, sigma)
+    return _divergence_hutchinson(score_fn, theta, sigma, n_probes=n_probes)
 
 
 def ode_log_likelihood(
@@ -76,7 +106,7 @@ def ode_log_likelihood(
     def drift_and_div(theta, sigma):
         with torch.no_grad():
             s = score_fn(theta, sigma)
-        div = _divergence_hutchinson(score_fn, theta, sigma, n_probes=n_probes)
+        div = _divergence(score_fn, theta, sigma, n_probes)
         return -sigma * s, -sigma * div
 
     for i in range(len(sigmas_ascending) - 1):
@@ -93,6 +123,92 @@ def ode_log_likelihood(
     # log q(x_0) = log_prior + int (div f) dsigma with div f = -sigma div s;
     # delta_logq accumulated exactly that integrand.
     return log_prior + delta_logq
+
+
+def ode_sample_with_likelihood(
+    score_fn,
+    shape: tuple[int, ...],
+    sigmas_descending: torch.Tensor,
+    n_probes: int = 1,
+    device: str = "cpu",
+    seed: int | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Sample the probability-flow ODE from the uniform torus prior; return
+    (x0, log_q) where log_q is the density of the produced sample under the
+    SAME discretized flow -- sample and likelihood in one pass, so importance
+    weights against a known action are valid for these samples.
+
+    Accumulating along the descending trajectory, int_{max}^{min} div f dsigma
+    is minus the ascending integral in `ode_log_likelihood`, hence the sign.
+    """
+    if seed is not None:
+        torch.manual_seed(seed)
+    from .wrapped import wrap
+
+    x = torch.rand(shape, device=device) * (2.0 * math.pi) - math.pi
+    batch = shape[0]
+    n_dof = x[0].numel()
+    acc = torch.zeros(batch, device=device)
+
+    def drift_and_div(theta, sigma):
+        with torch.no_grad():
+            s = score_fn(theta, sigma)
+        div = _divergence(score_fn, theta, sigma, n_probes)
+        return -sigma * s, -sigma * div
+
+    for i in range(len(sigmas_descending) - 1):
+        sig0 = sigmas_descending[i]
+        sig1 = sigmas_descending[i + 1]
+        h = sig1 - sig0
+        f0, d0 = drift_and_div(x, sig0)
+        x_pred = wrap(x + h * f0)
+        f1, d1 = drift_and_div(x_pred, sig1)
+        x = wrap(x + 0.5 * h * (f0 + f1))
+        acc = acc + 0.5 * h * (d0 + d1)
+
+    log_prior = -n_dof * math.log(2.0 * math.pi)
+    return x, log_prior - acc
+
+
+def _effective_score_fn(
+    model,
+    chunk_c: torch.Tensor,
+    fine_size: int,
+    beta_target: float,
+    consistency_weight: float,
+    physics_blend_coef: float,
+    physics_blend_beta_min: float,
+    device: str,
+):
+    """The sampling-time effective score (model + exact-score blend + blocking
+    consistency guidance, no charge projection) for one coarse chunk."""
+    from ..lgt.lattice import plaquette_angles
+    from ..pipeline.ladder import blocking_consistency_score, wilson_exact_score
+    from .score_net import coarse_conditioning_channels
+
+    cond = coarse_conditioning_channels(
+        chunk_c, fine_size, n_channels=getattr(model, "cond_channels", 4)
+    )
+    coarse_plaq = plaquette_angles(chunk_c)
+    beta = torch.full((chunk_c.shape[0],), float(beta_target), device=device)
+
+    def score_fn(theta, sigma):
+        sig = sigma.expand(theta.shape[0])
+        score = model.score(theta, sig, beta[: theta.shape[0]], cond[: theta.shape[0]])
+        if physics_blend_coef > 0:
+            sigma_c = physics_blend_coef / math.sqrt(beta_target)
+            w = 1.0 / (1.0 + (sigma / sigma_c) ** 2)
+            if physics_blend_beta_min > 0:
+                w = w / (1.0 + (physics_blend_beta_min / beta_target) ** 2)
+            beta_eff = beta_target / (1.0 + 4.0 * beta_target * sigma**2)
+            score = (1.0 - w) * score + w * wilson_exact_score(theta, beta_eff)
+        if consistency_weight > 0:
+            score = score + consistency_weight * blocking_consistency_score(
+                theta, coarse_plaq[: theta.shape[0]], sigma
+            )
+        return score
+
+    return score_fn
 
 
 def conditional_log_likelihood(
@@ -112,10 +228,6 @@ def conditional_log_likelihood(
 ) -> torch.Tensor:
     """log q(fine_i | coarse_i) for paired configs, using the sampling-time
     effective score (model + blend + consistency guidance, no charge projection)."""
-    from ..lgt.lattice import plaquette_angles
-    from ..pipeline.ladder import blocking_consistency_score, wilson_exact_score
-    from .score_net import coarse_conditioning_channels
-
     model.eval()
     fine_size = fine.shape[-1]
     sigmas_desc = schedule.discrete_sigmas(n_steps, device=device, beta=beta_target)
@@ -124,30 +236,53 @@ def conditional_log_likelihood(
     for start in range(0, fine.shape[0], batch_size):
         chunk_c = coarse[start : start + batch_size].to(device).float()
         chunk_f = fine[start : start + batch_size].to(device).float()
-        cond = coarse_conditioning_channels(
-            chunk_c, fine_size, n_channels=getattr(model, "cond_channels", 4)
+        score_fn = _effective_score_fn(
+            model, chunk_c, fine_size, beta_target,
+            consistency_weight, physics_blend_coef, physics_blend_beta_min, device,
         )
-        coarse_plaq = plaquette_angles(chunk_c)
-        beta = torch.full((chunk_f.shape[0],), float(beta_target), device=device)
-
-        def score_fn(theta, sigma):
-            sig = sigma.expand(theta.shape[0])
-            score = model.score(theta, sig, beta[: theta.shape[0]], cond[: theta.shape[0]])
-            if physics_blend_coef > 0:
-                sigma_c = physics_blend_coef / math.sqrt(beta_target)
-                w = 1.0 / (1.0 + (sigma / sigma_c) ** 2)
-                if physics_blend_beta_min > 0:
-                    w = w / (1.0 + (physics_blend_beta_min / beta_target) ** 2)
-                beta_eff = beta_target / (1.0 + 4.0 * beta_target * sigma**2)
-                score = (1.0 - w) * score + w * wilson_exact_score(theta, beta_eff)
-            if consistency_weight > 0:
-                score = score + consistency_weight * blocking_consistency_score(
-                    theta, coarse_plaq[: theta.shape[0]], sigma
-                )
-            return score
-
         out.append(ode_log_likelihood(score_fn, chunk_f, sigmas_asc, n_probes=n_probes, seed=seed).cpu())
     return torch.cat(out, dim=0)
+
+
+def conditional_ode_sample(
+    model,
+    schedule,
+    coarse: torch.Tensor,
+    beta_target: float,
+    n_steps: int = 120,
+    n_probes: int = 2,
+    consistency_weight: float = 1.0,
+    physics_blend_coef: float = 0.0,
+    physics_blend_beta_min: float = 0.0,
+    batch_size: int = 16,
+    device: str = "cpu",
+    seed: int | None = None,
+) -> tuple[torch.Tensor, torch.Tensor]:
+    """Probability-flow ODE sample of fine configs conditioned on each coarse
+    config, returning (fine, log_q) with log_q the density of the actual
+    samples. No charge projection (a non-diffeomorphic map would invalidate
+    the density); sector correctness is carried by the importance weights."""
+    model.eval()
+    fine_size = coarse.shape[-1] * 2
+    sigmas_desc = schedule.discrete_sigmas(n_steps, device=device, beta=beta_target)
+    fines, logqs = [], []
+    for start in range(0, coarse.shape[0], batch_size):
+        chunk_c = coarse[start : start + batch_size].to(device).float()
+        score_fn = _effective_score_fn(
+            model, chunk_c, fine_size, beta_target,
+            consistency_weight, physics_blend_coef, physics_blend_beta_min, device,
+        )
+        x, log_q = ode_sample_with_likelihood(
+            score_fn,
+            (chunk_c.shape[0], 2, fine_size, fine_size),
+            sigmas_desc,
+            n_probes=n_probes,
+            device=device,
+            seed=None if seed is None else seed + start,
+        )
+        fines.append(x.cpu())
+        logqs.append(log_q.cpu())
+    return torch.cat(fines, dim=0), torch.cat(logqs, dim=0)
 
 
 def _ess_from_log_weights(log_w: torch.Tensor) -> tuple[float, float, float]:
@@ -205,3 +340,69 @@ def importance_ess(
         out.update(ess_per_n_fiber=ess_f, log_weight_std_fiber=std_f,
                    log_weight_range_fiber=rng_f)
     return out
+
+
+def snis_log_weights(
+    fine: torch.Tensor,
+    log_q: torch.Tensor,
+    beta: float,
+    action_type: str = "wilson",
+    coarse: torch.Tensor | None = None,
+    coarse_beta_matched: float | None = None,
+) -> torch.Tensor:
+    """Raw self-normalized importance-sampling log-weights.
+
+    With coarse given: log w = -S_f(x) + S_matched(c) - log q(x|c). The
+    proposal joint is pi_c^matched(c) * q(x|c) -- BOTH factors known exactly
+    (the coarse base is HMC at the matched coupling, q is the flow density) --
+    so against the target marginal exp(-S_f(x))/Z these weights make SNIS
+    consistent with no approximation; normalization constants cancel under
+    self-normalization. Without coarse, the maximally conservative joint
+    weights (see `importance_ess`)."""
+    action = make_action(action_type, float(beta))
+    with torch.no_grad():
+        log_w = -action.per_config(fine.float()).cpu() - log_q.cpu()
+        if coarse is not None and coarse_beta_matched is not None:
+            coarse_action = make_action(action_type, float(coarse_beta_matched))
+            log_w = log_w + coarse_action.per_config(coarse.float()).cpu()
+    return log_w
+
+
+def reweighted_mean(values: torch.Tensor, log_w: torch.Tensor) -> tuple[float, float]:
+    """Self-normalized importance estimate of E[values] and its linearized
+    standard error sqrt(sum w_i^2 (v_i - mu)^2), w normalized."""
+    lw = log_w - log_w.max()
+    w = torch.exp(lw)
+    w = w / w.sum()
+    values = values.float().cpu()
+    mu = float((w * values).sum())
+    err = float(torch.sqrt((w**2 * (values - mu) ** 2).sum()))
+    return mu, err
+
+
+def independence_metropolis(
+    log_w: torch.Tensor, seed: int | None = None
+) -> tuple[torch.Tensor, float]:
+    """Independence-Metropolis chain over the pre-drawn proposal ensemble.
+
+    Proposals are iid draws from the (coarse, fine) proposal distribution, so
+    accepting proposal i over current state c with prob min(1, w_i / w_c)
+    yields a chain whose stationary law is the target -- asymptotically exact
+    observables from the accepted trajectory, no reweighting variance caveats.
+    Returns (state index per step [n], acceptance rate over steps 1..n-1)."""
+    gen = torch.Generator()
+    if seed is not None:
+        gen.manual_seed(seed)
+    log_w = log_w.float().cpu()
+    n = log_w.numel()
+    u = torch.rand(n, generator=gen)
+    idx = torch.empty(n, dtype=torch.long)
+    current = 0
+    accepted = 0
+    idx[0] = 0
+    for i in range(1, n):
+        if u[i] < torch.exp((log_w[i] - log_w[current]).clamp(max=0.0)):
+            current = i
+            accepted += 1
+        idx[i] = current
+    return idx, accepted / max(n - 1, 1)

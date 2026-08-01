@@ -1,0 +1,47 @@
+14 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors
+[1/14] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    generated 128 configs L=32 beta=6.10518 in 616s
+    case done in 625s
+[2/14] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    generated 128 configs L=32 beta=10.015 in 362s
+    case done in 372s
+[3/14] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    generated 128 configs L=32 beta=14.1464 in 379s
+    case done in 390s
+[4/14] E_bc1.2: base L=16 beta=1.2 -> L=32 beta=3.6012 (out-of-sample matched pair 1.2 -> 3.6012)
+    generated 128 configs L=32 beta=3.6012 in 416s
+    case done in 427s
+[5/14] E_bc2.7: base L=16 beta=2.7 -> L=32 beta=8.79549 (out-of-sample matched pair 2.7 -> 8.7955)
+    generated 128 configs L=32 beta=8.79549 in 473s
+    case done in 486s
+[6/14] E_bc3.4: base L=16 beta=3.4 -> L=32 beta=11.6638 (out-of-sample matched pair 3.4 -> 11.6638)
+    generated 128 configs L=32 beta=11.6638 in 426s
+    case done in 438s
+[7/14] E_bc4.5: base L=16 beta=4.5 -> L=32 beta=16.2057 (out-of-sample matched pair 4.5 -> 16.2057)
+    generated 128 configs L=32 beta=16.2057 in 411s
+    case done in 424s
+[8/14] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    generated 128 configs L=32 beta=21.5051 in 484s
+    case done in 499s
+[9/14] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    generated 128 configs L=32 beta=34.3944 in 466s
+    case done in 479s
+[10/14] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    generated 128 configs L=32 beta=45.6238 in 514s
+    case done in 526s
+[11/14] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    generated 128 configs L=32 beta=70.4526 in 446s
+    case done in 461s
+[12/14] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    generated 128 configs L=32 beta=138.477 in 432s
+    case done in 444s
+[13/14] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    generated 128 configs L=32 beta=178.482 in 461s
+    case done in 475s
+[14/14] C_L128: base L=64 beta=4 -> L=128 beta=14.1464 (size scan rung)
+    generated 64 configs L=128 beta=14.1464 in 3862s
+    case done in 3941s
+C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\06_generalization_study.py:411: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors\summary_tables.md

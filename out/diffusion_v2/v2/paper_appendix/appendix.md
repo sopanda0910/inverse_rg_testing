@@ -37,11 +37,31 @@ per-config SEM for generated ensembles; z-scores are against the exact
 character-expansion values. Two independent seeds were run for the
 out-of-sample tracks; all seed-2 results confirmed seed-1 within statistics.
 
+**Sector modes.** The pipeline exposes two topological-sector treatments.
+*Transport* (the strict default used above): the fine sector is the coarse
+configuration's sector, carried deterministically by the smooth instanton
+shift — final P(Q) is the coarse base's empirical histogram, so this mode
+measures what the model itself carries, but it cannot retarget topology when
+the requested β_f is not the base's matched coupling. *Exact-sector*
+(production): the coarse base is first charge-conjugation symmetrized
+(C-antithetic: half the batch is mapped θ → −θ, exactly measure-preserving,
+enforcing P(Q) = P(−Q) at finite sample size), and each configuration's
+sector is then drawn from the exact finite-volume P(Q) at the *target*
+coupling and imposed by the same instanton shift. Sector statistics are then
+correct by construction at any target — the honest successor to
+hop-in-rethermalization, and this pipeline's analogue of Q-shift sector
+reconstruction. Wilson observables are statistically identical in the two
+modes (mean |plaquette z| 1.77 vs 1.74 over 38 cases).
+
 **Statistical baseline.** Under these conventions the v2 checkpoint matches
 exact results across 38 study cases from β_f = 1.49 to 872.8 (15× the training
 maximum) and volumes to L = 128 (64× the training area), with topology
 transport improved over v6 (mean raw spurious ⟨Q²⟩ excess 5.3 → 2.9; raw
-charge-match rate 0.17 → 0.21) at equal Wilson-observable accuracy.
+charge-match rate 0.17 → 0.21) at equal Wilson-observable accuracy. In
+exact-sector mode the sector statistics are additionally correct by
+construction: exact-P(Q) χ² failures drop from 5/35 (all in the mismatch
+track and the largest volume) to 1/35 — consistent with the α = 0.05 false
+positive rate — and the worst ⟨Q²⟩ deviation from |z| = 11.8 to 2.8.
 
 ---
 
@@ -74,7 +94,12 @@ of coupling, from a single checkpoint with no per-case tuning.
 **Deliberate mismatch controls (part B).** The conditioning coarse ensemble is
 held at β_c = 4 while the target β_f is varied off the matched value. The
 model tracks the *requested* coupling — evidence that β-conditioning, not the
-coarse input alone, sets the generated physics.
+coarse input alone, sets the generated physics. Wilson observables pass;
+P(Q), by design of the transport mode, remains the β_c = 4 base's sector
+histogram, which is *structurally* wrong for the off-matched targets — this
+track fails the exact-P(Q) χ² test under pure transport, and is corrected by
+the exact-sector mode (Fig. 20) or by a seconds-long instanton-HMC tail
+(Fig. 21).
 
 ### Figure 6 — `figures/06_size_scan.png`
 **Volume transfer (part C).** The same checkpoint applied at L = 64 and
@@ -179,6 +204,34 @@ hold that ground, while this pipeline's advantages are flat-cost seeding,
 extrapolation reach, and one-checkpoint generality. Closing the ESS gap would
 require likelihood-aware training.
 
+### Figure 20 — `figures/20_mismatch_exact_sectors.png`
+**Mismatch controls in exact-sector mode.** The part-B scan of Fig. 5 rerun
+with C-antithetic base symmetrization and sectors resampled from the exact
+finite-volume P(Q) at each *target* coupling. Every χ² failure of the
+transport mode (B_bt6: p = 0.0005 → 0.43; B_bt30: 0.0000 → 0.94;
+B_bt55: 0.005 → 0.77; B_bc2_bt8: 0.03 → 0.32; and C_L128: 0.005 → 0.39)
+passes; Wilson observables are unchanged. Sector content is no longer
+inherited from the (deliberately wrong) base — it is drawn where the target
+theory says it should be.
+
+### Figure 21 — `figures/21_pq_tail_mismatch.png`
+**Sector re-equilibration by an instanton-HMC tail (B_bt6, L = 32,
+β_f = 6).** The seeding claim, topologically: starting from the *transported*
+ensemble — whose P(Q) is the mismatched β_c = 4 base's histogram,
+χ² p = 0.0005 — a 200-trajectory HMC continuation with the instanton Q-hop
+restores ⟨Q²⟩ = 5.2 vs exact 4.78 (p = 0.43) in 6 seconds of wall clock.
+Left: P(Q) before/after vs exact; right: the ⟨Q²⟩ trajectory relaxing onto
+the exact line within tens of trajectories. The diffusion batch supplies the
+expensive part (thermalized UV at the target coupling); the topologically
+mixing tail is essentially free.
+
+### Figure 22 — `figures/22_pq_tail_L64.png`
+**Instanton-HMC tail at larger volume (C_L64, β_f = 14.15, L = 64).** Same
+before/after construction on the size-scan rung: the tail moves the
+transported histogram onto the exact P(Q) (χ² p 0.07 → 0.70) in 19 seconds,
+demonstrating the tail's cost stays trivial as the volume grows (the Q-hop's
+ΔS ≈ 2π²β/V is volume-independent).
+
 ---
 
 ## Table S1 — Instanton-HMC burn-in scan (entry cost vs quality, L = 32)
@@ -210,3 +263,34 @@ row (the Q-hop works); the failures are UV thermalization.
 
 Guidance-off control: 0.019–0.021 at L = 16, 0.016 at L = 32 — statistically
 identical, attributing the gap to the score model rather than the guidance.
+
+## Table S3 — Sector-mode comparison (38-case study, same checkpoint and seeds)
+
+| metric | transport | exact-sector |
+|---|---|---|
+| exact-P(Q) χ² failures (p < 0.05) | 5/35 | 1/35 |
+| … of which mismatch track (B) | 4 | 0 |
+| worst \|z(⟨Q²⟩ vs exact)\| | 11.8 | 2.8 |
+| cases with \|z(⟨Q²⟩)\| > 2 | 13 | 3 |
+| significant ⟨Q⟩ asymmetry (\|z\| > 2) | 0 | 0 |
+| mean \|plaquette z\| (38 cases) | 1.77 | 1.74 |
+
+The exact-sector residuals are at the multiple-testing false-positive rate
+(≈ 1.75 expected at α = 0.05 over 35 tests). χ² is computable for 35 of 38
+cases; the three deep-frozen cases (exact ⟨Q²⟩ ≲ 10⁻³) have no populated
+bins to test.
+
+## Table S4 — P(Q) before/after a 200-trajectory instanton-HMC tail
+
+| case | L | β_f | ⟨Q²⟩ before | after | exact | χ² p before | after | tail (s) |
+|---|---|---|---|---|---|---|---|---|
+| B_bt6 | 32 | 6 | 1.92 | 5.20 | 4.78 | 0.0005 | 0.43 | 6 |
+| A_bc1.5 | 32 | 4.44 | 5.10 | 6.88 | 6.79 | 0.87 | 0.24 | 6 |
+| E_bc11.8 | 32 | 43.6 | 0.44 | 0.54 | 0.58 | 0.31 | 0.96 | 16 |
+| D_bc55.02 | 32 | 218.6 | 0.031 | 0.039 | 0.029 | — | — | 41 |
+| C_L64 | 64 | 14.15 | 6.43 | 10.4 | 7.62 | 0.07 | 0.70 | 19 |
+
+Tails run on the transport-mode ensembles (the harder starting point). The
+frozen-regime row (β_f = 218.6) has too few populated Q bins for a χ² test;
+its ⟨Q²⟩ stays consistent with exact. All tails cost seconds — negligible
+against either arm of the head-to-head in Table S1.

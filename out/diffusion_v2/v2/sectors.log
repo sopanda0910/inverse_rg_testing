@@ -4,3 +4,44 @@
 [2026-08-01 08:44:57] STAGE_SECTOR_STUDY_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 20260730 --symmetrize-base --sector-mode exact --out-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors
 38 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors
 [1/38] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    generated 128 configs L=32 beta=1.4892 in 1385s
+    case done in 1429s
+[2/38] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    generated 128 configs L=32 beta=2.02441 in 1405s
+    case done in 1434s
+[3/38] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    generated 128 configs L=32 beta=2.5435 in 1345s
+    case done in 1388s
+[4/38] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    generated 128 configs L=32 beta=3.10399 in 1145s
+    case done in 1172s
+[5/38] A_bc1.5: base L=16 beta=1.5 -> L=32 beta=4.44493 (matched pair 1.5 -> 4.4449)
+    generated 128 configs L=32 beta=4.44493 in 1136s
+    case done in 1169s
+[6/38] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+================ sectors2 launch Sat 08/01/2026 10:50:31.40 ================ 
+[2026-08-01 10:50:31] SECTORS2_START
+[2026-08-01 10:50:31] STAGE_SECTOR_CACHECOPY_B_DONE
+[2026-08-01 10:50:31] STAGE_SECTOR_STUDY_PAR_START
+[2026-08-01 10:50:31] workers launched: A pid=32280 (14 cases), B pid=19220 (19 cases)
+[2026-08-01 13:43:27] worker A rc=0, worker B rc=0
+[2026-08-01 13:43:27] STAGE_SECTOR_STUDY_PAR_DONE (172.9 min)
+[2026-08-01 13:43:27] STAGE_SECTOR_MERGE_START
+[2026-08-01 13:43:27] merged 19 worker-B records; total 38
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors\summary_tables.md
+[2026-08-01 13:43:34] STAGE_SECTOR_MERGE_DONE (0.1 min)
+[2026-08-01 13:43:34] STAGE_PQ_TAIL_START
+case B_bt6
+  B_bt6: Q^2 1.92 -> 5.2 (exact 4.78); chi2 p 0.0005150703029800491 -> 0.3855362688098858; 6s
+case A_bc1.5
+  A_bc1.5: Q^2 5.1 -> 6.88 (exact 6.79); chi2 p 0.8716164000217158 -> 0.23706735810210955; 6s
+case E_bc11.8
+  E_bc11.8: Q^2 0.438 -> 0.539 (exact 0.575); chi2 p 0.31270765599755945 -> 0.9640861379840084; 16s
+case D_bc55.0237
+  D_bc55.0237: Q^2 0.0312 -> 0.0391 (exact 0.029); chi2 p None -> None; 41s
+case C_L64
+  C_L64: Q^2 6.43 -> 10.4 (exact 7.62); chi2 p 0.06647026204118743 -> 0.6974924220663467; 19s
+report: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\pq_hmc_tail\report.md
+[2026-08-01 13:45:07] STAGE_PQ_TAIL_DONE (1.6 min)
+[2026-08-01 13:45:07] SECTORS_DONE

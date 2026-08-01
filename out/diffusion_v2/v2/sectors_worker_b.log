@@ -1,0 +1,60 @@
+19 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_b
+[1/19] A_bc5: base L=16 beta=5 -> L=32 beta=18.2524 (matched pair 5 -> 18.2524)
+    generated 128 configs L=32 beta=18.2524 in 611s
+    case done in 621s
+[2/19] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    generated 128 configs L=32 beta=22.3151 in 358s
+    case done in 369s
+[3/19] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    generated 128 configs L=32 beta=30.3772 in 377s
+    case done in 388s
+[4/19] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    generated 128 configs L=32 beta=55.0237 in 412s
+    case done in 423s
+[5/19] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    generated 128 configs L=32 beta=78.4578 in 466s
+    case done in 480s
+[6/19] D_bc30: base L=16 beta=30 -> L=32 beta=118.473 (matched pair 30 -> 118.4726 (beyond training range))
+    generated 128 configs L=32 beta=118.473 in 427s
+    case done in 439s
+[7/19] D_bc40: base L=16 beta=40 -> L=32 beta=158.48 (matched pair 40 -> 158.4797 (beyond training range))
+    generated 128 configs L=32 beta=158.48 in 408s
+    case done in 421s
+[8/19] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    generated 128 configs L=32 beta=218.58 in 479s
+    case done in 492s
+[9/19] F_L32_bc100: base L=16 beta=100 -> L=32 beta=398.492 (extrapolation demo 100 -> 398.4921 at L=32)
+    generated 64 configs L=32 beta=398.492 in 243s
+    case done in 253s
+[10/19] F_L32_bc218.58: base L=16 beta=218.58 -> L=32 beta=872.816 (extrapolation demo 218.58 -> 872.8164 at L=32)
+    generated 64 configs L=32 beta=872.816 in 223s
+    case done in 232s
+[11/19] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    generated 64 configs L=64 beta=218.58 in 807s
+    case done in 829s
+[12/19] B_bt6: base L=16 beta=4 -> L=32 beta=6 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=6 in 440s
+    case done in 452s
+[13/19] B_bt10: base L=16 beta=4 -> L=32 beta=10 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=10 in 421s
+    case done in 433s
+[14/19] B_bt16: base L=16 beta=4 -> L=32 beta=16 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=16 in 469s
+    case done in 533s
+[15/19] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=20 in 940s
+    case done in 952s
+[16/19] B_bt30: base L=16 beta=4 -> L=32 beta=30 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=30 in 421s
+    case done in 435s
+[17/19] B_bt55.0237: base L=16 beta=4 -> L=32 beta=55.0237 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=55.0237 in 1008s
+    case done in 1021s
+[18/19] B_bc2_bt8: base L=16 beta=2 -> L=32 beta=8 (tree-level beta_f = 4 beta_c; matched target is 6.1052)
+    generated 128 configs L=32 beta=8 in 452s
+    case done in 464s
+[19/19] C_L64: base L=32 beta=4 -> L=64 beta=14.1464 (size scan rung)
+    generated 96 configs L=64 beta=14.1464 in 1104s
+    case done in 1128s
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_b\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors_b\summary_tables.md
