@@ -178,6 +178,53 @@ def generate_fine_from_coarse(
     return torch.cat(outputs, dim=0)
 
 
+def conjugate_symmetrize(configs: torch.Tensor, generator: torch.Generator | None = None) -> torch.Tensor:
+    """Apply charge conjugation theta -> -theta to a random half of the ensemble.
+
+    C is an exact symmetry of the Wilson/Villain action (Q -> -Q, action
+    invariant), so this is measure-preserving antithetic variance reduction: it
+    enforces the exact-distribution property P(Q) = P(-Q) on the finite sample
+    without altering any expectation value. Applied to the coarse base before
+    lifting, it removes the finite-sample sector asymmetry that structural
+    charge transport would otherwise reproduce verbatim."""
+    flip = torch.rand(configs.shape[0], generator=generator) < 0.5
+    out = configs.clone()
+    out[flip] = -out[flip]
+    return out
+
+
+def resample_exact_sectors(
+    sample: torch.Tensor,
+    beta: float,
+    action_type: str = "wilson",
+    generator: torch.Generator | None = None,
+) -> torch.Tensor:
+    """Draw each configuration's topological sector from the EXACT finite-volume
+    P(Q) at the target coupling and move it there with the smooth instanton map.
+
+    Structural charge transport delivers the coarse base's empirical sector
+    histogram -- correct only when the target is the matched coupling and the
+    base is well sampled. This replaces that histogram with exact sector
+    weights: P(Q) is computable in closed form for this theory, the instanton
+    shift changes Q by construction, and local rethermalization afterwards
+    relaxes the O(2 pi dQ / V) uniform strain within the fixed sector. The
+    sector distribution is then exact BY CONSTRUCTION at any target coupling
+    (the honest successor to re-equilibrating sectors with Metropolis Q-hops
+    during rethermalization, and this project's analogue of Q-shift sector
+    reconstruction). Label ensembles produced this way explicitly."""
+    from ..lgt.exact import topological_charge_distribution
+
+    q_values, probs = topological_charge_distribution(beta, sample.shape[-1], action_type)
+    idx = torch.multinomial(
+        torch.from_numpy(probs).to(dtype=torch.float64),
+        sample.shape[0],
+        replacement=True,
+        generator=generator,
+    )
+    q_target = torch.from_numpy(q_values).to(dtype=sample.dtype)[idx]
+    return apply_coarse_charge(sample, q_target)
+
+
 def apply_coarse_charge(sample: torch.Tensor, coarse_q: torch.Tensor) -> torch.Tensor:
     """Set each configuration's topological sector to coarse_q by adding the smooth
     instanton difference (the deterministic map generate_fine_from_coarse applies

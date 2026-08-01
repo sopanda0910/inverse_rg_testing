@@ -179,3 +179,34 @@ class TestTrainingLoop:
         model, history = train_score_model([rung], [val], cfg)
         assert len(history) == 1
         assert math.isfinite(history[0]["train_loss"])
+
+
+class TestSectorFixes:
+    def test_conjugate_symmetrize_preserves_action(self):
+        from diffusion_v2.pipeline.ladder import conjugate_symmetrize
+
+        f = random_field(batch=32, size=8, seed=20)
+        gen = torch.Generator().manual_seed(3)
+        g = conjugate_symmetrize(f, generator=gen)
+        s0 = torch.sort(torch.cos(plaquette_angles(f)).sum(dim=(-2, -1))).values
+        s1 = torch.sort(torch.cos(plaquette_angles(g)).sum(dim=(-2, -1))).values
+        assert torch.allclose(s0, s1, atol=1e-5)
+        q0, q1 = topological_charge(f), topological_charge(g)
+        assert torch.equal(q0.abs(), q1.abs())
+        assert not torch.equal(q0, q1)
+
+    def test_resample_exact_sectors_hits_targets(self):
+        from diffusion_v2.pipeline.ladder import resample_exact_sectors
+        from diffusion_v2.lgt.exact import topological_charge_distribution
+
+        f = random_field(batch=64, size=8, scale=0.3, seed=21)
+        gen = torch.Generator().manual_seed(5)
+        beta = 2.0
+        g = resample_exact_sectors(f, beta, "wilson", generator=gen)
+        q = topological_charge(g)
+        q_values, probs = topological_charge_distribution(beta, 8)
+        exact_q2 = float((q_values.astype(float) ** 2 * probs).sum())
+        got_q2 = float(q.square().mean())
+        # 64 draws from exact P(Q): mean Q^2 within ~4 sigma of exact
+        var = float(((q_values.astype(float) ** 2 - exact_q2) ** 2 * probs).sum())
+        assert abs(got_q2 - exact_q2) < 4.0 * (var / 64) ** 0.5 + 1e-6

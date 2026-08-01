@@ -1,0 +1,6 @@
+================ sectors launch Sat 08/01/2026  8:44:56.86 ================ 
+[2026-08-01 08:44:57] SECTORS_START
+[2026-08-01 08:44:57] STAGE_SECTOR_CACHECOPY_DONE
+[2026-08-01 08:44:57] STAGE_SECTOR_STUDY_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe diffusion_v2/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 20260730 --symmetrize-base --sector-mode exact --out-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors
+38 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\generalization_exact_sectors
+[1/38] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)

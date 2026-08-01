@@ -76,7 +76,12 @@ from diffusion_v2.lgt.blocking import approx_matched_fine_beta
 from diffusion_v2.lgt.lattice import mean_plaquette, topological_charge
 from diffusion_v2.lgt.local_updates import retherm_sweeps
 from diffusion_v2.model.train import load_checkpoint
-from diffusion_v2.pipeline.ladder import generate_fine_from_coarse, apply_coarse_charge
+from diffusion_v2.pipeline.ladder import (
+    generate_fine_from_coarse,
+    apply_coarse_charge,
+    conjugate_symmetrize,
+    resample_exact_sectors,
+)
 from diffusion_v2.validate.report import validate_ensemble, GEN_COLOR, REF_COLOR, INK, MUTED, GRID_COLOR
 from diffusion_v2.utils import set_seed, save_ensemble, load_ensemble, save_json
 
@@ -200,7 +205,8 @@ def hmc_ensemble_cached(path: Path, lattice_size: int, beta: float, n_configs: i
 
 def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
              seed: int = 1234, physics_blend: float = 0.0,
-             physics_blend_beta_min: float = 0.0, retherm_qhops: bool = False) -> dict:
+             physics_blend_beta_min: float = 0.0, retherm_qhops: bool = False,
+             symmetrize_base: bool = False, sector_mode: str = "transport") -> dict:
     record: dict = asdict(case)
     record["matched_target_beta"] = approx_matched_fine_beta(case.base_beta, ACTION_TYPE)
     record["mismatch_ratio"] = case.target_beta / record["matched_target_beta"]
@@ -210,6 +216,11 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
         out / "bases" / f"{ACTION_TYPE}_L{case.base_size}_beta{case.base_beta:g}.pt",
         case.base_size, case.base_beta, case.n_configs, device, smoke,
     )
+    if symmetrize_base:
+        sym_gen = torch.Generator().manual_seed(
+            (seed + zlib.crc32((case.run_id + "_sym").encode())) % (2**31))
+        base = conjugate_symmetrize(base, generator=sym_gen)
+        record["symmetrize_base"] = True
     record["base_plaquette"] = float(mean_plaquette(base))
     record["base_q_squared"] = float(topological_charge(base).square().mean())
 
@@ -252,7 +263,14 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
         record["q_match_rate_raw"] = float((dq == 0).float().mean())
         record["mean_abs_dq_raw"] = float(dq.mean())
         record["q_squared_raw"] = float(q_raw.square().mean())
-        fine = apply_coarse_charge(fine, q_base)
+        record["sector_mode"] = sector_mode
+        if sector_mode == "exact":
+            sec_gen = torch.Generator().manual_seed(
+                (seed + zlib.crc32((case.run_id + "_sector").encode())) % (2**31))
+            fine = resample_exact_sectors(fine, case.target_beta, ACTION_TYPE,
+                                          generator=sec_gen)
+        else:
+            fine = apply_coarse_charge(fine, q_base)
         record["plaquette_pre_retherm"] = float(mean_plaquette(fine))
         record["q_squared_pre_retherm"] = float(topological_charge(fine).square().mean())
         t0 = time.time()
@@ -266,9 +284,11 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
         save_ensemble(gen_path, fine, {
             "beta": case.target_beta, "lattice_size": fine_size, "action_type": ACTION_TYPE,
             "provenance": f"generalization study {case.run_id}: base L={case.base_size} "
-                          f"beta={case.base_beta:g}, diffusion (case seed {case_seed}) + "
-                          f"charge enforcement + retherm sweeps "
-                          f"(Q-hops {'on' if retherm_qhops else 'off'})",
+                          f"beta={case.base_beta:g}"
+                          f"{' (C-symmetrized)' if symmetrize_base else ''}, "
+                          f"diffusion (case seed {case_seed}) + "
+                          f"{'exact-sector resampling' if sector_mode == 'exact' else 'charge enforcement'}"
+                          f" + retherm sweeps (Q-hops {'on' if retherm_qhops else 'off'})",
             "timings": {k: record[k] for k in ("sample_seconds", "retherm_seconds")},
             "pre_retherm": {k: record[k] for k in ("plaquette_pre_retherm", "q_squared_pre_retherm")},
             "raw_topology": {k: record[k] for k in
@@ -513,6 +533,15 @@ def main() -> None:
     parser.add_argument("--retherm-qhops", action="store_true", dest="retherm_qhops",
                         help="include instanton Q-hop proposals in rethermalization "
                         "(v6 behavior); default OFF -- the honest topology test")
+    parser.add_argument("--symmetrize-base", action="store_true", dest="symmetrize_base",
+                        help="charge-conjugate a random half of each coarse base "
+                        "(exact antithetic symmetrization: enforces P(Q) = P(-Q))")
+    parser.add_argument("--sector-mode", choices=("transport", "exact"),
+                        default="transport",
+                        help="'transport' (default): fine sector = coarse config's "
+                        "sector; 'exact': resample sectors from the exact P(Q) at "
+                        "the TARGET coupling (correct by construction, incl. "
+                        "mismatched targets)")
     parser.add_argument("--sigma-floor-coef", type=float, default=None, dest="sigma_floor_coef",
                         help="override the checkpoint schedule's beta-aware noise floor "
                         "coefficient at sampling time (safe when --physics-blend > 0)")
@@ -559,7 +588,9 @@ def main() -> None:
                     run_case(case, model, schedule, out, device, args.smoke,
                              seed=args.seed, physics_blend=args.physics_blend,
                              physics_blend_beta_min=args.physics_blend_beta_min,
-                             retherm_qhops=args.retherm_qhops)
+                             retherm_qhops=args.retherm_qhops,
+                             symmetrize_base=args.symmetrize_base,
+                             sector_mode=args.sector_mode)
                 )
             except Exception as exc:
                 records[case.run_id] = {**asdict(case), "error": f"{type(exc).__name__}: {exc}"}

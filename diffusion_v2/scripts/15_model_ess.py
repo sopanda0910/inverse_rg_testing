@@ -88,13 +88,21 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=16)
     parser.add_argument("--seed", type=int, default=20260730)
     parser.add_argument("--out", default=None)
+    parser.add_argument("--consistency-weight", type=float, default=None,
+                        dest="consistency_override",
+                        help="override ladder.consistency_weight (0 = no blocking "
+                        "guidance; isolates how much of the ESS gap the guidance "
+                        "term contributes)")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(args.seed)
     device = resolve_device(config)
     action_type = config["action_type"]
     ladder_cfg = config.get("ladder", {})
-    args.consistency_weight = float(ladder_cfg.get("consistency_weight", 1.0))
+    args.consistency_weight = (
+        args.consistency_override if args.consistency_override is not None
+        else float(ladder_cfg.get("consistency_weight", 1.0))
+    )
     args.physics_blend = float(ladder_cfg.get("physics_blend_coef", 0.0))
     args.physics_blend_beta_min = float(ladder_cfg.get("physics_blend_beta_min", 0.0))
 
