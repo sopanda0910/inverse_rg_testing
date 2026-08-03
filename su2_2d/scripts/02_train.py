@@ -25,27 +25,26 @@ def main() -> None:
     args = parser.parse_args()
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
 
-    datasets, betas = [], []
+    datasets = []
     for f in sorted(Path(config["data"]["out_dir"]).glob("wilson_*.pt")):
         blob = torch.load(f, map_location="cpu", weights_only=False)
-        # mixed lattice sizes train fine (fully convolutional): group per size
         datasets.append((blob["lattice_size"], blob["configs"], blob["beta"]))
     if not datasets:
         raise SystemExit("no training data — run 01_generate_data.py first")
 
-    # simplest first version: train per lattice size, sharing one checkpoint
-    # via sequential passes (continuous-beta multi-size training carried over
-    # from U(1) comes after the first lift validates)
-    sizes = sorted({l for l, _, _ in datasets})
-    ckpt = config["train"]["checkpoint"]
-    for l in sizes:
-        parts = [(c, b) for (ll, c, b) in datasets if ll == l]
+    # one model over all sizes and couplings: group by lattice size (batches
+    # must share a size to stack), then train jointly across groups
+    groups = []
+    for l in sorted({size for size, _, _ in datasets}):
+        parts = [(c, b) for (size, c, b) in datasets if size == l]
         data = torch.cat([c for c, _ in parts], dim=0)
         beta_vec = torch.cat([torch.full((c.shape[0],), float(b)) for c, b in parts])
-        print(f"training on L={l}: {data.shape[0]} configs, "
+        groups.append((data, beta_vec))
+        print(f"group L={l}: {data.shape[0]} configs, "
               f"betas {sorted({float(b) for _, b in parts})}")
-        train(data, beta_vec, config["train"], checkpoint_path=ckpt,
-              seed=config["seed"])
+
+    ckpt = config["train"]["checkpoint"]
+    train(groups, config["train"], checkpoint_path=ckpt, seed=config["seed"])
     print(f"checkpoint: {ckpt}")
 
 

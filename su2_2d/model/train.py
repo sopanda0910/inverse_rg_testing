@@ -45,8 +45,16 @@ def dsm_loss(model, batch, beta, schedule, generator=None, conditional=True):
     return torch.stack(losses).mean()
 
 
-def train(dataset, betas, config, checkpoint_path=None, seed=0, log_every=20):
-    """dataset: [N, 2, L, L, 4]; betas: [N] coupling per config."""
+def train(groups, config, checkpoint_path=None, seed=0, log_every=20):
+    """Train ONE model across all (lattice size, beta) groups.
+
+    groups: list of (data [N, 2, L, L, 4], betas [N]) — one entry per lattice
+    size. The network is fully convolutional and `dsm_loss` evaluates
+    per-sample, so sizes are trained jointly by drawing each step's batch from
+    a randomly chosen group; this is the multi-size/continuous-beta discipline
+    the U(1) study converged on. Training per size in separate calls would
+    discard the earlier size (each call builds a fresh model).
+    """
     gen = torch.Generator().manual_seed(seed)
     schedule = GeometricNoiseSchedule(
         config.get("sigma_min", 0.05), config.get("sigma_max", 2.5))
@@ -58,12 +66,20 @@ def train(dataset, betas, config, checkpoint_path=None, seed=0, log_every=20):
     decay = config.get("ema_decay", 0.999)
     n_steps = config.get("train_steps", 2000)
     batch_size = config.get("batch_size", 16)
+    conditional = config.get("conditional", True)
     best = math.inf
 
+    val_slices = []
+    for data, betas in groups:
+        idx = torch.arange(0, data.shape[0], max(1, data.shape[0] // 4))
+        val_slices.append((data[idx], betas[idx]))
+
     for step in range(1, n_steps + 1):
-        idx = torch.randint(0, dataset.shape[0], (batch_size,), generator=gen)
-        loss = dsm_loss(model, dataset[idx], betas[idx], schedule, generator=gen,
-                        conditional=config.get("conditional", True))
+        g = int(torch.randint(0, len(groups), (1,), generator=gen))
+        data, betas = groups[g]
+        idx = torch.randint(0, data.shape[0], (batch_size,), generator=gen)
+        loss = dsm_loss(model, data[idx], betas[idx], schedule, generator=gen,
+                        conditional=conditional)
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -71,14 +87,20 @@ def train(dataset, betas, config, checkpoint_path=None, seed=0, log_every=20):
             for p_ema, p in zip(ema.parameters(), model.parameters()):
                 p_ema.mul_(decay).add_(p, alpha=1 - decay)
         if step % log_every == 0:
+            # fixed-seed validation over EVERY group (EMA weights, matching
+            # what gets saved -- the U(1) trainer's B1 bug was validating the
+            # raw model while saving EMA)
             with torch.no_grad():
-                val_idx = torch.arange(0, dataset.shape[0], max(1, dataset.shape[0] // 8))
-                val = dsm_loss(ema, dataset[val_idx], betas[val_idx], schedule,
-                               generator=torch.Generator().manual_seed(12345),
-                               conditional=config.get("conditional", True))
-            print(f"step {step}: loss {float(loss):.5f}  val(EMA) {float(val):.5f}", flush=True)
-            if checkpoint_path is not None and float(val) < best:
-                best = float(val)
+                vals = [float(dsm_loss(ema, vd, vb, schedule,
+                                       generator=torch.Generator().manual_seed(12345),
+                                       conditional=conditional))
+                        for vd, vb in val_slices]
+            val = sum(vals) / len(vals)
+            detail = " ".join(f"L{d.shape[-2]}:{v:.4f}" for (d, _), v in zip(val_slices, vals))
+            print(f"step {step}: loss {float(loss):.5f}  val(EMA) {val:.5f}  [{detail}]",
+                  flush=True)
+            if checkpoint_path is not None and val < best:
+                best = val
                 save_checkpoint(ema, schedule, config, checkpoint_path)
     return ema, schedule
 

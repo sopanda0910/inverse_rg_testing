@@ -8,6 +8,7 @@ from su2_2d.lgt.heat_kernel import exact_conditional_score, kernel_value, sample
 from su2_2d.lgt.lattice import gauge_transform, wilson_force
 from su2_2d.model.noise import exact_score_target, noise_links, proxy_score_target
 from su2_2d.model.score_head import SU2ScoreNet, assemble_score, plaquette_features
+from su2_2d.model.train import coarse_conditioning
 
 
 def _rand_su2(*shape, seed=0):
@@ -71,6 +72,37 @@ class TestHeatKernel:
         from su2_2d.lgt.lattice import project_tangent
         auto = project_tangent(dq, x)
         assert torch.allclose(score.double(), auto, atol=1e-4)
+
+
+class TestTrainingPath:
+    def test_score_target_works_under_no_grad(self):
+        # the trainer computes EMA validation inside torch.no_grad(); the
+        # exact score's internal autograd must still run there
+        gen = torch.Generator().manual_seed(9)
+        u0 = group.random_haar((4,), generator=gen)
+        ut, _ = noise_links(u0, 0.3, generator=gen)
+        with torch.no_grad():
+            target = exact_score_target(ut, u0, 0.3)
+        assert torch.isfinite(target).all()
+
+    def test_train_optimizes_one_model_across_sizes(self):
+        from su2_2d.model.train import train
+
+        gen = torch.Generator().manual_seed(10)
+        groups = [
+            (group.random_haar((6, 2, 4, 4), generator=gen), torch.full((6,), 2.0)),
+            (group.random_haar((6, 2, 8, 8), generator=gen), torch.full((6,), 4.0)),
+        ]
+        cfg = {"hidden": 8, "depth": 1, "train_steps": 4, "batch_size": 2,
+               "conditional": True, "lr": 1e-3}
+        before = None
+        model, schedule = train(groups, cfg, checkpoint_path=None, seed=0, log_every=100)
+        assert schedule.sigma_max > schedule.sigma_min
+        # a single model handled both sizes without a shape error
+        for data, betas in groups:
+            out = model.score(data[:1], torch.full((1,), 0.4), betas[:1],
+                              coarse_conditioning(data[:1]))
+            assert out.shape == (1, 2, data.shape[-2], data.shape[-2], 3)
 
 
 class TestScoreHead:
