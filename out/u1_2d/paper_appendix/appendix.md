@@ -227,18 +227,31 @@ result in this appendix uses the unmodified v2 campaign checkpoint.
 ---
 
 ### Figure 1 — `figures/01_ladder_drift.png`
-**Ladder observable drift.** Mean plaquette (and companion observables) at each
-rung of the iterated ladder L = 8 → 16 → 32 → 64 (β = 1.35 → 4.0 → 14.15 →
-55.02), generated ensemble vs exact. Drift does not accumulate across rungs:
-each inverse step is followed by short local rethermalization (16 sweeps,
-no Q-hops), which pins the UV before the next doubling.
+**Ladder observable drift.** z vs exact for the plaquette and two companion
+loops, W(2×2) and W(4×4), at each *generated* rung of the ladder — L = 16, 32,
+64 at β = 4.0, 14.15, 55.02 — lifted from an L = 8, β = 1.35 HMC base. Shading
+is the |z| ≤ 2 band. Drift does not accumulate across rungs: every observable
+stays inside the band at every rung, because each inverse step is followed by
+short local rethermalization (16 sweeps, no Q-hops) which pins the UV before
+the next doubling. Companion loops are shown because the residual model error
+concentrates in extended observables (see *Validation sharpness*), so a
+plaquette-only version of this figure would be the least sensitive one
+available.
 
 ### Figure 2 — `figures/02_ladder_topology.png`
-**Ladder topology.** Topological charge distribution by rung against the exact
-finite-volume P(Q). The sector content is inherited from the coarse base — an
-L = 8, β = 1.35 ensemble where HMC tunnels freely — and transported
+**Ladder topology.** ⟨Q⟩, ⟨Q²⟩ and χ_top per rung: generated (filled circles)
+against the exact finite-volume values (black bars), with the direct-HMC
+reference for contrast. The sector content is inherited from the coarse base —
+an L = 8, β = 1.35 ensemble where HMC tunnels freely — and transported
 structurally up the ladder, which is how correct ⟨Q²⟩ persists at couplings
-where any direct chain is frozen.
+where any direct chain is frozen. Generated ⟨Q²⟩ is *identical* at all three
+rungs (1.823) against exact 1.934 → 1.904 → 1.903: the transported sector is
+literally the base's, which is the ladder-invariance identity operating rather
+than three independent agreements. Reference points drawn as grey ×
+(L = 32 and 64) are chains that never tunnel at that coupling — they are the
+freezing demonstration, not a reference, and their ⟨Q²⟩ of 12.3 and 57.5
+against exact ≈ 1.9 is the bias being demonstrated. Only the exact values are
+truth in this figure.
 
 ### Figure 3 — `figures/03_ladder_rung_L64.png`
 **Top rung validation (L = 64, β = 55.02).** Full observable panel at the

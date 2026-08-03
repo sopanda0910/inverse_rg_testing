@@ -18,10 +18,14 @@ Two sibling packages, one per theory:
   `out/u1_2d/paper_appendix/appendix.md`, full story in `docs/NARRATIVE.md`,
   audit in `docs/V2_AUDIT.md`. Do not reopen model-quality work; bug-parity
   fixes only.
-- `su2_2d/` — 2D SU(2), the active line. First non-abelian step: quaternion
-  link variables, exact group heat-kernel diffusion targets, group-manifold
-  HMC, non-abelian curl-head score. Pipeline scripts exist but the heavy
-  stages have NOT been run yet.
+- `su2_2d/` — 2D SU(2). **SET ASIDE (2026-08-03) and NOT in the working tree.**
+  It was removed from tracking in `f7bca3b` while the focus moved to
+  documenting and publishing U(1). Recover it with
+  `git checkout 87fd6fa -- su2_2d` (27 files: quaternion link variables, exact
+  group heat-kernel targets, group-manifold HMC, non-abelian curl-head score).
+  Its heavy stages were run far enough to localize the first failure — the
+  single-plaquette curl basis is incomplete for SU(2) — and no further.
+  Do not reference `su2_2d/` paths in commands until it is restored.
 
 The final U(1) checkpoints are `out/u1_2d/checkpoints/score_net.pt` (pipeline)
 and `score_net_rkl2.pt` (likelihood/ESS work only). Everything else in
@@ -101,17 +105,22 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
 
 ### Testing
 
-- `pytest u1_2d/tests su2_2d/tests -q`
-- Smoke scripts (`su2_2d/scripts/00_smoke.py`) for fast integration checks
+- `pytest u1_2d/tests -q` (111 tests; `su2_2d/tests` only exists once su2_2d is
+  restored from git — see above)
+- `python u1_2d/scripts/29_verify_identities.py` — the exact physics identities
+  (Q integrality, gauge invariance, blocking telescope, curl-head completeness,
+  <Q^2> ladder fixed point, area law, instanton cost). Seconds; must pass.
+- `python u1_2d/scripts/30_assemble_appendix_figures.py --check` — verifies the
+  27 appendix figures match their canonical sources. Run before submitting.
 
 ## File Layout
 
 ```
 u1_2d/            -- CLOSED 2D U(1) study (configs, lgt, model, pipeline, scripts, tests, validate)
-su2_2d/           -- active 2D SU(2) line (configs, lgt, model, scripts, tests)
+su2_2d/           -- SET ASIDE, not in the tree (git checkout 87fd6fa -- su2_2d)
 docs/             -- NARRATIVE.md (full mathematical story), V2_AUDIT.md (final U(1) audit)
 out/u1_2d/        -- U(1) results of record: reports, figures, summaries, final checkpoints
-out/su2_2d/       -- SU(2) outputs (created by pipeline scripts)
+out/su2_2d/       -- SU(2) outputs (untracked; only if su2_2d is restored)
 artifacts/        -- gitignored scratch (safe to delete)
 ```
 
@@ -124,7 +133,7 @@ All dependencies (torch, numpy, scipy, matplotlib, pytest) are installed.
 
 ```bash
 # Windows
-.venv/Scripts/python.exe -m pytest u1_2d/tests su2_2d/tests -q
+.venv/Scripts/python.exe -m pytest u1_2d/tests -q
 ```
 
 If you need to install additional packages: `.venv/Scripts/pip install <package>`.

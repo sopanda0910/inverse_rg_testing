@@ -450,6 +450,55 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     plt.close(fig)
 
 
+DRIFT_OBSERVABLES = ("plaquette", "wilson_2x2", "wilson_4x4")
+DRIFT_STYLE = {
+    "plaquette": ("plaquette", GEN_COLOR, "o"),
+    "wilson_2x2": (r"$W(2\times2)$", "#d97706", "s"),
+    "wilson_4x4": (r"$W(4\times4)$", REF_COLOR, "^"),
+}
+
+
+def plot_ladder_drift(drift, output_dir) -> Path:
+    """Per-rung z vs exact for the plaquette and companion loops.
+
+    The single-series version of this plot could not show what the ladder
+    argument actually needs: drift is only meaningful relative to the
+    statistical band, and a bias that grows with loop area (the documented
+    residual) is invisible if only the plaquette is drawn. Distinct markers
+    carry the series identity as well as colour.
+    """
+    output_dir = Path(output_dir)
+    x = [d["rung"] for d in drift]
+    fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    ax.axhspan(-2.0, 2.0, color=GRID_COLOR, alpha=0.55, zorder=0,
+               label=r"$|z| \leq 2$")
+    ax.axhline(0.0, color=INK, lw=0.9, zorder=1)
+    for name in DRIFT_OBSERVABLES:
+        zs = [d.get("z", {}).get(name) for d in drift]
+        if any(z is None for z in zs):
+            continue
+        label, color, marker = DRIFT_STYLE[name]
+        ax.plot(x, zs, marker=marker, ms=6, lw=1.6, color=color, label=label, zorder=3)
+        ax.annotate(label, (x[-1], zs[-1]), textcoords="offset points",
+                    xytext=(7, 0), va="center", fontsize=8, color=color)
+    ax.set_xticks(x)
+    ax.set_xticklabels([f"{d['L']}\n" + rf"$\beta$={d['beta']:g}" for d in drift], fontsize=8)
+    ax.set_xlabel("ladder rung  ($L$, coupling)")
+    ax.set_ylabel(r"$z$ vs exact")
+    ax.set_title("Bias drift along the ladder")
+    ax.margins(x=0.16)
+    ax.legend(fontsize=8, frameon=False, loc="best")
+    ax.grid(axis="y", color=GRID_COLOR, lw=0.7)
+    ax.set_axisbelow(True)
+    for spine in ax.spines.values():
+        spine.set_color(GRID_COLOR)
+    fig.tight_layout()
+    path = output_dir / "ladder_drift.png"
+    fig.savefig(path, dpi=130)
+    plt.close(fig)
+    return path
+
+
 def validate_ladder(
     rung_results,
     action_type: str = "wilson",
@@ -482,7 +531,8 @@ def validate_ladder(
             ref_n_chains=ref_n_chains,
         )
         all_rows[label] = rows
-        plaq_row = next(r for r in rows if r["observable"] == "plaquette")
+        by_name = {r["observable"]: r for r in rows}
+        plaq_row = by_name["plaquette"]
         drift.append(
             {
                 "rung": i,
@@ -490,42 +540,47 @@ def validate_ladder(
                 "beta": rung.beta,
                 "plaq_deviation": plaq_row["value"] - plaq_row["exact"],
                 "plaq_z": plaq_row["z_exact"],
+                "z": {
+                    name: by_name[name]["z_exact"]
+                    for name in DRIFT_OBSERVABLES
+                    if name in by_name
+                },
             }
         )
 
-    fig, ax = plt.subplots(figsize=(6, 4))
-    ax.axhline(0.0, color="k", lw=0.8)
-    ax.plot([d["rung"] for d in drift], [d["plaq_z"] for d in drift], "o-")
-    ax.set_xlabel("rung")
-    ax.set_ylabel("plaquette z-score vs exact")
-    ax.set_title("Bias drift along the ladder")
-    fig.tight_layout()
-    fig.savefig(output_dir / "ladder_drift.png", dpi=130)
-    plt.close(fig)
-
-    _plot_ladder_topology(rung_results, all_rows, output_dir)
+    plot_ladder_drift(drift, output_dir)
+    topo_rungs = []
+    for rung, (label, rows) in zip(rung_results, all_rows.items()):
+        by_name = {r["observable"]: r for r in rows}
+        topo_rungs.append({"L": rung.lattice_size, "beta": rung.beta, "obs": by_name})
+    plot_ladder_topology(topo_rungs, output_dir)
 
     return {"rows": all_rows, "drift": drift}
 
 
-def _plot_ladder_topology(rung_results, all_rows, output_dir):
-    """Generated vs exact vs reference-HMC topology observables along the ladder."""
-    names = ["Q", "Q^2", "chi_top ((<Q^2>-<Q>^2)/V)"]
+TOPOLOGY_OBSERVABLES = ["Q", "Q^2", "chi_top ((<Q^2>-<Q>^2)/V)"]
+
+
+def plot_ladder_topology(rungs, output_dir):
+    """Generated vs exact vs reference-HMC topology observables along the ladder.
+
+    `rungs`: [{"L": int, "beta": float, "obs": {name: row}}], where each row has
+    value/error/exact and optionally reference/ref_error/ref_topology_frozen.
+    Taking plain dicts (rather than the ensemble objects) lets this be rebuilt
+    from `validation/report.md` after the .pt ensembles have been pruned.
+    """
+    names = TOPOLOGY_OBSERVABLES
     titles = [
         r"$\langle Q \rangle$",
         r"$\langle Q^2 \rangle$",
         r"$\chi_{\rm top} = (\langle Q^2\rangle - \langle Q\rangle^2)/V$",
     ]
-    per_rung = []
-    for label, rows in all_rows.items():
-        by_name = {r["observable"]: r for r in rows}
-        if all(n in by_name for n in names):
-            per_rung.append(by_name)
-    if len(per_rung) != len(rung_results):
+    per_rung = [r["obs"] for r in rungs if all(n in r["obs"] for n in names)]
+    if len(per_rung) != len(rungs):
         return
 
-    x = np.arange(len(rung_results))
-    tick_labels = [f"L={r.lattice_size}\n" + rf"$\beta$={r.beta:g}" for r in rung_results]
+    x = np.arange(len(rungs))
+    tick_labels = [f"L={r['L']}\n" + rf"$\beta$={r['beta']:g}" for r in rungs]
     fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.2))
     for ax, name, title in zip(axes, names, titles):
         vals = np.array([r[name]["value"] for r in per_rung], dtype=float)
@@ -537,8 +592,24 @@ def _plot_ladder_topology(rung_results, all_rows, output_dir):
         refs = [r[name].get("reference") for r in per_rung]
         if all(v is not None for v in refs):
             ref_errs = [r[name].get("ref_error", float("nan")) for r in per_rung]
-            ax.errorbar(x + 0.08, refs, yerr=ref_errs, fmt="s", ms=6, mfc="none",
-                        color=REF_COLOR, capsize=3, label="reference HMC", zorder=4)
+            # The reference chain is deliberately frozen at the upper rungs (it is
+            # the freezing demonstration). Those points measure the REFERENCE's
+            # bias, not the model's, so they must not read as ground truth --
+            # exact is the only truth line here.
+            frozen = [bool(r[name].get("ref_topology_frozen")) for r in per_rung]
+            live_idx = [i for i, f in enumerate(frozen) if not f]
+            frozen_idx = [i for i, f in enumerate(frozen) if f]
+            if live_idx:
+                ax.errorbar(x[live_idx] + 0.08, [refs[i] for i in live_idx],
+                            yerr=[ref_errs[i] for i in live_idx], fmt="s", ms=6,
+                            mfc="none", color=REF_COLOR, capsize=3,
+                            label="reference HMC", zorder=4)
+            if frozen_idx:
+                ax.errorbar(x[frozen_idx] + 0.08, [refs[i] for i in frozen_idx],
+                            yerr=[ref_errs[i] for i in frozen_idx], fmt="x", ms=7,
+                            mew=1.6, color=MUTED, capsize=3, ls="none",
+                            label="reference HMC (frozen: not a valid reference)",
+                            zorder=4)
             positive = min(v for v in refs) > 0
         else:
             positive = True

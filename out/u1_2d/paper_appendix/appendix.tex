@@ -145,23 +145,37 @@ $\langle Q^2 \rangle$ deviation from $|z| = 11.8$ to $2.8$
 \begin{figure}[p]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/01_ladder_drift.png}
-  \caption{\textbf{Ladder observable drift.} Mean plaquette (and companion
-  observables) at each rung of the iterated ladder $L = 8 \to 16 \to 32 \to
-  64$ ($\beta = 1.35 \to 4.0 \to 14.15 \to 55.02$), generated ensemble vs
-  exact. Drift does not accumulate across rungs: each inverse step is
+  \caption{\textbf{Ladder observable drift.} $z$ vs exact for the plaquette
+  and two companion loops, $W(2\times2)$ and $W(4\times4)$, at each
+  \emph{generated} rung of the ladder --- $L = 16, 32, 64$ at $\beta = 4.0,
+  14.15, 55.02$ --- lifted from an $L = 8$, $\beta = 1.35$ HMC base. Shading
+  is the $|z| \le 2$ band. Drift does not accumulate across rungs: every
+  observable stays inside the band at every rung, because each inverse step is
   followed by short local rethermalization (16 sweeps, no $Q$-hops), which
-  pins the UV before the next doubling.}
+  pins the UV before the next doubling. Companion loops are shown because the
+  residual model error concentrates in extended observables
+  (\S\ref{sec:appendix-v2-sharpness}), so a plaquette-only version of this figure would be
+  the least sensitive one available.}
 \end{figure}
 
 \begin{figure}[p]
   \centering
   \includegraphics[width=0.9\linewidth]{figures/02_ladder_topology.png}
-  \caption{\textbf{Ladder topology.} Topological charge distribution by rung
-  against the exact finite-volume $P(Q)$. The sector content is inherited
-  from the coarse base --- an $L = 8$, $\beta = 1.35$ ensemble where HMC
-  tunnels freely --- and transported structurally up the ladder, which is
-  how correct $\langle Q^2 \rangle$ persists at couplings where any direct
-  chain is frozen.}
+  \caption{\textbf{Ladder topology.} $\langle Q \rangle$, $\langle Q^2
+  \rangle$ and $\chi_{\rm top}$ per rung: generated (filled circles) against
+  the exact finite-volume values (black bars), with the direct-HMC reference
+  for contrast. The sector content is inherited from the coarse base --- an
+  $L = 8$, $\beta = 1.35$ ensemble where HMC tunnels freely --- and
+  transported structurally up the ladder, which is how correct $\langle Q^2
+  \rangle$ persists at couplings where any direct chain is frozen. Generated
+  $\langle Q^2 \rangle$ is \emph{identical} at all three rungs (1.823) against
+  exact $1.934 \to 1.904 \to 1.903$: the transported sector is literally the
+  base's, which is the ladder-invariance identity operating rather than three
+  independent agreements. Reference points drawn as grey $\times$ ($L = 32$
+  and $64$) are chains that never tunnel at that coupling --- they are the
+  freezing demonstration, not a reference, and their $\langle Q^2 \rangle$ of
+  12.3 and 57.5 against exact $\approx 1.9$ is the bias being demonstrated.
+  Only the exact values are truth in this figure.}
 \end{figure}
 
 \begin{figure}[p]
