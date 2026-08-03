@@ -21,6 +21,7 @@ from .score_head import plaquette_features
 
 
 def _heat_noise(shape, s, generator):
+    """s is a scalar diffusion time shared by the whole batch."""
     theta = sample_angle(s, shape, generator=generator)
     axis = torch.randn(*shape, 3, generator=generator)
     axis = axis / axis.norm(dim=-1, keepdim=True).clamp_min(1e-12)
@@ -41,7 +42,7 @@ def sample(model, schedule, n: int, lattice_size: int, beta: float,
     else:
         cond = None
     beta_t = torch.full((n,), float(beta))
-    sigmas = schedule.sigmas(descending=True)
+    sigmas = schedule.sigmas(descending=True, beta=beta)
     with torch.no_grad():
         for i in range(len(sigmas) - 1):
             s_hi, s_lo = float(sigmas[i]), float(sigmas[i + 1])

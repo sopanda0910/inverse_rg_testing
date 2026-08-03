@@ -95,6 +95,27 @@ class TestLattice:
         coarse = block_links(field)
         assert coarse.shape == (2, 2, 4, 4, 4)
 
+    def test_blocked_plaquette_is_fine_2x2_loop(self):
+        # the identity the exact coupling matching rests on
+        field = _rand_su2(3, 2, 8, 8, seed=17)
+        from su2_2d.lgt.lattice import plaquette_word
+
+        blocked = group.trace_half(plaquette_word(block_links(field)))
+        direct = wilson_loop_trace_half(field, 2, 2)[..., 0::2, 0::2]
+        assert torch.allclose(blocked, direct, atol=1e-5)
+
+    def test_matched_coarse_beta_solves_exactly(self):
+        from su2_2d.lgt.blocking import matched_coarse_beta
+        from su2_2d.lgt.exact import plaquette_exact
+
+        for bf in (2.0, 8.0, 16.0):
+            bc = matched_coarse_beta(bf)
+            assert abs(plaquette_exact(bc) - plaquette_exact(bf) ** 4) < 1e-9
+            assert bc < bf
+        # tree level is a genuinely different coupling, most badly at weak beta
+        assert abs(matched_coarse_beta(16.0) - 4.0) > 0.2
+        assert abs(matched_coarse_beta(2.0) - 0.5) > 0.3
+
 
 class TestHMC:
     def test_leapfrog_reversibility(self):

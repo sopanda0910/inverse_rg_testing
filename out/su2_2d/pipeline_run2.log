@@ -83,3 +83,86 @@ step 1060: loss 0.74452  val(EMA) 9.94087  [L8:1.2213 L16:18.6604]
 step 1080: loss 0.64748  val(EMA) 9.60282  [L8:1.1901 L16:18.0156]
 step 1100: loss 0.63669  val(EMA) 9.27546  [L8:1.1600 L16:17.3910]
 step 1120: loss 0.78428  val(EMA) 8.96127  [L8:1.1310 L16:16.7916]
+step 1140: loss 0.76802  val(EMA) 8.65724  [L8:1.1034 L16:16.2111]
+step 1160: loss 0.73842  val(EMA) 8.36151  [L8:1.0765 L16:15.6465]
+step 1180: loss 0.76533  val(EMA) 8.07722  [L8:1.0508 L16:15.1037]
+step 1200: loss 0.71897  val(EMA) 7.80186  [L8:1.0258 L16:14.5779]
+step 1220: loss 0.88145  val(EMA) 7.53641  [L8:1.0018 L16:14.0711]
+step 1240: loss 0.73183  val(EMA) 7.27960  [L8:0.9786 L16:13.5806]
+step 1260: loss 0.68857  val(EMA) 7.03129  [L8:0.9563 L16:13.1062]
+step 1280: loss 0.80330  val(EMA) 6.79219  [L8:0.9349 L16:12.6495]
+step 1300: loss 0.73957  val(EMA) 6.56142  [L8:0.9143 L16:12.2086]
+step 1320: loss 0.63477  val(EMA) 6.33830  [L8:0.8945 L16:11.7821]
+step 1340: loss 0.76413  val(EMA) 6.12303  [L8:0.8755 L16:11.3706]
+step 1360: loss 0.82548  val(EMA) 5.91790  [L8:0.8568 L16:10.9790]
+step 1380: loss 1.07858  val(EMA) 5.72906  [L8:0.8397 L16:10.6184]
+step 1400: loss 0.78670  val(EMA) 5.52515  [L8:0.8232 L16:10.2271]
+step 1420: loss 0.83852  val(EMA) 5.35116  [L8:0.8071 L16:9.8952]
+step 1440: loss 0.75686  val(EMA) 5.17935  [L8:0.7896 L16:9.5691]
+step 1460: loss 0.83108  val(EMA) 5.00391  [L8:0.7728 L16:9.2350]
+step 1480: loss 0.77454  val(EMA) 4.83472  [L8:0.7567 L16:8.9128]
+step 1500: loss 0.77866  val(EMA) 4.67122  [L8:0.7413 L16:8.6012]
+step 1520: loss 0.73937  val(EMA) 4.51492  [L8:0.7266 L16:8.3032]
+step 1540: loss 0.76030  val(EMA) 4.36415  [L8:0.7124 L16:8.0159]
+step 1560: loss 0.73927  val(EMA) 4.21813  [L8:0.6991 L16:7.7372]
+step 1580: loss 0.83030  val(EMA) 4.07688  [L8:0.6862 L16:7.4675]
+step 1600: loss 0.72952  val(EMA) 3.93998  [L8:0.6737 L16:7.2062]
+step 1620: loss 0.85250  val(EMA) 3.80915  [L8:0.6620 L16:6.9563]
+step 1640: loss 0.78844  val(EMA) 3.68247  [L8:0.6507 L16:6.7142]
+step 1660: loss 0.78150  val(EMA) 3.56048  [L8:0.6398 L16:6.4812]
+step 1680: loss 0.74620  val(EMA) 3.44311  [L8:0.6294 L16:6.2568]
+step 1700: loss 0.77810  val(EMA) 3.33041  [L8:0.6195 L16:6.0413]
+step 1720: loss 0.82297  val(EMA) 3.22119  [L8:0.6100 L16:5.8324]
+step 1740: loss 0.81379  val(EMA) 3.11601  [L8:0.6009 L16:5.6311]
+step 1760: loss 0.79178  val(EMA) 3.01445  [L8:0.5921 L16:5.4368]
+step 1780: loss 0.81804  val(EMA) 2.91703  [L8:0.5838 L16:5.2503]
+step 1800: loss 0.76430  val(EMA) 2.82357  [L8:0.5759 L16:5.0712]
+step 1820: loss 0.63477  val(EMA) 2.73283  [L8:0.5683 L16:4.8974]
+step 1840: loss 0.73205  val(EMA) 2.64540  [L8:0.5610 L16:4.7298]
+step 1860: loss 0.77654  val(EMA) 2.56129  [L8:0.5538 L16:4.5688]
+step 1880: loss 0.88792  val(EMA) 2.48044  [L8:0.5470 L16:4.4139]
+step 1900: loss 0.89404  val(EMA) 2.40190  [L8:0.5404 L16:4.2634]
+step 1920: loss 0.70179  val(EMA) 2.32634  [L8:0.5341 L16:4.1186]
+step 1940: loss 0.79724  val(EMA) 2.25356  [L8:0.5281 L16:3.9790]
+step 1960: loss 0.69232  val(EMA) 2.18383  [L8:0.5225 L16:3.8451]
+step 1980: loss 0.78316  val(EMA) 2.11702  [L8:0.5169 L16:3.7171]
+step 2000: loss 0.77684  val(EMA) 2.05421  [L8:0.5117 L16:3.5967]
+checkpoint: out/su2_2d/checkpoints/score_net.pt
+[2026-08-03 10:08:21] STAGE_TRAIN_DONE (18.8 min)
+[2026-08-03 10:08:21] STAGE_LIFT_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\su2_2d\scripts\03_sample_validate.py --config su2_2d/configs/su2.yaml
+{
+  "fine_L": 16,
+  "fine_beta": 16.0,
+  "coarse_L": 8,
+  "coarse_beta": 4.0,
+  "n": 128,
+  "seconds_generate": 38.4,
+  "generated": {
+    "plaquette": [
+      0.9260903000831604,
+      0.00036625421489588916
+    ],
+    "wilson_2x2": [
+      0.6804071664810181,
+      0.00220364797860384
+    ]
+  },
+  "reference_hmc": {
+    "plaquette": [
+      0.9075738191604614,
+      0.00047667097533121705
+    ],
+    "wilson_2x2": [
+      0.6803585290908813,
+      0.002014555037021637
+    ]
+  },
+  "exact": {
+    "plaquette": 0.9078148458807505,
+    "wilson_2x2": 0.6791866215050657
+  },
+  "z_plaquette": 49.898276822848025,
+  "z_wilson_2x2": 0.5538747512321194
+}
+[2026-08-03 10:11:35] STAGE_LIFT_DONE (3.2 min)
+[2026-08-03 10:11:35] CHAIN_DONE

@@ -4,6 +4,7 @@
 """
 
 import argparse
+import math
 import sys
 import time
 from pathlib import Path
@@ -29,14 +30,29 @@ def main() -> None:
     out_dir = Path(data["out_dir"])
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    for l, beta in data["rungs"]:
-        path = out_dir / f"wilson_L{l}_beta{beta:g}.pt"
+    # anchors, then log-uniform random couplings (continuous-beta coverage),
+    # then the never-trained held-out rungs
+    specs = [(l, float(b), data["n_configs"], "wilson") for l, b in data["rungs"]]
+    rng = torch.Generator().manual_seed(config["seed"] + 991)
+    for spec in data.get("random_rungs", []) or []:
+        lo, hi = math.log(spec["beta_min"]), math.log(spec["beta_max"])
+        u = torch.rand(spec["n"], generator=rng)
+        for b in sorted(float(torch.exp(lo + x * (hi - lo))) for x in u):
+            specs.append((spec["lattice_size"], round(b, 4),
+                          spec.get("n_configs", data["n_configs"]), "wilson"))
+    for spec in data.get("heldout", []) or []:
+        specs.append((spec["lattice_size"], float(spec["beta"]),
+                      spec.get("n_configs", data["n_configs"]), "heldout"))
+    print(f"{len(specs)} ensembles to generate\n")
+
+    for l, beta, n_cfg, tag in specs:
+        path = out_dir / f"{tag}_L{l}_beta{beta:g}.pt"
         if path.exists():
-            print(f"{path} exists, skipping")
+            print(f"{path.name} exists, skipping")
             continue
         t0 = time.time()
         configs, acc = run_hmc_ensemble(
-            l, beta, n_configs=data["n_configs"], n_chains=data["n_chains"],
+            l, beta, n_configs=n_cfg, n_chains=data["n_chains"],
             burn_in=data["burn_in"], thin=data["thin"], seed=config["seed"])
         per_config = mean_plaquette(configs)
         plaq = float(per_config.mean())

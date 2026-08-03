@@ -74,6 +74,82 @@ class TestHeatKernel:
         assert torch.allclose(score.double(), auto, atol=1e-4)
 
 
+class TestKernelRepresentations:
+    def test_dual_matches_character_in_overlap(self):
+        from su2_2d.lgt.heat_kernel import _log_kernel_character, _log_kernel_dual
+
+        th = torch.linspace(0.05, math.pi - 0.05, 200, dtype=torch.float64)
+        for s in (2.0, 4.0, 8.0):
+            sv = torch.full_like(th, s)
+            assert float((_log_kernel_dual(th, sv) - _log_kernel_character(th, sv)).abs().max()) < 1e-8
+
+    def test_dual_survives_tiny_s_where_characters_cannot(self):
+        # at s = 0.02 the kernel is ~e^-900 near theta = pi; the character sum
+        # cannot represent that by cancellation in float64, the dual can
+        from su2_2d.lgt.heat_kernel import _log_kernel_dual
+
+        th = torch.tensor([3.0], dtype=torch.float64)
+        v = _log_kernel_dual(th, torch.tensor([0.02], dtype=torch.float64))
+        assert torch.isfinite(v).all() and float(v) < -100
+
+    def test_normalization_across_scales(self):
+        g = torch.linspace(1e-5, math.pi - 1e-5, 20000, dtype=torch.float64)
+        for s in (0.02, 0.5, 5.0, 25.0):
+            v = kernel_value(g, torch.full_like(g, s)) * torch.sin(g) ** 2 * (2 / math.pi)
+            assert abs(float(torch.trapz(v, g)) - 1.0) < 2e-3
+
+    def test_per_config_sigma_matches_scalar_calls(self):
+        from su2_2d.lgt.heat_kernel import exact_conditional_score
+
+        gen = torch.Generator().manual_seed(3)
+        u0 = group.random_haar((4, 2, 4, 4), generator=gen)
+        ut = group.random_haar((4, 2, 4, 4), generator=gen)
+        sig = torch.tensor([0.1, 0.3, 0.7, 1.4])
+        batched = exact_conditional_score(ut, u0, sig)
+        for i in range(4):
+            one = exact_conditional_score(ut[i:i + 1], u0[i:i + 1], float(sig[i]))
+            assert torch.allclose(batched[i:i + 1], one, atol=1e-5)
+
+
+class TestAugmentation:
+    def test_d4_preserves_the_action(self):
+        from su2_2d.lgt.lattice import wilson_action
+        from su2_2d.model.augment import d4_element
+
+        f = _rand_su2(2, 2, 8, 8, seed=21)
+        s0 = wilson_action(f, 2.0)
+        for k in range(8):
+            assert float((wilson_action(d4_element(f, k), 2.0) - s0).abs().max()) < 1e-4
+
+    def test_d4_is_an_involution_pairwise(self):
+        from su2_2d.model.augment import flip_x, flip_y, transpose_xy
+
+        f = _rand_su2(1, 2, 8, 8, seed=22)
+        for op in (flip_x, flip_y, transpose_xy):
+            assert torch.allclose(op(op(f)), f, atol=1e-5)
+
+
+class TestScheduleBetaAware:
+    def test_floor_scales_with_beta(self):
+        from su2_2d.model.schedule import GeometricNoiseSchedule
+
+        s = GeometricNoiseSchedule(0.05, 2.5, sigma_min_beta_coef=0.3)
+        lo_weak = float(s.effective_sigma_min(1.0))
+        lo_strong = float(s.effective_sigma_min(64.0))
+        assert lo_strong < lo_weak <= 0.05 + 1e-9
+        assert abs(lo_strong - 0.3 / 8.0) < 1e-6
+
+    def test_high_beta_bias_shifts_mass_to_small_sigma(self):
+        from su2_2d.model.schedule import GeometricNoiseSchedule
+
+        s = GeometricNoiseSchedule(0.05, 2.5, sigma_min_beta_coef=0.3)
+        beta = torch.full((4000,), 32.0)
+        g = torch.Generator().manual_seed(1)
+        plain = s.sample_sigma(4000, generator=g, beta=beta, high_beta_bias=0.0)
+        biased = s.sample_sigma(4000, generator=g, beta=beta, high_beta_bias=0.5)
+        assert float(biased.median()) < float(plain.median())
+
+
 class TestTrainingPath:
     def test_score_target_works_under_no_grad(self):
         # the trainer computes EMA validation inside torch.no_grad(); the

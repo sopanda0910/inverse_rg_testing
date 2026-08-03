@@ -27,6 +27,7 @@ from su2_2d.lgt import (
     wilson_loop_exact,
     wilson_loop_trace_half,
 )
+from su2_2d.lgt.blocking import matched_coarse_beta
 from su2_2d.model.sampler import sample
 from su2_2d.model.train import load_checkpoint
 
@@ -53,10 +54,14 @@ def main() -> None:
     schedule.n_steps = sam["n_ode_steps"]
     coarse_L, fine_beta = sam["coarse_L"], sam["fine_beta"]
     fine_L = 2 * coarse_L
+    # exact 2D matching unless the config pins a coupling explicitly
+    coarse_beta = sam.get("coarse_beta") or matched_coarse_beta(fine_beta)
+    print(f"lift {coarse_L}:{coarse_beta:.4f} -> {fine_L}:{fine_beta:g} "
+          f"(tree-level would be {fine_beta / 4:g})")
 
     t0 = time.time()
     coarse, _ = run_hmc_ensemble(
-        coarse_L, sam["coarse_beta"], n_configs=sam["n_configs"],
+        coarse_L, coarse_beta, n_configs=sam["n_configs"],
         n_chains=config["data"]["n_chains"], burn_in=config["data"]["burn_in"],
         thin=config["data"]["thin"], seed=config["seed"] + 1)
     generated = sample(model, schedule, sam["n_configs"], fine_L, fine_beta,
@@ -70,7 +75,7 @@ def main() -> None:
 
     report = {
         "fine_L": fine_L, "fine_beta": fine_beta,
-        "coarse_L": coarse_L, "coarse_beta": sam["coarse_beta"],
+        "coarse_L": coarse_L, "coarse_beta": coarse_beta,
         "n": sam["n_configs"], "seconds_generate": round(t_gen, 1),
         "generated": observe(generated),
         "reference_hmc": observe(reference),

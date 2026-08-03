@@ -18,6 +18,7 @@ from pathlib import Path
 import torch
 
 from ..lgt.blocking import block_links
+from .augment import random_d4
 from .noise import exact_score_target, noise_links
 from .schedule import GeometricNoiseSchedule
 from .score_head import SU2ScoreNet, plaquette_features
@@ -30,22 +31,30 @@ def coarse_conditioning(fine_shape_field: torch.Tensor) -> torch.Tensor:
     return torch.repeat_interleave(torch.repeat_interleave(feats, 2, dim=-2), 2, dim=-1)
 
 
-def dsm_loss(model, batch, beta, schedule, generator=None, conditional=True):
+def dsm_loss(model, batch, beta, schedule, generator=None, conditional=True,
+             augment=False, high_beta_bias=0.0):
+    """Vectorized exact-heat-kernel DSM loss (no Python loop over the batch).
+
+    sigma is drawn per configuration from the beta-aware floor, the whole
+    batch is noised in one call, and the sigma^2 weighting balances the scales
+    (the target grows like 1/sigma). D4 augmentation is applied to the clean
+    configuration before noising, so conditioning and target stay consistent.
+    """
+    if augment:
+        batch = random_d4(batch, generator)
     n = batch.shape[0]
-    sigma = schedule.sample_sigma(n, generator=generator)
-    losses = []
-    for i in range(n):
-        u0 = batch[i : i + 1]
-        s = float(sigma[i])
-        u_t, _ = noise_links(u0, s, generator=generator)
-        target = exact_score_target(u_t, u0, s)
-        cond = coarse_conditioning(u0) if conditional else None
-        pred = model.score(u_t, sigma[i : i + 1], beta[i : i + 1], cond)
-        losses.append(s * s * ((pred - target) ** 2).mean())
-    return torch.stack(losses).mean()
+    sigma = schedule.sample_sigma(n, generator=generator, beta=beta,
+                                  high_beta_bias=high_beta_bias)
+    u_t, _ = noise_links(batch, sigma, generator=generator)
+    target = exact_score_target(u_t, batch, sigma)
+    cond = coarse_conditioning(batch) if conditional else None
+    pred = model.score(u_t, sigma, beta, cond)
+    w = (sigma**2).view(-1, *([1] * (pred.dim() - 1)))
+    return (w * (pred - target) ** 2).mean()
 
 
-def train(groups, config, checkpoint_path=None, seed=0, log_every=20):
+def train(groups, config, checkpoint_path=None, seed=0, log_every=20,
+          heldout_groups=None):
     """Train ONE model across all (lattice size, beta) groups.
 
     groups: list of (data [N, 2, L, L, 4], betas [N]) — one entry per lattice
@@ -57,7 +66,10 @@ def train(groups, config, checkpoint_path=None, seed=0, log_every=20):
     """
     gen = torch.Generator().manual_seed(seed)
     schedule = GeometricNoiseSchedule(
-        config.get("sigma_min", 0.05), config.get("sigma_max", 2.5))
+        config.get("sigma_min", 0.05), config.get("sigma_max", 2.5),
+        sigma_min_beta_coef=config.get("sigma_min_beta_coef", 0.3))
+    augment = config.get("sym_augment", True)
+    high_beta_bias = config.get("high_beta_sigma_bias", 0.0)
     model = SU2ScoreNet(
         hidden=config.get("hidden", 48), depth=config.get("depth", 4),
         cond_channels=2 if config.get("conditional", True) else 0)
@@ -69,17 +81,36 @@ def train(groups, config, checkpoint_path=None, seed=0, log_every=20):
     conditional = config.get("conditional", True)
     best = math.inf
 
-    val_slices = []
-    for data, betas in groups:
-        idx = torch.arange(0, data.shape[0], max(1, data.shape[0] // 4))
-        val_slices.append((data[idx], betas[idx]))
+    def slices(gs, n_take=8):
+        out = []
+        for data, betas in gs or []:
+            idx = torch.arange(0, data.shape[0], max(1, data.shape[0] // n_take))
+            out.append((data[idx], betas[idx]))
+        return out
+
+    val_slices = slices(groups)
+    heldout_slices = slices(heldout_groups)
+
+    def evaluate(model_, sl):
+        """Fixed-seed, EMA-weight evaluation (never augmented, so the number
+        is comparable across steps)."""
+        with torch.no_grad():
+            return [float(dsm_loss(model_, d, b, schedule,
+                                   generator=torch.Generator().manual_seed(12345),
+                                   conditional=conditional, augment=False,
+                                   high_beta_bias=high_beta_bias))
+                    for d, b in sl]
+
+    best_heldout = math.inf
+    blocked = 0
 
     for step in range(1, n_steps + 1):
         g = int(torch.randint(0, len(groups), (1,), generator=gen))
         data, betas = groups[g]
         idx = torch.randint(0, data.shape[0], (batch_size,), generator=gen)
         loss = dsm_loss(model, data[idx], betas[idx], schedule, generator=gen,
-                        conditional=conditional)
+                        conditional=conditional, augment=augment,
+                        high_beta_bias=high_beta_bias)
         opt.zero_grad()
         loss.backward()
         opt.step()
@@ -87,21 +118,33 @@ def train(groups, config, checkpoint_path=None, seed=0, log_every=20):
             for p_ema, p in zip(ema.parameters(), model.parameters()):
                 p_ema.mul_(decay).add_(p, alpha=1 - decay)
         if step % log_every == 0:
-            # fixed-seed validation over EVERY group (EMA weights, matching
-            # what gets saved -- the U(1) trainer's B1 bug was validating the
-            # raw model while saving EMA)
-            with torch.no_grad():
-                vals = [float(dsm_loss(ema, vd, vb, schedule,
-                                       generator=torch.Generator().manual_seed(12345),
-                                       conditional=conditional))
-                        for vd, vb in val_slices]
+            # fixed-seed validation on EMA weights -- the weights that get
+            # saved (the U(1) trainer's B1 bug validated the raw model)
+            vals = evaluate(ema, val_slices)
             val = sum(vals) / len(vals)
-            detail = " ".join(f"L{d.shape[-2]}:{v:.4f}" for (d, _), v in zip(val_slices, vals))
-            print(f"step {step}: loss {float(loss):.5f}  val(EMA) {val:.5f}  [{detail}]",
-                  flush=True)
-            if checkpoint_path is not None and val < best:
+            detail = " ".join(f"L{d.shape[-3]}:{v:.4f}" for (d, _), v in zip(val_slices, vals))
+            hout = evaluate(ema, heldout_slices) if heldout_slices else []
+            hmean = sum(hout) / len(hout) if hout else None
+            best_heldout = min(best_heldout, hmean) if hmean is not None else best_heldout
+
+            # guarded save (U(1) script-22 protocol): improving the in-sample
+            # validation is not enough -- a never-trained coupling must not
+            # degrade, or we are just memorizing the training couplings
+            save = checkpoint_path is not None and val < best
+            if save and hmean is not None and hmean > 1.15 * best_heldout:
+                save, blocked = False, blocked + 1
+            msg = (f"step {step}: loss {float(loss):.5f}  val(EMA) {val:.5f}  [{detail}]")
+            if hmean is not None:
+                msg += f"  heldout {hmean:.5f}"
+            if save:
                 best = val
                 save_checkpoint(ema, schedule, config, checkpoint_path)
+                msg += "  *saved"
+            elif checkpoint_path is not None and val < best:
+                msg += "  (save BLOCKED by heldout guard)"
+            print(msg, flush=True)
+    if blocked:
+        print(f"heldout guard blocked {blocked} save(s)", flush=True)
     return ema, schedule
 
 
@@ -112,6 +155,7 @@ def save_checkpoint(model, schedule, config, path):
         "config": dict(config),
         "sigma_min": schedule.sigma_min,
         "sigma_max": schedule.sigma_max,
+        "sigma_min_beta_coef": schedule.sigma_min_beta_coef,
     }, path)
 
 
@@ -123,5 +167,7 @@ def load_checkpoint(path):
         cond_channels=2 if config.get("conditional", True) else 0)
     model.load_state_dict(ckpt["state_dict"])
     model.eval()
-    schedule = GeometricNoiseSchedule(ckpt["sigma_min"], ckpt["sigma_max"])
+    schedule = GeometricNoiseSchedule(
+        ckpt["sigma_min"], ckpt["sigma_max"],
+        sigma_min_beta_coef=ckpt.get("sigma_min_beta_coef", 0.3))
     return model, schedule

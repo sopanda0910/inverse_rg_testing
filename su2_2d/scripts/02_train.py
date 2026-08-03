@@ -25,26 +25,42 @@ def main() -> None:
     args = parser.parse_args()
     config = yaml.safe_load(Path(args.config).read_text(encoding="utf-8"))
 
-    datasets = []
-    for f in sorted(Path(config["data"]["out_dir"]).glob("wilson_*.pt")):
-        blob = torch.load(f, map_location="cpu", weights_only=False)
-        datasets.append((blob["lattice_size"], blob["configs"], blob["beta"]))
+    data_dir = Path(config["data"]["out_dir"])
+
+    def load(pattern):
+        out = []
+        for f in sorted(data_dir.glob(pattern)):
+            blob = torch.load(f, map_location="cpu", weights_only=False)
+            out.append((blob["lattice_size"], blob["configs"], blob["beta"]))
+        return out
+
+    def group_by_size(datasets):
+        groups = []
+        for l in sorted({size for size, _, _ in datasets}):
+            parts = [(c, b) for (size, c, b) in datasets if size == l]
+            data = torch.cat([c for c, _ in parts], dim=0)
+            beta_vec = torch.cat([torch.full((c.shape[0],), float(b)) for c, b in parts])
+            groups.append((data, beta_vec))
+            betas = sorted({round(float(b), 3) for _, b in parts})
+            print(f"  L={l}: {data.shape[0]} configs over {len(betas)} couplings "
+                  f"[{min(betas):g} .. {max(betas):g}]")
+        return groups
+
+    datasets = load("wilson_*.pt")
     if not datasets:
         raise SystemExit("no training data — run 01_generate_data.py first")
+    print("training groups:")
+    groups = group_by_size(datasets)
 
-    # one model over all sizes and couplings: group by lattice size (batches
-    # must share a size to stack), then train jointly across groups
-    groups = []
-    for l in sorted({size for size, _, _ in datasets}):
-        parts = [(c, b) for (size, c, b) in datasets if size == l]
-        data = torch.cat([c for c, _ in parts], dim=0)
-        beta_vec = torch.cat([torch.full((c.shape[0],), float(b)) for c, b in parts])
-        groups.append((data, beta_vec))
-        print(f"group L={l}: {data.shape[0]} configs, "
-              f"betas {sorted({float(b) for _, b in parts})}")
+    heldout_sets = load("heldout_*.pt")
+    heldout = None
+    if heldout_sets:
+        print("held-out (never trained, generalization guard):")
+        heldout = group_by_size(heldout_sets)
 
     ckpt = config["train"]["checkpoint"]
-    train(groups, config["train"], checkpoint_path=ckpt, seed=config["seed"])
+    train(groups, config["train"], checkpoint_path=ckpt, seed=config["seed"],
+          heldout_groups=heldout)
     print(f"checkpoint: {ckpt}")
 
 

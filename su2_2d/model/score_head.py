@@ -82,7 +82,10 @@ class SU2ScoreNet(nn.Module):
             nn.Conv2d(hidden, hidden, 3, padding=1, padding_mode="circular")
             for _ in range(depth)
         )
-        self.film = nn.Linear(2, 2 * hidden * (depth + 1))
+        # FiLM sees (log sigma, log beta) plus GLOBAL coarse summaries: a local
+        # receptive field cannot reach lattice-wide coarse structure, which
+        # U(1) found mattered (its analogue was the coarse winding sum)
+        self.film = nn.Linear(2 + (2 if cond_channels else 0), 2 * hidden * (depth + 1))
         self.out = nn.Conv2d(hidden, 1, 3, padding=1, padding_mode="circular")
         nn.init.zeros_(self.out.weight)
         nn.init.zeros_(self.out.bias)
@@ -91,8 +94,11 @@ class SU2ScoreNet(nn.Module):
         feats = plaquette_features(field)
         if cond is not None:
             feats = torch.cat([feats, cond], dim=-3)
-        emb = torch.stack([torch.log(sigma), torch.log(beta)], dim=-1)
-        film = self.film(emb)
+        emb = [torch.log(sigma), torch.log(beta)]
+        if cond is not None:
+            emb.append(cond[..., 0, :, :].mean(dim=(-2, -1)))
+            emb.append(cond[..., 1, :, :].mean(dim=(-2, -1)))
+        film = self.film(torch.stack(emb, dim=-1))
         chunks = film.chunk(2 * (len(self.blocks) + 1), dim=-1)
         x = self.inp(feats)
         x = x * (1 + chunks[0][..., None, None]) + chunks[1][..., None, None]
