@@ -11,7 +11,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+import os
+
 import torch
+
+torch.set_num_threads(int(os.environ.get("SU2_2D_TORCH_THREADS", "8")))
 
 from su2_2d.lgt import group, mean_plaquette, plaquette_exact, run_hmc_ensemble, wilson_loop_trace_half
 from su2_2d.lgt.exact import wilson_loop_exact

@@ -73,7 +73,10 @@ def exact_conditional_score(u_t: torch.Tensor, u_0: torch.Tensor, sigma: float) 
     omega = group.logmap(x)
     theta = (omega.norm(dim=-1, keepdim=True) / 2.0).clamp(1e-5, math.pi - 1e-5)
     n_hat = omega / omega.norm(dim=-1, keepdim=True).clamp_min(1e-12)
-    t = theta.detach().reshape(-1).requires_grad_(True)
-    (dlogk,) = torch.autograd.grad(log_kernel(t, s).sum(), t)
+    # enable_grad: this internal derivative must work even when the caller
+    # evaluates targets under torch.no_grad() (e.g. EMA validation)
+    with torch.enable_grad():
+        t = theta.detach().reshape(-1).requires_grad_(True)
+        (dlogk,) = torch.autograd.grad(log_kernel(t, s).sum(), t)
     dlogk = dlogk.reshape(theta.shape)
     return 0.5 * dlogk * n_hat

@@ -13,7 +13,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
+import os
+
 import torch
+
+torch.set_num_threads(int(os.environ.get("SU2_2D_TORCH_THREADS", "8")))
 import yaml
 
 from su2_2d.lgt import (
