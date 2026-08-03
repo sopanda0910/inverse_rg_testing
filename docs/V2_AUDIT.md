@@ -1,7 +1,7 @@
-# diffusion_v2 Final Audit — Known Problems and Remaining Work
+# u1_2d Final Audit — Known Problems and Remaining Work
 
 **Date:** 2026-08-02
-**Scope:** full review of `diffusion_v2/` (model core, lattice/validation layers, exactness scripts 19–26, campaign result artifacts under `out/diffusion_v2/`) conducted before moving on to SU(2) 2D.
+**Scope:** full review of `u1_2d/` (model core, lattice/validation layers, exactness scripts 19–26, campaign result artifacts under `out/u1_2d/`) conducted before moving on to SU(2) 2D.
 
 **Verdict up front:** the load-bearing math is correct everywhere it was checked — curl-head gauge structure, wrapped-Gaussian DSM target, probability-flow ODE signs and torus Jacobians, SNIS/ESS formulas, SMC incremental weights, HMC reversibility (verified numerically, |dH| ~ dt²), and `lgt/exact.py` against independent Monte Carlo. The five fine-tune negatives (mlft, rklft, rkl2, big-net RKL, score-correction head) were re-derived as mathematically correct implementations: they are real converged negatives, not bugs. Nothing below blocks the SU(2) move. The document lists what is genuinely still open, in priority order.
 
@@ -41,8 +41,8 @@ None invalidate published numbers, but they should be fixed before artifacts are
 | B3 | `model/likelihood.py:103,150` | `torch.manual_seed(seed)` inside library functions clobbers **global** RNG state. | Anything using global RNG later in-process is silently coupled to the ODE seed. Script 19 escapes only because `independence_metropolis` uses its own generator. Footgun for the SU(2) port — use a local `torch.Generator`. |
 | B4 | `scripts/24_smc_ladder.py:150` | Resampled-column observables use naive `std/sqrt(n)` sem, treating post-resampling duplicates as independent. | At unique-fraction ~0.5 the sem is understated ~√2×; resampled z-scores look better than they are. Unique fraction is reported but never folded in. |
 | B5 | `scripts/23_ess_progress_figures.py:181` | Reads `r["monitor"]["log_w_std"]`, but current `22_multicase_rkl.py` writes plural `out["monitors"]` (22:197). Works today only because the on-disk history has the old singular schema. Also hardcodes log-scraped constants (`-0.8867` line 159, `136.86` line 185). | Re-running 22 then 23 raises `KeyError: 'monitor'`; constants silently wrong if runs are redone. |
-| B6 | `out/diffusion_v2/data/matching.json` | Overwritten, not appended — only the 4 scale-up entries (β_f 43.9–50.2) remain. | Anything re-reading matching results for the original ladder is missing entries. Check before regenerating anything that depends on it. |
-| B7 | `out/diffusion_v2/run.log` | Terminal state is the VERDICT stage crashing (FileNotFoundError, `CHAIN_DONE_WITH_ERRORS`) on 07-31. `verdict.md` exists, so it was evidently rerun, but the log of record ends in an error. | Cosmetic/reproducibility. Rerun verdict via the fixed script so the log closes clean. |
+| B6 | `out/u1_2d/data/matching.json` | Overwritten, not appended — only the 4 scale-up entries (β_f 43.9–50.2) remain. | Anything re-reading matching results for the original ladder is missing entries. Check before regenerating anything that depends on it. |
+| B7 | `out/u1_2d/run.log` | Terminal state is the VERDICT stage crashing (FileNotFoundError, `CHAIN_DONE_WITH_ERRORS`) on 07-31. `verdict.md` exists, so it was evidently rerun, but the log of record ends in an error. | Cosmetic/reproducibility. Rerun verdict via the fixed script so the log closes clean. |
 
 ### Latent (don't fire in the shipped pipeline, but are traps)
 

@@ -1,0 +1,173 @@
+"""Generate HMC ensembles for all training + held-out rungs, plus beta matching.
+
+    python u1_2d/scripts/01_generate_data.py --config u1_2d/configs/default.yaml
+"""
+
+import argparse
+import json
+import time
+from pathlib import Path
+
+import torch
+
+from u1_2d.lgt import make_action, run_hmc_ensemble, block_links, match_coarse_beta
+from u1_2d.lgt.blocking import villain_blocked_beta
+from u1_2d.lgt.hmc import adapted_hmc_params
+from u1_2d.lgt.lattice import wrap
+from u1_2d.lgt.local_updates import instanton_field, retherm_sweeps
+from u1_2d.utils import (
+    load_config,
+    resolve_device,
+    set_seed,
+    save_ensemble,
+    load_ensemble,
+    ensemble_path,
+    save_json,
+    expand_rungs,
+)
+
+
+def generate_rung(rung: dict, data_cfg: dict, action_type: str, device: str) -> torch.Tensor:
+    beta, lattice_size = float(rung["beta"]), int(rung["lattice_size"])
+    action = make_action(action_type, beta)
+    step_size, n_steps = adapted_hmc_params(
+        beta, float(data_cfg["hmc_step_size"]), int(data_cfg["hmc_steps"])
+    )
+    step_size = float(rung.get("hmc_step_size", step_size))
+    n_steps = int(rung.get("hmc_steps", n_steps))
+    burn_in = int(rung.get("burn_in", data_cfg["burn_in"]))
+    hot_start = bool(rung.get("hot_start", data_cfg.get("hot_start", True)))
+    t0 = time.time()
+    configs, stats = run_hmc_ensemble(
+        lattice_size,
+        action,
+        n_configs=int(rung.get("n_configs", data_cfg["n_configs"])),
+        n_chains=int(data_cfg["n_chains"]),
+        burn_in=burn_in,
+        thin=int(data_cfg["thin"]),
+        n_steps=n_steps,
+        step_size=step_size,
+        device=device,
+        topological_updates=bool(data_cfg.get("topological_updates", True)),
+        hot_start=hot_start,
+    )
+    print(
+        f"  L={lattice_size} beta={beta}: {configs.shape[0]} configs, "
+        f"acceptance {stats.acceptance_rate:.3f}, {'hot' if hot_start else 'cold'} start, "
+        f"burn-in {burn_in}, {time.time()-t0:.0f}s"
+    )
+    fraction = float(rung.get("sector_augment", 0.0))
+    if fraction > 0:
+        configs = sector_augment(configs, action, fraction)
+    return configs
+
+
+def sector_augment(configs: torch.Tensor, action, fraction: float) -> torch.Tensor:
+    """Append instanton-shifted copies so charged sectors are represented at high
+    beta, where P(|Q| > 0) is tiny and the conditional model otherwise sees almost
+    no charged coarse configurations. Shifting fine configs shifts their blocked
+    partners' charge identically (blocking preserves Q), so the (fine | coarse)
+    pairs remain on the correct conditional relation -- this broadens conditioning
+    coverage without biasing the conditional law. Local rethermalization (no Q-hops)
+    relaxes the smooth instanton strain inside the fixed sector."""
+    n_aug = int(fraction * configs.shape[0])
+    if n_aug == 0:
+        return configs
+    lattice_size = configs.shape[-1]
+    index = torch.randperm(configs.shape[0])[:n_aug]
+    charges = torch.tensor([-2.0, -1.0, 1.0, 2.0])[torch.randint(0, 4, (n_aug,))]
+    inst = instanton_field(lattice_size, dtype=configs.dtype)
+    shifted = wrap(configs[index] + charges.view(-1, 1, 1, 1) * inst)
+    shifted = retherm_sweeps(shifted, action, 8, topological_updates=False)
+    print(f"    sector augmentation: +{n_aug} configs at Q shifts of +-1, +-2")
+    return torch.cat([configs, shifted], dim=0)
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", default="u1_2d/configs/default.yaml")
+    parser.add_argument("--rebuild-matching", action="store_true",
+                        help="recompute matching.json entries for every "
+                        "ensemble file already on disk (repairs a matching.json "
+                        "that an earlier run overwrote with a subset)")
+    args = parser.parse_args()
+    config = load_config(args.config)
+    set_seed(int(config["seed"]))
+    device = resolve_device(config)
+    action_type = config["action_type"]
+    data_cfg = config["data"]
+    out_dir = Path(data_cfg["out_dir"])
+
+    matching = {}
+    for rung in expand_rungs(data_cfg, int(config["seed"])) + list(data_cfg.get("heldout", [])):
+        path = ensemble_path(out_dir, action_type, rung["lattice_size"], rung["beta"])
+        if path.exists():
+            print(f"skip existing {path}")
+            continue
+        print(f"generating {path} ...")
+        configs = generate_rung(rung, data_cfg, action_type, device)
+        save_ensemble(
+            path,
+            configs,
+            {
+                "beta": float(rung["beta"]),
+                "lattice_size": int(rung["lattice_size"]),
+                "action_type": action_type,
+                "provenance": "direct HMC (Omelyan) + instanton updates",
+                "n_configs": configs.shape[0],
+                "sampler": {
+                    **{k: data_cfg[k] for k in ("n_chains", "burn_in", "thin", "hmc_steps", "hmc_step_size")},
+                    "hot_start": bool(data_cfg.get("hot_start", True)),
+                    **{k: rung[k] for k in ("burn_in", "hot_start", "hmc_steps", "hmc_step_size") if k in rung},
+                },
+                "seed": int(config["seed"]),
+            },
+        )
+        if action_type == "villain":
+            matched = villain_blocked_beta(float(rung["beta"]))
+        else:
+            matched = match_coarse_beta(block_links(configs), action_type)
+        matching[f"L{rung['lattice_size']}_beta{rung['beta']:g}"] = {
+            "fine_beta": float(rung["beta"]),
+            "matched_coarse_beta": matched,
+            "tree_level": float(rung["beta"]) / 4.0,
+        }
+        print(f"  matched coarse beta: {matched:.4f} (tree level {float(rung['beta'])/4.0:g})")
+
+    if args.rebuild_matching:
+        import re
+
+        for path in sorted(out_dir.glob(f"{action_type}_L*_beta*.pt")):
+            m = re.match(rf"{action_type}_L(\d+)_beta([\d.]+)\.pt", path.name)
+            if not m:
+                continue
+            lattice_size, beta = int(m.group(1)), float(m.group(2))
+            key = f"L{lattice_size}_beta{beta:g}"
+            if key in matching:
+                continue
+            configs, _ = load_ensemble(path)
+            if action_type == "villain":
+                matched = villain_blocked_beta(beta)
+            else:
+                matched = match_coarse_beta(block_links(configs.float()), action_type)
+            matching[key] = {
+                "fine_beta": beta,
+                "matched_coarse_beta": matched,
+                "tree_level": beta / 4.0,
+            }
+            print(f"  rebuilt {key}: matched coarse beta {matched:.4f}")
+
+    if matching:
+        # Merge into any existing file -- earlier runs that regenerate only a
+        # subset of rungs must not clobber the other entries.
+        merged = {}
+        matching_path = out_dir / "matching.json"
+        if matching_path.exists():
+            merged = json.loads(matching_path.read_text(encoding="utf-8"))
+        merged.update(matching)
+        save_json(matching_path, merged)
+        print(f"wrote {matching_path} ({len(merged)} entries, {len(matching)} new)")
+
+
+if __name__ == "__main__":
+    main()

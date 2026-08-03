@@ -5,10 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "inverserg"
 version = "0.1.0"
-description = "Inverse renormalization-group experiments for 2D U(1) lattice gauge theory."
+description = "Diffusion-based inverse renormalization-group experiments for lattice field theories."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = ["matplotlib>=3.8", "numpy>=1.24", "scipy>=1.11", "torch>=2.2"]
 
 [tool.setuptools.packages.find]
-include = ["diffusion*", "diffusion_v2*"]
+include = ["u1_2d*", "su2_2d*"]

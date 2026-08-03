@@ -1,0 +1,40 @@
+# 2D SU(2) pipeline config — first non-abelian rung pair.
+# Tree-level matching across one 2x2 blocking step is beta_c = beta_f / 4
+# (same Gaussian variance-addition argument as U(1); MLE character matching
+# comes later once the first lift validates).
+
+action: wilson
+seed: 20260802
+
+data:
+  out_dir: out/su2_2d/data
+  rungs:                 # (L, beta) HMC ensembles for training
+    - [8, 2.0]
+    - [8, 4.0]
+    - [16, 8.0]
+    - [16, 16.0]
+  n_configs: 256
+  n_chains: 8
+  burn_in: 400
+  thin: 5
+
+train:
+  checkpoint: out/su2_2d/checkpoints/score_net.pt
+  hidden: 48
+  depth: 4
+  conditional: true
+  sigma_min: 0.05
+  sigma_max: 2.5
+  lr: 3.0e-4
+  ema_decay: 0.999
+  train_steps: 2000
+  batch_size: 16
+
+sample:
+  out_dir: out/su2_2d/generated
+  n_configs: 128
+  n_ode_steps: 60
+  # first lift: coarse (8, 4.0) -> fine (16, 16.0)
+  coarse_L: 8
+  coarse_beta: 4.0
+  fine_beta: 16.0

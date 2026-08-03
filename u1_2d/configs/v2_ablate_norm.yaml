@@ -1,0 +1,79 @@
+# Ablation of v2: identical to v2.yaml except train.norm_type: group (the v6
+# normalization). Purpose: attribute the mid-beta Wilson-loop undershoot seen in
+# the v2 seed-1 study. Reuses the v2 data ensembles (same data.out_dir) and the
+# main study caches; only training and a targeted 06 subset rerun.
+
+seed: 0
+device: auto
+action_type: wilson
+
+data:
+  out_dir: out/u1_2d/data
+  rungs:
+    - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600, sector_augment: 0.5}
+    - {beta: 25.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 40.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+  random_rungs:
+    - {n: 60, beta_min: 1.0, beta_max: 60.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 2.0, beta_max: 60.0, lattice_size: 32, n_configs: 128}
+    - {n: 6, beta_min: 1.0, beta_max: 8.0, lattice_size: 8, n_configs: 128}
+  heldout:
+    - {beta: 20.0, lattice_size: 16, hot_start: false, burn_in: 2000, n_configs: 128}
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  topological_updates: true
+  hot_start: true
+
+train:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 3.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  sigma_min_beta_coef: 0.3
+  high_beta_sigma_bias: 0.3
+  sym_augment: 0.5
+  norm_type: group
+  cond_film: true
+  hidden: 56
+  depth: 4
+  kernel_size: 3
+  cond_channels: 5
+  val_fraction: 0.1
+  topo_weight: 0.1
+  early_stop_patience: 0
+  ema_decay: 0.999
+  grad_clip_norm: 1.0
+  snapshot_every: 5
+  checkpoint: out/u1_2d/v2_ablate_norm/checkpoints/score_net.pt
+  history: out/u1_2d/v2_ablate_norm/checkpoints/history.json
+
+ladder:
+  base: {beta: 1.3472, lattice_size: 8}
+  n_base_configs: 192
+  beta_schedule: [4.0, 14.1464, 55.0237]
+  n_retherm_sweeps: 16
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  corrector_snr: 0.16
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  charge_projection_sigma: 0.5
+  charge_projection_interval: 10
+  retherm_topological_updates: false
+  sample_batch_size: 32
+  out_dir: out/u1_2d/v2_ablate_norm/generated
+  physics_blend_coef: 1.0
+  physics_blend_beta_min: 5.0
+  sigma_min_beta_coef: 0.1
+
+validate:
+  out_dir: out/u1_2d/v2_ablate_norm/validation
+  n_reference_configs: 384
+  freezing_rung: {beta: 55.0237, lattice_size: 64}
+  freezing_hmc_length: 300
