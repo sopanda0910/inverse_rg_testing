@@ -1710,8 +1710,12 @@ adopted, or closed by a converged measurement with an understood mechanism.
   exact-sector mode) for physics claims; $\sigma_{\min}$-coef $0.03$ and the
   guarded rkl2 checkpoint for likelihood work; AIS as the validated
   exactness mechanism (floor-saturating, positive spread reduction).
-* **Closed with mechanism:** matching residual (negligible — Villain
-  control); data-side fine-tuning in all forms (forward/reverse-KL
+* **Closed with mechanism:** matching residual (negligible — established by
+  the *within-arm* $R^2_c$ decomposition, since a matching residual is a
+  $c$-only function and so can contribute only to the coarse-explainable
+  share of the fiber log-weight variance, which is $\le 6\%$; the Villain
+  arm corroborates but is confounded by a train/test mismatch and must not
+  be read as a subtraction — §18.5); data-side fine-tuning in all forms (forward/reverse-KL
   asymmetry); capacity scaling (extrapolation cost); SMC (no weight
   diversity); wide surrogate bases (off-manifold extrapolation);
   sector-crutch-alone and bridge-alone exactness (each removes only its own
