@@ -274,8 +274,15 @@ def format_report(results: list[dict], args) -> str:
             sec = r.get("sector_resolved_plaquette", {}).get(label)
             if sec is None:
                 continue
-            used = sum(1 for v in sec["per_sector"].values() if "mean" in v)
-            zs = f"{sec['z']:+.1f}" if math.isfinite(sec.get("z", float("nan"))) else "--"
+            est_sectors = [v for v in sec["per_sector"].values() if "mean" in v]
+            used = len(est_sectors)
+            # a single dominating weight inside any used sector makes the
+            # linearized err (hence z) meaningless -- same suppression rule
+            # as the global table, applied per sector
+            credible = est_sectors and all(
+                v.get("ess", 0.0) * v["count"] >= 4.0 for v in est_sectors)
+            zs = (f"{sec['z']:+.1f}"
+                  if credible and math.isfinite(sec.get("z", float("nan"))) else "--")
             lines.append(
                 f"| {r['fine_L']} | {r['fine_beta']:g} | {label} "
                 f"| {sec['mean']:.6g} | {sec['err']:.2g} | {zs} "

@@ -434,6 +434,93 @@ results use the fine-tuned variants. Full provenance:
 `out/diffusion_v2/ess_chain/` (chain logs, per-stage sentinels, chosen
 knobs, verification JSONs) and `scripts/19–26`.
 
+## Exactness endgame (2026-08-02 evening): decomposition, AIS transport, L = 64
+
+**Table S6 — Matching residual vs model error.** Both arms blend-free at the
+*trained* σ floor (coef 0.3; below it, unblended sampling measures the
+network's untrained-σ extrapolation, not the model — audit §4.3). R²_c is the
+fiber log-weight variance explained by coarse-only observables — an upper
+bound on the matching-residual floor, since c-dependent model error lands
+there too. For the Villain action the β/4 matching is *exact*, so its spread
+is pure model error by construction.
+
+| arm | L16 β14.1 std/site (R²_c) | L16 β55.0 | L32 β55.0 |
+|---|---|---|---|
+| Wilson (matching residual + model error) | 0.0209 (0.062) | 0.0419 (0.005) | 0.0175 (0.023) |
+| Villain (pure model error, exact matching) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
+
+Wilson ≤ Villain everywhere, and Wilson's R²_c sits *below* Villain's pure
+model-error baseline: the coarse-action matching floor is **negligible**, and
+the entire measured density gap is fine-side model error. The last competing
+explanation for the fine-tune program's five converged negatives is
+eliminated; the closure is definitive at the level of mechanism, not just
+exhaustion. (Deployment-settings coarse regressions from the AIS samples
+agree: R²_c = 0.003–0.064.) Provenance: `out/diffusion_v2/matching_residual/`.
+
+**Table S7 — AIS-corrected transport (final AIS result).** Surrogate-bridge
+annealed importance sampling from ODE samples with exact initial density
+(48 bridge steps, 2 HMC + instanton-hop updates per step; coefficients fit on
+the even half, quoted on the held-out odd half; 7-feature basis).
+
+| case | std before | surrogate R² | predicted floor √(1−R²)·std | AIS std (held-out) | held-out ESS/N |
+|---|---|---|---|---|---|
+| 16:14.1 | 17.0 | 0.717 | 9.0 | 30.6 | 0.021 |
+| 16:55.0 | 17.6 | 0.332 | 14.4 | 18.6 | 0.024 |
+| 32:55.0 | 36.4 | 0.664 | 21.1 | 28.4 | 0.021 |
+| 32:218.6 | 117.5 | 0.839 | 47.1 | 44.7 | 0.021 |
+
+The bridge saturates its theoretical floor where the gap is largest
+(32:218.6: measured 44.7 vs predicted 47.1 — a 2.6× spread reduction with the
+mechanism working exactly as derived), but held-out ESS/N stays at the 1/48
+floor everywhere: the weights degenerate on the topological-sector component,
+which does not regress onto smooth features. A wider 11-feature basis
+(W(2×2), 4th character, plaquette-neighbor correlator, blocked 3rd character)
+raised in-sample R² but exploded the held-out weights at 2 of 4 cases
+(std 1120 and 18,650) — under-regularized wide bases extrapolate wildly once
+the bridge dynamics move samples off the fit manifold. Recorded as the
+program's sixth honest negative; the 7-feature run is the final AIS number.
+Provenance: `out/diffusion_v2/ais_transport/` (final),
+`ais_transport_rich/` (negative), `exactness2/`.
+
+**The measured KL.** For valid weights, E[log w] − ΔF_exact = −KL(q‖p)
+identically, with ΔF exactly computable here from the character expansion —
+so the free-energy certificate doubles as a direct, sem-quotable measurement
+of the model's mean density offset: **≈ 0.88 nats/site at 16:55 and
+1.02 nats/site at 32:218.6** (stable-weight cases). The log-mean-exp gap
+itself closes only at healthy ESS, which no case of the real model reaches;
+on synthetic exact weights the certificate closes to < 0.02 nats (unit
+test), validating the conventions end-to-end. The structure of the remaining
+gap is therefore fully quantified: a bulk smooth offset of ~1 nat/site
+(mean), spread 0.02–0.07 nats/site (variance), plus sector-frequency
+mismatch. Within-sector SNIS combined with the exact finite-volume P(Q)
+removes the sector component but inherits the bulk spread; neither crutch
+alone yields usable exact estimates at n ≈ 100.
+
+**L = 64 head-to-head and the entry-cost verdict.** At L = 64, β = 55, the
+instanton-HMC arm with the standard 400-trajectory burn-in fails every Wilson
+observable at z ≈ +9 to +10 while the diffusion arm passes all observables
+(|z| ≤ 1.8, 8.6 s/config including base, sampling, and retherm). The bias is
+positive (too ordered) and Q² is fine — cold-start relaxation of
+long-wavelength modes, not topology — and it does **not** anneal away:
+max Wilson |z| = 6.5 at burn-in 1600 and 6.3 at 6400. The competitor's
+marginal-cost advantage (0.036 s/config) is purchased with an ensemble that
+is still ~6σ biased after 16× the standard burn-in. This is the entry-cost
+explosion of Fig. 18 materializing at scale, measured. Provenance:
+`out/diffusion_v2/diffusion_vs_instanton/L64/` (+ `burnin_scan/`).
+
+**Fresh-seed classification of the 3σ Wilson flags.** All four flagged cases
+(D_bc14.1464 plaq −2.93 ∧ W22 −3.47, B_bt20 −3.19, A_bc8 −2.71,
+F_L64 W22 +3.03) were rerun with two fresh seeds each: every mean-value flag
+flips sign or vanishes across seeds (D: +2.24/+2.97 then +0.45/+0.57;
+B: −2.56 then +0.13; A: −1.33 then −0.02; F: −0.86 then −1.28) —
+fluctuations, consistent with the ~0.2 expected beyond-3σ count over 76
+tests. One repeatable residual: F_L64's minimum KS p ≈ 0.000 in both fresh
+seeds — a Wilson-loop *distribution-shape* mismatch at the far extrapolation
+whose means nonetheless pass; noted as the honest residual defect of the far
+extrapolation regime, alongside the volume-growing raw Q² excess
+(1.7–2.7 at L ≤ 32 → 7.1–28.2 at L = 64/128, rescued by exact-sector mode,
+Table S3). Provenance: `out/diffusion_v2/generalization_fresh_s3/`, `_s4/`.
+
 **Program closure (2026-08-02).** The exactness program is closed at
 rkl2 + σ_min-coef 0.03 — the measured optimum. The complete falsification
 chain — sampling-time knobs (one win), data-side maximum-likelihood
@@ -441,10 +528,15 @@ fine-tuning at 197k and at 354 parameters (both degrade deployment: the
 forward/reverse-KL asymmetry is intrinsic to the objective, not a capacity
 effect), single-case reverse-KL (destroys extrapolation), guarded multi-case
 reverse-KL (the one 2× win, then plateau), capacity/data scaling under DSM
-(helps only in-distribution, costs extrapolation), and per-level SMC
-restructuring (no weight diversity to harvest) — leaves the per-site density
-gap at 0.02–0.07 nats/site against the ~0.005 usable-certificate bar
-(Fig. 27b). Exactness for this pipeline therefore rests, by measurement
+(helps only in-distribution, costs extrapolation), per-level SMC
+restructuring (no weight diversity to harvest), and surrogate-bridge AIS
+(saturates its floor, 2.6× spread reduction at the extrapolation case, ESS
+unchanged; wide-basis variant the sixth converged negative) — leaves the
+per-site density gap at 0.02–0.07 nats/site (spread) and ≈ 1 nat/site (mean,
+measured directly by the free-energy identity) against the ~0.005
+usable-certificate bar (Fig. 27b), with the matching-residual explanation
+eliminated by the Villain control (Table S6): the gap is fine-side model
+error, in full. Exactness for this pipeline therefore rests, by measurement
 rather than assumption, on the Markov-chain route — rethermalization,
 instanton-HMC tails, exact-sector resampling — wrapped around the generative
 proposal: the architecture the head-to-head, seeding, and three-way results

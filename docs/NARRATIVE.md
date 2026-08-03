@@ -1323,3 +1323,194 @@ week's products:
 That directive — together with the ladder, the equivariance strategy, the
 topology transport machinery, and the honesty protocol — is the inheritance
 the next model (non-abelian) starts from.
+
+### 21. Annealed importance sampling: the mathematical completion of the transport
+
+Everything in sections 15–18 measured the gap between the diffusion model's
+density $q$ and the target $p$ and tried to *shrink* it by changing $q$. The
+program's five converged negatives said: within this model class and
+objective, $q$ is as close to $p$ as it will get. Annealed importance
+sampling (AIS; Neal 2001) is the one mechanism that attacks the gap without
+touching $q$ at all — and it composes with the diffusion machinery so cleanly
+that it is best understood as the *continuation* of the probability-flow
+transport by other means.
+
+**The structural fit.** The probability-flow ODE (section 16) is a
+deterministic transport: it carries a wrapped-Gaussian reference at
+$\sigma_{\max}$ down to the model distribution at $\sigma_{\min}$, and the
+instantaneous change-of-variables formula hands us, for each sample $x_0$,
+the exact value $\log q(x_0 \mid c)$. That pair — a sample *with its own
+density* — is precisely the input AIS needs and precisely what ordinary MCMC
+initialization throws away. Rethermalization (the pipeline's Markov-chain
+wrapper) destroys density tracking: after a few HMC sweeps we no longer know
+the density of what we have, which is why retherm gives correctness without
+importance weights. AIS threads the needle: it interleaves the *same kind* of
+exact MCMC updates with weight increments arranged so that density tracking
+is never needed beyond the starting point.
+
+**The construction.** We cannot evaluate $q$ at new points (one ODE solve
+gives the density only of its own endpoint), so the bridge does not
+interpolate $q \to p$ directly. Instead, fit a tractable *surrogate* for the
+log-density mismatch: with differentiable gauge-invariant observables
+$O_k(x)$ (plaquette characters, rectangles, the matched coarse action of the
+blocked field, a smooth $Q^2$),
+
+$$
+\log \tilde q(x) \;=\; -S_f(x) + G(x), \qquad
+G(x) \;=\; \textstyle\sum_k g_k\, O_k(x) + \text{const},
+$$
+
+with $g$ fit by ridge-regularized least squares of $\log q + S_f$ on the
+features at the initial samples — an $L^2(q)$ projection of the log-density
+error onto the feature span. Then define the bridge family
+
+$$
+\pi_t(x) \;\propto\; \exp\!\bigl(-S_f(x) + (1-t)\,G(x)\bigr),
+\qquad t: 0 \to 1,
+$$
+
+so $\pi_0 = \tilde q$ (the surrogate approximation of the model) and
+$\pi_1 = p$ (the exact target). Every $\pi_t$ is known in closed form up to
+normalization and is autograd-differentiable — so the *same* HMC and
+instanton-hop kernels that give the pipeline its exactness apply to every
+bridge distribution unchanged.
+
+**The weight identity and why it is unbiased.** Run $K$ bridge steps
+$t_0 = 0 < t_1 < \dots < t_K = 1$. After accumulating increment $k$, move
+the sample by any kernel $T_k$ that leaves $\pi_{t_k}$ invariant. The AIS
+weight telescopes:
+
+$$
+\log w \;=\; \underbrace{\bigl[\log \tilde q(x_0) - \log q(x_0 \mid
+c_0)\bigr]}_{\text{surrogate fit residual}} \;+\;
+\underbrace{\sum_{k=1}^{K} (t_{k-1} - t_k)\, G(x_{k-1})}_{\text{AIS
+increments}} .
+$$
+
+Unbiasedness is three lines of the extended-state-space argument: the joint
+forward density of the trajectory $(x_0, \dots, x_K)$ is
+$q(x_0)\prod_k T_k(x_{k-1} \to x_k)$; multiply and divide by the reverse
+trajectory density built from the reversals $\tilde T_k$ (detailed balance
+w.r.t. $\pi_{t_k}$ gives $\pi_{t_k}(x_{k-1}) T_k(x_{k-1} \to x_k) =
+\pi_{t_k}(x_k) \tilde T_k(x_k \to x_{k-1})$); every transition-kernel factor
+cancels against its reversal, and what survives is exactly the ratio of
+consecutive bridge densities — the increments above. Hence
+$\mathbb{E}[w\, h(x_K)] = Z_{\text{ratio}}\, \mathbb{E}_{p}[h]$ for any $h$:
+valid importance weights with **no density tracking through the MCMC**. This
+is the precise sense in which AIS reconciles the two exactness routes the
+program had kept separate — the weighted route (needs density, no MCMC) and
+the retherm route (MCMC, no density).
+
+**The variance budget, and the floor theorem we then measured.** The two
+terms of $\log w$ are independent levers:
+
+$$
+\operatorname{Var}[\log w] \;=\;
+\operatorname{Var}\bigl[\underbrace{\log \tilde q - \log q}_{\text{fit
+residual}}\bigr] \;+\; \textstyle\sum_k \operatorname{Var}[\text{increment}_k].
+$$
+
+The increments shrink as the schedule refines — they can be paid down with
+compute. The fit residual **cannot**: it is fixed the moment the basis is
+chosen, and equals $(1 - R^2)\cdot\operatorname{Var}[\text{target}]$ from
+the regression. So AIS comes with a sharp falsifiable prediction: as $K$
+grows, the delivered log-weight std must converge to
+$\sqrt{1 - R^2}\,\cdot\,\text{std}_{\text{before}}$ and no further. The
+measurement (Table S7 of the appendix): at the extrapolation case
+$32{:}218.6$, predicted floor $47.1$, measured $44.7$ — the bridge saturates
+its floor exactly. The mechanism works as derived; what remains is a
+*basis-representation* question, not a bridging question.
+
+**Why the basis cannot simply be widened.** The obvious next move — add
+features until $R^2 \to 1$ — was tried (11 features) and produced the
+program's sixth converged negative: in-sample $R^2$ rose, and the held-out
+weights exploded by two to three orders of magnitude at two of four cases.
+The mechanism deserves stating because it recurs throughout this project:
+the fit is performed on samples from $q$, but the bridge dynamics *move* the
+samples toward $p$, evaluating $G$ off the fit manifold, where a wide,
+weakly-regularized basis extrapolates wildly. It is the
+deployment-vs-data-side asymmetry of section 18 in yet another costume:
+an in-sample objective improvement bought a deployed-distribution failure,
+now for the surrogate rather than the score.
+
+**The sector decomposition of the remaining gap.** The weights after AIS
+still degenerate — but now we can say precisely on what. Write the model's
+error as (bulk smooth offset) + (topological-sector frequency mismatch). The
+bulk part regresses onto smooth observables and anneals through the bridge;
+the sector part is a *single number per sector* (how much probability the
+model puts in sector $Q$ versus the target's exactly-known $P(Q)$) and is
+invisible to any smooth feature. Conditioning fixes it in principle: for any
+observable $h$,
+
+$$
+\mathbb{E}_p[h] \;=\; \sum_Q P_{\text{exact}}(Q)\;
+\mathbb{E}_p[h \mid Q],
+$$
+
+and within-sector self-normalized weights validly estimate each
+$\mathbb{E}_p[h \mid Q]$ (conditioning on a weight-measurable event preserves
+the importance identity), while the exactly solvable theory supplies
+$P_{\text{exact}}(Q)$ — the abelian crutch. Measured: the sector masses are
+indeed removed, but the *within-sector* spread is the same bulk
+$0.02$–$0.07$ nats/site as everywhere else, so per-sector estimates remain
+single-sample-dominated at $n \approx 100$. The two components of the gap are
+now separately quantified, and each crutch (bridge for the bulk, sectors for
+the topology) demonstrably removes its own component — they simply cannot,
+at this model quality, jointly reach usable ESS.
+
+**The KL identity — the certificate that became a measurement.** For any
+valid weights, Jensen's inequality has an exact companion:
+
+$$
+\mathbb{E}_q[\log w] \;=\; \Delta F_{\text{exact}} \;-\;
+\mathrm{KL}(q \,\|\, p),
+$$
+
+and in this theory $\Delta F_{\text{exact}}$ is computable from the character
+expansion. The free-energy certificate was built to *verify* the weight chain
+(log-mean-exp must equal $\Delta F$); at the model's actual ESS the
+log-mean-exp cannot converge — but the *mean* log-weight turns the same
+identity into an unbiased, error-barred **measurement of
+$\mathrm{KL}(q\|p)$**: about $0.9$–$1.0$ nats per site. That single number is
+the program's cleanest statement of where the generative model ends: the
+per-site density offset that five fine-tunes, a capacity scale-up, a
+physics-form correction, and an annealed bridge each confronted, quantified —
+and left standing.
+
+### 22. Closure: what "finished" means, and what transfers
+
+The 2D U(1) study is finished in the strong sense: every avenue is either
+adopted, or closed by a converged measurement with an understood mechanism.
+
+* **Adopted:** the v2 campaign pipeline (retherm + instanton tails +
+  exact-sector mode) for physics claims; $\sigma_{\min}$-coef $0.03$ and the
+  guarded rkl2 checkpoint for likelihood work; AIS as the validated
+  exactness mechanism (floor-saturating, positive spread reduction).
+* **Closed with mechanism:** matching residual (negligible — Villain
+  control); data-side fine-tuning in all forms (forward/reverse-KL
+  asymmetry); capacity scaling (extrapolation cost); SMC (no weight
+  diversity); wide surrogate bases (off-manifold extrapolation);
+  sector-crutch-alone and bridge-alone exactness (each removes only its own
+  component of a now fully decomposed gap).
+* **Measured and named as residual:** the $\approx 1$ nat/site mean density
+  offset; the $0.02$–$0.07$ nats/site spread; the volume-growing raw $Q^2$
+  excess (rescued only by the abelian $P(Q)$ crutch); the repeatable
+  Wilson-loop distribution-shape (KS) mismatch at the farthest extrapolation
+  point, whose means nonetheless pass.
+* **The claim that survived everything:** at large $\beta$, plain HMC is
+  topologically frozen; instanton-HMC pays an entry cost that at $L = 64$
+  leaves it $\sim\!6\sigma$ biased on Wilson observables even after
+  $16\times$ the standard burn-in; the diffusion pipeline is flat-cost,
+  passes all observables, and its correctness is carried by exact
+  Markov-chain machinery wrapped around a proposal whose density error is
+  now measured, decomposed, and understood.
+
+What transfers to the non-abelian successor is exactly the load-bearing
+structure: the ladder, the equivariant curl-form score, DSM on the group
+heat kernel, retherm-based exactness, the guarded-checkpoint discipline, the
+AIS bridge (whose construction needs only differentiable invariant features
+and an HMC kernel — both already built for SU(2)), and the honesty protocol
+that turned every negative into a mechanism. What does *not* transfer is the
+exact character-expansion referee — $P(Q)$, $\Delta F$, exact observables —
+which is why it was worth extracting every certificate this solvable theory
+could give before leaving it.
