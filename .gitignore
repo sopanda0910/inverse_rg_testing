@@ -5,3 +5,7 @@ __pycache__/
 inverserg.egg-info/
 artifacts/
 .claude/settings.local.json
+
+# heavy regenerable SU(2) artifacts (reports/figures stay tracked)
+out/su2_2d/data/
+out/su2_2d/checkpoints/
