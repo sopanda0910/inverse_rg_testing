@@ -688,40 +688,66 @@ the same control.
 
 **Table S6 — Matching residual vs model error.** Both arms blend-free at the
 *trained* σ floor (coef 0.3; below it, unblended sampling measures the
-network's untrained-σ extrapolation, not the model — audit §4.3). R²_c is the
-fiber log-weight variance explained by coarse-only observables — an upper
-bound on the matching-residual floor, since c-dependent model error lands
-there too. For the Villain action the β/4 matching is *exact*, so its spread
-is pure model error by construction.
+network's untrained-σ extrapolation, not the model). R²_c is the fiber
+log-weight variance explained by coarse-only observables. The Villain arm was
+rerun on 2026-08-03 after a bug fix (below); both runs are shown, because the
+difference between them is itself informative.
 
 | arm | L16 β14.1 std/site (R²_c) | L16 β55.0 | L32 β55.0 |
 |---|---|---|---|
 | Wilson (matching residual + model error) | 0.0209 (0.062) | 0.0419 (0.005) | 0.0175 (0.023) |
-| Villain (pure model error, exact matching) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
+| Villain, β_c = β_f/4 exact (corrected) | 0.0298 (0.075) | 0.0914 (0.003) | 0.0406 (0.077) |
+| Villain, β_c = Wilson-matched (original, superseded) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
 
-> **Correction (2026-08-03).** The Villain arm as run used the *Wilson*-matched
-> coarse coupling: `27_matching_residual.py` called
-> `approx_matched_coarse_beta(fine_beta)` without `action_type`, whose default
-> is `"wilson"`, so the Villain arm ran at β_c = 4.0 rather than the exact
-> 14.1464/4 = 3.5366 (13% off at β_f = 14.1, 2.8% at β_f = 55). The weights and
-> certificate remain internally valid (base HMC, S_matched and ΔF all used the
-> same β_c), but the row's stated premise — "β/4 matching is exact, so this
-> spread is pure model error" — did not hold as run: a perfect model would
-> still show a c-only spread from the mismatch, and that contamination lands in
-> R²_c, the very quantity the decomposition isolates. Bounding it: the
-> mismatch term contributes ~0.6–1.5 nats against measured spreads of 15–24
-> nats, i.e. < 1% of the variance, so the conclusion below survives, but the
-> Villain numbers should be read as an upper bound on model error until the arm
-> is rerun. The bug is fixed in code (`action_type` now passed in scripts 27
-> and 19); the table still reports the original run.
+**The bug.** `27_matching_residual.py` called
+`approx_matched_coarse_beta(fine_beta)` without `action_type`, whose default
+is `"wilson"`, so the Villain arm ran at β_c = 4.0 and 14.1464 rather than the
+exact 14.1464/4 = 3.5366 and 55.0237/4 = 13.7559. Both runs are internally
+valid (base HMC, S_matched and ΔF all use the same β_c); only the corrected
+one has the exact-matching property the control depends on. Fixed in scripts
+27 and 19.
 
-Wilson ≤ Villain everywhere, and Wilson's R²_c sits *below* Villain's pure
-model-error baseline: the coarse-action matching floor is **negligible**, and
-the entire measured density gap is fine-side model error. The last competing
-explanation for the fine-tune program's five converged negatives is
-eliminated; the closure is definitive at the level of mechanism, not just
-exhaustion. (Deployment-settings coarse regressions from the AIS samples
-agree: R²_c = 0.003–0.064.) Provenance: `out/u1_2d/matching_residual/`.
+**What the rerun showed, and why it was not what we expected.** Correcting the
+matching made the Villain spreads *larger*, by +4%, +99% and +51%. The reason
+is a train/test confound, not a matching effect: the checkpoint was trained on
+**Wilson** data at the **Wilson**-matched ladder couplings, which are exactly
+the couplings the buggy run happened to use. The corrected run conditions the
+same model on a different action at couplings it never saw, so it measures
+model error plus an out-of-distribution conditioning penalty. The corrected
+Villain row is therefore an *upper bound* on model error, and the subtraction
+"Wilson − Villain = matching floor" cannot be read quantitatively. We report
+it because the confound is real and the earlier framing hid it.
+
+**The conclusion survives, on stronger and Villain-independent grounds.** The
+matching residual is, by construction, a function of the coarse configuration
+alone — it is the discrepancy between S_matched(c) and the true blocked action
+evaluated on the same c. Any such term can therefore contribute *only* to the
+coarse-explainable variance R²_c. Wilson's R²_c is **0.062, 0.005, 0.023**: at
+most ~6% of the fiber log-weight variance is coarse-explainable at all, and
+that figure is itself an upper bound because c-dependent *model* error lands
+there too. The matching floor is negligible, and the measured density gap is
+fine-side model error — and this argument needs no Villain arm. The Villain
+comparison corroborates it (Wilson ≤ Villain at every case, now by a wider
+margin) without being load-bearing. Deployment-settings coarse regressions
+from the AIS samples agree: R²_c = 0.003–0.064.
+
+**Why the arm was not re-run against a Villain-trained checkpoint.** The
+obvious repair — train a Villain-specific model so the control arm is free of
+the conditioning confound — would replace one confound with a larger one. It
+would compare *two different checkpoints* (different capacity utilization,
+training noise and seeds) rather than one checkpoint with and without a
+matching residual. Table S5 measures how big that substitution is: variants of
+the same architecture move fiber spreads by factors of 2–6. The quantity being
+resolved here is bounded at a few percent of the variance, so it sits an order
+of magnitude below the noise of any cross-model comparison. No amount of
+retraining resolves an effect smaller than the confound introduced to measure
+it; the within-arm R²_c decomposition does, and needs no second campaign. The
+2D U(1) study is therefore closed with the corrected Villain numbers reported
+as-is, confound named, and the load-bearing argument moved to R²_c. Full
+discussion in `docs/NARRATIVE.md` §18.5.
+
+Provenance: `out/u1_2d/matching_residual/wilson/`, `villain_fixed/`
+(corrected, of record), `villain/` (original, superseded).
 
 **Table S7 — AIS-corrected transport (final AIS result).** Surrogate-bridge
 annealed importance sampling from ODE samples with exact initial density

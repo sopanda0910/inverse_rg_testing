@@ -329,6 +329,7 @@ m int}$ criterion) ---
   markers show it failing exactness (Wilson observables, up to $16.6\sigma$)
   at $\beta \ge 55$: its topology moves work, its UV does not thermalize.
   The diffusion pipeline passes everywhere at flat cost.}
+  \label{fig:headtohead}
 \end{figure}
 
 \begin{figure}[p]
@@ -354,6 +355,7 @@ m int}$ criterion) ---
   cost does not grow with $\beta$ while the baseline's does, and beyond
   $\beta \approx 55$ the baseline stops reaching correctness at any tested
   budget.}
+  \label{fig:entry-cost}
 \end{figure}
 
 \begin{figure}[p]
@@ -679,6 +681,7 @@ to $10^{-4}$; extended ones carry the error.
   $\beta \ge 55$ until the entry cost explodes, while the diffusion pipeline
   stays flat at ${\sim}2.4$\,s/config with filled (exact-agreeing) markers
   throughout.}
+  \label{fig:three-way}
 \end{figure}
 
 \begin{figure}[p]
@@ -732,17 +735,19 @@ to $10^{-4}$; extended ones carry the error.
   \centering
   \caption{Matching residual vs model error. Both arms blend-free at the
   \emph{trained} $\sigma$ floor (coef 0.3). $R^2_c$ is the fiber log-weight
-  variance explained by coarse-only observables --- an upper bound on the
-  matching-residual floor, since $c$-dependent model error lands there too.
-  \textbf{Correction (2026-08-03):} the Villain arm as run used the
-  \emph{Wilson}-matched coarse coupling ($\beta_c = 4.0$ instead of
-  $14.1464/4 = 3.5366$), because \texttt{approx\_matched\_coarse\_beta} was
-  called without its \texttt{action\_type} argument. The weights and
-  certificate remain internally valid, but the row's premise --- ``$\beta/4$
-  matching is exact, so this spread is pure model error'' --- did not hold as
-  run; the mismatch contributes ${\sim}0.6$--1.5 nats against spreads of
-  15--24 nats ($<1\%$ of variance), so the conclusion survives but the
-  Villain numbers are an upper bound until the arm is rerun. Fixed in code.}
+  variance explained by coarse-only observables. The Villain arm was rerun on
+  2026-08-03 after a bug fix: \texttt{approx\_matched\_coarse\_beta} had been
+  called without its \texttt{action\_type} argument, so the arm ran at the
+  \emph{Wilson}-matched $\beta_c$ (4.0, 14.1464) rather than the exact
+  $\beta_f/4$ (3.5366, 13.7559). Both runs are internally valid; only the
+  corrected one has the exact-matching property the control depends on.
+  Correcting it made the Villain spreads \emph{larger} ($+4\%$, $+99\%$,
+  $+51\%$) --- a train/test confound rather than a matching effect, since the
+  checkpoint was trained on Wilson data at precisely the Wilson-matched
+  couplings the buggy run used, so the corrected arm additionally pays an
+  out-of-distribution conditioning penalty. The corrected Villain row is thus
+  an \emph{upper bound} on model error and the subtraction
+  Wilson${-}$Villain must not be read quantitatively.}
   \label{tab:matching-residual}
   \begin{tabular}{lrrr}
     \toprule
@@ -751,15 +756,40 @@ to $10^{-4}$; extended ones carry the error.
     \midrule
     Wilson (matching residual $+$ model error) & 0.0209 (0.062) &
       0.0419 (0.005) & 0.0175 (0.023) \\
-    Villain (exact matching \emph{as intended}) & 0.0287 (0.174) &
+    Villain, $\beta_c = \beta_f/4$ exact (corrected) & 0.0298 (0.075) &
+      0.0914 (0.003) & 0.0406 (0.077) \\
+    Villain, Wilson-matched $\beta_c$ (superseded) & 0.0287 (0.174) &
       0.0459 (0.031) & 0.0268 (0.048) \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-Wilson $\le$ Villain everywhere, and Wilson's $R^2_c$ sits \emph{below}
-Villain's model-error baseline: the coarse-action matching floor is
-negligible, and the entire measured density gap is fine-side model error.
+The conclusion survives on stronger, Villain-independent grounds. The matching
+residual is by construction a function of the coarse configuration alone --- it
+is the discrepancy between $S_{\rm matched}(c)$ and the true blocked action on
+the same $c$ --- so it can contribute \emph{only} to the coarse-explainable
+variance $R^2_c$. Wilson's $R^2_c$ is 0.062, 0.005, 0.023: at most ${\sim}6\%$
+of the fiber log-weight variance is coarse-explainable at all, and that is
+itself an upper bound because $c$-dependent \emph{model} error lands there
+too. The matching floor is therefore negligible and the measured density gap
+is fine-side model error, without needing the Villain arm at all; the Villain
+comparison corroborates it (Wilson $\le$ Villain at every case, now by a wider
+margin) without being load-bearing.
+
+\paragraph{Why the arm was not re-run against a Villain-trained checkpoint.}
+The obvious repair --- train a Villain-specific model so the control arm is
+free of the conditioning confound --- would replace one confound with a larger
+one. It would compare \emph{two different checkpoints} (different capacity
+utilization, training noise and seeds) rather than one checkpoint with and
+without a matching residual. Table~\ref{tab:ess-program} measures how big that
+substitution is: variants of the same architecture move fiber spreads by
+factors of 2--6. The quantity being resolved here is bounded at a few percent
+of the variance, an order of magnitude below the noise of any cross-model
+comparison. No amount of retraining resolves an effect smaller than the
+confound introduced to measure it, whereas the within-arm $R^2_c$
+decomposition does and needs no second campaign. The study is therefore closed
+with the corrected Villain numbers reported as-is, the confound named, and the
+load-bearing argument moved to $R^2_c$.
 
 \begin{table}[p]
   \centering

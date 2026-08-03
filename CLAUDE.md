@@ -56,8 +56,17 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
   generated and reference ensembles; U(1) also has exact character-expansion
   references (`u1_2d.lgt.exact`), SU(2) has `su2_2d.lgt.exact`
 - Exactness lesson from U(1) (measured, do not re-litigate): the model's
-  density gap is fine-side model error (~1 nat/site mean, 0.02–0.07 std),
-  with the matching-residual explanation eliminated by the Villain control.
+  density gap is fine-side model error (~1 nat/site mean, 0.02–0.07 std).
+  The matching-residual explanation is eliminated by the **within-arm R²_c
+  decomposition** (≤6% of fiber log-weight variance is coarse-explainable,
+  and a matching residual is a c-only function so it can land nowhere else)
+  — *not* by the Villain arm, which corroborates but is confounded. Do not
+  retrain a Villain-specific checkpoint to "fix" that arm: the effect is a
+  few percent of variance while same-architecture checkpoint variants move
+  spreads 2–6× (Table S5), so any cross-model comparison is an order of
+  magnitude noisier than its own signal. Closed; see `docs/NARRATIVE.md`
+  §18.5 for the full write-up and the general lesson (prefer within-model
+  decompositions to cross-arm subtractions for small effects).
   Exactness **must** come from Markov-chain machinery wrapped around the
   proposal — not from the proposal's own likelihood. This is a *design
   directive* for SU(2), not a property the U(1) pipeline delivered: the

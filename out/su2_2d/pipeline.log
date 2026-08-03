@@ -1,0 +1,85 @@
+================ su2 pipeline launch Mon 08/03/2026  9:42:59.23 ================ 
+[2026-08-03 09:43:02] STAGE_SMOKE_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\su2_2d\scripts\00_smoke.py
+HMC L=8 beta=2.0: 24s, acceptance 0.86
+  plaquette +0.4337 ± 0.0047 (naive sem, autocorrelation-blind)   exact +0.4331
+  W(2x2)    +0.0317                exact +0.0352
+
+score-approximation gap (relative L2 error of proxy vs exact target):
+  sigma  0.1:   0.08 %
+  sigma  0.3:   0.76 %
+  sigma  0.6:   3.17 %
+  sigma  1.0:   9.81 %
+  sigma  1.5:  28.27 %
+[2026-08-03 09:43:32] STAGE_SMOKE_DONE (0.5 min)
+[2026-08-03 09:43:32] STAGE_DATA_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\su2_2d\scripts\01_generate_data.py --config su2_2d/configs/su2.yaml
+L=8 beta=2.0: 256 configs, acc 0.87, plaq +0.43191 (exact +0.43313, rel 0.28%, z 0.1) OK, 28s
+  -> out\su2_2d\data\wilson_L8_beta2.pt
+L=8 beta=4.0: 256 configs, acc 0.77, plaq +0.65389 (exact +0.65805, rel 0.63%, z 0.6) marginal, 34s
+  -> out\su2_2d\data\wilson_L8_beta4.pt
+L=16 beta=8.0: 256 configs, acc 0.79, plaq +0.81857 (exact +0.81925, rel 0.08%, z 0.4) OK, 133s
+  -> out\su2_2d\data\wilson_L16_beta8.pt
+L=16 beta=16.0: 256 configs, acc 0.78, plaq +0.90741 (exact +0.90781, rel 0.04%, z 0.5) OK, 160s
+  -> out\su2_2d\data\wilson_L16_beta16.pt
+[2026-08-03 09:49:32] STAGE_DATA_DONE (6.0 min)
+[2026-08-03 09:49:32] STAGE_TRAIN_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\su2_2d\scripts\02_train.py --config su2_2d/configs/su2.yaml
+group L=8: 512 configs, betas [2.0, 4.0]
+group L=16: 512 configs, betas [8.0, 16.0]
+C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\su2_2d\model\train.py:100: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:839.)
+  print(f"step {step}: loss {float(loss):.5f}  val(EMA) {val:.5f}  [{detail}]",
+step 20: loss 0.80156  val(EMA) 39.23194  [L8:4.4294 L16:74.0345]
+step 40: loss 0.77916  val(EMA) 38.57153  [L8:4.3327 L16:72.8103]
+step 60: loss 0.74238  val(EMA) 37.87645  [L8:4.2343 L16:71.5186]
+step 80: loss 0.77440  val(EMA) 37.17914  [L8:4.1385 L16:70.2197]
+step 100: loss 0.79690  val(EMA) 36.47948  [L8:4.0441 L16:68.9149]
+step 120: loss 0.85004  val(EMA) 35.77325  [L8:3.9503 L16:67.5962]
+step 140: loss 0.85237  val(EMA) 35.06456  [L8:3.8577 L16:66.2714]
+step 160: loss 0.74416  val(EMA) 34.35997  [L8:3.7674 L16:64.9526]
+step 180: loss 0.88524  val(EMA) 33.65702  [L8:3.6788 L16:63.6352]
+step 200: loss 0.75509  val(EMA) 32.95670  [L8:3.5921 L16:62.3213]
+step 220: loss 0.70717  val(EMA) 32.26002  [L8:3.5071 L16:61.0129]
+step 240: loss 0.60156  val(EMA) 31.56685  [L8:3.4237 L16:59.7100]
+step 260: loss 0.83465  val(EMA) 30.87793  [L8:3.3419 L16:58.4139]
+step 280: loss 0.68028  val(EMA) 30.19284  [L8:3.2616 L16:57.1241]
+step 300: loss 0.75590  val(EMA) 29.51603  [L8:3.1833 L16:55.8488]
+step 320: loss 0.78182  val(EMA) 28.83791  [L8:3.1059 L16:54.5699]
+step 340: loss 0.89050  val(EMA) 28.17942  [L8:3.0315 L16:53.3274]
+step 360: loss 0.81044  val(EMA) 27.51232  [L8:2.9578 L16:52.0668]
+step 380: loss 0.84986  val(EMA) 26.85003  [L8:2.8859 L16:50.8142]
+step 400: loss 0.79489  val(EMA) 26.19416  [L8:2.8151 L16:49.5732]
+step 420: loss 0.72967  val(EMA) 25.54675  [L8:2.7459 L16:48.3476]
+step 440: loss 0.78044  val(EMA) 24.90916  [L8:2.6785 L16:47.1398]
+step 460: loss 0.84998  val(EMA) 24.28077  [L8:2.6123 L16:45.9492]
+step 480: loss 0.76661  val(EMA) 23.66243  [L8:2.5481 L16:44.7768]
+step 500: loss 0.72654  val(EMA) 23.05391  [L8:2.4853 L16:43.6225]
+step 520: loss 0.80636  val(EMA) 22.45447  [L8:2.4238 L16:42.4851]
+step 540: loss 0.88754  val(EMA) 21.86504  [L8:2.3639 L16:41.3661]
+step 560: loss 0.77848  val(EMA) 21.28782  [L8:2.3055 L16:40.2702]
+step 580: loss 0.74935  val(EMA) 20.72051  [L8:2.2486 L16:39.1924]
+step 600: loss 0.73245  val(EMA) 20.16182  [L8:2.1931 L16:38.1305]
+step 620: loss 0.71328  val(EMA) 19.61509  [L8:2.1393 L16:37.0909]
+step 640: loss 0.75358  val(EMA) 19.07852  [L8:2.0869 L16:36.0701]
+step 660: loss 0.74622  val(EMA) 18.55256  [L8:2.0352 L16:35.0699]
+step 680: loss 0.76955  val(EMA) 18.03757  [L8:1.9849 L16:34.0902]
+step 700: loss 0.78543  val(EMA) 17.53241  [L8:1.9364 L16:33.1284]
+step 720: loss 0.68422  val(EMA) 17.04361  [L8:1.8875 L16:32.1997]
+step 740: loss 0.87847  val(EMA) 16.57130  [L8:1.8417 L16:31.3009]
+step 760: loss 0.78563  val(EMA) 16.10571  [L8:1.7969 L16:30.4145]
+step 780: loss 1.06678  val(EMA) 15.64442  [L8:1.7514 L16:29.5374]
+step 800: loss 0.85766  val(EMA) 15.17074  [L8:1.7092 L16:28.6323]
+step 820: loss 0.89550  val(EMA) 14.71427  [L8:1.6668 L16:27.7618]
+step 840: loss 0.85691  val(EMA) 14.26938  [L8:1.6268 L16:26.9119]
+step 860: loss 0.75482  val(EMA) 13.84152  [L8:1.5869 L16:26.0962]
+step 880: loss 0.78370  val(EMA) 13.40067  [L8:1.5459 L16:25.2554]
+step 900: loss 0.87351  val(EMA) 12.99054  [L8:1.5077 L16:24.4734]
+step 920: loss 0.68579  val(EMA) 12.60647  [L8:1.4712 L16:23.7417]
+step 940: loss 0.78620  val(EMA) 12.19725  [L8:1.4333 L16:22.9612]
+step 960: loss 0.83538  val(EMA) 11.80686  [L8:1.3956 L16:22.2181]
+step 980: loss 0.62687  val(EMA) 11.41338  [L8:1.3593 L16:21.4675]
+step 1000: loss 0.85798  val(EMA) 11.02906  [L8:1.3231 L16:20.7350]
+step 1020: loss 0.69185  val(EMA) 10.65460  [L8:1.2878 L16:20.0214]
+step 1040: loss 0.87415  val(EMA) 10.29165  [L8:1.2538 L16:19.3295]
+step 1060: loss 0.74452  val(EMA) 9.94087  [L8:1.2213 L16:18.6604]
+step 1080: loss 0.64748  val(EMA) 9.60282  [L8:1.1901 L16:18.0156]
+step 1100: loss 0.63669  val(EMA) 9.27546  [L8:1.1600 L16:17.3910]
+step 1120: loss 0.78428  val(EMA) 8.96127  [L8:1.1310 L16:16.7916]

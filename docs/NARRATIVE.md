@@ -1336,6 +1336,118 @@ $\sim 0.005$ bar, and further progress on the exactness certificate is a
 from-scratch likelihood-native training project — deliberately not
 undertaken, for the strategic reasons recorded in Section 20.
 
+### 18.5 The Villain control: how it works, what it gave, and whether it was worth it
+
+Sections 15--18 established that the model's density sits about a nat per site
+away from the target, and that six interventions failed to close it. One
+competing explanation survived all of them, and it is not a model defect at
+all.
+
+**The question the control answers.** The pipeline conditions each generation
+on a coarse configuration drawn from a *single-coupling* Wilson ensemble. But
+the true blocked measure of a Wilson theory is not a single-coupling Wilson
+theory: blocking induces rectangle terms, higher characters, and an infinite
+tail of further couplings. Projecting all of that onto one $\beta_c$ is an
+approximation, and whatever it discards shows up in the importance weights
+*without being the score model's fault*. If that projection error were the
+dominant term, the entire fine-tuning program would have been chasing
+something no amount of fine-side training could fix. So: is the measured gap
+model error, or matching error?
+
+**How the control works.** For the Villain action the blocking relation is
+exact. The Villain plaquette weight is a wrapped Gaussian of variance
+$1/\beta$; the coarse plaquette is the wrapped sum of four of them; wrapped
+convolution adds variances, giving $4/\beta_f$; demanding that equal
+$1/\beta_c$ gives
+
+$$
+\beta_c \;=\; \beta_f/4 \qquad \text{exactly, with no truncation.}
+$$
+
+There is no induced-coupling tail to discard, so a Villain arm has *no*
+matching residual by construction and its fiber spread is model error alone.
+Run both arms at matched cases and the difference isolates the matching floor.
+That is the design.
+
+**What it gave.** The arms were run at three cases. The Villain arm was rerun
+on 2026-08-03 after a bug fix: `approx_matched_coarse_beta` had been called
+without its `action_type` argument, whose default is `"wilson"`, so the arm
+had been running at $\beta_c = 4.0$ and $14.1464$ instead of the exact
+$14.1464/4 = 3.5366$ and $55.0237/4 = 13.7559$. Both runs are internally
+valid --- the base HMC, $S_{\rm matched}$ and $\Delta F$ all used the same
+$\beta_c$ --- but only the corrected one has the exact-matching property the
+control depends on.
+
+| arm | 16:14.1 std/site ($R^2_c$) | 16:55.0 | 32:55.0 |
+|---|---|---|---|
+| Wilson (matching residual + model error) | 0.0209 (0.062) | 0.0419 (0.005) | 0.0175 (0.023) |
+| Villain, $\beta_c = \beta_f/4$ (corrected) | 0.0298 (0.075) | 0.0914 (0.003) | 0.0406 (0.077) |
+| Villain, Wilson-matched $\beta_c$ (superseded) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
+
+**The correction made the control's arm worse, not better.** Fixing the
+matching *raised* the Villain spreads by $+4\%$, $+99\%$ and $+51\%$. That is
+the opposite of the expected direction and it deserves an explanation rather
+than a footnote.
+
+The most likely cause is conditioning-distribution shift. The checkpoint was
+trained on **Wilson** data, and $4.0$ and $14.1464$ are not arbitrary numbers:
+they are literally the ladder's own coarse couplings (`ladder.beta_schedule =
+[4.0, 14.1464, 55.0237]`, with $14.1464$ also a training rung at $L = 16$).
+The buggy run therefore happened to present the model with coarse ensembles
+close to those it was built around, while the corrected run presents Villain
+ensembles at couplings that appear nowhere in training. The corrected arm thus
+measures model error *plus* an out-of-distribution conditioning penalty.
+
+That story should not be oversold: the effect is **not monotone** in the
+$\beta_c$ error. The $13\%$ mismatch at $\beta_f = 14.1$ moved the spread by
+$+4\%$, while the $2.8\%$ mismatch at $\beta_f = 55.0$ moved it by $+99\%$. A
+single-parameter "sensitivity to $\beta_c$" account does not fit. Something
+discrete --- seen-versus-unseen conditioning --- fits better, but separating
+the two would take a dedicated experiment, and none was run.
+
+**Was the control useful? Partly, and not in the way intended.**
+
+*As a subtraction, no.* Wilson $-$ Villain was supposed to be the matching
+floor. It cannot be read that way, because the two arms differ by more than
+the presence of a matching residual: they differ in the action generating the
+conditioner and in how far that conditioner sits from anything the model was
+trained on. And the effect being resolved is small --- bounded below at a few
+percent of the variance --- while the study's own Table S5 shows *checkpoint
+variants of the same architecture moving spreads by factors of 2--6*. An
+effect cannot be resolved by a comparison whose confounds are an order of
+magnitude larger than the signal. This is also why retraining a
+Villain-specific checkpoint would not rescue the design: it would replace an
+out-of-distribution confound with a model-identity confound of comparable or
+greater size.
+
+*As a consistency check, yes.* Wilson $\le$ Villain at every case, and by a
+wider margin after the correction. Had the ordering come out reversed, the
+matching-floor explanation would have been live and the whole closure would
+have been in doubt. It was not.
+
+*And the question it was built for is answered anyway, by a cleaner argument
+that needs no second arm.* The matching residual is, by construction, a
+function of the coarse configuration alone --- it is the discrepancy between
+$S_{\rm matched}(c)$ and the true blocked action evaluated on the same $c$.
+Any such term can therefore contribute **only** to the coarse-explainable
+share of the fiber log-weight variance, $R^2_c$. And $R^2_c$ is measured
+directly, within a single arm, with no cross-model comparison: for Wilson it
+is $0.062$, $0.005$, $0.023$. At most about six percent of the variance is
+coarse-explainable *at all*, and even that is an upper bound, because
+$c$-dependent **model** error lands in the same regression. The matching floor
+is negligible; the gap is fine-side model error. The Villain arm corroborates
+this. It never had to carry it.
+
+**The transferable lesson.** When the quantity of interest is small compared
+with model-to-model variation, prefer a *within-model decomposition* to a
+*cross-arm subtraction*. The decomposition here --- regress the log-weights on
+coarse-only observables and read off the explainable share --- costs one
+linear fit on data already in hand, has no confound, and gave a tighter answer
+than the second campaign it was meant to be checked against. The same
+reasoning applies directly to the non-abelian successor, where exact
+companion actions are scarcer and cross-arm controls correspondingly more
+expensive and more confounded.
+
 ### 19. The generalization discipline (what keeps all of this honest)
 
 Overfitting was not a hypothetical risk here — it actually happened twice
