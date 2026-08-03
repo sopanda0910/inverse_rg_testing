@@ -85,7 +85,7 @@ from diffusion_v2.pipeline.ladder import (
 from diffusion_v2.validate.report import validate_ensemble, GEN_COLOR, REF_COLOR, INK, MUTED, GRID_COLOR
 from diffusion_v2.utils import set_seed, save_ensemble, load_ensemble, save_json
 
-CHECKPOINT = "out/diffusion_v2/v2/checkpoints/score_net.pt"
+CHECKPOINT = "out/diffusion_v2/checkpoints/score_net.pt"
 OUT_DIR = Path("out/diffusion_v2/demo/generalization")
 ACTION_TYPE = "wilson"
 

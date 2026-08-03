@@ -25,7 +25,7 @@ CONFIG = "diffusion_v2/configs/v2_ablate_norm.yaml"
 OUT = REPO / "out" / "diffusion_v2" / "v2_ablate_norm"
 STATE = OUT / "campaign_state"
 GEN_DIR = OUT / "generalization"
-MAIN_GEN = REPO / "out" / "diffusion_v2" / "v2" / "generalization"
+MAIN_GEN = REPO / "out" / "diffusion_v2" / "generalization"
 CKPT = "out/diffusion_v2/v2_ablate_norm/checkpoints/score_net.pt"
 SAMPLER_FLAGS = ["--physics-blend", "1.0", "--physics-blend-beta-min", "5.0",
                  "--sigma-floor-coef", "0.1"]

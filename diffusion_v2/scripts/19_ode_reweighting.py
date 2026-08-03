@@ -22,6 +22,7 @@ paid for through the weights instead.
 
 import argparse
 import json
+import math
 import time
 from pathlib import Path
 
@@ -29,10 +30,12 @@ import torch
 
 from diffusion_v2.lgt import make_action, run_hmc_ensemble
 from diffusion_v2.lgt.blocking import approx_matched_coarse_beta
+from diffusion_v2.lgt.exact import plaquette_exact, topological_susceptibility_exact
 from diffusion_v2.lgt.hmc import adapted_hmc_params
 from diffusion_v2.lgt.lattice import plaquette_angles, topological_charge
 from diffusion_v2.model.likelihood import (
     conditional_ode_sample,
+    free_energy_certificate,
     importance_ess,
     independence_metropolis,
     reweighted_mean,
@@ -41,6 +44,7 @@ from diffusion_v2.model.likelihood import (
 from diffusion_v2.model.schedule import GeometricNoiseSchedule
 from diffusion_v2.model.train import load_checkpoint
 from diffusion_v2.utils import load_config, resolve_device, set_seed, save_json
+from diffusion_v2.validate.stats import integrated_autocorrelation_time
 
 
 def per_config_observables(configs: torch.Tensor) -> dict[str, torch.Tensor]:
@@ -53,6 +57,22 @@ def per_config_observables(configs: torch.Tensor) -> dict[str, torch.Tensor]:
 def unweighted_mean(values: torch.Tensor) -> tuple[float, float]:
     n = values.numel()
     return float(values.mean()), float(values.std() / max(n, 2) ** 0.5)
+
+
+def chain_aware_mean(values: torch.Tensor, n_chains: int) -> tuple[float, float]:
+    """Mean and tau_int-corrected sem for an HMC ensemble ordered chain-major
+    per draw (run_hmc_ensemble contract). With fewer than 8 draws per chain the
+    windowed tau_int is unusable; fall back to the naive sem, which is then a
+    LOWER BOUND wherever thinning does not decorrelate (topology at high beta)."""
+    n_draws = values.numel() // n_chains
+    mu = float(values.mean())
+    if n_draws < 8:
+        return mu, float(values.std() / max(values.numel(), 2) ** 0.5)
+    per_chain = values[: n_draws * n_chains].reshape(n_draws, n_chains).cpu().numpy()
+    taus = [integrated_autocorrelation_time(per_chain[:, c])[0] for c in range(n_chains)]
+    tau = max(sum(taus) / len(taus), 0.5)
+    n_eff = max(values.numel() / (2.0 * tau), 2.0)
+    return mu, float(values.std() / n_eff**0.5)
 
 
 def run_case(model, schedule, case, args, action_type, device):
@@ -86,6 +106,12 @@ def run_case(model, schedule, case, args, action_type, device):
     diag = importance_ess(fine, log_q, fine_beta, action_type,
                           coarse=coarse, coarse_beta_matched=coarse_beta)
     diag.pop("log_weights", None)
+    # Free-energy certificate: log E[w] vs the exact character-expansion
+    # Delta F. Valid because the coarse base IS HMC at the same matched
+    # coupling that enters the weights. Unshifted weights required.
+    diag["free_energy_certificate"] = free_energy_certificate(
+        log_w, fine_L, fine_beta, coarse_beta, action_type
+    )
     imh_idx, imh_accept = independence_metropolis(log_w, seed=args.seed)
 
     obs = per_config_observables(fine)
@@ -105,6 +131,28 @@ def run_case(model, schedule, case, args, action_type, device):
             "imh": [imh_mu, imh_err],
         }
 
+    if args.exact_ref:
+        refs = {
+            "plaquette": plaquette_exact(fine_beta, action_type, fine_L),
+            "Q^2": topological_susceptibility_exact(fine_beta, action_type, fine_L) * fine_L**2,
+            "Q": 0.0,
+        }
+        # With degenerate weights the linearized SNIS error collapses and its
+        # z-score becomes noise dressed as precision; suppress weighted-column
+        # z-scores below a minimal effective count.
+        ess_count = diag.get("ess_per_n_fiber", 0.0) * log_w.numel()
+        for name, o in obs_out.items():
+            ex = refs.get(name)
+            if ex is None:
+                continue
+            o["exact"] = ex
+            for est in ("raw", "reweighted", "imh"):
+                mu, err = o[est]
+                z = (mu - ex) / err if err > 0 else float("nan")
+                if est in ("reweighted", "imh") and ess_count < 4.0:
+                    z = float("nan")
+                o[f"z_{est}"] = z
+
     if args.hmc_ref:
         f_step, f_nsteps = adapted_hmc_params(fine_beta, 0.2, 5)
         f_burn = 200 if fine_beta < 5 else (2000 if fine_beta >= 20 else 600)
@@ -117,7 +165,7 @@ def run_case(model, schedule, case, args, action_type, device):
         )
         t_ref = time.time() - t0
         for name, values in per_config_observables(ref).items():
-            obs_out[name]["hmc_ref"] = list(unweighted_mean(values))
+            obs_out[name]["hmc_ref"] = list(chain_aware_mean(values, 16))
         diag["seconds_hmc_ref"] = round(t_ref, 1)
 
     diag.update({
@@ -133,11 +181,14 @@ def run_case(model, schedule, case, args, action_type, device):
 
 
 def format_report(results: list[dict]) -> str:
+    has_exact = any("exact" in o for r in results for o in r["observables"].values())
+    ref_head = "exact | z(raw) | z(rw)" if has_exact else "HMC ref"
     lines = [
         "# Reweighted observables via probability-flow ODE sampling",
         "",
-        "| L | beta_f | ESS/N (fiber) | i-MH acc | obs | raw | reweighted | i-MH | HMC ref |",
-        "|---|--------|---------------|----------|-----|-----|------------|------|---------|",
+        f"| L | beta_f | ESS/N (fiber) | i-MH acc | obs | raw | reweighted | i-MH | {ref_head} |",
+        "|---|--------|---------------|----------|-----|-----|------------|------|---------|"
+        + ("--|--|" if has_exact else ""),
     ]
     for r in results:
         fib = r.get("ess_per_n_fiber")
@@ -146,11 +197,20 @@ def format_report(results: list[dict]) -> str:
         for name, o in r["observables"].items():
             def fmt(pair):
                 return f"{pair[0]:.5g} ({pair[1]:.2g})" if pair else "--"
+            def fmtz(key):
+                z = o.get(key)
+                return f"{z:+.1f}" if z is not None and math.isfinite(z) else "--"
             head = (f"| {r['fine_L']} | {r['fine_beta']:g} | {fib_s} | "
                     f"{r['imh_acceptance']:.2f} " if first else "| | | | ")
+            if has_exact:
+                ex = o.get("exact")
+                ref_cells = (f"{ex:.5g} | {fmtz('z_raw')} | {fmtz('z_reweighted')}"
+                             if ex is not None else "-- | -- | --")
+            else:
+                ref_cells = fmt(o.get("hmc_ref"))
             lines.append(
                 head + f"| {name} | {fmt(o['raw'])} | {fmt(o['reweighted'])} | "
-                f"{fmt(o['imh'])} | {fmt(o.get('hmc_ref'))} |"
+                f"{fmt(o['imh'])} | {ref_cells} |"
             )
             first = False
     lines += [
@@ -170,6 +230,27 @@ def format_report(results: list[dict]) -> str:
         "estimators noisy -- raw columns stay the (biased) high-precision",
         "numbers.",
     ]
+    if any("free_energy_certificate" in r for r in results):
+        lines += [
+            "",
+            "## Free-energy certificate",
+            "",
+            "log E[w] vs the exact character-expansion Delta F",
+            "(2 L_f^2 log 2pi + log Z_f - log Z_c). An independent end-to-end",
+            "check of the weight chain against the solvable theory; heavy",
+            "tails bias the estimate LOW (rare dominant weights undersampled),",
+            "so agreement within a few sem certifies, disagreement of tens of",
+            "nats quantifies the same density gap the ESS sees.",
+            "",
+            "| L | beta_f | log mean w | exact dF | gap | sem |",
+            "|---|--------|------------|----------|-----|-----|",
+        ]
+        for r in results:
+            c = r.get("free_energy_certificate")
+            if c:
+                lines.append(f"| {r['fine_L']} | {r['fine_beta']:g} | "
+                             f"{c['log_mean_w']:.2f} | {c['exact_delta_F']:.2f} | "
+                             f"{c['gap']:+.2f} | {c['sem']:.2f} |")
     return "\n".join(lines)
 
 
@@ -177,6 +258,9 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="diffusion_v2/configs/v2.yaml")
     parser.add_argument("--checkpoint", default=None)
+    parser.add_argument("--correction", default=None,
+                        help="path to a score-correction file (see script 25); "
+                        "loads its stored base checkpoint and overrides --checkpoint")
     parser.add_argument("--cases", nargs="+", default=["16:14.1464", "16:55.0237", "32:55.0237"],
                         help="fine_L:fine_beta per case")
     parser.add_argument("--n-configs", type=int, default=64)
@@ -189,25 +273,68 @@ def main() -> None:
     parser.add_argument("--hmc-ref", action="store_true",
                         help="also run direct fine-level HMC as reference "
                         "(slow and topologically unreliable at large beta)")
+    parser.add_argument("--exact-ref", action="store_true",
+                        help="add exact character-expansion references "
+                        "(finite-volume plaquette, <Q^2>, <Q>=0) and z-scores "
+                        "for every estimator")
     parser.add_argument("--out", default=None)
+    parser.add_argument("--action-type", default=None,
+                        help="override config action_type. `villain` is the "
+                        "matching-residual control: beta/4 coarse matching is "
+                        "EXACT for the Villain action (lgt/blocking.py), so "
+                        "the fiber log-weight spread there is pure model "
+                        "error; Wilson minus Villain isolates the matching "
+                        "floor")
     parser.add_argument("--consistency-weight", type=float, default=None,
                         dest="consistency_override")
+    parser.add_argument("--physics-blend", type=float, default=None,
+                        dest="physics_blend_override",
+                        help="override ladder.physics_blend_coef")
+    parser.add_argument("--physics-blend-beta-min", type=float, default=None,
+                        dest="physics_blend_beta_min_override",
+                        help="override ladder.physics_blend_beta_min")
+    parser.add_argument("--sigma-min-coef", type=float, default=0.03,
+                        help="terminal sigma_min(beta) = coef / sqrt(beta). "
+                        "Lower = the ODE integrates closer to sigma=0, "
+                        "shrinking the endgame offset between the sampled "
+                        "(noised) and target density. Default 0.03 is the "
+                        "2026-08-01 sweep winner (ladder default 0.1 gave "
+                        "log-w std 42 vs 24 at L=16 beta=55); pass the ladder "
+                        "value explicitly to reproduce pre-sweep numbers")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(args.seed)
     device = resolve_device(config)
-    action_type = config["action_type"]
+    action_type = args.action_type or config["action_type"]
     ladder_cfg = config.get("ladder", {})
     args.consistency_weight = (
         args.consistency_override if args.consistency_override is not None
         else float(ladder_cfg.get("consistency_weight", 1.0))
     )
-    args.physics_blend = float(ladder_cfg.get("physics_blend_coef", 0.0))
-    args.physics_blend_beta_min = float(ladder_cfg.get("physics_blend_beta_min", 0.0))
+    args.physics_blend = (
+        args.physics_blend_override if args.physics_blend_override is not None
+        else float(ladder_cfg.get("physics_blend_coef", 0.0))
+    )
+    args.physics_blend_beta_min = (
+        args.physics_blend_beta_min_override
+        if args.physics_blend_beta_min_override is not None
+        else float(ladder_cfg.get("physics_blend_beta_min", 0.0))
+    )
+    if action_type == "villain" and args.physics_blend > 0:
+        print("villain control: the physics blend injects the WILSON exact score; "
+              "disabling it. Run the Wilson arm with --physics-blend 0 too for a "
+              "clean matching-floor comparison.")
+        args.physics_blend = 0.0
 
-    checkpoint = args.checkpoint or config["train"]["checkpoint"]
-    model, schedule = load_checkpoint(checkpoint, device)
-    coef = ladder_cfg.get("sigma_min_beta_coef")
+    if args.correction:
+        from diffusion_v2.model.score_correction import load_corrected_checkpoint
+
+        model, schedule = load_corrected_checkpoint(args.correction, device)
+    else:
+        checkpoint = args.checkpoint or config["train"]["checkpoint"]
+        model, schedule = load_checkpoint(checkpoint, device)
+    coef = (args.sigma_min_coef if args.sigma_min_coef is not None
+            else ladder_cfg.get("sigma_min_beta_coef"))
     if coef is not None:
         schedule = GeometricNoiseSchedule(
             schedule.sigma_min, schedule.sigma_max, sigma_min_beta_coef=float(coef)

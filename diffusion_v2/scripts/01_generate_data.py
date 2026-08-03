@@ -4,6 +4,7 @@
 """
 
 import argparse
+import json
 import time
 from pathlib import Path
 
@@ -19,6 +20,7 @@ from diffusion_v2.utils import (
     resolve_device,
     set_seed,
     save_ensemble,
+    load_ensemble,
     ensemble_path,
     save_json,
     expand_rungs,
@@ -84,6 +86,10 @@ def sector_augment(configs: torch.Tensor, action, fraction: float) -> torch.Tens
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="diffusion_v2/configs/default.yaml")
+    parser.add_argument("--rebuild-matching", action="store_true",
+                        help="recompute matching.json entries for every "
+                        "ensemble file already on disk (repairs a matching.json "
+                        "that an earlier run overwrote with a subset)")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]))
@@ -128,9 +134,39 @@ def main() -> None:
         }
         print(f"  matched coarse beta: {matched:.4f} (tree level {float(rung['beta'])/4.0:g})")
 
+    if args.rebuild_matching:
+        import re
+
+        for path in sorted(out_dir.glob(f"{action_type}_L*_beta*.pt")):
+            m = re.match(rf"{action_type}_L(\d+)_beta([\d.]+)\.pt", path.name)
+            if not m:
+                continue
+            lattice_size, beta = int(m.group(1)), float(m.group(2))
+            key = f"L{lattice_size}_beta{beta:g}"
+            if key in matching:
+                continue
+            configs, _ = load_ensemble(path)
+            if action_type == "villain":
+                matched = villain_blocked_beta(beta)
+            else:
+                matched = match_coarse_beta(block_links(configs.float()), action_type)
+            matching[key] = {
+                "fine_beta": beta,
+                "matched_coarse_beta": matched,
+                "tree_level": beta / 4.0,
+            }
+            print(f"  rebuilt {key}: matched coarse beta {matched:.4f}")
+
     if matching:
-        save_json(out_dir / "matching.json", matching)
-        print(f"wrote {out_dir / 'matching.json'}")
+        # Merge into any existing file -- earlier runs that regenerate only a
+        # subset of rungs must not clobber the other entries.
+        merged = {}
+        matching_path = out_dir / "matching.json"
+        if matching_path.exists():
+            merged = json.loads(matching_path.read_text(encoding="utf-8"))
+        merged.update(matching)
+        save_json(matching_path, merged)
+        print(f"wrote {matching_path} ({len(merged)} entries, {len(matching)} new)")
 
 
 if __name__ == "__main__":

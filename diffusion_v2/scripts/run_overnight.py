@@ -21,7 +21,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 PY = str(REPO / ".venv" / "Scripts" / "python.exe")
 CONFIG = "diffusion_v2/configs/v2.yaml"
-OUT = REPO / "out" / "diffusion_v2" / "v2"
+OUT = REPO / "out" / "diffusion_v2"
 STATE = OUT / "campaign_state"
 
 

@@ -67,10 +67,18 @@ class GeometricNoiseSchedule:
         return self.sigma(t, beta=beta)
 
     def discrete_sigmas(self, n_steps: int, device=None, beta=None) -> torch.Tensor:
-        """Descending sigmas for ancestral sampling, sigma_max -> sigma_min(beta)."""
+        """Descending sigmas for ancestral sampling, sigma_max -> sigma_min(beta).
+
+        Scalar beta -> [n_steps]; per-sample tensor beta -> [n_steps, B], one
+        log-spaced grid per sample (matching effective_sigma_min's tensor
+        support)."""
         low = self.effective_sigma_min(beta)
+        ratios = torch.linspace(1.0, 0.0, n_steps, device=device)
+        if isinstance(low, torch.Tensor) and low.numel() > 1:
+            log_low = torch.log(low.to(ratios.device).float()).reshape(1, -1)
+            log_range = math.log(self.sigma_max) - log_low
+            return torch.exp(log_low + ratios.reshape(-1, 1) * log_range)
         if isinstance(low, torch.Tensor):
             low = float(low)
-        ratios = torch.linspace(1.0, 0.0, n_steps, device=device)
         log_range = math.log(self.sigma_max) - math.log(low)
         return torch.exp(math.log(low) + ratios * log_range)

@@ -73,12 +73,61 @@ def jackknife(values: np.ndarray, estimator=np.mean) -> tuple[float, float]:
 
 
 def binned_mean_err(values: np.ndarray, n_bins: int = 20) -> tuple[float, float]:
-    """Mean and error from binning (robust to mild autocorrelation)."""
+    """Mean and error from binning (robust to mild autocorrelation).
+
+    Fixed n_bins is blind to autocorrelation longer than the bin length; where
+    chain structure is known, prefer `autocorr_aware_mean_err`."""
     values = np.asarray(values, dtype=float)
     n_bins = min(n_bins, max(2, len(values) // 2))
     bins = np.array_split(values, n_bins)
     means = np.array([b.mean() for b in bins])
     return float(values.mean()), float(means.std(ddof=1) / math.sqrt(len(means)))
+
+
+def chain_tau_int(values: np.ndarray, n_chains: int) -> float:
+    """Mean per-chain tau_int for a series ordered chain-major per draw
+    (run_hmc_ensemble contract: index = draw * n_chains + chain). Computing
+    tau_int on the interleaved ordering instead reads ~0.5 regardless of the
+    true autocorrelation, because correlated samples sit n_chains apart."""
+    values = np.asarray(values, dtype=float)
+    n_draws = len(values) // max(n_chains, 1)
+    if n_draws < 8:
+        return 0.5
+    per_chain = values[: n_draws * n_chains].reshape(n_draws, n_chains)
+    taus = [integrated_autocorrelation_time(per_chain[:, c])[0] for c in range(n_chains)]
+    return float(max(float(np.mean(taus)), 0.5))
+
+
+def autocorr_aware_mean_err(
+    values: np.ndarray, n_chains: int | None = None, n_bins: int = 20
+) -> tuple[float, float, float]:
+    """Mean, error, and tau_int. The binned error is the floor; when chain
+    structure is known and per-chain tau_int is measurable, the naive sem
+    inflated by sqrt(2 tau_int) replaces it wherever larger (n_eff = N / 2 tau;
+    chains are independent, so the inflation applies to the pooled sem)."""
+    values = np.asarray(values, dtype=float)
+    mean, err = binned_mean_err(values, n_bins)
+    tau = 0.5
+    if n_chains and len(values) >= 8 * n_chains:
+        tau = chain_tau_int(values, n_chains)
+        naive = values.std(ddof=1) / math.sqrt(max(len(values), 2))
+        err = max(err, naive * math.sqrt(2.0 * tau))
+    return mean, float(err), tau
+
+
+def ks_p_neff(a: np.ndarray, b: np.ndarray, n_eff_a: float, n_eff_b: float) -> float:
+    """Two-sample KS p-value with autocorrelation-corrected effective sample
+    sizes. scipy's ks_2samp assumes i.i.d. samples; with autocorrelated inputs
+    its p-values overstate significance. Statistic from the full samples,
+    p from the asymptotic Kolmogorov distribution at the effective size."""
+    from scipy.stats import ks_2samp, kstwobign
+
+    d = float(ks_2samp(np.asarray(a, dtype=float), np.asarray(b, dtype=float)).statistic)
+    ne = n_eff_a * n_eff_b / max(n_eff_a + n_eff_b, 1e-9)
+    if ne < 4:
+        return float("nan")
+    root = math.sqrt(ne)
+    return float(kstwobign.sf((root + 0.12 + 0.11 / root) * d))
 
 
 def integrated_autocorrelation_time(

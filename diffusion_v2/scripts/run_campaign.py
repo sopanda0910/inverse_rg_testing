@@ -30,11 +30,11 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 PY = str(REPO / ".venv" / "Scripts" / "python.exe")
 CONFIG = "diffusion_v2/configs/v2.yaml"
-OUT = REPO / "out" / "diffusion_v2" / "v2"
+OUT = REPO / "out" / "diffusion_v2"
 STATE = OUT / "campaign_state"
 GEN_DIR = OUT / "generalization"
 THERM_DIR = OUT / "thermalization"
-CKPT = "out/diffusion_v2/v2/checkpoints/score_net.pt"
+CKPT = "out/diffusion_v2/checkpoints/score_net.pt"
 V6_BASELINES = REPO / "out" / "diffusion" / "demo_v6" / "generalization_blend_verify" / "thermalization"
 
 SAMPLER_FLAGS = ["--physics-blend", "1.0", "--physics-blend-beta-min", "5.0",

@@ -60,13 +60,13 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=20260731)
     parser.add_argument("--out-dir", default=None)
     parser.add_argument("--baseline-summary",
-                        default="out/diffusion_v2/v2/diffusion_vs_instanton/summary.json",
+                        default="out/diffusion_v2/diffusion_vs_instanton/summary.json",
                         help="pull the burn-in 500 points and diffusion costs from here")
     args = parser.parse_args()
     config = load_config(args.config)
     device = resolve_device(config)
     action_type = config["action_type"]
-    out_dir = Path(args.out_dir or "out/diffusion_v2/v2/diffusion_vs_instanton/burnin_scan")
+    out_dir = Path(args.out_dir or "out/diffusion_v2/diffusion_vs_instanton/burnin_scan")
     out_dir.mkdir(parents=True, exist_ok=True)
     summary_path = out_dir / "summary.json"
     records = json.loads(summary_path.read_text(encoding="utf-8")) if summary_path.exists() else []

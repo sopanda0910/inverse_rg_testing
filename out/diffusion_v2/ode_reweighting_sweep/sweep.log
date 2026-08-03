@@ -1,0 +1,66 @@
+[sweep] baseline: (defaults)
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.031372662633657455, "log_weight_std": 29.435768127441406, "log_weight_range": 158.486328125, "ess_per_n_fiber": 0.030444839969277382, "log_weight_std_fiber": 27.477705001831055, "log_weight_range_fiber": 153.82421875, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.12698412698412698, "seconds_hmc_base": 9.5, "seconds_ode_sample": 184.6, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\baseline\report.md
+[sweep] baseline: rc=0 (197s)
+[sweep] sigmin0.03: --sigma-min-coef 0.03
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.031004207208752632, "log_weight_std": 25.978992462158203, "log_weight_range": 118.09375, "ess_per_n_fiber": 0.03090321272611618, "log_weight_std_fiber": 23.994718551635742, "log_weight_range_fiber": 111.794921875, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.14285714285714285, "seconds_hmc_base": 8.9, "seconds_ode_sample": 155.7, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\sigmin0.03\report.md
+[sweep] sigmin0.03: rc=0 (168s)
+[sweep] sigmin0.01: --sigma-min-coef 0.01
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.01688215136528015, "log_weight_std": 23.23476219177246, "log_weight_range": 118.48046875, "ess_per_n_fiber": 0.019684186205267906, "log_weight_std_fiber": 22.368568420410156, "log_weight_range_fiber": 114.8642578125, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.1111111111111111, "seconds_hmc_base": 9.2, "seconds_ode_sample": 171.5, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\sigmin0.01\report.md
+[sweep] sigmin0.01: rc=0 (184s)
+[sweep] blend2: --physics-blend 2
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.01562507450580597, "log_weight_std": 47.43815612792969, "log_weight_range": 211.455078125, "ess_per_n_fiber": 0.01562567427754402, "log_weight_std_fiber": 46.56158447265625, "log_weight_range_fiber": 204.2763671875, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.09523809523809523, "seconds_hmc_base": 9.0, "seconds_ode_sample": 153.9, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\blend2\report.md
+[sweep] blend2: rc=0 (166s)
+[sweep] blend4: --physics-blend 4
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.0156250037252903, "log_weight_std": 128.91720581054688, "log_weight_range": 671.0263671875, "ess_per_n_fiber": 0.01562502607703209, "log_weight_std_fiber": 127.81016540527344, "log_weight_range_fiber": 663.1376953125, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.15873015873015872, "seconds_hmc_base": 9.4, "seconds_ode_sample": 174.8, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\blend4\report.md
+[sweep] blend4: rc=0 (188s)
+[sweep] cw0: --consistency-weight 0
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.016269652172923088, "log_weight_std": 42.17622756958008, "log_weight_range": 232.3330078125, "ess_per_n_fiber": 0.015698224306106567, "log_weight_std_fiber": 42.44139099121094, "log_weight_range_fiber": 226.8623046875, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.031746031746031744, "seconds_hmc_base": 8.6, "seconds_ode_sample": 152.6, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\cw0\report.md
+[sweep] cw0: rc=0 (165s)
+[sweep] cw0.5: --consistency-weight 0.5
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.03286118805408478, "log_weight_std": 31.779638290405273, "log_weight_range": 147.30078125, "ess_per_n_fiber": 0.025685446336865425, "log_weight_std_fiber": 31.906574249267578, "log_weight_range_fiber": 142.3994140625, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.031746031746031744, "seconds_hmc_base": 8.1, "seconds_ode_sample": 153.1, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\cw0.5\report.md
+[sweep] cw0.5: rc=0 (165s)
+[sweep] cw2: --consistency-weight 2
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.0218561552464962, "log_weight_std": 37.129154205322266, "log_weight_range": 190.3271484375, "ess_per_n_fiber": 0.022998763248324394, "log_weight_std_fiber": 38.14768981933594, "log_weight_range_fiber": 194.8642578125, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.06349206349206349, "seconds_hmc_base": 8.4, "seconds_ode_sample": 163.3, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\cw2\report.md
+[sweep] cw2: rc=0 (175s)
+[sweep] sigmin0.03_blend2: --sigma-min-coef 0.03 --physics-blend 2
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.015625305473804474, "log_weight_std": 39.33956527709961, "log_weight_range": 196.8994140625, "ess_per_n_fiber": 0.015626024454832077, "log_weight_std_fiber": 38.53509521484375, "log_weight_range_fiber": 193.2255859375, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.1111111111111111, "seconds_hmc_base": 8.6, "seconds_ode_sample": 186.2, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\sigmin0.03_blend2\report.md
+[sweep] sigmin0.03_blend2: rc=0 (199s)
+[sweep] sigmin0.03_blend4_cw0.5: --sigma-min-coef 0.03 --physics-blend 4 --consistency-weight 0.5
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.015636559575796127, "log_weight_std": 87.62297821044922, "log_weight_range": 363.0009765625, "ess_per_n_fiber": 0.015628401190042496, "log_weight_std_fiber": 87.85786437988281, "log_weight_range_fiber": 364.7236328125, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.09523809523809523, "seconds_hmc_base": 9.8, "seconds_ode_sample": 178.4, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\sigmin0.03_blend4_cw0.5\report.md
+[sweep] sigmin0.03_blend4_cw0.5: rc=0 (193s)
+[sweep] sigmin0.01_blend4: --sigma-min-coef 0.01 --physics-blend 4
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.0156250037252903, "log_weight_std": 106.9344253540039, "log_weight_range": 568.3623046875, "ess_per_n_fiber": 0.015625011175870895, "log_weight_std_fiber": 106.2105484008789, "log_weight_range_fiber": 560.4736328125, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.14285714285714285, "seconds_hmc_base": 9.8, "seconds_ode_sample": 175.2, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\sigmin0.01_blend4\report.md
+[sweep] sigmin0.01_blend4: rc=0 (189s)
+[sweep] probes8: --n-probes 8
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.027642320841550827, "log_weight_std": 29.830047607421875, "log_weight_range": 164.994140625, "ess_per_n_fiber": 0.02089666947722435, "log_weight_std_fiber": 27.899253845214844, "log_weight_range_fiber": 160.365234375, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.12698412698412698, "seconds_hmc_base": 9.0, "seconds_ode_sample": 541.1, "ode_steps": 120, "n_probes": 8}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\probes8\report.md
+[sweep] probes8: rc=0 (554s)
+[sweep] steps240: --ode-steps 240
+case L=16 beta=55.0237 ...
+  {"n": 64, "ess_per_n": 0.016376392915844917, "log_weight_std": 27.903615951538086, "log_weight_range": 128.1640625, "ess_per_n_fiber": 0.030840707942843437, "log_weight_std_fiber": 27.11629867553711, "log_weight_range_fiber": 132.59375, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.09523809523809523, "seconds_hmc_base": 7.8, "seconds_ode_sample": 310.3, "ode_steps": 240, "n_probes": 2}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\steps240\report.md
+[sweep] steps240: rc=0 (321s)
+[sweep] wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\v2\ode_reweighting_sweep\sweep_summary.md

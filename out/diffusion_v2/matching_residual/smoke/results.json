@@ -1,0 +1,53 @@
+[
+  {
+    "fine_L": 8,
+    "fine_beta": 2.0,
+    "coarse_L": 4,
+    "coarse_beta": 0.488104328097667,
+    "action_type": "wilson",
+    "n": 32,
+    "ess_per_n_fiber": 0.03267023339867592,
+    "log_weight_std_fiber": 14.87630558013916,
+    "per_site_std": 0.11622113734483719,
+    "coarse_regression": {
+      "r2": 0.2904132497035603,
+      "explained_std": 8.0168416251443,
+      "residual_std": 12.531349473763493,
+      "cv_residual_std": 14.351980492336109,
+      "ridge": 1.0,
+      "std_coefficients": {
+        "sum_cos_P": -1.1379592545940007,
+        "sum_cos_2P": 0.7172192682818511,
+        "sum_cos_3P": -2.50404549518431,
+        "sum_cos_rect": -0.968974365481205,
+        "Q_c": -0.396412667250027,
+        "Q_c^2": 2.7233831779930195
+      }
+    },
+    "fine_surrogate_regression": {
+      "r2": 0.07135453145623605,
+      "target_std": 14.643468327059718,
+      "residual_std": 14.111361711851172,
+      "cv_residual_std": 15.714809589084128,
+      "residual_std_per_site": 0.12277194991471975,
+      "ridge": 1.0,
+      "std_coefficients": {
+        "S_matched(blocked)": -0.037794205198622983,
+        "sum_cos_p": 0.14416257667310428,
+        "sum_cos_2p": 0.22945484493743643,
+        "sum_cos_3p": 1.0073559734366382,
+        "sum_cos_rect": -0.27229688388568085,
+        "sum_cos_2P_blocked": 1.8262300525242607,
+        "Q_float^2": -0.5766356229985754
+      }
+    },
+    "free_energy_certificate": {
+      "log_mean_w": 185.46098090089635,
+      "exact_delta_F": 287.0446936122223,
+      "gap": -101.58371271132597,
+      "sem": 0.9773053196242397,
+      "n": 32
+    },
+    "seconds": 4.4
+  }
+]

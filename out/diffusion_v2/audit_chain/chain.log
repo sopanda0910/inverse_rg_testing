@@ -1,0 +1,341 @@
+================ audit chain launch Sun 08/02/2026 14:53:37.26 ================ 
+[2026-08-02 14:53:37] STAGE_PYTEST_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe -m pytest diffusion_v2/tests -q
+........................................................................ [ 67%]
+..................................                                       [100%]
+============================== warnings summary ===============================
+diffusion_v2/tests/test_likelihood_train.py::TestIntegrator::test_matches_eval_integrator_on_analytic_score
+  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\tests\test_likelihood_train.py:44: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+  Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:839.)
+    assert abs(float((log_q_diff - log_q_exact).mean())) < 1.0
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+106 passed, 1 warning in 59.95s
+[2026-08-02 14:54:38] STAGE_PYTEST_DONE (1.0 min)
+[2026-08-02 14:54:38] STAGE_REBUILD_MATCHING_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\01_generate_data.py --config diffusion_v2/configs/v2.yaml --rebuild-matching
+skip existing out\diffusion_v2\data\wilson_L16_beta14.1464.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta25.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta40.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta55.0237.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.0119.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.0397.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.0743.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.2464.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.2749.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.7484.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.8367.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta1.8781.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.122.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.1285.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.1757.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.1862.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.2983.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.3046.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.3454.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta2.7647.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.1518.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.1669.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.2922.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.3842.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.4006.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.6231.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta3.7225.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta4.0764.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta4.7323.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta4.7632.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta5.586.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta6.2411.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta6.4184.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta6.8771.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta8.3946.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta8.4548.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta8.7139.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta9.287.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta9.571.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta9.8499.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta10.2188.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta11.8501.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta11.8784.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta12.9259.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta14.4687.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta15.5366.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta17.502.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta17.7602.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta19.403.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta20.2412.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta21.8857.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta27.0442.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta27.3387.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta27.7875.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta30.5978.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta33.325.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta34.3422.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta38.5957.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta39.6475.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta47.0386.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta47.4228.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta54.11.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta56.1944.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta57.2189.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta2.1926.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta2.4697.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta2.8622.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta4.994.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta8.069.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta11.2015.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta12.3504.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta12.688.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta14.1441.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta18.0708.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta18.6487.pt
+skip existing out\diffusion_v2\data\wilson_L32_beta52.6284.pt
+skip existing out\diffusion_v2\data\wilson_L8_beta1.4347.pt
+skip existing out\diffusion_v2\data\wilson_L8_beta1.4977.pt
+skip existing out\diffusion_v2\data\wilson_L8_beta1.7872.pt
+skip existing out\diffusion_v2\data\wilson_L8_beta1.9783.pt
+skip existing out\diffusion_v2\data\wilson_L8_beta2.4006.pt
+skip existing out\diffusion_v2\data\wilson_L8_beta2.4786.pt
+skip existing out\diffusion_v2\data\wilson_L16_beta20.pt
+  rebuilt L16_beta1.0119: matched coarse beta 0.0827
+  rebuilt L16_beta1.0397: matched coarse beta 0.0827
+  rebuilt L16_beta1.0743: matched coarse beta 0.0861
+  rebuilt L16_beta1.2464: matched coarse beta 0.1473
+  rebuilt L16_beta1.2749: matched coarse beta 0.1794
+  rebuilt L16_beta1.7484: matched coarse beta 0.3507
+  rebuilt L16_beta1.8367: matched coarse beta 0.3861
+  rebuilt L16_beta1.8781: matched coarse beta 0.4105
+  rebuilt L16_beta10.2188: matched coarse beta 3.0481
+  rebuilt L16_beta11.8501: matched coarse beta 3.4556
+  rebuilt L16_beta11.8784: matched coarse beta 3.4383
+  rebuilt L16_beta12.9259: matched coarse beta 3.7415
+  rebuilt L16_beta14.1464: matched coarse beta 3.9495
+  rebuilt L16_beta14.4687: matched coarse beta 4.0990
+  rebuilt L16_beta15.5366: matched coarse beta 4.3221
+  rebuilt L16_beta17.502: matched coarse beta 4.6372
+  rebuilt L16_beta17.7602: matched coarse beta 4.6741
+  rebuilt L16_beta19.403: matched coarse beta 5.2476
+  rebuilt L16_beta2.122: matched coarse beta 0.5376
+  rebuilt L16_beta2.1285: matched coarse beta 0.5204
+  rebuilt L16_beta2.1757: matched coarse beta 0.5602
+  rebuilt L16_beta2.1862: matched coarse beta 0.5591
+  rebuilt L16_beta2.2983: matched coarse beta 0.6126
+  rebuilt L16_beta2.3046: matched coarse beta 0.6361
+  rebuilt L16_beta2.3454: matched coarse beta 0.6525
+  rebuilt L16_beta2.7647: matched coarse beta 0.8523
+  rebuilt L16_beta20.2412: matched coarse beta 5.5888
+  rebuilt L16_beta20: matched coarse beta 5.4873
+  rebuilt L16_beta21.8857: matched coarse beta 6.0527
+  rebuilt L16_beta25: matched coarse beta 6.3592
+  rebuilt L16_beta27.0442: matched coarse beta 7.3915
+  rebuilt L16_beta27.3387: matched coarse beta 7.3554
+  rebuilt L16_beta27.7875: matched coarse beta 7.3089
+  rebuilt L16_beta3.1518: matched coarse beta 1.0331
+  rebuilt L16_beta3.1669: matched coarse beta 1.0299
+  rebuilt L16_beta3.2922: matched coarse beta 1.0607
+  rebuilt L16_beta3.3842: matched coarse beta 1.0614
+  rebuilt L16_beta3.4006: matched coarse beta 1.0921
+  rebuilt L16_beta3.6231: matched coarse beta 1.2435
+  rebuilt L16_beta3.7225: matched coarse beta 1.2482
+  rebuilt L16_beta30.5978: matched coarse beta 7.9495
+  rebuilt L16_beta33.325: matched coarse beta 8.7026
+  rebuilt L16_beta34.3422: matched coarse beta 8.8640
+  rebuilt L16_beta38.5957: matched coarse beta 10.0156
+  rebuilt L16_beta39.6475: matched coarse beta 10.4354
+  rebuilt L16_beta4.0764: matched coarse beta 1.3790
+  rebuilt L16_beta4.7323: matched coarse beta 1.6100
+  rebuilt L16_beta4.7632: matched coarse beta 1.6205
+  rebuilt L16_beta40: matched coarse beta 9.7062
+  rebuilt L16_beta47.0386: matched coarse beta 12.1627
+  rebuilt L16_beta47.4228: matched coarse beta 12.3817
+  rebuilt L16_beta5.586: matched coarse beta 1.8661
+  rebuilt L16_beta54.11: matched coarse beta 13.5786
+  rebuilt L16_beta55.0237: matched coarse beta 12.8774
+  rebuilt L16_beta56.1944: matched coarse beta 14.5225
+  rebuilt L16_beta57.2189: matched coarse beta 14.6376
+  rebuilt L16_beta6.2411: matched coarse beta 2.0604
+  rebuilt L16_beta6.4184: matched coarse beta 2.1220
+  rebuilt L16_beta6.8771: matched coarse beta 2.2253
+  rebuilt L16_beta8.3946: matched coarse beta 2.5795
+  rebuilt L16_beta8.4548: matched coarse beta 2.5667
+  rebuilt L16_beta8.7139: matched coarse beta 2.6886
+  rebuilt L16_beta9.287: matched coarse beta 2.8480
+  rebuilt L16_beta9.571: matched coarse beta 2.9210
+  rebuilt L16_beta9.8499: matched coarse beta 2.9519
+  rebuilt L32_beta10.8745: matched coarse beta 3.2444
+  rebuilt L32_beta11.2015: matched coarse beta 3.3044
+  rebuilt L32_beta11.9792: matched coarse beta 3.4679
+  rebuilt L32_beta12.3504: matched coarse beta 3.5784
+  rebuilt L32_beta12.688: matched coarse beta 3.6882
+  rebuilt L32_beta14.1441: matched coarse beta 4.0306
+  rebuilt L32_beta18.0708: matched coarse beta 4.9635
+  rebuilt L32_beta18.6487: matched coarse beta 5.1209
+  rebuilt L32_beta2.0799: matched coarse beta 0.5360
+  rebuilt L32_beta2.1926: matched coarse beta 0.5963
+  rebuilt L32_beta2.4378: matched coarse beta 0.7078
+  rebuilt L32_beta2.4697: matched coarse beta 0.7237
+  rebuilt L32_beta2.5092: matched coarse beta 0.7380
+  rebuilt L32_beta2.8622: matched coarse beta 0.9058
+  rebuilt L32_beta25.9011: matched coarse beta 7.0522
+  rebuilt L32_beta30.6638: matched coarse beta 8.1399
+  rebuilt L32_beta31.4382: matched coarse beta 8.3755
+  rebuilt L32_beta4.0939: matched coarse beta 1.4004
+  rebuilt L32_beta4.2586: matched coarse beta 1.4347
+  rebuilt L32_beta4.2761: matched coarse beta 1.4491
+  rebuilt L32_beta4.994: matched coarse beta 1.6891
+  rebuilt L32_beta40.9956: matched coarse beta 10.4247
+  rebuilt L32_beta43.8647: matched coarse beta 11.4096
+  rebuilt L32_beta44.3339: matched coarse beta 11.4885
+  rebuilt L32_beta44.5075: matched coarse beta 11.4427
+  rebuilt L32_beta5.2987: matched coarse beta 1.7770
+  rebuilt L32_beta5.7905: matched coarse beta 1.9003
+  rebuilt L32_beta50.1987: matched coarse beta 13.2386
+  rebuilt L32_beta52.6284: matched coarse beta 14.0222
+  rebuilt L32_beta6.1747: matched coarse beta 2.0261
+  rebuilt L32_beta8.069: matched coarse beta 2.4953
+  rebuilt L32_beta8.7467: matched coarse beta 2.7087
+  rebuilt L32_beta8.9764: matched coarse beta 2.7478
+  rebuilt L32_beta9.3874: matched coarse beta 2.8561
+  rebuilt L32_beta9.5767: matched coarse beta 2.8748
+  rebuilt L32_beta9.6729: matched coarse beta 2.9593
+  rebuilt L8_beta1.4347: matched coarse beta 0.2279
+  rebuilt L8_beta1.4977: matched coarse beta 0.2450
+  rebuilt L8_beta1.7872: matched coarse beta 0.2991
+  rebuilt L8_beta1.9783: matched coarse beta 0.4944
+  rebuilt L8_beta2.4006: matched coarse beta 0.6690
+  rebuilt L8_beta2.4786: matched coarse beta 0.6703
+wrote out\diffusion_v2\data\matching.json (107 entries, 107 new)
+[2026-08-02 14:54:42] STAGE_REBUILD_MATCHING_DONE (0.1 min)
+[2026-08-02 14:54:42] STAGE_MATCHRES_WILSON_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\27_matching_residual.py --checkpoint C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\checkpoints\score_net_rkl2.pt --cases 16:14.1464 16:55.0237 32:55.0237 32:218.58 --n-configs 96 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\matching_residual\wilson
+case wilson L=16 beta=14.1464 ...
+  {"log_weight_std_fiber": 11.018960952758789, "per_site_std": 0.02152140811085701, "seconds": 266.6, "r2_c": 0.052180776151266595, "r2_x": 0.47849632914466056}
+case wilson L=16 beta=55.0237 ...
+  {"log_weight_std_fiber": 27.858314514160156, "per_site_std": 0.054410770535469055, "seconds": 270.3, "r2_c": 0.009406941030716376, "r2_x": 0.7779100412115612}
+case wilson L=32 beta=55.0237 ...
+  {"log_weight_std_fiber": 41.0121955871582, "per_site_std": 0.02002548612654209, "seconds": 748.1, "r2_c": 0.017457701243344892, "r2_x": 0.6236924698285538}
+case wilson L=32 beta=218.58 ...
+================ audit chain launch Sun 08/02/2026 15:26:17.97 ================ 
+[2026-08-02 15:26:18] STAGE_PYTEST: sentinel present, skipping
+[2026-08-02 15:26:18] STAGE_REBUILD_MATCHING: sentinel present, skipping
+[2026-08-02 15:26:18] STAGE_MATCHRES_WILSON_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\27_matching_residual.py --checkpoint C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\checkpoints\score_net_rkl2.pt --cases 16:14.1464 16:55.0237 32:55.0237 --n-configs 96 --sigma-min-coef 0.3 --physics-blend 0 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\matching_residual\wilson
+case wilson L=16 beta=14.1464 ...
+  {"log_weight_std_fiber": 10.676508903503418, "per_site_std": 0.020852556452155113, "seconds": 244.2, "r2_c": 0.06170281069975769, "r2_x": 0.5638991433728151}
+case wilson L=16 beta=55.0237 ...
+  {"log_weight_std_fiber": 21.451276779174805, "per_site_std": 0.04189702495932579, "seconds": 254.7, "r2_c": 0.004956901628943022, "r2_x": 0.7390763901479163}
+case wilson L=32 beta=55.0237 ...
+================ audit chain launch Sun 08/02/2026 15:42:15.07 ================ 
+[2026-08-02 15:42:16] STAGE_PYTEST: sentinel present, skipping
+[2026-08-02 15:42:16] STAGE_REBUILD_MATCHING: sentinel present, skipping
+[2026-08-02 15:42:16] STAGE_MATCHRES_WILSON_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\27_matching_residual.py --checkpoint C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\checkpoints\score_net_rkl2.pt --cases 16:14.1464 16:55.0237 32:55.0237 --n-configs 96 --sigma-min-coef 0.3 --physics-blend 0 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\matching_residual\wilson
+case wilson L=16 beta=14.1464 ...
+  {"log_weight_std_fiber": 10.676508903503418, "per_site_std": 0.020852556452155113, "seconds": 226.1, "r2_c": 0.06170281069975769, "r2_x": 0.5638991433728151}
+case wilson L=16 beta=55.0237 ...
+  {"log_weight_std_fiber": 21.451276779174805, "per_site_std": 0.04189702495932579, "seconds": 213.2, "r2_c": 0.004956901628943022, "r2_x": 0.7390763901479163}
+case wilson L=32 beta=55.0237 ...
+  {"log_weight_std_fiber": 35.9071044921875, "per_site_std": 0.017532765865325928, "seconds": 643.6, "r2_c": 0.022806660326197603, "r2_x": 0.593679751835486}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\matching_residual\wilson\report.md
+[2026-08-02 16:00:23] STAGE_MATCHRES_WILSON_DONE (18.1 min)
+[2026-08-02 16:00:23] STAGE_MATCHRES_VILLAIN_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\27_matching_residual.py --checkpoint C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\checkpoints\score_net_rkl2.pt --action-type villain --cases 16:14.1464 16:55.0237 32:55.0237 --n-configs 96 --sigma-min-coef 0.3 --physics-blend 0 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\matching_residual\villain
+case villain L=16 beta=14.1464 ...
+  {"log_weight_std_fiber": 14.710004806518555, "per_site_std": 0.028730478137731552, "seconds": 231.9, "r2_c": 0.1735391751598101, "r2_x": 0.6271665578435115}
+case villain L=16 beta=55.0237 ...
+  {"log_weight_std_fiber": 23.481342315673828, "per_site_std": 0.045861996710300446, "seconds": 255.6, "r2_c": 0.03101497630557226, "r2_x": 0.7822763104745862}
+case villain L=32 beta=55.0237 ...
+  {"log_weight_std_fiber": 54.833255767822266, "per_site_std": 0.026774050667881966, "seconds": 824.0, "r2_c": 0.04756343372679306, "r2_x": 0.8508385753899648}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\matching_residual\villain\report.md
+[2026-08-02 16:22:21] STAGE_MATCHRES_VILLAIN_DONE (22.0 min)
+[2026-08-02 16:22:21] STAGE_AIS_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\28_ais_transport.py --checkpoint C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\checkpoints\score_net_rkl2.pt --cases 16:14.1464 16:55.0237 32:55.0237 32:218.58 --n-configs 96 --n-bridge 48 --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\ais_transport
+case L=16 beta=14.1464 ...
+  {"before_std": 17.0, "after_std_heldout": 30.56, "ess_heldout": 0.021, "r2": 0.717, "acc": 0.93, "sec": [214.8, 15.5]}
+case L=16 beta=55.0237 ...
+  {"before_std": 17.6, "after_std_heldout": 18.58, "ess_heldout": 0.024, "r2": 0.332, "acc": 0.99, "sec": [215.0, 30.4]}
+case L=32 beta=55.0237 ...
+  {"before_std": 36.4, "after_std_heldout": 28.35, "ess_heldout": 0.021, "r2": 0.664, "acc": 0.97, "sec": [599.1, 45.4]}
+case L=32 beta=218.58 ...
+  {"before_std": 117.5, "after_std_heldout": 44.74, "ess_heldout": 0.021, "r2": 0.839, "acc": 0.99, "sec": [697.2, 104.0]}
+wrote C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\ais_transport\report.md
+[2026-08-02 16:54:37] STAGE_AIS_DONE (32.3 min)
+[2026-08-02 16:54:37] STAGE_VALIDATE_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\04_validate.py --config diffusion_v2/configs/v2.yaml
+loaded out\diffusion_v2\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded out\diffusion_v2\generated\ladder_rung0_wilson_L16_beta4.pt
+loaded out\diffusion_v2\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded out\diffusion_v2\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded out\diffusion_v2\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded out\diffusion_v2\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.950
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\diffusion_v2\validation\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0017937420928755277, 'plaq_z': 2.1546197771801725}
+{'rung': 1, 'L': 32, 'beta': 14.1464, 'plaq_deviation': 0.00010744948747221095, 'plaq_z': 0.7789643423568591}
+{'rung': 2, 'L': 64, 'beta': 55.0237, 'plaq_deviation': -3.2087431500738006e-06, 'plaq_z': -0.190567315079804}
+[2026-08-02 16:55:19] STAGE_VALIDATE_DONE (0.7 min)
+[2026-08-02 16:55:19] STAGE_VERDICT_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\12_campaign_verdict.py --study C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization --out C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\verdict
+verdict: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\verdict\verdict.md
+figure:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\verdict\showcase.png
+[2026-08-02 16:55:27] STAGE_VERDICT_DONE (0.1 min)
+[2026-08-02 16:55:27] STAGE_GEN_FRESH_S3_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\06_generalization_study.py --cases D_bc14.1464,B_bt20,A_bc8,F_L64_bc55.0237 --seed 20260803 --out-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s3
+4 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s3
+[1/4] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    HMC L=16 beta=8: 128 configs, acc 0.981, cold start, burn 600, 8s
+    generated 128 configs L=32 beta=30.3772 in 241s
+    HMC L=32 beta=30.3772: 192 configs, acc 0.980, cold start, burn 2000, 70s
+    case done in 329s
+[2/4] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    HMC L=16 beta=14.1464: 128 configs, acc 0.992, cold start, burn 600, 10s
+    generated 128 configs L=32 beta=55.0237 in 229s
+    HMC L=32 beta=55.0237: 192 configs, acc 0.982, cold start, burn 2000, 92s
+    case done in 341s
+[3/4] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    HMC L=32 beta=55.0237: 64 configs, acc 0.991, cold start, burn 2000, 90s
+    generated 64 configs L=64 beta=218.58 in 444s
+    HMC L=64 beta=218.58: 96 configs, acc 0.963, cold start, burn 2000, 268s
+    case done in 819s
+[4/4] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    HMC L=16 beta=4: 128 configs, acc 0.983, hot start, burn 200, 2s
+    generated 128 configs L=32 beta=20 in 242s
+    HMC L=32 beta=20: 192 configs, acc 0.980, cold start, burn 2000, 59s
+    case done in 313s
+C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\06_generalization_study.py:411: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s3\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s3\summary_tables.md
+[2026-08-02 17:25:43] STAGE_GEN_FRESH_S3_DONE (30.3 min)
+[2026-08-02 17:25:43] STAGE_GEN_FRESH_S4_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\06_generalization_study.py --cases D_bc14.1464,B_bt20,A_bc8,F_L64_bc55.0237 --seed 20260804 --out-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s4
+4 cases, output -> C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s4
+[1/4] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    HMC L=16 beta=8: 128 configs, acc 0.988, cold start, burn 600, 8s
+    generated 128 configs L=32 beta=30.3772 in 255s
+    HMC L=32 beta=30.3772: 192 configs, acc 0.985, cold start, burn 2000, 82s
+    case done in 354s
+[2/4] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    HMC L=16 beta=14.1464: 128 configs, acc 0.997, cold start, burn 600, 10s
+    generated 128 configs L=32 beta=55.0237 in 240s
+    HMC L=32 beta=55.0237: 192 configs, acc 0.979, cold start, burn 2000, 92s
+    case done in 352s
+[3/4] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    HMC L=32 beta=55.0237: 64 configs, acc 0.981, cold start, burn 2000, 90s
+    generated 64 configs L=64 beta=218.58 in 446s
+    HMC L=64 beta=218.58: 96 configs, acc 0.950, cold start, burn 2000, 257s
+    case done in 811s
+[4/4] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    HMC L=16 beta=4: 128 configs, acc 0.981, hot start, burn 200, 3s
+    generated 128 configs L=32 beta=20 in 232s
+    HMC L=32 beta=20: 192 configs, acc 0.978, cold start, burn 2000, 61s
+    case done in 305s
+C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\06_generalization_study.py:411: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s4\summary.json
+tables:  C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\generalization_fresh_s4\summary_tables.md
+[2026-08-02 17:56:17] STAGE_GEN_FRESH_S4_DONE (30.6 min)
+[2026-08-02 17:56:17] STAGE_H2H_L64_START: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\.venv\Scripts\python.exe C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\diffusion_v2\scripts\14_diffusion_vs_instanton_hmc.py --betas 55.0237,218.58 --lattice-size 64 --n-chains 16 --burn-in 400 --n-prod 320 --n-gen 96 --out-dir C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\diffusion_vs_instanton\L64
+case L=64 beta=55.0237
+  instanton HMC: 16 chains, burn 400, prod 320
+  diffusion: base L=32 beta=14.1464, 96 configs
+  done in 873s
+case L=64 beta=218.58
+  instanton HMC: 16 chains, burn 400, prod 320
+  diffusion: base L=32 beta=55.0236, 96 configs
+  done in 1014s
+report: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\diffusion_vs_instanton\L64\report.md
+[2026-08-02 18:27:50] STAGE_H2H_L64_DONE (31.6 min)
+[2026-08-02 18:27:51] report: C:\Users\ompan\OneDrive\Desktop\Lattice QCD Research\dev\InverseRG\out\diffusion_v2\audit_chain\report.md
+[2026-08-02 18:27:51] CHAIN_DONE

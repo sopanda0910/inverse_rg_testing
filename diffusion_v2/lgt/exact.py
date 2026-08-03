@@ -40,7 +40,36 @@ def _log_r_q(beta: float, q_values: np.ndarray, action_type: str) -> np.ndarray:
 
 
 def _q_cutoff(beta: float, volume: int) -> int:
-    return int(20 + 4 * math.sqrt(max(beta, 1.0)))
+    # Terms in sum_q r_q^V decay like exp(-V q^2 / (2 beta)); 20 + 4 sqrt(beta/V)
+    # keeps the truncated tail below e^-40 with a wide safety margin.
+    return int(20 + 4 * math.sqrt(max(beta, 1.0) / max(volume, 1)))
+
+
+def _log_c_q(beta: float, q_values: np.ndarray, action_type: str) -> np.ndarray:
+    """log c_q, the Fourier coefficients of the single-plaquette weight w.r.t.
+    normalized Haar measure: Wilson c_q = I_q(beta); Villain (as implemented in
+    lgt.actions: f = sum_n exp(-beta/2 (theta+2 pi n)^2)) c_q =
+    exp(-q^2/(2 beta)) / sqrt(2 pi beta)."""
+    if action_type == "wilson":
+        return np.log(ive(np.abs(q_values), beta)) + beta
+    if action_type == "villain":
+        return -q_values.astype(float) ** 2 / (2.0 * beta) - 0.5 * math.log(TWO_PI * beta)
+    raise ValueError(f"Unknown action type: {action_type}")
+
+
+def log_partition(beta: float, lattice_size: int, action_type: str = "wilson") -> float:
+    """Exact log Z on the periodic L x L lattice with NORMALIZED Haar measure
+    per link: Z_haar = sum_q c_q(beta)^V (torus character expansion), V = L^2.
+
+    The Lebesgue-measure partition function used by importance weights
+    (log q densities are w.r.t. dtheta per link) is
+    log Z_leb = 2 V log(2 pi) + log Z_haar."""
+    volume = lattice_size * lattice_size
+    q_max = _q_cutoff(beta, volume)
+    qs = np.arange(-q_max, q_max + 1)
+    terms = volume * _log_c_q(beta, qs, action_type)
+    m = terms.max()
+    return float(m + np.log(np.exp(terms - m).sum()))
 
 
 def wilson_loop_exact(

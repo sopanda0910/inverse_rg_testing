@@ -48,14 +48,18 @@ import torch
 from ..lgt.actions import make_action
 
 
-def _divergence_hutchinson(score_fn, theta, sigma, n_probes: int = 1) -> torch.Tensor:
+def _divergence_hutchinson(
+    score_fn, theta, sigma, n_probes: int = 1, generator: torch.Generator | None = None
+) -> torch.Tensor:
     """E_v [ v . d(s . v)/dtheta ] per config, Rademacher probes."""
     div = torch.zeros(theta.shape[0], device=theta.device)
     for _ in range(n_probes):
         with torch.enable_grad():
             x = theta.detach().requires_grad_(True)
             s = score_fn(x, sigma)
-            v = torch.randint(0, 2, theta.shape, device=theta.device, dtype=theta.dtype) * 2 - 1
+            v = torch.randint(
+                0, 2, theta.shape, device=theta.device, dtype=theta.dtype, generator=generator
+            ) * 2 - 1
             sv = (s * v).sum()
             (grad,) = torch.autograd.grad(sv, x)
         div = div + (grad * v).flatten(1).sum(dim=1)
@@ -78,10 +82,12 @@ def _divergence_exact(score_fn, theta, sigma) -> torch.Tensor:
     return div
 
 
-def _divergence(score_fn, theta, sigma, n_probes: int) -> torch.Tensor:
+def _divergence(
+    score_fn, theta, sigma, n_probes: int, generator: torch.Generator | None = None
+) -> torch.Tensor:
     if n_probes <= 0:
         return _divergence_exact(score_fn, theta, sigma)
-    return _divergence_hutchinson(score_fn, theta, sigma, n_probes=n_probes)
+    return _divergence_hutchinson(score_fn, theta, sigma, n_probes=n_probes, generator=generator)
 
 
 def ode_log_likelihood(
@@ -99,8 +105,10 @@ def ode_log_likelihood(
     2 * n_probes vjps. States stay wrapped -- wrapping is an isometry of the
     torus, so it changes neither the flow nor the density.
     """
+    gen = None
     if seed is not None:
-        torch.manual_seed(seed)
+        gen = torch.Generator(device=x0.device)
+        gen.manual_seed(seed)
     from .wrapped import wrap
 
     x = x0.clone()
@@ -111,7 +119,7 @@ def ode_log_likelihood(
     def drift_and_div(theta, sigma):
         with torch.no_grad():
             s = score_fn(theta, sigma)
-        div = _divergence(score_fn, theta, sigma, n_probes)
+        div = _divergence(score_fn, theta, sigma, n_probes, generator=gen)
         return -sigma * s, -sigma * div
 
     for i in range(len(sigmas_ascending) - 1):
@@ -146,11 +154,13 @@ def ode_sample_with_likelihood(
     Accumulating along the descending trajectory, int_{max}^{min} div f dsigma
     is minus the ascending integral in `ode_log_likelihood`, hence the sign.
     """
+    gen = None
     if seed is not None:
-        torch.manual_seed(seed)
+        gen = torch.Generator(device=device)
+        gen.manual_seed(seed)
     from .wrapped import wrap
 
-    x = torch.rand(shape, device=device) * (2.0 * math.pi) - math.pi
+    x = torch.rand(shape, device=device, generator=gen) * (2.0 * math.pi) - math.pi
     batch = shape[0]
     n_dof = x[0].numel()
     acc = torch.zeros(batch, device=device)
@@ -158,7 +168,7 @@ def ode_sample_with_likelihood(
     def drift_and_div(theta, sigma):
         with torch.no_grad():
             s = score_fn(theta, sigma)
-        div = _divergence(score_fn, theta, sigma, n_probes)
+        div = _divergence(score_fn, theta, sigma, n_probes, generator=gen)
         return -sigma * s, -sigma * div
 
     for i in range(len(sigmas_descending) - 1):
@@ -245,7 +255,10 @@ def conditional_log_likelihood(
             model, chunk_c, fine_size, beta_target,
             consistency_weight, physics_blend_coef, physics_blend_beta_min, device,
         )
-        out.append(ode_log_likelihood(score_fn, chunk_f, sigmas_asc, n_probes=n_probes, seed=seed).cpu())
+        out.append(ode_log_likelihood(
+            score_fn, chunk_f, sigmas_asc, n_probes=n_probes,
+            seed=None if seed is None else seed + start,
+        ).cpu())
     return torch.cat(out, dim=0)
 
 
@@ -371,6 +384,63 @@ def snis_log_weights(
             coarse_action = make_action(action_type, float(coarse_beta_matched))
             log_w = log_w + coarse_action.per_config(coarse.float()).cpu()
     return log_w
+
+
+def free_energy_certificate(
+    log_w_fiber: torch.Tensor,
+    fine_L: int,
+    fine_beta: float,
+    coarse_beta_matched: float,
+    action_type: str = "wilson",
+) -> dict:
+    """Independent exactness check of the whole weight chain against the
+    solvable theory: for fiber weights w = exp(-S_f(x) + S_m(c) - log q(x|c))
+    with c ~ exp(-S_m)/Z_c and x ~ q(.|c),
+
+        E[w] = (2 pi)^{N_f} Z_haar(beta_f, L_f) / Z_haar(beta_c, L_c),
+
+    (N_f = 2 L_f^2; the coarse Lebesgue volume cancels Z_c's (2 pi)^{N_c}).
+    Both partition functions are exactly computable from the character
+    expansion, so log-mean-exp of the stored weights must reproduce the exact
+    free-energy difference -- a certificate no SU(2) successor will have.
+
+    Reading the numbers: the log-mean-exp only closes the gap when the weights
+    have usable ESS; with degenerate weights it sits near max(log w) and the
+    gap reads roughly -KL. The IDENTITY that always holds is
+
+        E[log w] - dF_exact = -KL(q_eff || p)     (q_eff = coarse x proposal),
+
+    so `kl_from_mean_log_w` below is an unbiased direct MEASUREMENT of the
+    model's mean density offset -- the number the whole ESS program bounds --
+    with an honest sem (log-weight std / sqrt n). The `gap` is the certificate
+    (must -> 0 as ESS -> 1); the KL fields are the measurement. Both per
+    site = / (2 L_f^2)."""
+    from ..lgt.exact import log_partition
+
+    coarse_L = fine_L // 2
+    lw = log_w_fiber.double()
+    m = lw.max()
+    w = torch.exp(lw - m)
+    n = w.numel()
+    est = float(m + torch.log(w.mean()))
+    sem = float(w.std() / (math.sqrt(n) * w.mean()))
+    exact = (
+        2 * fine_L * fine_L * math.log(2.0 * math.pi)
+        + log_partition(fine_beta, fine_L, action_type)
+        - log_partition(coarse_beta_matched, coarse_L, action_type)
+    )
+    n_sites = 2 * fine_L * fine_L
+    kl = float(exact - lw.mean())
+    return {
+        "log_mean_w": est,
+        "exact_delta_F": exact,
+        "gap": est - exact,
+        "sem": sem,
+        "n": n,
+        "kl_from_mean_log_w": kl,
+        "kl_sem": float(lw.std() / math.sqrt(n)),
+        "kl_per_site": kl / n_sites,
+    }
 
 
 def reweighted_mean(values: torch.Tensor, log_w: torch.Tensor) -> tuple[float, float]:

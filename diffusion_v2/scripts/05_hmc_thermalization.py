@@ -1165,7 +1165,7 @@ def main() -> None:
                         help="generalization mode: which study parts to include")
     parser.add_argument("--betas", default=None,
                         help="generalization mode: comma-separated target-beta filter")
-    parser.add_argument("--checkpoint", default="out/diffusion_v2/v2/checkpoints/score_net.pt",
+    parser.add_argument("--checkpoint", default="out/diffusion_v2/checkpoints/score_net.pt",
                         help="generalization mode: score-net checkpoint for raw-seed sampling")
     parser.add_argument("--physics-blend", type=float, default=0.0, dest="physics_blend",
                         help="generalization mode: exact-score blend coefficient for "

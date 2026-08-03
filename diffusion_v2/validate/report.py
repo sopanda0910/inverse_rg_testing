@@ -21,7 +21,15 @@ from scipy.stats import ks_2samp, chisquare
 
 from ..lgt import exact
 from .observables import measure_ensemble
-from .stats import binned_mean_err, z_score, integrated_autocorrelation_time
+from .stats import (
+    autocorr_aware_mean_err,
+    binned_mean_err,
+    chain_tau_int,
+    integrated_autocorrelation_time,
+    jackknife,
+    ks_p_neff,
+    z_score,
+)
 
 
 GEN_COLOR = "#2a78d6"
@@ -112,6 +120,8 @@ def validate_ensemble(
     output_dir: str | Path | None = None,
     make_plots: bool = True,
     reference_label: str = "reference HMC",
+    n_chains: int | None = None,
+    ref_n_chains: int | None = None,
 ) -> list[dict]:
     """Compare an ensemble against exact formulas and (optionally) a reference ensemble.
 
@@ -120,8 +130,17 @@ def validate_ensemble(
     should be overridden (e.g. "plain HMC (hot start)") when reference_configs
     is a biased/frozen ensemble used deliberately to illustrate that bias.
 
+    n_chains / ref_n_chains: chain counts of ensembles ordered chain-major per
+    draw (run_hmc_ensemble contract; ladder ensembles inherit the layout from
+    their coarse base). When given, every error is tau_int-aware -- the naive
+    sem inflated by sqrt(2 tau_int) measured per chain -- and KS p-values use
+    autocorrelation-corrected effective sample sizes. Without them the fixed
+    20-bin binned error is used, which understates errors for observables with
+    tau_int beyond the bin length (topology at high beta).
+
     Returns a list of row dicts: observable, value, error, exact, z_exact,
-    reference, ref_error, z_ref, ks_p (two-sample vs reference where defined).
+    reference, ref_error, z_ref, ks_p (two-sample vs reference where defined),
+    plus tau_int / ref_tau_int where measured and ref_topology_frozen flags.
     """
     lattice_size = configs.shape[-1]
     meas = measure_ensemble(configs)
@@ -129,25 +148,34 @@ def validate_ensemble(
     rows = []
 
     def add_row(name, values, exact_value, ref_values=None, scalar=None, scalar_err=None):
+        tau = 0.5
         if values is not None:
-            value, err = binned_mean_err(np.asarray(values))
+            value, err, tau = autocorr_aware_mean_err(np.asarray(values), n_chains)
         else:
             value = scalar
             err = float("nan") if scalar_err is None else scalar_err
         row = {"observable": name, "value": value, "error": err, "exact": exact_value}
+        if tau > 1.0:
+            row["tau_int"] = tau
         row["z_exact"] = (
             z_score(value, err, exact_value)
             if exact_value is not None and not math.isnan(err)
             else float("nan")
         )
         if ref_values is not None:
-            rv, re = binned_mean_err(np.asarray(ref_values))
+            rv, re, rtau = autocorr_aware_mean_err(np.asarray(ref_values), ref_n_chains)
             row["reference"] = rv
             row["ref_error"] = re
+            if rtau > 1.0:
+                row["ref_tau_int"] = rtau
             row["z_ref"] = z_score(value, err, rv, re)
             if values is not None and np.asarray(values).ndim == 1 and len(np.asarray(values)) > 3:
-                row["ks_p"] = float(ks_2samp(np.asarray(values), np.asarray(ref_values)).pvalue)
+                va, vr = np.asarray(values), np.asarray(ref_values)
+                row["ks_p"] = ks_p_neff(
+                    va, vr, len(va) / (2.0 * tau), len(vr) / (2.0 * rtau)
+                )
         rows.append(row)
+        return row
 
     add_row(
         "plaquette",
@@ -184,19 +212,51 @@ def validate_ensemble(
     ref_charges = ref["topological_charge"] if ref else None
     volume = lattice_size * lattice_size
     chi_exact = exact.topological_susceptibility_exact(beta, action_type, lattice_size)
-    add_row("Q", charges, 0.0, ref_charges)
-    add_row(
+
+    # A frozen reference (no tunnelings within any chain) makes its topology
+    # columns measure the REFERENCE's bias, not the model's; flag the rows so
+    # the table distinguishes "reference is wrong" from genuine disagreement.
+    # Tunnelings must be counted per chain: consecutive entries of the
+    # interleaved series belong to different chains.
+    ref_frozen = None
+    if ref_charges is not None and ref_n_chains:
+        n_draws = len(ref_charges) // ref_n_chains
+        if n_draws >= 2:
+            per_chain = np.round(np.asarray(ref_charges[: n_draws * ref_n_chains],
+                                            dtype=float)).reshape(n_draws, ref_n_chains)
+            ref_frozen = bool(np.sum(np.abs(np.diff(per_chain, axis=0)) > 0) < 3)
+
+    topo_rows = [add_row("Q", charges, 0.0, ref_charges)]
+    topo_rows.append(add_row(
         "Q^2",
         charges**2,
         chi_exact * volume,
         ref_charges**2 if ref is not None else None,
-    )
-    add_row(
-        "chi_top ((<Q^2>-<Q>^2)/V)",
-        (charges - charges.mean()) ** 2 / volume,
-        chi_exact,
-        ((ref_charges - ref_charges.mean()) ** 2 / volume) if ref is not None else None,
-    )
+    ))
+    # chi_top via jackknife of the variance estimator -- per-config values
+    # centered on the full-sample mean would mildly double-dip. tau_int
+    # inflation carries over from the Q^2 series.
+    tau_q2 = chain_tau_int(np.asarray(charges, dtype=float) ** 2, n_chains) if n_chains else 0.5
+    chi_val, chi_err = jackknife(np.asarray(charges, dtype=float),
+                                 estimator=lambda x: np.var(x) / volume)
+    chi_row = {"observable": "chi_top ((<Q^2>-<Q>^2)/V)",
+               "value": chi_val,
+               "error": chi_err * math.sqrt(2.0 * tau_q2),
+               "exact": chi_exact}
+    chi_row["z_exact"] = z_score(chi_row["value"], chi_row["error"], chi_exact)
+    if ref_charges is not None:
+        rtau = chain_tau_int(np.asarray(ref_charges, dtype=float) ** 2,
+                             ref_n_chains) if ref_n_chains else 0.5
+        rv, re = jackknife(np.asarray(ref_charges, dtype=float),
+                           estimator=lambda x: np.var(x) / volume)
+        chi_row["reference"] = rv
+        chi_row["ref_error"] = re * math.sqrt(2.0 * rtau)
+        chi_row["z_ref"] = z_score(chi_row["value"], chi_row["error"], rv, chi_row["ref_error"])
+    rows.append(chi_row)
+    topo_rows.append(chi_row)
+    if ref_frozen is not None:
+        for row in topo_rows:
+            row["ref_topology_frozen"] = ref_frozen
 
     q_values, q_probs = exact.topological_charge_distribution(beta, lattice_size, action_type)
     counts = _q_histogram(charges, q_values)
@@ -205,14 +265,22 @@ def validate_ensemble(
     if keep.sum() > 1 and counts[keep].sum() > 0:
         scale = counts[keep].sum() / expected[keep].sum()
         chi2 = chisquare(counts[keep], expected[keep] * scale)
+        # Autocorrelated draws deflate the effective count; scale the statistic
+        # by 1 / (2 tau_int(Q)) before the p-value (i.i.d. tau = 0.5 -> no-op).
+        tau_q = chain_tau_int(np.asarray(charges, dtype=float), n_chains) if n_chains else 0.5
+        from scipy.stats import chi2 as chi2_dist
+
+        dof = float(keep.sum() - 1)
+        stat_eff = float(chi2.statistic) / (2.0 * tau_q)
         rows.append(
             {
                 "observable": "Q histogram vs exact P(Q)",
                 "value": float(chi2.statistic),
                 "error": float("nan"),
-                "exact": float(keep.sum() - 1),
+                "exact": dof,
                 "z_exact": float("nan"),
-                "chi2_p": float(chi2.pvalue),
+                "chi2_p": float(chi2_dist.sf(stat_eff, dof)),
+                **({"tau_int": tau_q} if tau_q > 1.0 else {}),
             }
         )
 
@@ -387,8 +455,14 @@ def validate_ladder(
     action_type: str = "wilson",
     reference_map: dict | None = None,
     output_dir: str | Path = "artifacts/diffusion/validation",
+    n_chains: int | None = None,
+    ref_n_chains: int | None = None,
 ) -> dict:
-    """Validate every rung of a generated ladder. reference_map: {(L, beta): configs}."""
+    """Validate every rung of a generated ladder. reference_map: {(L, beta): configs}.
+
+    n_chains: chain count of the coarse HMC base -- ladder ensembles inherit its
+    chain-major-per-draw layout through conditioning, so fine configs are NOT
+    i.i.d. across the ensemble."""
     output_dir = Path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
     all_rows = {}
@@ -404,6 +478,8 @@ def validate_ladder(
             reference_configs=reference,
             label=label,
             output_dir=output_dir,
+            n_chains=n_chains,
+            ref_n_chains=ref_n_chains,
         )
         all_rows[label] = rows
         plaq_row = next(r for r in rows if r["observable"] == "plaquette")
@@ -516,9 +592,29 @@ def write_report(all_rows: dict, path: str | Path, header: str = "") -> None:
     lines = [f"# Validation report", ""]
     if header:
         lines += [header, ""]
+    any_tau = any("tau_int" in r or "ref_tau_int" in r
+                  for rows in all_rows.values() for r in rows)
+    any_frozen = any(r.get("ref_topology_frozen") for rows in all_rows.values() for r in rows)
+    legend = []
+    if any_tau:
+        legend.append(
+            "Errors are tau_int-aware where chain structure is known: naive sem "
+            "x sqrt(2 tau_int), tau_int measured per chain. KS/chi^2 p-values "
+            "use effective sample sizes n / (2 tau_int)."
+        )
+    if any_frozen:
+        legend.append(
+            "`ref_topology_frozen = True` rows: the reference chain never "
+            "tunnels at this coupling (deliberate, for the freezing "
+            "comparison), so z_ref there measures the REFERENCE's bias, not "
+            "the model's -- only z_exact carries weight for those rows."
+        )
+    if legend:
+        lines += legend + [""]
     for label, rows in all_rows.items():
         lines += [f"## {label}", ""]
-        cols = ["observable", "value", "error", "exact", "z_exact", "reference", "ref_error", "z_ref", "ks_p", "chi2_p"]
+        cols = ["observable", "value", "error", "tau_int", "exact", "z_exact", "reference",
+                "ref_error", "ref_tau_int", "z_ref", "ref_topology_frozen", "ks_p", "chi2_p"]
         present = [c for c in cols if any(c in r for r in rows)]
         lines.append("| " + " | ".join(present) + " |")
         lines.append("|" + "---|" * len(present))

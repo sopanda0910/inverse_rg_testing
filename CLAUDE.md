@@ -19,7 +19,7 @@ instanton-HMC head-to-head, and wall-clock thermalization accounting).
 New work goes in `diffusion_v2/`; do not modify `diffusion/` except for bug
 parity. The v2 campaign config is `diffusion_v2/configs/v2.yaml`; the chain
 driver is `diffusion_v2/scripts/run_campaign.py` (outputs under
-`out/diffusion_v2/v2/`, resumable via `campaign_state/` sentinels).
+`out/diffusion_v2/`, resumable via `campaign_state/` sentinels).
 
 ## Key Conventions
 

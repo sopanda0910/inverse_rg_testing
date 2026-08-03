@@ -71,7 +71,8 @@ def coarse_conditioning_channels(
     the raw angle is the local winding density -- it sums to 2 pi Q_coarse -- giving
     the sampler direct access to where the coarse configuration carries its charge.
     """
-    if coarse.dim() == 3:
+    squeeze_out = coarse.dim() == 3
+    if squeeze_out:
         coarse = coarse.unsqueeze(0)
     plaq = plaquette_angles(coarse)
     loop22 = wilson_loop_angles(coarse, 2, 2)
@@ -82,7 +83,8 @@ def coarse_conditioning_channels(
         raise ValueError(f"unsupported conditioning channel count: {n_channels}")
     feats = torch.stack(channels, dim=1)
     scale = fine_size // coarse.shape[-1]
-    return feats.repeat_interleave(scale, dim=-2).repeat_interleave(scale, dim=-1)
+    feats = feats.repeat_interleave(scale, dim=-2).repeat_interleave(scale, dim=-1)
+    return feats.squeeze(0) if squeeze_out else feats
 
 
 def plaquette_curl(h: torch.Tensor) -> torch.Tensor:

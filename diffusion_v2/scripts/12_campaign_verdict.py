@@ -120,13 +120,28 @@ def write_tables(cases, therm, out_path: Path, baseline_note: str) -> None:
     lines += ["## Pipeline observables vs exact (mean over seeds, per-seed in parentheses)", "",
               "| case | part | L_f | beta_f | plaq z | W22 z | Q^2 z | P(Q) chi2 p |",
               "|" + "---|" * 8]
+    any_inf_q2 = False
     for e in cases:
+        q2_cell = fmt_seeds(e["q2_z"])
+        if "inf" in q2_cell:
+            q2_cell += " [a]"
+            any_inf_q2 = True
         lines.append("| " + " | ".join([
             e["id"], e["part"], str(e["fine_size"]), f"{e['beta_f']:g}",
-            fmt_seeds(e["plaq_z"]), fmt_seeds(e["w22_z"]), fmt_seeds(e["q2_z"]),
+            fmt_seeds(e["plaq_z"]), fmt_seeds(e["w22_z"]), q2_cell,
             fmt_seeds(e["chi2_p"], ".2f"),
         ]) + " |")
     lines.append("")
+    if any_inf_q2:
+        lines += [
+            "[a] Deep-frozen regime: every generated config has Q = 0, so the",
+            "sample variance of Q^2 vanishes and z is ill-defined (recorded as",
+            "+inf). Exact <Q^2> is ~1e-3 there; with expected nonzero-charge",
+            "count n<Q^2> << 1, an all-zero sample is the modal outcome under",
+            "exact P(Q) -- the entry signals a degenerate estimator, not a",
+            "failed comparison.",
+            "",
+        ]
 
     lines += ["## Raw topology (spurious Q^2 excess over base, pre-enforcement)", ""]
     for part in sorted({e["part"] for e in cases}):

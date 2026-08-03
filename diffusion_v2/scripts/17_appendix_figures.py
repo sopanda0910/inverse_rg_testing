@@ -1,7 +1,7 @@
 """Paper-appendix figures for the head-to-head, burn-in scan, and ESS results.
 
 Reads the campaign summaries (no new simulation) and writes three figures into
-out/diffusion_v2/v2/paper_appendix/figures/.
+out/diffusion_v2/paper_appendix/figures/.
 
     python diffusion_v2/scripts/17_appendix_figures.py
 """
@@ -15,7 +15,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-OUT = Path("out/diffusion_v2/v2")
+OUT = Path("out/diffusion_v2")
 FIG_DIR = OUT / "paper_appendix" / "figures"
 
 GEN_COLOR = "#2a78d6"

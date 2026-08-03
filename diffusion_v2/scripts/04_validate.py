@@ -18,7 +18,7 @@ from diffusion_v2.lgt.lattice import topological_charge
 from diffusion_v2.pipeline.ladder import LadderRungResult
 from diffusion_v2.validate import validate_ladder, write_report
 from diffusion_v2.validate.report import freezing_diagnostics
-from diffusion_v2.validate.stats import integrated_autocorrelation_time
+from diffusion_v2.validate.stats import chain_tau_int
 from diffusion_v2.utils import (
     load_config,
     resolve_device,
@@ -83,18 +83,17 @@ def main() -> None:
     data_cfg = config["data"]
     out_dir = Path(val_cfg["out_dir"])
 
-    rungs = []
+    rungs, raw_rungs = [], []
     pattern = str(Path(config["ladder"]["out_dir"]) / f"ladder_rung*_{action_type}_*.pt")
-    for path in sorted(p for p in glob.glob(pattern) if "_raw_" not in Path(p).name):
+    for path in sorted(glob.glob(pattern)):
         configs, meta = load_ensemble(path)
-        rungs.append(
-            LadderRungResult(
-                beta=float(meta["beta"]),
-                lattice_size=int(meta["lattice_size"]),
-                configs=configs,
-                observables=meta.get("observables", {}),
-            )
+        rung = LadderRungResult(
+            beta=float(meta["beta"]),
+            lattice_size=int(meta["lattice_size"]),
+            configs=configs,
+            observables=meta.get("observables", {}),
         )
+        (raw_rungs if "_raw_" in Path(path).name else rungs).append(rung)
         print(f"loaded {path}")
     if not rungs:
         raise SystemExit(f"no ladder ensembles found under {pattern}; run 03_run_ladder.py first")
@@ -106,7 +105,23 @@ def main() -> None:
                 rung.lattice_size, rung.beta, config, device
             )
 
-    summary = validate_ladder(rungs, action_type, reference_map, out_dir)
+    n_chains = int(data_cfg["n_chains"])
+    summary = validate_ladder(rungs, action_type, reference_map, out_dir,
+                              n_chains=n_chains, ref_n_chains=n_chains)
+
+    # Raw pre-enforcement pass: the default rungs carry the deterministic
+    # charge-transport step, so their Q columns validate the transport
+    # machinery (coarse histogram + instanton map) as much as the model. The
+    # raw ensembles 03 saves alongside are the model's own topology; a labeled
+    # second pass keeps both stories in one report.
+    if raw_rungs:
+        raw_summary = validate_ladder(
+            raw_rungs, action_type, reference_map,
+            out_dir / "raw_preenforcement",
+            n_chains=n_chains, ref_n_chains=n_chains,
+        )
+        for label, rows in raw_summary["rows"].items():
+            summary["rows"][f"{label}_RAW_preenforcement"] = rows
 
     freezing = {}
     frz = val_cfg.get("freezing_rung")
@@ -131,8 +146,12 @@ def main() -> None:
         if ladder_match:
             q_ladder = topological_charge(ladder_match[0].configs).cpu().numpy()
             freezing["ladder_q_squared"] = float(np.mean(q_ladder**2))
-            tau_ladder, _ = integrated_autocorrelation_time(q_ladder)
-            freezing["ladder_tau_int_Q"] = tau_ladder
+            # Per chain: the ensemble is chain-major per draw, so the
+            # interleaved series puts correlated samples n_chains apart and a
+            # windowed tau_int on it reads ~0.5 regardless of the truth. Fine
+            # configs inherit the coarse chain's autocorrelation through
+            # conditioning -- they are NOT i.i.d. across the ensemble.
+            freezing["ladder_tau_int_Q"] = chain_tau_int(q_ladder, n_chains)
         print(f"  tau_int(Q) HMC = {freezing['tau_int_Q']:.1f} +- {freezing['tau_int_Q_err']:.1f}")
         save_json(out_dir / "freezing.json", freezing)
 
@@ -141,10 +160,14 @@ def main() -> None:
         + ", ".join(f"L={r.lattice_size} beta={r.beta:g}" for r in rungs)
     ]
     if freezing:
+        ladder_tau = freezing.get("ladder_tau_int_Q")
+        ladder_tau_s = (f"; ladder ensemble per-chain tau_int(Q) = {ladder_tau:.1f} "
+                        "(inherited from the coarse HMC base through conditioning)"
+                        if ladder_tau is not None else "")
         header_lines.append(
             f"\nTopological freezing: {freezing['label']}: tau_int(Q) = "
-            f"{freezing['tau_int_Q']:.1f} +- {freezing['tau_int_Q_err']:.1f} "
-            f"(ladder ensemble is i.i.d. across configs by construction)."
+            f"{freezing['tau_int_Q']:.1f} +- {freezing['tau_int_Q_err']:.1f}"
+            f"{ladder_tau_s}."
         )
     write_report(summary["rows"], out_dir / "report.md", header="\n".join(header_lines))
     print(f"report: {out_dir / 'report.md'}")

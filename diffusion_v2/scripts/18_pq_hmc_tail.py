@@ -8,7 +8,7 @@ the exact P(Q) at the target coupling. This script measures exactly that: it
 takes the study's transported ensembles, runs an instanton-HMC tail, and plots
 P(Q) before / after / exact plus the <Q^2> convergence trajectory.
 
-    python diffusion_v2/scripts/18_pq_hmc_tail.py --gen-dir out/diffusion_v2/v2/generalization
+    python diffusion_v2/scripts/18_pq_hmc_tail.py --gen-dir out/diffusion_v2/generalization
 """
 
 import argparse
@@ -183,7 +183,7 @@ def run_case(run_id, gen_dir, action_type, args, device, seed, out_dir):
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--gen-dir", default="out/diffusion_v2/v2/generalization")
+    parser.add_argument("--gen-dir", default="out/diffusion_v2/generalization")
     parser.add_argument("--cases", default=DEFAULT_CASES)
     parser.add_argument("--n-traj", type=int, default=None,
                         help="fixed trajectory count (disables adaptive stopping)")

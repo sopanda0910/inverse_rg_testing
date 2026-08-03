@@ -66,6 +66,8 @@ class BatchedHMC:
         return torch.zeros(shape, device=self.device)
 
     def force(self, theta: torch.Tensor) -> torch.Tensor:
+        """Returns +dS/dtheta (the physics force is MINUS this; the integrator
+        applies the sign at the momentum update)."""
         with torch.enable_grad():
             theta = theta.detach().clone().requires_grad_(True)
             total = self.action.per_config(theta).sum()
@@ -134,7 +136,8 @@ class BatchedHMC:
         with torch.no_grad():
             for _ in range(burn_in):
                 theta, accept = self.metropolis_step(theta)
-                _track(accept)
+            # acceptance_rate reports the sampling phase only; burn-in steps
+            # (large-|dH| relaxation) would drag it down misleadingly.
             for _ in range(n_samples_per_chain):
                 for _ in range(thin):
                     theta, accept = self.metropolis_step(theta)

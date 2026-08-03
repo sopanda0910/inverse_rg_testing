@@ -24,7 +24,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 PY = str(REPO / ".venv" / "Scripts" / "python.exe")
-OUT = REPO / "out" / "diffusion_v2" / "v2"
+OUT = REPO / "out" / "diffusion_v2"
 STATE = OUT / "campaign_state"
 MAIN_GEN = OUT / "generalization"
 SEED2_GEN = OUT / "generalization_exact_sectors_seed2"

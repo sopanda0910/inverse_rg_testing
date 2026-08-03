@@ -146,6 +146,7 @@ def train_score_model(
     val_data = [_prepare_rung(r, device, config.cond_channels) for r in val_rungs]
     history: list[dict] = []
     best_val = math.inf
+    best_ema_state: dict | None = None
 
     steps_per_epoch = sum(
         (d["fine"].shape[0] + config.batch_size - 1) // config.batch_size for d in train_data
@@ -227,7 +228,12 @@ def train_score_model(
         model.eval()
         val_total = 0.0
         gen = torch.Generator(device="cpu").manual_seed(12345)
-        with torch.no_grad():
+        # Validate the EMA weights -- they are what save_checkpoint ships, so
+        # best-epoch selection and early stopping must measure the same curve.
+        raw_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
+        model.load_state_dict(ema_state)
+        with torch.no_grad(), torch.random.fork_rng(devices=[]):
+            torch.manual_seed(12345)
             for data in val_data:
                 n = data["fine"].shape[0]
                 # beta passed so the validation noise distribution matches the
@@ -244,13 +250,16 @@ def train_score_model(
                 )
                 record[f"val_{data['name']}"] = vloss
                 val_total += vloss
+        model.load_state_dict(raw_state)
         record["val_total"] = val_total
         history.append(record)
 
-        if config.checkpoint_path and (not val_data or val_total <= best_val):
+        if not val_data or val_total <= best_val:
             best_val = val_total
             best_epoch = epoch
-            save_checkpoint(ema_state, config, config.checkpoint_path)
+            best_ema_state = {k: v.detach().clone() for k, v in ema_state.items()}
+            if config.checkpoint_path:
+                save_checkpoint(ema_state, config, config.checkpoint_path)
         if config.log_every and epoch % config.log_every == 0:
             val_str = " ".join(f"{k}={v:.4f}" for k, v in record.items() if k.startswith("val_"))
             print(f"epoch {epoch:3d}  train={record['train_loss']:.4f}  {val_str}")
@@ -271,7 +280,10 @@ def train_score_model(
                   f"{config.early_stop_patience} epochs (best {best_val:.4f} at {best_epoch})")
             break
 
-    model.load_state_dict(ema_state)
+    # Return the best-epoch EMA weights so the in-memory model matches the disk
+    # checkpoint on early-stopped runs (resumed runs without an in-memory best
+    # fall back to the final EMA, as before).
+    model.load_state_dict(best_ema_state if best_ema_state is not None else ema_state)
     model.eval()
     return model, history
 

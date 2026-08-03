@@ -1,0 +1,122 @@
+[
+  {
+    "beta": 55.0237,
+    "lattice_size": 64,
+    "targets": {
+      "plaquette": 0.9908709473551462,
+      "wilson_2x2": 0.9639807907327661,
+      "wilson_4x4": 0.8635222238503071,
+      "Q^2": 1.9030858198906764
+    },
+    "instanton_hmc": {
+      "acceptance": 0.955859375,
+      "instanton_acceptance": 0.709765625,
+      "tunnelings": 3634,
+      "burn_seconds": 27.22,
+      "prod_seconds": 23.8,
+      "sec_per_traj": 0.07438552379608154,
+      "tau_int": {
+        "plaquette": 3.4848032389678276,
+        "wilson_2x2": 3.8540644556528707,
+        "wilson_4x4": 3.538220916332855,
+        "Q": 4.209978597772688
+      },
+      "interval_trajectories": 7.708128911305741,
+      "seconds_per_independent_config": 0.03583582540969983,
+      "burnin_seconds_amortized": 27.2198383808136,
+      "plaquette_mean": 0.9910144805908203,
+      "plaquette_err": 1.4431685485760681e-05,
+      "plaquette_z": 9.945701478575378,
+      "wilson_2x2_mean": 0.96462482213974,
+      "wilson_2x2_err": 6.471834058174863e-05,
+      "wilson_2x2_z": 9.951296667756546,
+      "wilson_4x4_mean": 0.8665451407432556,
+      "wilson_4x4_err": 0.00033599717426113784,
+      "wilson_4x4_z": 8.996852130069154,
+      "Q^2_mean": 1.9577281475067139,
+      "Q^2_err": 0.1255316585302353,
+      "Q^2_z": 0.4352872275871067
+    },
+    "diffusion": {
+      "coarse_beta": 14.146404977472109,
+      "n_configs": 96,
+      "base_seconds": 15.28,
+      "sample_seconds": 784.8,
+      "retherm_seconds": 21.47,
+      "seconds_per_independent_config": 8.55776878943046,
+      "plaquette_mean": 0.9908995032310486,
+      "plaquette_err": 1.9602468455559574e-05,
+      "plaquette_z": 1.4567489786847443,
+      "wilson_2x2_mean": 0.964202880859375,
+      "wilson_2x2_err": 0.0001210882983286865,
+      "wilson_2x2_z": 1.834117166351191,
+      "wilson_4x4_mean": 0.8642063140869141,
+      "wilson_4x4_err": 0.0008558392873965204,
+      "wilson_4x4_z": 0.7993209083541818,
+      "Q^2_mean": 2.0625,
+      "Q^2_err": 0.2725820541381836,
+      "Q^2_z": 0.5848300637888278
+    },
+    "case_seconds": 872.7
+  },
+  {
+    "beta": 218.58,
+    "lattice_size": 64,
+    "targets": {
+      "plaquette": 0.9977098813951474,
+      "wilson_2x2": 0.9908709662886502,
+      "wilson_4x4": 0.9639811893654159,
+      "Q^2": 0.4742676553212849
+    },
+    "instanton_hmc": {
+      "acceptance": 0.9490234375,
+      "instanton_acceptance": 0.4169921875,
+      "tunnelings": 2135,
+      "burn_seconds": 52.53,
+      "prod_seconds": 47.1,
+      "sec_per_traj": 0.14718626514077188,
+      "tau_int": {
+        "plaquette": 3.0036382083366533,
+        "wilson_2x2": 3.2540069052719325,
+        "wilson_4x4": 2.7529267446165715,
+        "Q": 1.5938967118674068
+      },
+      "interval_trajectories": 6.508013810543865,
+      "seconds_per_independent_config": 0.05986814039115715,
+      "burnin_seconds_amortized": 52.531753063201904,
+      "plaquette_mean": 0.997782826423645,
+      "plaquette_err": 2.9384166282397928e-06,
+      "plaquette_z": 24.824603766735443,
+      "wilson_2x2_mean": 0.9911267757415771,
+      "wilson_2x2_err": 1.558682015456725e-05,
+      "wilson_2x2_z": 16.41190764955074,
+      "wilson_4x4_mean": 0.9642597436904907,
+      "wilson_4x4_err": 9.949321247404441e-05,
+      "wilson_4x4_z": 2.7997319429957197,
+      "Q^2_mean": 0.4566909074783325,
+      "Q^2_err": 0.014180256053805351,
+      "Q^2_z": -1.2395225993282089
+    },
+    "diffusion": {
+      "coarse_beta": 55.02364659738549,
+      "n_configs": 96,
+      "base_seconds": 106.9,
+      "sample_seconds": 784.81,
+      "retherm_seconds": 23.07,
+      "seconds_per_independent_config": 9.528884589672089,
+      "plaquette_mean": 0.9977211356163025,
+      "plaquette_err": 5.5142759265436325e-06,
+      "plaquette_z": 2.04092455746307,
+      "wilson_2x2_mean": 0.9909026026725769,
+      "wilson_2x2_err": 3.511727845761925e-05,
+      "wilson_2x2_z": 0.9008780098050501,
+      "wilson_4x4_mean": 0.9637392163276672,
+      "wilson_4x4_err": 0.00025441928301006556,
+      "wilson_4x4_z": -0.9510797880012531,
+      "Q^2_mean": 0.5104166865348816,
+      "Q^2_err": 0.08884590119123459,
+      "Q^2_z": 0.4068733698337803
+    },
+    "case_seconds": 1014.5
+  }
+]

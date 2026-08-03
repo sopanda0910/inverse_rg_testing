@@ -1,7 +1,7 @@
 """Waits for the v2 campaign to finish, then decides whether to launch the
 norm ablation based on the seed-2 evidence.
 
-Decision rule (written to out/diffusion_v2/v2/ablation_decision.md either way):
+Decision rule (written to out/diffusion_v2/ablation_decision.md either way):
 the seed-1 study showed a mid-beta Wilson-loop undershoot (negative plaquette z
 concentrated at target beta in [10, 60]). The seed-2 shard runs the E/F cases
 with independent noise; the undershoot is CONFIRMED -- and the ablation chain
@@ -23,7 +23,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-OUT = REPO / "out" / "diffusion_v2" / "v2"
+OUT = REPO / "out" / "diffusion_v2"
 RUN_LOG = OUT / "run.log"
 S2_SUMMARY = OUT / "generalization" / "seeds" / "s2" / "summary.json"
 DECISION = OUT / "ablation_decision.md"
