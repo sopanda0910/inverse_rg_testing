@@ -20,6 +20,17 @@ FIG_DIR = OUT / "paper_appendix" / "figures"
 
 GEN_COLOR = "#2a78d6"
 HMC_COLOR = "#d64550"
+
+# One-time cost of the campaign that produced the deployed checkpoint, from
+# out/u1_2d/run.log: STAGE_DATA_DONE (21.7 min) + STAGE_TRAIN_DONE (125.3 min).
+# The head-to-head charges the instanton-HMC arm its burn-in, so the diffusion
+# arm must be charged its own entry cost or Fig 18 compares a one-time cost
+# against a marginal one.
+CAMPAIGN_DATA_SECONDS = 21.7 * 60.0
+CAMPAIGN_TRAIN_SECONDS = 125.3 * 60.0
+CAMPAIGN_ONE_TIME_SECONDS = CAMPAIGN_DATA_SECONDS + CAMPAIGN_TRAIN_SECONDS
+# 38 study cases x 128 configs: what the single checkpoint actually served.
+STUDY_CONFIGS_GENERATED = 38 * 128
 INK = "#0b0b0b"
 GRID_COLOR = "#e1e0d9"
 MUTED = "#8f8d86"
@@ -117,13 +128,28 @@ def fig_entry_cost():
         diff_costs.append((rec["beta"], rec["diffusion"]["seconds_per_independent_config"]))
     xs, ys = zip(*sorted(diff_costs))
     ax.plot(xs, ys, marker="o", ms=9, mew=2, color=GEN_COLOR, lw=2,
-            label="diffusion: cost per config (no burn-in, flat)")
+            label="diffusion: marginal cost per config (flat)")
+    ax.axhline(CAMPAIGN_ONE_TIME_SECONDS, color=GEN_COLOR, lw=2, ls="--", alpha=0.85)
+    ax.text(
+        xs[0] * 1.02, CAMPAIGN_ONE_TIME_SECONDS * 0.30,
+        f"diffusion one-time entry cost: {CAMPAIGN_ONE_TIME_SECONDS/60:.0f} min\n"
+        f"(data {CAMPAIGN_DATA_SECONDS/60:.1f} + training {CAMPAIGN_TRAIN_SECONDS/60:.1f} min),\n"
+        "paid once for all 38 cases",
+        fontsize=8, color=GEN_COLOR, va="top", ha="left",
+    )
+    amortized = [y + CAMPAIGN_ONE_TIME_SECONDS / STUDY_CONFIGS_GENERATED for y in ys]
+    ax.plot(xs, amortized, marker="s", ms=6, color=GEN_COLOR, lw=1.5, ls=":", alpha=0.9,
+            label=(f"diffusion: amortized ({CAMPAIGN_ONE_TIME_SECONDS/STUDY_CONFIGS_GENERATED:.1f} s/config "
+                   "campaign share added)"))
     ax.set_xscale("log")
     ax.set_yscale("log")
     ax.set_xlabel(r"fine coupling $\beta_f$  (L = 32)")
     ax.set_ylabel("seconds")
-    ax.legend(frameon=False, fontsize=9, loc="upper left")
-    ax.set_title("The entry cost diverges; the amortized generative cost does not", fontsize=10)
+    ax.set_ylim(top=CAMPAIGN_ONE_TIME_SECONDS * 4.0)
+    ax.legend(frameon=True, framealpha=0.92, edgecolor="none", fontsize=8, loc="center left")
+    ax.set_title(
+        "The competitor's entry cost diverges with $\\beta$; the generative cost is a\n"
+        "fixed one-time charge plus a flat marginal cost", fontsize=10)
     fig.tight_layout()
     fig.savefig(FIG_DIR / "18_entry_cost.png", bbox_inches="tight")
     plt.close(fig)

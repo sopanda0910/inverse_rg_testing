@@ -78,7 +78,9 @@ def chain_aware_mean(values: torch.Tensor, n_chains: int) -> tuple[float, float]
 def run_case(model, schedule, case, args, action_type, device):
     fine_L, fine_beta = case
     coarse_L = fine_L // 2
-    coarse_beta = approx_matched_coarse_beta(fine_beta)
+    # Pass action_type: the default is "wilson", which would silently mismatch
+    # the coarse coupling under --action-type villain (see scripts/27).
+    coarse_beta = approx_matched_coarse_beta(fine_beta, action_type)
     step_size, n_steps = adapted_hmc_params(coarse_beta, 0.2, 5)
     burn_in = 200 if coarse_beta < 5 else (2000 if coarse_beta >= 20 else 600)
     t0 = time.time()

@@ -87,11 +87,30 @@ FEATURE_NAMES = [
     "sum_cos_rect",
     "sum_cos_2P_blocked",
     "Q_float^2",
+]
+
+RICH_EXTRA_FEATURE_NAMES = [
     "sum_cos_4p",
     "sum_cos_W22",
     "plaq_nn_corr",
     "sum_cos_3P_blocked",
 ]
+
+RICH_FEATURE_NAMES = FEATURE_NAMES + RICH_EXTRA_FEATURE_NAMES
+
+BASIS_FEATURE_NAMES = {
+    "final7": FEATURE_NAMES,
+    "rich11": RICH_FEATURE_NAMES,
+}
+
+DEFAULT_BASIS = "final7"
+
+
+def _feature_names_for_width(width: int) -> list[str]:
+    for names in (FEATURE_NAMES, RICH_FEATURE_NAMES, COARSE_FEATURE_NAMES):
+        if len(names) == width:
+            return list(names)
+    return [f"feature_{i}" for i in range(width)]
 
 
 def coarse_only_features(coarse: torch.Tensor) -> torch.Tensor:
@@ -116,7 +135,10 @@ def coarse_only_features(coarse: torch.Tensor) -> torch.Tensor:
 
 
 def bridge_features(
-    theta: torch.Tensor, coarse_beta_matched: float, action_type: str = "wilson"
+    theta: torch.Tensor,
+    coarse_beta_matched: float,
+    action_type: str = "wilson",
+    basis: str = DEFAULT_BASIS,
 ) -> torch.Tensor:
     """[B, 2, L, L] -> [B, n_features] differentiable per-config features.
 
@@ -125,7 +147,15 @@ def bridge_features(
     S_matched(B(x)) automatically; the rest absorb the smooth model-error
     offset. All features flow gradients (wrap has derivative 1 a.e.), so the
     bridge Hamiltonian is HMC-able by autograd.
+
+    basis: "final7" (default, the result of record) or "rich11". The wide
+    basis raised in-sample R^2 but exploded the held-out AIS weights at 2 of 4
+    cases (std 1120 and 18650) -- an under-regularized wide basis extrapolates
+    wildly once the bridge dynamics move samples off the fit manifold. It is
+    retained only to reproduce that recorded negative; do not deploy it.
     """
+    if basis not in BASIS_FEATURE_NAMES:
+        raise ValueError(f"unknown basis {basis!r}; expected one of {sorted(BASIS_FEATURE_NAMES)}")
     plaq = plaquette_angles(theta)
     blocked = block_links(theta)
     bplaq = plaquette_angles(blocked)
@@ -147,11 +177,14 @@ def bridge_features(
         rect,
         torch.cos(2.0 * bplaq).sum(dim=(-2, -1)),
         q_float**2,
-        torch.cos(4.0 * plaq).sum(dim=(-2, -1)),
-        torch.cos(wilson_loop_angles(theta, 2, 2)).sum(dim=(-2, -1)),
-        nn_corr,
-        torch.cos(3.0 * bplaq).sum(dim=(-2, -1)),
     ]
+    if basis == "rich11":
+        feats += [
+            torch.cos(4.0 * plaq).sum(dim=(-2, -1)),
+            torch.cos(wilson_loop_angles(theta, 2, 2)).sum(dim=(-2, -1)),
+            nn_corr,
+            torch.cos(3.0 * bplaq).sum(dim=(-2, -1)),
+        ]
     return torch.stack(feats, dim=1)
 
 
@@ -186,7 +219,9 @@ def fit_surrogate(
         "r2": r2,
         "resid_std": float(resid.std()),
         "target_std": float(y.std()),
-        "std_coefficients": {n: float(c) for n, c in zip(FEATURE_NAMES, g_std)},
+        "std_coefficients": {
+            n: float(c) for n, c in zip(_feature_names_for_width(g_std.numel()), g_std)
+        },
     }
 
 
@@ -288,16 +323,18 @@ class _BridgeAction:
     force and the instanton Q-hop apply to the bridge Hamiltonian unchanged."""
 
     def __init__(self, action_fine, g: torch.Tensor, const: float,
-                 coarse_beta_matched: float, action_type: str) -> None:
+                 coarse_beta_matched: float, action_type: str,
+                 basis: str = DEFAULT_BASIS) -> None:
         self.action_fine = action_fine
         self.g = g.float()
         self.const = const
         self.coarse_beta_matched = coarse_beta_matched
         self.action_type = action_type
+        self.basis = basis
         self.t = 0.0
 
     def g_of(self, theta: torch.Tensor) -> torch.Tensor:
-        feats = bridge_features(theta, self.coarse_beta_matched, self.action_type)
+        feats = bridge_features(theta, self.coarse_beta_matched, self.action_type, self.basis)
         return feats @ self.g.to(theta.dtype) + self.const
 
     def per_config(self, theta: torch.Tensor) -> torch.Tensor:
@@ -312,7 +349,8 @@ def ais_correct(
     g: torch.Tensor,
     const: float,
     action_type: str = "wilson",
-    n_bridge: int = 24,
+    basis: str = DEFAULT_BASIS,
+    n_bridge: int = 48,
     n_hmc_per_step: int = 2,
     step_size: float | None = None,
     n_leapfrog: int = 5,
@@ -330,7 +368,7 @@ def ais_correct(
         torch.manual_seed(seed)
     lattice_size = fine0.shape[-1]
     action_f = make_action(action_type, float(fine_beta))
-    bridge = _BridgeAction(action_f, g, const, coarse_beta_matched, action_type)
+    bridge = _BridgeAction(action_f, g, const, coarse_beta_matched, action_type, basis)
     if step_size is None:
         from ..lgt.hmc import adapted_hmc_params
 

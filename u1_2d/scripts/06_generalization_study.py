@@ -49,9 +49,9 @@ updates: the point is an unbiased ground truth for all observables including
 Wilson loops up to 12x12, Creutz ratios, Q, Q^2, chi_top, exact P(Q) chi^2, KS
 tests vs reference).
 
-    .venv/Scripts/python.exe diffusion/scripts/06_generalization_study.py
-    .venv/Scripts/python.exe diffusion/scripts/06_generalization_study.py --smoke
-    .venv/Scripts/python.exe diffusion/scripts/06_generalization_study.py --report-only
+    .venv/Scripts/python.exe u1_2d/scripts/06_generalization_study.py
+    .venv/Scripts/python.exe u1_2d/scripts/06_generalization_study.py --smoke
+    .venv/Scripts/python.exe u1_2d/scripts/06_generalization_study.py --report-only
 """
 
 import argparse

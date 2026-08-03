@@ -1,7 +1,7 @@
 # Supplementary Material — v2 Model
 
 This appendix documents the v2 checkpoint of the diffusion-based inverse-RG
-sampler for 2D compact U(1) lattice gauge theory. It addresses four questions:
+sampler for 2D compact U(1) lattice gauge theory. It addresses five questions:
 (1) does the generated ensemble match exact results, inside and far outside the
 training range; (2) how does the sampler compare, in wall-clock cost and
 correctness, against the strongest classical baseline we could construct
@@ -11,6 +11,51 @@ starting point; (4) what an exact-likelihood diagnostic honestly says about
 the model as an importance-sampling proposal; and (5) how far sampling-time
 tuning and likelihood-aware fine-tuning can close that importance-sampling
 gap — including which standard remedies fail, and why.
+
+## What this appendix establishes
+
+The sampler is the *instrument*, not the claim. Learned coarse-to-fine maps
+for lattice field theory are an established line — inverse-RG upscaling of
+configurations, RG-inspired coarse→fine flows, diffusion models for gauge
+theory, and the classical multiscale-thermalization algorithms they descend
+from. What that line has not done is ask whether the generated ensemble is
+the Boltzmann distribution. It is validated on observables: critical
+exponents, Wilson loops, topological susceptibility. Incorporating numerical
+exactness into inverse-RG methods is named as open work in that literature.
+
+This appendix answers it, for a sampler that passes conventional validation
+by a wide margin. Four results:
+
+1. **A way to measure distributional correctness when ESS is uninformative**
+   (§ *Measuring the gap*). Self-normalized ESS is the usual check and it
+   degenerates here — ESS/N sits at exactly 1/N, which is the estimator's
+   floor, not a measurement, and cannot distinguish a 10-nat gap from a
+   100-nat one. The free-energy identity converts the same weights into a
+   *direct* KL readout in nats/site, which stays finite and informative after
+   ESS has bottomed out.
+2. **The measurement.** ≈ 0.88 nats/site at L = 16, β = 55 and 1.02 at
+   L = 32, β = 218.6 — i.e. 448 and 2098 nats per configuration.
+3. **The dissociation, and where it becomes visible**
+   (§ *Validation sharpness*). The same ensembles reproduce the plaquette to
+   two parts in 10⁴. The two facts are consistent because low-order
+   gauge-invariant observables are a very low-dimensional projection of a
+   2L²-dimensional measure — and the residual *is* detectable once one looks
+   at extended observables, where the z-dispersion grows monotonically with
+   loop area. Short-distance agreement does not certify the measure.
+4. **A falsification chain rather than a shrug.** Six interventions —
+   sampling-time knobs, maximum-likelihood fine-tuning at two capacities,
+   single- and multi-case reverse-KL, capacity/data scaling, per-level SMC,
+   and surrogate-bridge AIS — converged, with a mechanism identified for each
+   (§ *Exactness endgame*, Tables S5–S7). The one control that could have
+   explained the gap away, an exactly-matched action arm, eliminates it
+   (Table S6): the gap is fine-side model error.
+
+The practical consequence is stated in *Scope of the claim* below and
+validated by Figs 17, 18, 21, 22 and 26: correctness for this class of
+sampler has to come from Markov-chain machinery wrapped around the proposal
+— seeded chains, Metropolis tails, structural sector imposition — not from
+the proposal's own density. A recommended protocol for reporting all of this
+is given at the end.
 
 ## Methodology
 
@@ -28,6 +73,29 @@ narrow high-β link distributions); a per-site normalization with no
 lattice-size dependence; a global coarse-FiLM channel carrying the coarse
 winding sum 2πQ/V to every layer; and a β-gated exact-score blend (analytic
 noised-Wilson score as σ → 0, gated off below β ≈ 5).
+
+**What "correct" means here (scope of the claim).** The deployed pipeline
+applies **no accept/reject step to the generated proposal**: the only
+Metropolis moves are inside the local rethermalization sweeps and the
+instanton Q-hop. Sixteen local sweeps *reduce* the proposal's bias; they do
+not remove it, and local updates relax long-wavelength modes slowest. The
+generation pipeline is therefore a **validated heuristic**, asymptotically
+exact only in the rethermalization → ∞ limit — which costs what direct
+simulation costs. Two claims must be kept apart, and are throughout:
+
+- *Graded on observables* (this appendix's actual claim): the generated
+  ensembles reproduce gauge-invariant observables against exact values to the
+  precision quoted. Quantified below, including the residual bias.
+- *As a measure* (not claimed): the generated ensemble is demonstrably **not**
+  a sample from the target — the measured density gap is ≈ 1 nat/site, i.e.
+  448 nats per configuration at L = 16, β = 55 and 2098 at L = 32, β = 218.6.
+  Observable agreement and distributional correctness are different
+  statements, and only the first is established.
+
+The conceptually exact mode is *seeding*: an HMC chain started from a
+diffusion configuration is asymptotically exact **within its sector**, with
+the sector supplied by transport (Figs 12–16, 21, 22, 26). That is the mode
+the head-to-head and three-way results validate directly.
 
 **Honesty conventions.** All topology results use the strict setting:
 rethermalization performs **no** topological (instanton-hop) updates, so the
@@ -53,17 +121,85 @@ coupling and imposed by the same instanton shift. Sector statistics are then
 correct by construction at any target — the honest successor to
 hop-in-rethermalization, and this pipeline's analogue of Q-shift sector
 reconstruction. Wilson observables are statistically identical in the two
-modes (mean |plaquette z| 1.77 vs 1.74 over 38 cases).
+modes (mean |plaquette z| **vs the HMC reference** 1.77 vs 1.74 over 38
+cases; against the exact character expansion, which is the convention used
+everywhere else in this appendix, 1.06 vs 1.08).
+
+**Why sector transport is exact, not approximate.** With β_f = 4β_c and
+L_f = 2L_c the exact finite-volume ⟨Q²⟩ ≈ V/(4π²β) is *invariant* along the
+ladder: for Villain the exact values over four rungs are 1.20271 → 1.20334 →
+1.20334 → 1.20334. The ladder multiplies V and β by 4 simultaneously, so the
+coarse ensemble's P(Q) **is** the fine theory's P(Q) — transport is an
+identity, not an approximation that happens to work. Equivalently, climbing
+the ladder is a continuum-limit trajectory at fixed physical volume, which is
+what the endpoint (L = 64, β = 55) should be read as: the same physical
+system resolved 8× finer than the base. The campaign's measured-matching
+ladder inherits this to 4% (1.986 → 1.934 → 1.904 → 1.903), the drift sitting
+in the first, strongest-coupling step where tree level is worst.
+
+The identity is a statement about the *target distribution*, and it should not
+be read as a statement about the model. The two are separated by the
+measurements: the raw charge-match rate is 0.21, transport-mode worst
+|z(⟨Q²⟩)| is 11.8, and the raw Q² excess grows with volume (1.7–2.7 at
+L ≤ 32 to 7.1–28.2 at L = 64/128). So the correct sector *distribution* is
+known exactly, while the model does **not** faithfully carry an individual
+configuration's charge across the step. That is precisely why the sector is
+imposed structurally (C-antithetic symmetrization plus resampling from the
+exact finite-volume P(Q) at the target coupling) rather than trusted to the
+network: the model is asked for a thermalized UV at the target coupling, not
+to act as a topological transport operator. The division of labour is
+deliberate, and only one half of it is exact. Its cost is a genuine
+limitation — the structural route consumes the exact P(Q) this solvable theory
+supplies, which a 4D non-abelian target will not.
 
 **Statistical baseline.** Under these conventions the v2 checkpoint matches
 exact results across 38 study cases from β_f = 1.49 to 872.8 (15× the training
-maximum) and volumes to L = 128 (64× the training area), with topology
-transport improved over v6 (mean raw spurious ⟨Q²⟩ excess 5.3 → 2.9; raw
-charge-match rate 0.17 → 0.21) at equal Wilson-observable accuracy. In
+maximum) and volumes to L = 128 (16× the largest training area, 64× the
+smallest), with topology transport improved over v6 (mean raw spurious ⟨Q²⟩
+excess ≈ 5 → 2.9 — both means taken **excluding the volume-scaling track C**,
+whose excess of 28.15 dominates any pooled average; over all 38 cases the v2
+mean is 4.01) and raw charge-match rate 0.17 → 0.21, at equal
+Wilson-observable accuracy. In
 exact-sector mode the sector statistics are additionally correct by
 construction: exact-P(Q) χ² failures drop from 5/35 (all in the mismatch
 track and the largest volume) to 1/35 — consistent with the α = 0.05 false
 positive rate — and the worst ⟨Q²⟩ deviation from |z| = 11.8 to 2.8.
+
+**Validation sharpness and the residual bias (added 2026-08-03).** The
+"matches exact" statement above is an *upper bound on bias*, and the bound is
+tight: with n = 64–128 configs per case the median relative SEM on ⟨cos θ_p⟩
+is 0.0087%, so |z| > 2 detects a relative plaquette bias of **0.017%** — two
+parts in 10⁴. Three residual features are visible at that precision and are
+reported here rather than left implicit (all computed on `z_exact`, which
+uses only the generated-ensemble error, the exact value being noiseless):
+
+- *A coherent negative offset.* All 20 Wilson-type observables have mean
+  z < 0: plaquette −0.423 ± 0.204 (−2.1σ), W(2×2) −0.466 ± 0.197, W(4×4)
+  −0.436 ± 0.177. The generated ensembles are systematically very slightly
+  **less ordered** than exact. The offset is far below the per-case
+  resolution and does not affect any conclusion, but it is a real systematic,
+  not scatter.
+- *Over-dispersion.* std(z) should be 1 for a correct model with correct
+  errors; measured, it is 1.255 (plaquette), 1.216 (W2×2), 1.316 (W8×8),
+  1.438 (W12×12), 2.785 (Q²). This is **genuine case-to-case model bias**,
+  not an error-bar artifact: the coarse base delivered to the model at thin=5
+  has τ_int = 0.50–0.62 on every observable, bounding any inherited-correlation
+  inflation at ≤ 1.12×, and `z_exact` never involves the reference chain's
+  errors at all.
+- *The bias concentrates in extended observables.* std(z) grows monotonically
+  with loop area — 1.093 (4×4) → 1.226 (6×6) → 1.316 (8×8) → 1.339 (10×10) →
+  1.438 (12×12), with max |z| rising 3.12 → 5.91. Counting beyond-3σ
+  excursions over the *full* observable set gives 29 of 760 tests against
+  2.05 expected, versus 4 of 114 over the {plaquette, W2×2, W4×4} subset the
+  case tables emphasize. These are not independent failures — they are a
+  handful of cases deviating coherently across all loop sizes.
+
+This is the observable-side shadow of the density gap: the residual model
+error lives in long-wavelength modes, exactly the modes that 16 local
+rethermalization sweeps relax slowest and that the ~1 nat/site KL is made of.
+Short-distance observables are reproduced to 10⁻⁴; extended ones carry the
+error. Any successor should report large-loop dispersion, not only the
+plaquette and small loops.
 
 **Exactness machinery and the ESS-gap program.** Beyond the diagnostic ODE
 likelihood of Fig. 19, the pipeline now includes a fully valid exactness
@@ -170,7 +306,8 @@ simultaneously.
 from a raw diffusion sample (no rethermalization applied — every sweep the
 seed needs is charged here), the equilibrated chain's own sampling interval
 2τ_int, and fresh hot/cold-start burn-in. Seeds thermalize in 0–13
-trajectories in 24 of 29 cases — below the interval, i.e. cheaper than the
+trajectories in 26 of 29 cases (23 of 29 under the stricter
+below-2τ_int criterion) — below the interval, i.e. cheaper than the
 chain's marginal cost per config; fresh hot chains never thermalize above
 β ≈ 8.8.
 
@@ -204,7 +341,10 @@ not evolved.
 ### Figure 17 — `figures/17_headtohead_cost.png`
 **Head-to-head vs instanton HMC: marginal cost and correctness (L = 32,
 burn-in 500, 128 configs/batch).** Instanton HMC — the strongest classical
-baseline; its Q-hop keeps tunneling to β = 256 where standard HMC froze at 16 —
+baseline; its Q-hop keeps tunneling to β = 256 where standard HMC froze at 16
+(from the `scripts/13` sweep; that run's output was not archived in
+`out/u1_2d/` and the figure of record does not depend on it — rerun
+`13_instanton_vs_standard_hmc.py` to re-materialize the numbers) —
 is far cheaper per config where it is correct (~0.01 s vs ~2.4 s), but open
 markers show it failing exactness (Wilson observables, up to 16.6σ) at
 β ≥ 55: its topology moves work, its UV does not thermalize. The diffusion
@@ -215,10 +355,21 @@ pipeline passes everywhere at flat cost.
 required before the instanton-HMC ensemble agrees with exact results: 8 s
 (β = 4.4), 16 s (β = 14.1), 1677 s (β = 55, needing 8000 trajectories), and
 *never within the tested budget* at β = 218.58 (7.2σ off after 8000
-trajectories / 2534 s). The diffusion pipeline has no burn-in; its per-config
-cost is flat (~2.3–2.8 s) across the same range. The baseline's entry cost
-grows ~200× over one decade of β and then stops converging; the generative
-cost does not.
+trajectories / 2534 s). The baseline's entry cost grows ~200× over one decade
+of β and then stops converging.
+
+**The diffusion arm is charged its own entry cost here** (dashed line): the
+campaign that produced the checkpoint cost **8820 s once** — 21.7 min of HMC
+data generation plus 125.3 min of training (`out/u1_2d/run.log`) — which is
+larger than *every* instanton-HMC burn-in that converges. For a single
+ensemble at a single coupling below β ≈ 55, instanton HMC is cheaper outright,
+and we say so. The generative cost is a **fixed one-time charge plus a flat
+marginal cost**, against a competitor cost that diverges with β: amortized
+over the 38 study cases the campaign adds 1.8 s/config, giving ~4.2 s/config
+total, still flat in β. The claim this figure supports is therefore *not*
+"diffusion is cheaper" — it is that the generative cost does not grow with β
+while the baseline's does, and beyond β ≈ 55 the baseline stops reaching
+correctness at any tested budget.
 
 ### Figure 19 — `figures/19_ess_weights.png`
 **Exact-likelihood diagnostic (honest negative).** Importance weights
@@ -250,7 +401,7 @@ theory says it should be.
 β_f = 6).** The seeding claim, topologically: starting from the *transported*
 ensemble — whose P(Q) is the mismatched β_c = 4 base's histogram,
 χ² p = 0.0005 — a 200-trajectory HMC continuation with the instanton Q-hop
-restores ⟨Q²⟩ = 5.2 vs exact 4.78 (p = 0.43) in 6 seconds of wall clock.
+restores ⟨Q²⟩ = 5.2 vs exact 4.78 (p = 0.39) in 6 seconds of wall clock.
 Left: P(Q) before/after vs exact; right: the ⟨Q²⟩ trajectory relaxing onto
 the exact line within tens of trajectories. The diffusion batch supplies the
 expensive part (thermalized UV at the target coupling); the topologically
@@ -386,9 +537,14 @@ identical, attributing the gap to the score model rather than the guidance.
 | exact-P(Q) χ² failures (p < 0.05) | 5/35 | 1/35 |
 | … of which mismatch track (B) | 4 | 0 |
 | worst \|z(⟨Q²⟩ vs exact)\| | 11.8 | 2.8 |
-| cases with \|z(⟨Q²⟩)\| > 2 | 13 | 3 |
+| cases with \|z(⟨Q²⟩)\| > 2 | 13 [b] | 3 [b] |
 | significant ⟨Q⟩ asymmetry (\|z\| > 2) | 0 | 0 |
 | mean \|plaquette z\| (38 cases) | 1.77 | 1.74 |
+
+[b] Counting convention differs between the columns as originally tabulated:
+the transport 13 includes 2 rows with z = +inf, while the exact-sector 3
+excludes its own 2 such rows. Counted consistently the pair is 13 vs 5
+(inf included) or 11 vs 3 (inf excluded); the qualitative gap is unchanged.
 
 The exact-sector residuals are at the multiple-testing false-positive rate
 (≈ 1.75 expected at α = 0.05 over 35 tests). χ² is computable for 35 of 38
@@ -399,7 +555,7 @@ bins to test.
 
 | case | L | β_f | ⟨Q²⟩ before | after | exact | χ² p before | after | tail (s) |
 |---|---|---|---|---|---|---|---|---|
-| B_bt6 | 32 | 6 | 1.92 | 5.20 | 4.78 | 0.0005 | 0.43 | 6 |
+| B_bt6 | 32 | 6 | 1.92 | 5.20 | 4.78 | 0.0005 | 0.39 | 6 |
 | A_bc1.5 | 32 | 4.44 | 5.10 | 6.88 | 6.79 | 0.87 | 0.24 | 6 |
 | E_bc11.8 | 32 | 43.6 | 0.44 | 0.54 | 0.58 | 0.31 | 0.96 | 16 |
 | D_bc55.02 | 32 | 218.6 | 0.031 | 0.039 | 0.029 | — | — | 41 |
@@ -424,8 +580,9 @@ against either arm of the head-to-head in Table S1.
 
 All rows are fresh-seed verification runs with valid weights (probability-flow
 ODE sampling, n = 64, 120 steps, 2 Hutchinson probes, σ_min-coef 0.03 except
-the ladder-knobs row at 0.1). ESS/N sits at the 1/64 floor in every row
-except the knob-only point (0.031): the total spread must reach O(1–3) before
+the ladder-knobs row at 0.1). ESS/N sits at or near the 1/64 floor in every row
+except the knob-only point (0.031); the two 16:14.1 entries reach
+0.021–0.023, i.e. 1.3–1.5× the floor: the total spread must reach O(1–3) before
 self-normalized ESS lifts off, so the halving delivered by rkl2 is real but
 insufficient — roughly an order of magnitude remains. Training cost of rkl2:
 300 warm-started optimizer steps, ≈ 80 min on the laptop CPU; the campaign
@@ -433,6 +590,99 @@ checkpoint itself is unmodified, and only this section's likelihood/ESS
 results use the fine-tuned variants. Full provenance:
 `out/u1_2d/ess_chain/` (chain logs, per-stage sentinels, chosen
 knobs, verification JSONs) and `scripts/19–26`.
+
+## Measuring the gap when ESS is uninformative
+
+The standard distributional check on a generative sampler is the
+self-normalized effective sample size. It is the right instinct and it fails
+in exactly the regime one most needs it.
+
+**Why ESS stops reporting.** For self-normalized weights, ESS/N is bounded
+below by 1/N — the value taken when a single sample carries all the weight.
+Every raw-transport case here sits at that bound (Table S2: 0.016 with
+N = 64, i.e. 1/64 to three digits). That is not a small ESS; it is an
+*unresolved* one. The estimator has saturated, and the true value could be
+arbitrarily smaller. Two proposals whose log-weight spreads differ by an
+order of magnitude — 15 nats and 164 nats, both present in Table S5 —
+report the identical ESS/N. Any program that tries to *improve* a proposal
+while monitoring ESS is therefore flying blind: the quantity it optimizes
+cannot see the progress it makes. This is the practical reason the ESS-gap
+program (Figs 23–25) is reported in log-weight spread throughout, with ESS
+quoted only to confirm it never lifted off.
+
+**What replaces it.** For weights that are valid — meaning the proposal
+density is known for the actual samples drawn — the identity
+
+    E_q[log w]  −  ΔF_exact  =  −KL(q ‖ p)
+
+holds exactly, with w = e^(−S_f) e^(+S_matched(c)) / q(x|c). If ΔF can be
+computed independently, the *mean* log-weight is a direct measurement of the
+Kullback–Leibler divergence, in nats. It is finite, it has a sem, and it is
+completely insensitive to how degenerate the weights are: the mean of log w
+is well-behaved precisely where the mean of w is not. That is the readout
+this appendix uses, and it is what turns "the weights are degenerate" into
+"the density is off by 0.88 nats/site."
+
+Three ingredients are required, and each is a real constraint on where the
+method applies:
+
+1. *Valid weights for the actual samples.* It is not enough to be able to
+   evaluate a density at a given configuration; the configurations must come
+   with their own densities. Here the probability-flow ODE is **sampled**,
+   accumulating the Hutchinson divergence along the same trajectory that
+   produces the configuration, so each sample arrives with its exact log q in
+   one pass. Evaluating a separately-drawn ensemble under a discretized
+   reverse map would not give valid weights, because the evaluation map is
+   not the inverse of the sampling map at finite step count.
+2. *An independently computable ΔF.* Supplied here by the character
+   expansion of the 2D U(1) partition function on the torus. This is the
+   ingredient that does not transfer: in a theory without an exact free
+   energy the identity still holds, but the KL cannot be read off, and one
+   is left with the spread alone.
+3. *Estimator control.* The Hutchinson trace estimator is unbiased in log q
+   (it enters linearly), and the residual concerns are discretization and
+   probe noise. Both are bounded by explicit controls rather than assumed:
+   8 probes and 240 integration steps both reproduce the baseline spread
+   (Fig. 24), pinning the measured spread on the model rather than the
+   estimator.
+
+**Validating the instrument.** Because the claim is a null result about a
+model, the machinery is validated end-to-end on cases where the answer is
+known. On an exactly solvable wrapped-Gaussian target with the true score and
+exact divergence the pipeline returns ESS/N > 0.5 — i.e. it *can* report a
+healthy ESS, so the floor values above are a property of the model, not of
+the code. On synthetic exact weights the free-energy certificate closes to
+< 0.02 nats. Both are unit tests, not one-off checks.
+
+**Mean and variance are different diagnostics.** They are routinely
+conflated under a single ESS number, and both are lost when that number
+saturates. They answer different questions:
+
+- the **mean** (the KL, ≈ 1 nat/site here) says how far the proposal's
+  density sits from the target on average — a bulk offset, largely uniform
+  per plaquette;
+- the **spread** (0.02–0.07 nats/site) says whether reweighting is usable at
+  all, since self-normalized estimators need total spread of O(1–3) before
+  ESS lifts off.
+
+Reporting both is what makes the closure statement quantitative: the residual
+gap is a ~1 nat/site bulk offset plus a 0.02–0.07 nats/site spread plus
+sector-frequency mismatch, and it is the *spread*, not the mean, that keeps
+reweighting out of reach.
+
+**Separating model error from matching error.** One competing explanation
+survives all of the above: the coarse conditioning ensemble is drawn from a
+single-coupling action, whereas the true blocked measure of a Wilson theory
+carries induced multi-coupling structure. Any mismatch there contributes to
+the weights without being the model's fault. The control is an arm in which
+the matching is exact by construction — the Villain action, where blocking
+gives β_c = β_f/4 exactly — so its spread is model error alone. Wilson ≤
+Villain at every case, and Wilson's coarse-explainable fraction sits *below*
+Villain's model-error baseline (Table S6): the matching floor is negligible
+and the measured gap is fine-side model error, in full. This is the step that
+makes the falsification chain a closure rather than an exhaustion, and it
+generalizes — any theory with an exactly-blockable companion action admits
+the same control.
 
 ## Exactness endgame (2026-08-02 evening): decomposition, AIS transport, L = 64
 
@@ -448,6 +698,22 @@ is pure model error by construction.
 |---|---|---|---|
 | Wilson (matching residual + model error) | 0.0209 (0.062) | 0.0419 (0.005) | 0.0175 (0.023) |
 | Villain (pure model error, exact matching) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
+
+> **Correction (2026-08-03).** The Villain arm as run used the *Wilson*-matched
+> coarse coupling: `27_matching_residual.py` called
+> `approx_matched_coarse_beta(fine_beta)` without `action_type`, whose default
+> is `"wilson"`, so the Villain arm ran at β_c = 4.0 rather than the exact
+> 14.1464/4 = 3.5366 (13% off at β_f = 14.1, 2.8% at β_f = 55). The weights and
+> certificate remain internally valid (base HMC, S_matched and ΔF all used the
+> same β_c), but the row's stated premise — "β/4 matching is exact, so this
+> spread is pure model error" — did not hold as run: a perfect model would
+> still show a c-only spread from the mismatch, and that contamination lands in
+> R²_c, the very quantity the decomposition isolates. Bounding it: the
+> mismatch term contributes ~0.6–1.5 nats against measured spreads of 15–24
+> nats, i.e. < 1% of the variance, so the conclusion below survives, but the
+> Villain numbers should be read as an upper bound on model error until the arm
+> is rerun. The bug is fixed in code (`action_type` now passed in scripts 27
+> and 19); the table still reports the original run.
 
 Wilson ≤ Villain everywhere, and Wilson's R²_c sits *below* Villain's pure
 model-error baseline: the coarse-action matching floor is **negligible**, and
@@ -482,6 +748,21 @@ program's sixth honest negative; the 7-feature run is the final AIS number.
 Provenance: `out/u1_2d/ais_transport/` (final),
 `ais_transport_rich/` (negative), `exactness2/`.
 
+> **Reproduction note (2026-08-03).** The 7-feature basis is now the code
+> default (`--basis final7`, `u1_2d/model/ais.py`), so `scripts/28` reproduces
+> this table as shipped; `--basis rich11` reproduces the negative above.
+> Previously the module exposed only the 11-feature basis while the script's
+> default output directory was the results-of-record path, so a bare rerun
+> would have overwritten the final numbers with the discarded variant. Script
+> 28 now writes to `artifacts/u1_2d/ais_transport` unless `--out` is given
+> explicitly, and its report header records the basis and width. The R²
+> columns here are in-sample (refit on all data after CV ridge selection);
+> with n = 64 and 6–11 predictors expect ~9–17% optimism, so the
+> coarse-explainable share is an over-estimate and the predicted floor
+> correspondingly optimistic. `cv_resid_std` in the JSONs is the honest
+> counterpart. Held-out ESS/N is at the 1/48 floor in all four cases; the
+> three-digit values should be read as "at floor", not ordered.
+
 **The measured KL.** For valid weights, E[log w] − ΔF_exact = −KL(q‖p)
 identically, with ΔF exactly computable here from the character expansion —
 so the free-energy certificate doubles as a direct, sem-quotable measurement
@@ -499,7 +780,7 @@ alone yields usable exact estimates at n ≈ 100.
 **L = 64 head-to-head and the entry-cost verdict.** At L = 64, β = 55, the
 instanton-HMC arm with the standard 400-trajectory burn-in fails every Wilson
 observable at z ≈ +9 to +10 while the diffusion arm passes all observables
-(|z| ≤ 1.8, 8.6 s/config including base, sampling, and retherm). The bias is
+(max |z| = 1.83, 8.6 s/config including base, sampling, and retherm). The bias is
 positive (too ordered) and Q² is fine — cold-start relaxation of
 long-wavelength modes, not topology — and it does **not** anneal away:
 max Wilson |z| = 6.5 at burn-in 1600 and 6.3 at 6400. The competitor's
@@ -512,9 +793,12 @@ explosion of Fig. 18 materializing at scale, measured. Provenance:
 (D_bc14.1464 plaq −2.93 ∧ W22 −3.47, B_bt20 −3.19, A_bc8 −2.71,
 F_L64 W22 +3.03) were rerun with two fresh seeds each: every mean-value flag
 flips sign or vanishes across seeds (D: +2.24/+2.97 then +0.45/+0.57;
-B: −2.56 then +0.13; A: −1.33 then −0.02; F: −0.86 then −1.28) —
+B: plaquette −1.49 then −0.04, W(2×2) −2.56 then +0.13; A: −1.33 then −0.02; F: −0.86 then −1.28) —
 fluctuations, consistent with the ~0.2 expected beyond-3σ count over 76
-tests. One repeatable residual: F_L64's minimum KS p ≈ 0.000 in both fresh
+tests. Two further residuals are recorded for completeness: seed s3's A_bc8 rerun
+shows ⟨Q²⟩ z = +4.18 with exact-P(Q) χ² p = 0.003 — a topology-transport
+excursion of the kind exact-sector mode is designed to remove (Table S3), not
+a Wilson-observable failure; and F_L64's minimum KS p ≈ 0.000 in both fresh
 seeds — a Wilson-loop *distribution-shape* mismatch at the far extrapolation
 whose means nonetheless pass; noted as the honest residual defect of the far
 extrapolation regime, alongside the volume-growing raw Q² excess
@@ -542,3 +826,93 @@ instanton-HMC tails, exact-sector resampling — wrapped around the generative
 proposal: the architecture the head-to-head, seeding, and three-way results
 (Figs. 17, 18, 21, 22, 26) validate directly, and the design carried forward
 to the non-abelian successor (`su2_2d/`).
+
+## A reporting protocol for learned coarse-to-fine samplers
+
+Everything above is specific to 2D U(1), but the failure mode is not: a
+learned coarse-to-fine map can reproduce low-order gauge-invariant
+observables to four significant figures while its density is off by ~1
+nat/site. That is not a pathology of this checkpoint — it is what one should
+expect from a model trained on a local objective (denoising score matching)
+and graded on a handful of low-dimensional projections. The physics
+literature has an independent statement of the same hazard: Wilson loops
+decouple from the slow topological modes, so observable agreement and
+correct sector content are not the same claim.
+
+The following is what this study would have reported from the start, and what
+we suggest for any sampler of this class. Most of it costs nothing beyond
+what is already computed.
+
+**1. Report the z-distribution, not a pass count.** "38 of 38 cases within
+|z| ≤ 3" is compatible with a badly biased sampler and with underestimated
+errors, and distinguishes neither. Under a correct model with correct errors,
+z across cases is standard normal: report mean(z) and std(z). Here mean(z) is
+−0.42 on the plaquette (a real, coherent negative offset across all 20
+Wilson-type observables) and std(z) is 1.26 (over-dispersed). Both were
+invisible in the pass counts.
+
+**2. Report dispersion against observable extent.** Short-distance agreement
+does not certify the measure, and the place the failure becomes visible is
+extended observables. Here std(z) climbs monotonically 1.09 → 1.44 from
+W(4×4) to W(12×12), with max |z| rising 3.1 → 5.9. Quoting only the
+plaquette and small loops — the three least affected quantities — hides
+exactly the signal that matters.
+
+**3. Eliminate the error-bar explanations before claiming model bias (and
+vice versa).** Over-dispersion has two candidate causes. Both are cheap to
+rule out: (i) measure τ_int of the coarse base actually delivered to the
+model — here 0.50–0.62 at thin = 5, bounding inherited-correlation inflation
+at ≤ 1.12×, far too small to explain 1.26–1.44; (ii) state which error enters
+the z you quote — z against an *exact* value involves only the generated
+ensemble's error, so a reference chain's autocorrelation cannot inflate it.
+With both excluded the dispersion is model bias, which is a much stronger
+statement than "some cases disagree."
+
+**4. Do not report a saturated ESS as a number.** If ESS/N equals 1/N to
+the digits shown, say "degenerate" and report the log-weight spread instead.
+Three-digit ESS values at the floor imply a precision that is not there and
+silently hide order-of-magnitude differences between proposals.
+
+**5. Where an exact free energy exists, report the KL directly.** The
+identity E_q[log w] − ΔF = −KL(q‖p) turns a certificate into a measurement
+in nats/site that survives weight degeneracy. Report the mean (bulk density
+offset) and the spread (reweighting usability) separately; they are different
+diagnostics and a single ESS number loses both.
+
+**6. Include an exactly-matched control arm.** The coarse conditioning
+distribution is a competing explanation for any measured gap. An action
+whose blocking relation is exact by construction — Villain here — separates
+matching error from model error and converts a list of failed remedies into a
+closure. Without it, "we tried six things and none worked" is exhaustion, not
+a result.
+
+**7. State the multiplicity, and apply it symmetrically.** Report the number
+of tests, the number of observables per case, and the expected false-positive
+count — and apply that reasoning to passes as well as to failures. Reruns of
+flagged cases with fresh seeds should be accompanied by reruns of a matched
+sample of unflagged cases; otherwise regression to the mean guarantees the
+flags "vanish."
+
+**8. Charge the generative arm its entry cost.** Burn-in for the classical
+baseline and training-plus-data-generation for the learned sampler are the
+same kind of cost. Quote the one-time cost, the marginal cost, and the
+break-even configuration count; a comparison of the competitor's entry cost
+against the model's marginal cost is not a comparison. Here the one-time cost
+is 8820 s, larger than every classical burn-in that converges, and the
+defensible claim is about *scaling* — the generative cost is flat in β while
+the baseline's diverges — not about being cheaper.
+
+**9. Report raw, pre-enforcement topology.** Any structural sector
+imposition (charge transport, exact-P(Q) resampling, Q-shift bijections) will
+make the final histogram look correct by construction. The informative number
+is what the model carries before enforcement: here a raw charge-match rate of
+0.21, and a raw ⟨Q²⟩ excess that *grows with volume* (1.7–2.7 at L ≤ 32 to
+7.1–28.2 at L = 64/128). Report both, and be explicit about which
+enforcement mechanism supplies the difference and whether it is available in
+the target theory.
+
+**10. Say which mode the correctness claim attaches to.** A generation
+pipeline with no accept/reject on the proposal is a heuristic validated on
+observables. A seeded chain run with an exact kernel is asymptotically exact.
+These deserve different language, and conflating them is the single easiest
+way for an honest study to overclaim.

@@ -27,9 +27,9 @@ would silently assume time-adjacent draws are as independent as different
 chains, which is false and was previously giving overconfident (too-small)
 error bars at high beta where within-chain autocorrelation is long.
 
-    .venv/Scripts/python.exe diffusion/scripts/13_instanton_vs_standard_hmc.py
-    .venv/Scripts/python.exe diffusion/scripts/13_instanton_vs_standard_hmc.py --smoke
-    .venv/Scripts/python.exe diffusion/scripts/13_instanton_vs_standard_hmc.py --report-only
+    .venv/Scripts/python.exe u1_2d/scripts/13_instanton_vs_standard_hmc.py
+    .venv/Scripts/python.exe u1_2d/scripts/13_instanton_vs_standard_hmc.py --smoke
+    .venv/Scripts/python.exe u1_2d/scripts/13_instanton_vs_standard_hmc.py --report-only
 """
 
 import argparse

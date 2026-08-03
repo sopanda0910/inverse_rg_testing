@@ -19,7 +19,7 @@ simulation:
 Writes report.md, summary.json, and fig_beta_matching.png into
 out/u1_2d/demo/beta_matching/ (override with --dir).
 
-    .venv/Scripts/python.exe diffusion/scripts/10_beta_matching_study.py
+    .venv/Scripts/python.exe u1_2d/scripts/10_beta_matching_study.py
 """
 
 import argparse

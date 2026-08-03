@@ -59,7 +59,12 @@ from u1_2d.utils import load_config, resolve_device, save_json, set_seed
 def run_case(model, schedule, case, args, action_type, device):
     fine_L, fine_beta = case
     coarse_L = fine_L // 2
-    coarse_beta = approx_matched_coarse_beta(fine_beta)
+    # action_type is REQUIRED here: the default is "wilson", and passing the
+    # Wilson-matched beta_c to the Villain arm destroys that arm's whole point
+    # (for Villain the beta/4 matching is exact, which is what makes its fiber
+    # spread pure model error). Omitting it put the Villain arm at beta_c = 4.0
+    # instead of 3.5366 at beta_f = 14.1464.
+    coarse_beta = approx_matched_coarse_beta(fine_beta, action_type)
     step_size, n_steps = adapted_hmc_params(coarse_beta, 0.2, 5)
     burn_in = 200 if coarse_beta < 5 else (2000 if coarse_beta >= 20 else 600)
     t0 = time.time()

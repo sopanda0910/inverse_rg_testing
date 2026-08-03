@@ -107,6 +107,26 @@ class TestHMC:
         f2, p2 = leapfrog(f1, -p1, 2.0, 0.05, 10)
         assert (group.mul(group.inverse(f2), field)[..., 0] - 1).abs().max() < 1e-8
 
+    def test_adapted_params_shrink_with_volume_and_beta(self):
+        from su2_2d.lgt.hmc import adapted_hmc_params
+
+        s_small, _ = adapted_hmc_params(2.0, 8)
+        s_bigL, _ = adapted_hmc_params(2.0, 16)
+        s_bigB, _ = adapted_hmc_params(16.0, 8)
+        assert s_bigL < s_small and s_bigB < s_small
+
+    def test_ensemble_rejects_bad_acceptance(self):
+        # a deliberately huge step tanks acceptance; the ensemble must raise
+        # rather than return non-equilibrium configs (the failure mode that
+        # silently contaminated the first SU(2) training set)
+        import pytest
+
+        from su2_2d.lgt.hmc import run_hmc_ensemble
+
+        with pytest.raises(RuntimeError, match="acceptance"):
+            run_hmc_ensemble(8, 16.0, n_configs=8, n_chains=4, burn_in=2, thin=1,
+                             step_size=2.0, n_steps=20, seed=0, tune=False)
+
     def test_dh_scales_as_dt_squared(self):
         field = _rand_su2(4, 2, 4, 4, seed=15).double()
         gen = torch.Generator().manual_seed(16)

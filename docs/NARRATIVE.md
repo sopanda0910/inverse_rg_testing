@@ -470,6 +470,75 @@ obtained cheaply at small $\beta$ where tunneling is frequent — are
 model never needs to tunnel between sectors at large $\beta$; it inherits the
 correct sector from its conditioner. Topology rides the ladder for free.
 
+**Why that is an identity, not a hope.** "Blocking preserves $Q$" is a
+statement about the *map*; what the argument actually needs is a statement
+about the *measure* — that the coarse ensemble's $P(Q)$ equals the fine
+theory's. It does, exactly, and for a reason worth stating. The
+finite-volume topological charge satisfies $\langle Q^2\rangle \approx
+\chi_t V$ with $\chi_t \approx 1/(4\pi^2\beta)$, so
+
+$$
+\langle Q^2 \rangle \;\approx\; \frac{V}{4\pi^2 \beta}
+\qquad\text{is invariant under}\qquad
+(V,\beta) \to (4V,\, 4\beta),
+$$
+
+which is precisely one ladder step ($L \to 2L$, $\beta \to 4\beta$).
+$\langle Q^2\rangle$ is a **fixed point of the ladder**. Evaluating the exact
+finite-volume $P(Q)$ (Villain, where $\beta_c = \beta_f/4$ is exact) at four
+successive rungs starting from $L=8,\ \beta=1.3472$ gives
+
+$$
+1.20271 \;\to\; 1.20334 \;\to\; 1.20334 \;\to\; 1.20334,
+$$
+
+invariant to five decimals. The campaign's measured-matching Wilson ladder
+inherits it to 4% ($1.986 \to 1.934 \to 1.904 \to 1.903$), the drift sitting
+in the first, strongest-coupling step where the tree-level relation is worst.
+
+Two consequences. First, sector transport is *exact at the level of the
+target*: the coarse base's sector distribution is the correct sector
+distribution for the fine theory, not an approximation that happens to be
+close. Second — the physical reading of the whole construction — since
+$\langle Q^2\rangle$ (and hence the physical volume in units of the
+topological correlation length) is held fixed while $L$ doubles and $a$
+shrinks, **the ladder is a continuum-limit trajectory at fixed physical
+volume**, not a thermodynamic-limit one. The endpoint ($L=64$,
+$\beta\approx55$) should be read as *the same physical system, resolved eight
+times more finely than the base* — which is exactly the limit in which
+topological freezing is the obstruction, and exactly why this is the right
+testbed.
+
+**What this does and does not license.** The identity is a statement about
+*distributions*, and it is worth being precise about the gap between that and
+what the model does, because the two are easy to conflate and the project's
+own measurements keep them apart:
+
+- The identity says: the coarse ensemble's $P(Q)$ **is** the right target for
+  the fine theory. That part is exact and needs no learning.
+- The measurements say: the model does **not** faithfully carry an individual
+  configuration's charge across the step. The raw charge-match rate is 0.21,
+  the transport-mode worst $|z(\langle Q^2\rangle)|$ is 11.8, and the raw
+  $Q^2$ excess *grows with volume* (1.7–2.7 at $L\le32$ to 7.1–28.2 at
+  $L=64/128$).
+
+So "topology rides the ladder for free" is true of the *target* and false of
+the *transport*. The resolution is the one the pipeline actually implements
+and should be stated as the design, not as a patch: because the correct
+sector distribution is known exactly (by this identity, or directly from the
+character expansion), the sector is **imposed structurally** — C-antithetic
+symmetrization plus resampling from the exact finite-volume $P(Q)$ at the
+target coupling — rather than trusted to the network. The learned model is
+asked to supply the expensive part, a thermalized UV at the target coupling;
+it is not asked to be a topological transport operator, and the measurements
+say it would fail if it were.
+
+That is a coherent division of labour, and it is honest about which half is
+exact. The cost is a real limitation to carry forward: the structural route
+needs the exact $P(Q)$, which this solvable theory supplies and a
+non-abelian target in 4D will not. In 2D SU(2) the point is moot ($\pi_1$ is
+trivial, no sectors); in 4D it is *the* open problem this line inherits.
+
 The learned lift is a **conditional generative model**: given a coarse
 configuration, produce a fine one distributed according to the physics. We
 chose score-based diffusion for it, for reasons the next part makes concrete.
@@ -1298,13 +1367,40 @@ the catching, now standard for every experiment in this project:
 Two claims, cleanly separated — the separation itself being one of the
 week's products:
 
-- **As a sampler graded on observables** (the paper's actual claim): fully
-  validated, far outside the training range, with flat generation cost in
-  exactly the regime where exact-by-construction HMC becomes unusable — plus
-  the seeding mode, where diffusion supplies the expensive thermalized
-  starting ensemble and a seconds-long exact MCMC tail supplies
+- **As a sampler graded on observables** (the paper's actual claim):
+  validated far outside the training range, with flat *marginal* generation
+  cost in exactly the regime where exact-by-construction HMC becomes
+  unusable — plus the seeding mode, where diffusion supplies the expensive
+  thermalized starting ensemble and a seconds-long exact MCMC tail supplies
   correctness. This claim stands, was never in question this week, and is
   the transferable architecture.
+
+  Three scoping qualifications, added by the 2026-08-03 audit, so that
+  "validated" is not read as more than it is. (i) *It is an upper bound on
+  bias, and a tight one*: the median relative SEM on the plaquette is
+  0.0087%, so passing $|z|\le 2$ means "no bias above ~2 parts in $10^4$
+  detected", not "agreement". (ii) *There is a small coherent residual*: all
+  20 Wilson-type observables carry a negative mean $z$ (plaquette
+  $-0.423\pm0.204$) — the generated ensembles are systematically very
+  slightly less ordered than exact. (iii) *The residual concentrates in
+  extended observables*: $\mathrm{std}(z)$ grows monotonically with loop
+  area, $1.09$ at $W(4\times4)$ to $1.44$ at $W(12\times12)$, with
+  $\max|z|$ rising $3.1 \to 5.9$. That last item is the observable-side
+  shadow of the density gap below — the error lives in the long-wavelength
+  modes that local rethermalization relaxes slowest — and it is a *measured*
+  bridge between the two bullets rather than a conjectured one. It is not an
+  error-bar artifact: the coarse base at thin=5 has $\tau_{\rm int} =
+  0.50$–$0.62$, bounding inherited-correlation inflation at $\le 1.12\times$,
+  and $z_{\rm exact}$ never involves the reference chain's errors.
+
+  Cost honesty, same audit: the flat cost above is a *marginal* cost. The
+  campaign that produced the checkpoint cost 8820 s once (21.7 min data +
+  125.3 min training), which exceeds every instanton-HMC burn-in that
+  converges; for a single ensemble at a single coupling below $\beta\approx55$
+  the classical baseline is cheaper outright. The defensible claim is that
+  the generative cost is a fixed charge plus a $\beta$-independent marginal
+  cost, against a baseline whose entry cost diverges and then stops reaching
+  correctness at all.
 
 - **As an exact sampler certified by importance weights** (the flow papers'
   claim): now *quantified* as out of reach — per-site density error of
@@ -1319,6 +1415,22 @@ week's products:
 > **Exactness must come from Markov-chain machinery wrapped around the
 > generative proposal — Metropolis tails, seeded chains — not from the
 > proposal's own likelihood.**
+
+Read the emphasis literally: **must**, not *does*. The directive describes
+what the successor has to be built around, not a property this pipeline
+already delivers. As deployed, the U(1) ladder applies no accept/reject to
+the generated proposal — the only Metropolis moves live inside the local
+rethermalization sweeps and the instanton hop. Sixteen local sweeps reduce
+the proposal's bias without removing it, and they are slowest precisely on
+the long-wavelength modes where the residual sits (§20, item iii). So the
+generation pipeline is an *observable-validated heuristic*, asymptotically
+exact only in the retherm $\to\infty$ limit, which costs what direct
+simulation costs: the exactness knob and the speedup knob are the same knob.
+What is genuinely asymptotically exact is the **seeded** mode — exact HMC
+started from a diffusion configuration, correct within its sector, with the
+sector supplied by the transport identity of §8. That is the mode the
+head-to-head, seeding and three-way results validate, and the one to carry
+forward.
 
 That directive — together with the ladder, the equivariance strategy, the
 topology transport machinery, and the honesty protocol — is the inheritance
@@ -1514,3 +1626,307 @@ that turned every negative into a mechanism. What does *not* transfer is the
 exact character-expansion referee — $P(Q)$, $\Delta F$, exact observables —
 which is why it was worth extracting every certificate this solvable theory
 could give before leaving it.
+
+---
+
+## Part V — The literature this work sits in
+
+> **Provenance and status of this Part (added 2026-08-03).** Sections 23–26
+> were compiled by a systematic literature search performed *after* the U(1)
+> study closed. Until that search, this document contained **two citations in
+> total** (Anderson 1982 in §10, Neal 2001 in §21) and no related-work
+> section. Items marked **[V]** were verified by fetching arXiv abstract pages
+> or full text, in several cases with verbatim quotation; items marked **[I]**
+> are inference, chiefly from exhaustive *negative* search (having looked and
+> not found). **Every citation here must be checked against the actual paper
+> before it appears in a submission** — this Part is a research map, not a
+> verified bibliography. The conclusions in §24 are consequential enough that
+> the checking is worth doing carefully.
+
+### 23. Background: what was already known
+
+**23.1 Inverse RG on configurations is a 2002 idea, not a 2026 one.**
+Reversing a blocking transformation to *generate* fine configurations from
+coarse ones originates with Ron, Swendsen and Brandt, PRL **89**, 275701
+(2002) **[V]**, entirely pre-ML. The machine-learning revival is Efthymiou,
+Beach and Melko, PRB **99**, 075113 (2019) **[V]** ("super-resolving the
+Ising model" with CNNs), and then the reference point for field theory:
+Bachtis, Aarts, Di Renzo and Lucini, **PRL 128, 081603 (2022)** **[V]**, which
+inverse-transforms 2D phi^4 configurations from V = 8^2 up to V' = 512^2 and
+claims to *"evade the critical slowing down effect."* Their map is a stack of
+transposed convolutions — a *deterministic supervised upsampler*, not a
+conditional generative model — the coupling flow is handled by histogram
+reweighting rather than an analytic matching, and validation is on critical
+exponents only, with no distributional check. Follow-ups: Bachtis, PRB
+**110**, L140202 (2024) (spin glasses, 8^3 -> 128^3); Bachtis,
+arXiv:2405.16288 (review). Rançon, Ivek and Balog, PRE **113**, 055302 (2026)
+**[V]** state the framing this project also arrived at — configuration-level
+inversion is *"formally impossible... can be approached probabilistically"* —
+and report the sobering result that **three-parameter networks suffice** for
+2D Ising inverse RG, extra capacity giving no benefit.
+
+**23.2 The classical ancestor of this entire architecture.**
+Endres, Brower, Detmold, Orginos and Pochinsky, **PRD 92, 114516 (2015)**
+**[V]**, describe *"a multiscale thermalization algorithm for lattice gauge
+theory... combining standard Monte Carlo with ideas drawn from real space
+renormalization group and multigrid methods,"* which *"ameliorates the problem
+of topological freezing."* Their procedure is: RG-matched coarse action →
+equilibrate coarse cheaply → **prolongate to fine** → **rethermalize in
+parallel**. Crucially their prolongator **preserves topological charge per
+configuration** (fine↔prolongated Q correlation > 0.8), and rethermalization
+takes ~50–100 trajectories against 1000+ from a cold or hot start. Detmold and
+Endres, PRD **97**, 074507 (2018), conjecture the rethermalization cost
+*vanishes* toward the continuum.
+
+This is, structurally, the pipeline in this document with a *learned*
+prolongator in place of their classical one: the matched-beta ladder ↔ their
+r_0 matching; §8's retherm ↔ their step 4; §13's topology transport ↔ their
+Q-preserving prolongation. It is the single most important omitted citation,
+and the comparison it demands — *does a learned prolongator beat a classical
+smearing-based one?* — has never been run here.
+
+**23.3 Diffusion models for lattice field theory.**
+Wang, Aarts and Zhou, JHEP **05** (2024) 060 **[V]**, established diffusion
+models as stochastic quantization for LFT. Cotler and Rezchikov,
+arXiv:2308.12355 **[V]**, *"explain how to use diffusion models to learn
+inverse renormalization group flows of statistical and quantum field
+theories"* — and already propose bridge/parallel-tempering samplers,
+pre-empting the AIS framing of §21. Masuki and Ashida, arXiv:2501.09064
+**[V]**, share the title concept for ML benchmarks rather than LFT.
+
+**23.4 Normalizing flows, and what is actually known about their scaling.**
+The canonical gauge-theory flow papers are Albergo, Kanwar and Shanahan, PRD
+**100**, 034515 (2019), and Kanwar, Albergo, Boyda, Cranmer, Hackett,
+Racanière, Rezende and Shanahan, **PRL 125, 121601 (2020)** **[V]**. Two facts
+matter for how this project has been describing them.
+
+First, the 2D U(1) flow result is at a **fixed L = 16, beta = 1–7**, and
+reports **integrated autocorrelation times, not ESS**: tau_int(Q) ≈ 10 for the
+flow against ≈ 4000 (heat bath) and ≈ 15000 (HMC). The "ESS/N ≈ 0.5–0.7"
+figure quoted in the Fig. 19 caption of the appendix is *not* from this paper
+and should not be attributed to it — its actual source is the Singha et al.
+Lattice 2026 Q-shift result of §23.7, where it is additionally reported as
+*flat in volume*.
+
+Second, and more important, **flow ESS collapses with volume**. Del Debbio,
+Marsh Rossney and Wilson, PRD **104**, 094507 (2021) **[V]**, work only at
+6^2–20^2 and warn that *"as we move towards the continuum limit the training
+costs scale extremely quickly."* Abbott et al., arXiv:2211.07541 **[V]**,
+state plainly that flow demonstrations *"have been at the scale of toy models,
+and it remains to be determined whether they can be applied to
+state-of-the-art lattice QCD."* Nicoli et al., PRD **108** (2023) **[V]**,
+document mode collapse as the failure mode. Singha et al., arXiv:2604.10209
+**[V]**, measure a super-resolving-NF comparator falling to **~0.01% ESS at
+L = 256**.
+
+The correct summary is therefore *not* the flat "flows have exactness, we have
+reach." For *general-purpose* flows the honest statement is that *both*
+families degrade with volume — they retain asymptotic exactness via
+reweighting/MH at toy volumes and lose efficiency beyond them, while this
+pipeline gave up the reweighting route entirely. But that qualification does
+**not** rescue the comparison, because the sharpest competitor (§23.7) reports
+ESS/N 0.5–0.7 *flat in volume* by restricting the flow to a single sector and
+recovering topology with an exact bijection. Against that specific design this
+project is behind on exactness and not obviously ahead on anything except
+beta-reach and the gauge-field setting. The uncomfortable reading — and the
+correct one — is that this pipeline's O(100)-nat weight spread is not a
+generic feature of the problem that everyone shares.
+
+**23.5 Topological freezing and its established remedies.** The freezing
+phenomenon: Del Debbio, Manca and Vicari, PLB **594**, 315 (2004). The result
+that most directly threatens this project's validation strategy is Schaefer,
+Sommer and Virotta, **NPB 845, 93 (2011)** **[V]**, which demonstrates that
+**Wilson loops decouple from the slow topological modes** — i.e. a sampler can
+reproduce Wilson-loop observables essentially perfectly while Q is badly
+wrong. That is the published, physics-level statement of the dissociation this
+project measured independently in §20 (sharp observables, ~1 nat/site density
+error) and it should be cited exactly there.
+
+Remedies with published numbers that any speed claim must be measured
+against: open boundary conditions, Lüscher and Schaefer, JHEP **07** (2011)
+036 **[V]**; metadynamics, Laio, Martinelli and Sanfilippo, JHEP **07** (2016)
+089 **[V]**; parallel tempering in boundary conditions, Hasenbusch, PRD **96**,
+054504 (2017) and Bonanno, Bonati and D'Elia, JHEP **03** (2021) 111 **[V]**
+(*two orders of magnitude* in tau(Q^2)); out-of-equilibrium / stochastic
+normalizing flows, Bonanno, Nada and Vadacchino, JHEP **04** (2024) 126 **[V]**.
+
+**23.6 The "strongest classical baseline we could construct" is published.**
+The instanton/winding-update HMC used as the head-to-head competitor is
+Albandea, Hernández, Ramos and Romero-López, **EPJC 81, 873 (2021)** **[V]** —
+winding HMC for **2D U(1)**, *"reversible jumps between topological sectors —
+winding steps — combined with standard HMC steps,"* validated against the same
+exact finite-beta analytics used here. It must be cited as prior art rather
+than presented as constructed in-house. Their companion work notes the
+difficulty of extending winding moves to 4D SU(2), which is directly useful
+for the `su2_2d` line.
+
+**23.7 The nearest competitor is a conference talk, not an arXiv paper.**
+An automated arXiv sweep will *not* find it, and initially reported the
+project's own note on it as a misattribution — wrongly. The work is Singha,
+Kauffmann, Jansen, Finkenrath, Arora and Nakajima, "Generative sampling across
+topological sectors in 2D U(1) lattice gauge theory," **Lattice 2026**
+(U. Maryland), building on RiGCS (arXiv:2503.08918, Ising, ICLR) and
+arXiv:2604.10209 (continuous phi^4). Two methods, both normalizing flows in
+plaquette space with exact likelihood:
+
+1. **Q-shift.** The flow is deliberately mode-collapsed to Q = 0 (reverse-KL
+   plus a soft-Q^2 penalty), and an exact unit-Jacobian bijection
+   T_q: phi_p -> phi_p - 2*pi*q/V shifts the charge by q, with mixture
+   importance sampling over sectors. Unbiased by construction:
+   chi_top within ±0.5% of exact through L = 32 (LCP beta/L^2 = 0.094,
+   beta = 6–96), **ESS/N 0.5–0.7 flat in volume**, tau_int(Q^2) ≈ 1.
+2. **Multilevel** (preliminary, L ≤ 16): a learned conditional 2x2 -> LxL
+   doubling on the line of constant physics — *the same tree-level
+   beta_c = beta_f/4 relation as this project's ladder* — in which doubling
+   **exactly preserves plaquette flux** (three fine plaquettes generated, the
+   fourth solved, Bianchi automatic), so topology is fixed at the cheap coarse
+   level. tau_int(Q^2) = 1.36 at L = 16 against 3.63 for a multiscale flow.
+
+Two consequences. First, this — not Kanwar et al. — is the actual source of
+the "ESS/N ≈ 0.5–0.7" figure quoted in the Fig. 19 caption, and there it is
+correctly sourced and *flat in volume*, which makes it a stronger comparator
+than §23.4's volume-collapsing flow results suggest. Second, their backup
+material gives the uniform Q-shift as an HMC topology move with
+volume-independent dS ~ 2*pi^2*beta/V, which is **mathematically the same move**
+as this project's smooth-instanton Metropolis hop
+(`lgt/local_updates.py::instanton_field`, every plaquette = 2*pi/L^2).
+Their multilevel result also means plain "RG-inspired hierarchical doubling"
+is no longer a distinguishing frame. The published uniform-winding prior art
+remains Albandea et al. (§23.6), whose boundary-window winding kick they report
+freezing at large beta/L^2 where the uniform shift does not.
+
+*Method note:* this entry is the clearest evidence that §23's arXiv-based
+sweep has a systematic blind spot for conference proceedings, and that its
+negative results ("nobody has done X") are weaker than its positive ones.
+Treat §24.2's novelty claims accordingly.
+
+### 24. Honest positioning: what is novel here and what is not
+
+**24.1 The headline concept is substantially published.** The most direct
+overlap is Zhu, Aarts, Wang, Zhou and Wang, arXiv:2502.05504, **JHEP 03 (2026)
+111** **[V, abstract quoted verbatim]**: a diffusion model for **2D U(1) gauge
+theory**, trained at small beta and *"extrapolated to larger inverse coupling
+regions without encountering the topological freezing problem"*, where *"the
+trained model can be employed to sample configurations on different lattice
+sizes without requiring further training"*, and whose *"exactness... is ensured
+by incorporating Metropolis-adjusted Langevin dynamics into the generation
+process."* (Earlier workshop version: arXiv:2410.19602, NeurIPS 2024 ML4PS.)
+
+Set against this document's four claimed advantages — extrapolation reach,
+one-checkpoint generality, freezing avoidance, and MCMC-wrapped exactness —
+all four are theirs, and they *achieved* the exactness §20 measured as out of
+reach. The §20 design directive ("exactness must come from Markov-chain
+machinery wrapped around the generative proposal") is, in substance, their
+published method. Any submission must engage this paper directly.
+
+Similarly, the coarse→fine learned stochastic map is Bauer, Kapust, Pawlowski
+and Temmen, arXiv:2412.12842 **[V]**: *"a renormalisation group inspired
+normalising flow... we use samples from a coarse lattice field theory and learn
+a stochastic map to the targeted fine theory... efficient sampling on lattices
+as large as 128x128... when only having sampling access on a 4x4 lattice."*
+That is the ladder, in flow form.
+
+**24.2 What appears to remain novel**, in decreasing confidence:
+
+1. **Inverse-RG scale doubling applied to *gauge* fields.** Every inverse-RG
+   and super-resolution paper found is scalar or spin (phi^4, Ising, Potts,
+   Edwards–Anderson); every gauge diffusion paper found is fixed-volume or
+   same-volume transfer. Nobody appears to join the two. **[I, from exhaustive
+   negative search]**
+2. **An explicit matched-beta ladder with a derived coupling relation** —
+   beta_c = beta_f/4 at tree level, refined by the exact character-convolution
+   MLE of §7 — together with the ⟨Q²⟩ ladder-invariance identity of §8, which
+   turns sector transport from a plausible heuristic into an exact statement.
+3. **The falsification program itself.** Measuring the density gap (~1
+   nat/site) and closing off six remedies with converged negatives. Every
+   inverse-RG paper above validates on critical exponents or observables and
+   never asks whether the generated ensemble *is* the Boltzmann distribution.
+   Bachtis, arXiv:2310.12631 **[V]**, explicitly lists *"how to incorporate
+   numerical exactness within inverse renormalization group methods"* as open
+   future work. **This is the strongest and most defensible contribution in
+   the project — and it is a negative result.**
+4. Structural coarse-charge transport as an explicit gauge-covariant instanton
+   shift with the derived guidance width lambda(sigma) = 8 sigma^2.
+
+**24.3 The implication for how to write this up.** A paper framed as *"we built
+a diffusion-based inverse-RG sampler"* is exposed on priority to Zhu et al. and
+Bachtis et al. A paper framed as *"inverse-RG generative samplers have never
+been tested for distributional correctness; here is what happens when you do,
+and here is the mechanism"* is novel, useful, and squarely within what this
+project actually established. The falsification chain, the guarded-checkpoint
+protocol, the Villain control, and the observable-vs-density dissociation of
+§20 are the assets — and §23.5 supplies the published physics result that
+explains *why* that dissociation had to happen.
+
+### 25. Objections a referee will raise, and the experiments they imply
+
+1. **Topology transport is the weak point, and it degrades with volume.** The
+   raw charge-match rate is 0.21 — the model's fine sector matches its coarse
+   conditioner about a fifth of the time — transport-mode worst |z(⟨Q²⟩)| is
+   11.8, and the raw Q² excess grows from 1.7–2.7 at L ≤ 32 to 7.1–28.2 at
+   L = 64/128. It is rescued by exact-sector mode, which draws Q from the
+   **exact analytic P(Q)** — unavailable in any theory where one would actually
+   need this method. §8's "topology rides the ladder for free" is in tension
+   with Table S3, and §23.5 explains how Wilson observables can look excellent
+   while this is true.
+2. **The baseline already solves the advertised problem.** Table S1 records
+   that instanton-HMC ⟨Q²⟩ is correct in *every* row and that the failures are
+   UV thermalization. So the headline regime is thermalization-limited, not
+   topology-limited — and the incumbent remedy for that is Endres et al.
+   multiscale thermalization (§23.2), uncited and uncompared.
+3. **Cost accounting.** Now partly addressed (Fig. 18 charges the 8820 s
+   campaign entry cost), but a break-even configuration count against each
+   classical remedy is still owed.
+4. **ESS reported at its floor.** ESS/N = 0.016 in every row of Table S2 is
+   exactly 1/64 at N = 64: an *unresolved* estimate, not a measurement. Re-run
+   with N >> 64 so the number is resolved.
+5. **The size of the gap is understated in prose.** Table S5 spreads are
+   15–164 nats and Fig. 23 states growth ∝ beta*V; against the O(1–3)
+   usability bar the shortfall at L = 32, beta = 218.6 is ~100 nats, i.e.
+   e^100 — not "roughly an order of magnitude."
+6. **Mean |z| and multiplicity.** For a correct sampler with correct errors
+   mean |z| should be ≈ 0.8; the vs-reference value is 1.77 (vs-exact 1.06).
+   Combined with the loop-size dispersion growth documented in §20, "matches
+   exact results" needs the scoping it now carries.
+
+**Experiments implied:** a direct comparison against Zhu et al. on 2D U(1)
+with matched observables and volumes; a learned-vs-classical prolongator
+comparison against Endres-style APE-smeared interpolation; a naive
+tiling/replication warm-start baseline; transport-mode-only topology at
+L = 64/128 with no analytic P(Q) crutch; and tau_int-aware benchmarking of
+seeded chains against PTBC and open boundary conditions.
+
+### 26. Minimum citation set
+
+*Inverse RG / super-resolution* — Ron, Swendsen, Brandt PRL **89**, 275701
+(2002); Efthymiou, Beach, Melko PRB **99**, 075113 (2019); Bachtis, Aarts, Di
+Renzo, Lucini PRL **128**, 081603 (2022); Bachtis PRB **110**, L140202 (2024);
+Bachtis arXiv:2405.16288; Rançon, Ivek, Balog PRE **113**, 055302 (2026).
+
+*Diffusion for LFT* — Wang, Aarts, Zhou JHEP **05** (2024) 060; **Zhu, Aarts,
+Wang, Zhou, Wang JHEP 03 (2026) 111 / arXiv:2502.05504 (mandatory: direct
+competitor)**; Cotler, Rezchikov arXiv:2308.12355; Masuki, Ashida
+arXiv:2501.09064.
+
+*Flows* — Albergo, Kanwar, Shanahan PRD **100**, 034515 (2019); Kanwar et al.
+PRL **125**, 121601 (2020); Del Debbio, Marsh Rossney, Wilson PRD **104**,
+094507 (2021); Abbott et al. arXiv:2211.07541; Nicoli et al. PRD **108**
+(2023); Bauer, Kapust, Pawlowski, Temmen arXiv:2412.12842; Singha,
+Chakrabarti, Arora PRD **108**, 074518 (2023); Singha et al. arXiv:2604.10209.
+
+*Topological freezing and remedies* — Del Debbio, Manca, Vicari PLB **594**,
+315 (2004); **Schaefer, Sommer, Virotta NPB 845, 93 (2011)**; Lüscher,
+Schaefer JHEP **07** (2011) 036; Laio, Martinelli, Sanfilippo JHEP **07**
+(2016) 089; Hasenbusch PRD **96**, 054504 (2017); Bonanno, Bonati, D'Elia JHEP
+**03** (2021) 111; Bonanno, Nada, Vadacchino JHEP **04** (2024) 126;
+**Albandea, Hernández, Ramos, Romero-López EPJC 81, 873 (2021) (mandatory: the
+winding-HMC baseline)**.
+
+*Multiscale thermalization / seeding* — **Endres, Brower, Detmold, Orginos,
+Pochinsky PRD 92, 114516 (2015) (mandatory)**; Detmold, Endres PRD **97**,
+074507 (2018).
+
+*Diffusion ML foundations* (currently absent) — Vincent (2011) for denoising
+score matching; Song, Ermon (2019); Ho, Jain, Abbeel (2020); Song et al. ICLR
+(2021) for the SDE/probability-flow formulation; Grathwohl et al. (FFJORD) for
+the continuous-flow likelihood; Neal (2001) for AIS (already cited in §21).

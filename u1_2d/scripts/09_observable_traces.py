@@ -23,9 +23,9 @@ Caveat: 06 saves its generated ensembles after 16 rethermalization sweeps
 (with Q-hops), so the seeds here are not raw diffusion output; the seed rows
 measure how much residual relaxation the shipped ensembles still need.
 
-    .venv/Scripts/python.exe diffusion/scripts/09_observable_traces.py
-    .venv/Scripts/python.exe diffusion/scripts/09_observable_traces.py --cases A_bc1 --n-traj 200
-    .venv/Scripts/python.exe diffusion/scripts/09_observable_traces.py --plot-only
+    .venv/Scripts/python.exe u1_2d/scripts/09_observable_traces.py
+    .venv/Scripts/python.exe u1_2d/scripts/09_observable_traces.py --cases A_bc1 --n-traj 200
+    .venv/Scripts/python.exe u1_2d/scripts/09_observable_traces.py --plot-only
 """
 
 import argparse

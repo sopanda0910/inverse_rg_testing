@@ -2,6 +2,7 @@
 exact-P(Q) sampling check, rectangle identities, log-partition, AIS machinery.
 """
 
+import pytest
 import math
 
 import numpy as np
@@ -21,7 +22,9 @@ from u1_2d.lgt.lattice import (
     wilson_loop_angles,
 )
 from u1_2d.model.ais import (
+    BASIS_FEATURE_NAMES,
     FEATURE_NAMES,
+    RICH_FEATURE_NAMES,
     _BridgeAction,
     bridge_features,
     fit_surrogate,
@@ -194,23 +197,36 @@ class TestAIS:
         assert abs(fit["const"] - 3.0) < 0.05
 
     def test_bridge_action_force_matches_finite_difference(self):
-        torch.manual_seed(4)
-        theta = (torch.rand(1, 2, 4, 4, dtype=torch.float64) * 2 - 1) * math.pi * 0.3
-        g = torch.zeros(len(FEATURE_NAMES), dtype=torch.float64)
-        g[:7] = torch.tensor([0.7, 0.2, 0.0, 0.0, 0.1, 0.0, 0.05], dtype=torch.float64)
-        g[8] = 0.15
-        bridge = _BridgeAction(make_action("wilson", 5.0), g, 0.0, 1.25, "wilson")
-        bridge.t = 0.4
-        t = theta.clone().requires_grad_(True)
-        (grad,) = torch.autograd.grad(bridge.per_config(t).sum(), t)
-        eps = 1e-6
-        for idx in [(0, 0, 1, 2), (0, 1, 3, 0)]:
-            tp = theta.clone()
-            tp[idx] += eps
-            tm = theta.clone()
-            tm[idx] -= eps
-            fd = float((bridge.per_config(tp) - bridge.per_config(tm)) / (2 * eps))
-            assert abs(fd - float(grad[idx])) < 1e-4
+        for basis in BASIS_FEATURE_NAMES:
+            torch.manual_seed(4)
+            theta = (torch.rand(1, 2, 4, 4, dtype=torch.float64) * 2 - 1) * math.pi * 0.3
+            g = torch.zeros(len(BASIS_FEATURE_NAMES[basis]), dtype=torch.float64)
+            g[:7] = torch.tensor([0.7, 0.2, 0.0, 0.0, 0.1, 0.0, 0.05], dtype=torch.float64)
+            if basis == "rich11":
+                g[8] = 0.15
+            bridge = _BridgeAction(make_action("wilson", 5.0), g, 0.0, 1.25, "wilson", basis)
+            bridge.t = 0.4
+            t = theta.clone().requires_grad_(True)
+            (grad,) = torch.autograd.grad(bridge.per_config(t).sum(), t)
+            eps = 1e-6
+            for idx in [(0, 0, 1, 2), (0, 1, 3, 0)]:
+                tp = theta.clone()
+                tp[idx] += eps
+                tm = theta.clone()
+                tm[idx] -= eps
+                fd = float((bridge.per_config(tp) - bridge.per_config(tm)) / (2 * eps))
+                assert abs(fd - float(grad[idx])) < 1e-4, basis
+
+    def test_bridge_basis_widths(self):
+        """The default basis must stay final7: it reproduces the Table S7 result
+        of record. rich11 is retained only to reproduce the recorded negative."""
+        theta = (torch.rand(2, 2, 4, 4) * 2 - 1) * math.pi
+        assert bridge_features(theta, 0.5).shape[1] == 7
+        assert bridge_features(theta, 0.5, "wilson", "rich11").shape[1] == 11
+        assert len(FEATURE_NAMES) == 7 and len(RICH_FEATURE_NAMES) == 11
+        assert RICH_FEATURE_NAMES[:7] == FEATURE_NAMES
+        with pytest.raises(ValueError):
+            bridge_features(theta, 0.5, "wilson", "nope")
 
     def test_bridge_endpoints(self):
         torch.manual_seed(5)

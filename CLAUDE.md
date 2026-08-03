@@ -56,10 +56,32 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
   generated and reference ensembles; U(1) also has exact character-expansion
   references (`u1_2d.lgt.exact`), SU(2) has `su2_2d.lgt.exact`
 - Exactness lesson from U(1) (measured, do not re-litigate): the model's
-  density gap is fine-side model error (~1 nat/site mean, 0.02–0.07 std);
-  correctness comes from Markov-chain machinery (retherm, M-H tails) wrapped
-  around the proposal, not from the proposal's own likelihood. AIS bridging
-  is the validated exactness mechanism and transfers to SU(2).
+  density gap is fine-side model error (~1 nat/site mean, 0.02–0.07 std),
+  with the matching-residual explanation eliminated by the Villain control.
+  Exactness **must** come from Markov-chain machinery wrapped around the
+  proposal — not from the proposal's own likelihood. This is a *design
+  directive* for SU(2), not a property the U(1) pipeline delivered: the
+  deployed ladder applies **no accept/reject to the proposal** (the only MH
+  is inside local retherm sweeps and the instanton hop), so as shipped it is
+  a **validated heuristic**, asymptotically exact only in the retherm → ∞
+  limit that costs what direct simulation costs. The conceptually clean
+  claim is the *seeded* mode: exact HMC from a diffusion seed is
+  asymptotically exact within its sector, with the sector supplied by
+  transport. AIS bridging saturates its derived floor (2.6× spread reduction
+  at the extrapolation case) but did **not** lift ESS — it is a validated
+  *mechanism*, not a delivered exactness route.
+- Ladder invariant (use it, it is the design's justification): with
+  β_f = 4β_c and L_f = 2L_c, the exact finite-volume ⟨Q²⟩ ≈ V/(4π²β) is a
+  **fixed point** of the ladder (Villain: 1.20271 → 1.20334 → 1.20334 →
+  1.20334 over four rungs). So the coarse ensemble's P(Q) *is* the fine
+  theory's P(Q) — sector transport is an identity, not an approximation —
+  and climbing the ladder is a continuum-limit trajectory at fixed physical
+  volume.
+- Validation caveat carried to SU(2): observable-level agreement is sharp
+  (plaquette to ~2 parts in 10⁴) but does not constrain the density (KL is
+  ~450–2100 nats/config). Residual model error concentrates in *extended*
+  observables — std(z) grows 1.09 → 1.44 from W(4×4) to W(12×12). Report
+  large-loop dispersion, not just plaquette/W(2×2)/W(4×4).
 
 ### Code Style
 

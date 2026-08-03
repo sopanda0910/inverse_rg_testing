@@ -159,7 +159,7 @@ or destroy charge at large beta, it only fixes UV modes within the sector.
 ## Layout
 
 ```
-diffusion/
+u1_2d/
   lgt/            lattice ops, Wilson/Villain actions, batched HMC, heatbath /
                   overrelaxation / instanton updates, blocking + beta matching,
                   exact analytic formulas
@@ -167,25 +167,34 @@ diffusion/
                   score network, DSM training loop (EMA, cosine LR), SMLD sampler
   pipeline/       generate_ladder: iterated generation + rethermalization
   validate/       observables, statistics, report generation
-  scripts/        00 toy check, 01 data, 02 train, 03 ladder, 04 validate
-  configs/        default.yaml (full), demo.yaml (~1-2 h CPU), smoke.yaml (minutes)
+  scripts/        00 toy check, 01 data, 02 train, 03 ladder, 04 validate,
+                  05-28 studies (thermalization, head-to-head, exactness program)
+  configs/        default.yaml (full), v2.yaml (the campaign of record),
+                  demo.yaml (~1-2 h CPU), smoke.yaml (minutes)
   tests/          pytest suite
 ```
 
 ## Running
 
 From the repository root (venv already set up; on Windows use
-`.venv/Scripts/python.exe`, on Unix `.venv/bin/python`):
+`.venv/Scripts/python.exe`, on Unix `.venv/bin/python`). The scripts import
+`u1_2d.*`, so either `pip install -e .` or prefix with `PYTHONPATH=.`:
 
 ```bash
-python diffusion/scripts/00_toy_wrapped_diffusion.py          # machinery check
-python diffusion/scripts/01_generate_data.py --config diffusion/configs/demo.yaml
-python diffusion/scripts/02_train.py         --config diffusion/configs/demo.yaml
-python diffusion/scripts/03_run_ladder.py    --config diffusion/configs/demo.yaml
-python diffusion/scripts/04_validate.py      --config diffusion/configs/demo.yaml
+python u1_2d/scripts/00_toy_wrapped_diffusion.py          # machinery check
+python u1_2d/scripts/01_generate_data.py --config u1_2d/configs/demo.yaml
+python u1_2d/scripts/02_train.py         --config u1_2d/configs/demo.yaml
+python u1_2d/scripts/03_run_ladder.py    --config u1_2d/configs/demo.yaml
+python u1_2d/scripts/04_validate.py      --config u1_2d/configs/demo.yaml
 
-pytest diffusion/tests -q                                     # unit tests
+pytest u1_2d/tests -q                                     # unit tests
 ```
+
+**This study is closed** (2026-08-02); see `docs/U1_2D_REVIEW.md` for the
+audit of record and `out/u1_2d/paper_appendix/appendix.md` for results.
+Reruns write to `artifacts/` by default — the results of record under
+`out/u1_2d/` should only be overwritten deliberately, via an explicit
+`--out`.
 
 Outputs land under `artifacts/diffusion/<run>/`: ensembles (`.pt` with metadata:
 beta, L, action, provenance), checkpoints, `validation/report.md`, and one figure

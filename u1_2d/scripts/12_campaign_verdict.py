@@ -2,9 +2,9 @@
 study directory (06 output, optionally with seeds/*/ replicas and a
 thermalization/ benchmark from 05 --generalization).
 
-    .venv/Scripts/python.exe diffusion/scripts/12_campaign_verdict.py \
+    .venv/Scripts/python.exe u1_2d/scripts/12_campaign_verdict.py \
         --study out/u1_2d/demo_v6/generalization --train-range 1:60
-    .venv/Scripts/python.exe diffusion/scripts/12_campaign_verdict.py \
+    .venv/Scripts/python.exe u1_2d/scripts/12_campaign_verdict.py \
         --study out/u1_2d/demo/generalization_v5 --train-range 1:60 \
         --baseline out/u1_2d/demo/generalization_v4
 

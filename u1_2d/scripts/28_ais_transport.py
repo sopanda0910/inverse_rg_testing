@@ -40,6 +40,7 @@ from u1_2d.lgt.exact import (
 from u1_2d.lgt.hmc import adapted_hmc_params
 from u1_2d.lgt.lattice import plaquette_angles, topological_charge
 from u1_2d.model.ais import (
+    BASIS_FEATURE_NAMES,
     COARSE_FEATURE_NAMES,
     ais_correct,
     bridge_features,
@@ -118,7 +119,7 @@ def run_case(model, schedule, case, args, action_type, device):
     action_f = make_action(action_type, float(fine_beta))
     with torch.no_grad():
         target = (log_q.double() + action_f.per_config(fine.float()).cpu().double()).float()
-        feats = bridge_features(fine.float(), coarse_beta, action_type)
+        feats = bridge_features(fine.float(), coarse_beta, action_type, args.basis)
     n = fine.shape[0]
     fit_idx = torch.arange(0, n, 2)
     hold_idx = torch.arange(1, n, 2)
@@ -129,7 +130,7 @@ def run_case(model, schedule, case, args, action_type, device):
     t1 = time.time()
     x_final, log_w_ais, diag = ais_correct(
         fine, log_q, fine_beta, coarse_beta, fit["g"], fit["const"],
-        action_type=action_type, n_bridge=args.n_bridge,
+        action_type=action_type, basis=args.basis, n_bridge=args.n_bridge,
         n_hmc_per_step=args.n_hmc_per_step, q_hops=not args.no_q_hops,
         seed=args.seed + 7, device=device,
     )
@@ -215,6 +216,7 @@ def format_report(results: list[dict], args) -> str:
     lines = [
         "# AIS-corrected transport",
         "",
+        f"basis {args.basis} ({len(BASIS_FEATURE_NAMES[args.basis])} features), "
         f"bridge steps {args.n_bridge}, {args.n_hmc_per_step} HMC updates/step, "
         f"Q-hops {'off' if args.no_q_hops else 'on'}, n = {args.n_configs}, "
         f"split fit (fit even / quote odd)",
@@ -328,7 +330,13 @@ def main() -> None:
     parser.add_argument("--ode-steps", type=int, default=120)
     parser.add_argument("--n-probes", type=int, default=2)
     parser.add_argument("--batch-size", type=int, default=16)
-    parser.add_argument("--n-bridge", type=int, default=32)
+    parser.add_argument("--n-bridge", type=int, default=48)
+    parser.add_argument(
+        "--basis", choices=["final7", "rich11"], default="final7",
+        help="surrogate feature basis. final7 (default) reproduces the result of "
+             "record; rich11 reproduces the recorded negative (held-out weights "
+             "explode at 2 of 4 cases). See Table S7.",
+    )
     parser.add_argument("--n-hmc-per-step", type=int, default=2)
     parser.add_argument("--no-q-hops", action="store_true")
     parser.add_argument("--seed", type=int, default=20260802)
@@ -354,7 +362,10 @@ def main() -> None:
         schedule.sigma_min, schedule.sigma_max, sigma_min_beta_coef=args.sigma_min_coef
     )
 
-    out_dir = Path(args.out or "out/u1_2d/ais_transport")
+    # Default to gitignored scratch: out/u1_2d/ais_transport holds the Table S7
+    # result of record, and a bare rerun must never overwrite it. Pass --out
+    # explicitly to publish.
+    out_dir = Path(args.out or "artifacts/u1_2d/ais_transport")
     out_dir.mkdir(parents=True, exist_ok=True)
     results = []
     for spec in args.cases:
