@@ -11,6 +11,7 @@ from u1_2d.model.schedule import GeometricNoiseSchedule
 from u1_2d.model.train import load_checkpoint
 from u1_2d.pipeline import generate_ladder
 from u1_2d.utils import (
+    configure_device,
     load_config,
     resolve_device,
     set_seed,
@@ -23,6 +24,7 @@ from u1_2d.utils import (
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="u1_2d/configs/default.yaml")
+    parser.add_argument("--device", default=None, help="override config device (cpu | cuda)")
     parser.add_argument("--physics-blend", type=float, default=None, dest="physics_blend",
                         help="exact-score blend coefficient at sampling time (overrides "
                         "ladder.physics_blend_coef in the config; 0.0 = off)")
@@ -32,7 +34,10 @@ def main() -> None:
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]) + 1)
+    if args.device is not None:
+        config["device"] = args.device
     device = resolve_device(config)
+    print(f"device: {configure_device(device)}")
     action_type = config["action_type"]
     ladder_cfg = config["ladder"]
     data_cfg = config["data"]

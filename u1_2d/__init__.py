@@ -6,11 +6,15 @@ Subpackages:
     pipeline  -- iterated coarse-to-fine generation ladder with rethermalization
     validate  -- observables, statistics, report generation
 
-U1_2D_TORCH_THREADS caps torch's thread pools for this process. This is
-the only thread-count lever that works on this machine's PyTorch build (OMP/MKL
-env vars are ignored), and per-process capping is the validated-safe way to run
-parallel campaign stages on the Snapdragon laptop -- do NOT combine parallelism
-with EcoQoS unthrottling or priority elevation (documented hardware crashes).
+U1_2D_TORCH_THREADS caps torch's thread pools for this process; U1_2D_DEVICE
+overrides the config's device for every script (see utils.resolve_device).
+
+The thread cap only bites on CPU runs -- it is the sole thread-count lever that
+works on the Snapdragon build (OMP/MKL env vars are ignored there), and
+per-process capping is the validated-safe way to run parallel campaign stages on
+that laptop: do NOT combine parallelism with EcoQoS unthrottling or priority
+elevation (documented hardware crashes). On the CUDA box it is inert for the
+training loop and matters only to the HMC/measurement stages that stay on CPU.
 """
 
 import os as _os

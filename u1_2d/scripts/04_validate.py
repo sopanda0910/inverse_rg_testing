@@ -20,6 +20,7 @@ from u1_2d.validate import validate_ladder, write_report
 from u1_2d.validate.report import freezing_diagnostics
 from u1_2d.validate.stats import chain_tau_int
 from u1_2d.utils import (
+    configure_device,
     load_config,
     resolve_device,
     set_seed,
@@ -74,10 +75,14 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="u1_2d/configs/default.yaml")
     parser.add_argument("--skip-reference", action="store_true", help="validate against exact results only")
+    parser.add_argument("--device", default=None, help="override config device (cpu | cuda)")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]) + 2)
+    if args.device is not None:
+        config["device"] = args.device
     device = resolve_device(config)
+    print(f"device: {configure_device(device)}")
     action_type = config["action_type"]
     val_cfg = config["validate"]
     data_cfg = config["data"]

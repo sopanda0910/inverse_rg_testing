@@ -16,6 +16,7 @@ from u1_2d.lgt.hmc import adapted_hmc_params
 from u1_2d.lgt.lattice import wrap
 from u1_2d.lgt.local_updates import instanton_field, retherm_sweeps
 from u1_2d.utils import (
+    configure_device,
     load_config,
     resolve_device,
     set_seed,
@@ -86,20 +87,43 @@ def sector_augment(configs: torch.Tensor, action, fraction: float) -> torch.Tens
 def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="u1_2d/configs/default.yaml")
+    parser.add_argument("--device", default=None, help="override config device (cpu | cuda)")
     parser.add_argument("--rebuild-matching", action="store_true",
                         help="recompute matching.json entries for every "
                         "ensemble file already on disk (repairs a matching.json "
                         "that an earlier run overwrote with a subset)")
+    parser.add_argument("--shard", default=None, metavar="I/N",
+                        help="generate only rungs with index %% N == I. Rungs are "
+                        "independent, and one rung saturates barely one core at "
+                        "these lattice sizes (measured: torch threads make batched "
+                        "HMC on [16,2,16,16] *slower* past 1), so N single-threaded "
+                        "shards is how this stage fills a multi-core box. Each shard "
+                        "writes matching.shard<I>.json; combine with --merge-shards.")
+    parser.add_argument("--merge-shards", action="store_true",
+                        help="fold matching.shard*.json into matching.json and "
+                        "remove them (run once after a sharded generation)")
     args = parser.parse_args()
+    shard_index = shard_count = None
+    if args.shard is not None:
+        shard_index, shard_count = (int(x) for x in args.shard.split("/"))
+        if not 0 <= shard_index < shard_count:
+            parser.error(f"--shard {args.shard}: need 0 <= I < N")
     config = load_config(args.config)
     set_seed(int(config["seed"]))
+    if args.device is not None:
+        config["device"] = args.device
     device = resolve_device(config)
+    print(f"device: {configure_device(device)}")
     action_type = config["action_type"]
     data_cfg = config["data"]
     out_dir = Path(data_cfg["out_dir"])
 
     matching = {}
-    for rung in expand_rungs(data_cfg, int(config["seed"])) + list(data_cfg.get("heldout", [])):
+    all_rungs = expand_rungs(data_cfg, int(config["seed"])) + list(data_cfg.get("heldout", []))
+    if shard_count is not None:
+        all_rungs = [r for i, r in enumerate(all_rungs) if i % shard_count == shard_index]
+        print(f"shard {shard_index}/{shard_count}: {len(all_rungs)} rungs")
+    for rung in all_rungs:
         path = ensemble_path(out_dir, action_type, rung["lattice_size"], rung["beta"])
         if path.exists():
             print(f"skip existing {path}")
@@ -157,7 +181,20 @@ def main() -> None:
             }
             print(f"  rebuilt {key}: matched coarse beta {matched:.4f}")
 
+    if args.merge_shards:
+        for shard_path in sorted(out_dir.glob("matching.shard*.json")):
+            matching.update(json.loads(shard_path.read_text(encoding="utf-8")))
+            shard_path.unlink()
+            print(f"merged {shard_path.name}")
+
     if matching:
+        # Concurrent shards must not lose each other's entries, so a shard writes
+        # its own file and --merge-shards folds them in; only the unsharded path
+        # (and the merge pass) touches matching.json itself.
+        if shard_count is not None:
+            save_json(out_dir / f"matching.shard{shard_index}.json", matching)
+            print(f"wrote matching.shard{shard_index}.json ({len(matching)} entries)")
+            return
         # Merge into any existing file -- earlier runs that regenerate only a
         # subset of rungs must not clobber the other entries.
         merged = {}

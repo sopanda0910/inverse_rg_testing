@@ -178,18 +178,36 @@ def train_score_model(
         start_epoch = snap["epoch"] + 1
         print(f"resuming from epoch {start_epoch} (best val {best_val:.4f} at {best_epoch})")
 
+    # Flat views for the EMA update, built after any resume so they alias the live
+    # tensors. state_dict() hands back detached views sharing storage with the
+    # parameters, so in-place optimizer steps and load_state_dict() both stay visible
+    # here. Two _foreach_ kernels replace ~200 per-tensor ops per step -- on GPU this
+    # workload is launch-bound (many small rungs, small L), so it dominates.
+    _live_state = model.state_dict()
+    _float_keys = [k for k, v in _live_state.items() if v.dtype.is_floating_point]
+    _ema_float = [ema_state[k] for k in _float_keys]
+    _live_float = [_live_state[k] for k in _float_keys]
+    _int_pairs = [
+        (ema_state[k], v) for k, v in _live_state.items() if not v.dtype.is_floating_point
+    ]
+
     for epoch in range(start_epoch, config.epochs):
         model.train()
-        losses = []
         all_batches = []
         for data in train_data:
             n = data["fine"].shape[0]
-            perm = torch.randperm(n, device=device)
+            # Permutations drawn on CPU so a run visits batches in the same order on
+            # CPU and GPU -- otherwise the two devices' RNG streams diverge and the
+            # ported run cannot be checked against the reference one.
+            perm = torch.randperm(n).to(data["fine"].device)
             all_batches.extend(
                 (data, perm[i : i + config.batch_size]) for i in range(0, n, config.batch_size)
             )
         order = torch.randperm(len(all_batches))
-        topo_losses = []
+        # Accumulated on-device: a float() per step would sync the GPU every batch.
+        loss_sum = torch.zeros((), device=device)
+        topo_sum = torch.zeros((), device=device)
+        n_steps = 0
         for batch_index in order.tolist():
             data, idx = all_batches[batch_index]
             optimizer.zero_grad()
@@ -207,7 +225,6 @@ def train_score_model(
                 topo_weight=config.topo_weight, return_parts=True,
                 high_beta_sigma_bias=config.high_beta_sigma_bias,
             )
-            topo_losses.append(float(topo.detach()))
             loss.backward()
             if config.grad_clip_norm is not None:
                 torch.nn.utils.clip_grad_norm_(model.parameters(), config.grad_clip_norm)
@@ -215,16 +232,17 @@ def train_score_model(
             if lr_schedule is not None:
                 lr_schedule.step()
             with torch.no_grad():
-                for key, value in model.state_dict().items():
-                    if value.dtype.is_floating_point:
-                        ema_state[key].mul_(config.ema_decay).add_(value, alpha=1.0 - config.ema_decay)
-                    else:
-                        ema_state[key].copy_(value)
-            losses.append(float(loss.detach()))
+                torch._foreach_mul_(_ema_float, config.ema_decay)
+                torch._foreach_add_(_ema_float, _live_float, alpha=1.0 - config.ema_decay)
+                for ema_buffer, live_buffer in _int_pairs:
+                    ema_buffer.copy_(live_buffer)
+                loss_sum += loss.detach()
+                topo_sum += topo.detach()
+            n_steps += 1
 
-        record = {"epoch": epoch, "train_loss": sum(losses) / max(len(losses), 1)}
+        record = {"epoch": epoch, "train_loss": float(loss_sum) / max(n_steps, 1)}
         if config.topo_weight > 0.0:
-            record["train_topo"] = sum(topo_losses) / max(len(topo_losses), 1)
+            record["train_topo"] = float(topo_sum) / max(n_steps, 1)
         model.eval()
         val_total = 0.0
         gen = torch.Generator(device="cpu").manual_seed(12345)
@@ -232,7 +250,11 @@ def train_score_model(
         # best-epoch selection and early stopping must measure the same curve.
         raw_state = {k: v.detach().clone() for k, v in model.state_dict().items()}
         model.load_state_dict(ema_state)
-        with torch.no_grad(), torch.random.fork_rng(devices=[]):
+        # The manual_seed below reseeds every CUDA generator as well as the CPU one,
+        # so the fork must cover this run's device -- with devices=[] a GPU run would
+        # restart its training noise from seed 12345 after every validation pass.
+        fork_devices = [torch.device(device).index or 0] if str(device).startswith("cuda") else []
+        with torch.no_grad(), torch.random.fork_rng(devices=fork_devices):
             torch.manual_seed(12345)
             for data in val_data:
                 n = data["fine"].shape[0]

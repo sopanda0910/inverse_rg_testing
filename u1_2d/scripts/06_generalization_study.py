@@ -200,7 +200,13 @@ def hmc_ensemble_cached(path: Path, lattice_size: int, beta: float, n_configs: i
         "provenance": f"HMC with instanton Q-hop updates, {'hot' if hot else 'cold'} start, "
                       f"burn-in {burn_in} (unbiased topology and UV)",
     })
-    return configs[:n_configs]
+    # Ensembles are CPU-resident by convention in this codebase: the cache path
+    # loads to CPU, and generate_fine_from_coarse moves each chunk to the compute
+    # device itself and returns CPU. run_hmc_ensemble is the one function that
+    # hands back tensors on its `device`, so normalize here -- otherwise on cuda
+    # the base sits on the GPU, the generated fine ensemble on the CPU, and every
+    # case dies at the first q_raw - q_base.
+    return configs[:n_configs].cpu()
 
 
 def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
@@ -545,6 +551,11 @@ def main() -> None:
     parser.add_argument("--sigma-floor-coef", type=float, default=None, dest="sigma_floor_coef",
                         help="override the checkpoint schedule's beta-aware noise floor "
                         "coefficient at sampling time (safe when --physics-blend > 0)")
+    parser.add_argument("--device", default="cpu",
+                        help="torch device for the sampler. Defaults to cpu, which is "
+                             "what every published run of this script used -- pass cuda "
+                             "to put the ladder sampling on a GPU (this stage is "
+                             "sampler-dominated, so it is the one that benefits).")
     parser.add_argument("--seed", type=int, default=1234,
                         help="base seed; each case derives its own seed from this + run_id, "
                         "so different values give independent sampler noise")
@@ -558,7 +569,10 @@ def main() -> None:
 
     if not args.report_only:
         set_seed(args.seed)
-        device = "cpu"
+        from u1_2d.utils import configure_device
+
+        device = args.device
+        print(f"device: {configure_device(device)}", flush=True)
         model, schedule = load_checkpoint(args.checkpoint or CHECKPOINT, device)
         if args.sigma_floor_coef is not None:
             from u1_2d.model.schedule import GeometricNoiseSchedule

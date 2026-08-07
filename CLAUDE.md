@@ -126,8 +126,7 @@ artifacts/        -- gitignored scratch (safe to delete)
 
 ## Virtual Environment
 
-A project-local virtualenv is already set up at `.venv/` (gitignored).
-All dependencies (torch, numpy, scipy, matplotlib, pytest) are installed.
+A project-local virtualenv is at `.venv/` (gitignored).
 
 **Always use the venv Python** — never the system Python:
 
@@ -136,14 +135,27 @@ All dependencies (torch, numpy, scipy, matplotlib, pytest) are installed.
 .venv/Scripts/python.exe -m pytest u1_2d/tests -q
 ```
 
-If you need to install additional packages: `.venv/Scripts/pip install <package>`.
+Torch must come from the CUDA 12.8 index — the RTX 5060 is Blackwell (sm_120)
+and pre-cu128 wheels report `cuda.is_available() == True`, then die at the first
+kernel launch. `utils.configure_device` checks for this and refuses to start.
 
-## Compute Safety (this machine)
+```bash
+.venv/Scripts/pip install --index-url https://download.pytorch.org/whl/cu128 torch
+.venv/Scripts/pip install -e ".[dev]"
+```
 
-Snapdragon X Elite laptop, CPU-only. Validated recipe for long runs: EcoQoS
-as-is, **no priority games**, `U1_2D_TORCH_THREADS=8` (or the SU(2)
-equivalent) as the single-process ceiling, **never parallel worker
-processes** — priority elevation + parallelism hard-crashed the machine twice
-on 2026-07-24. Launch detached long runs via Windows scheduled tasks
-(`schtasks /Run /TN <name>`), not from an editor-attached shell; drivers are
-sentinel-resumable.
+## Compute (this machine)
+
+**Current: RTX 5060 Laptop (8 GiB, sm_120), CUDA 12.8, driver 573.24.**
+Training runs on GPU — `device: auto` in every config resolves to `cuda`.
+Override per-run with `--device cpu` or the `U1_2D_DEVICE` env var. The HMC data
+generation, measurement, and validation stages are still CPU tensor code and are
+unaffected. 8 GiB is ample: the whole v3_scale training set resident on-device is
+well under 1 GiB, so `_prepare_rung` moves every rung up front and leaves it there.
+
+Historical (Snapdragon X Elite, CPU-only) — still the recipe if a run moves back
+to that laptop: EcoQoS as-is, **no priority games**, `U1_2D_TORCH_THREADS=8` as
+the single-process ceiling, **never parallel worker processes** — priority
+elevation + parallelism hard-crashed that machine twice on 2026-07-24. Launch
+detached long runs via Windows scheduled tasks (`schtasks /Run /TN <name>`), not
+from an editor-attached shell; drivers are sentinel-resumable.

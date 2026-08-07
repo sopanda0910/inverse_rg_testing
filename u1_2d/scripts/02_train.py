@@ -9,6 +9,7 @@ from pathlib import Path
 from u1_2d.lgt import block_links
 from u1_2d.model.train import RungData, TrainConfig, train_score_model
 from u1_2d.utils import (
+    configure_device,
     load_config,
     resolve_device,
     set_seed,
@@ -23,12 +24,16 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default="u1_2d/configs/default.yaml")
     parser.add_argument("--epochs", type=int, default=None, help="override config epochs")
+    parser.add_argument("--device", default=None, help="override config device (cpu | cuda)")
     parser.add_argument("--resume", action="store_true",
                         help="continue from the .resume snapshot next to the checkpoint")
     args = parser.parse_args()
     config = load_config(args.config)
     set_seed(int(config["seed"]))
+    if args.device is not None:
+        config["device"] = args.device
     device = resolve_device(config)
+    print(f"device: {configure_device(device)}")
     action_type = config["action_type"]
     data_cfg, train_cfg = config["data"], config["train"]
     out_dir = Path(data_cfg["out_dir"])

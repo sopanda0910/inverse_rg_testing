@@ -335,7 +335,10 @@ class _BridgeAction:
 
     def g_of(self, theta: torch.Tensor) -> torch.Tensor:
         feats = bridge_features(theta, self.coarse_beta_matched, self.action_type, self.basis)
-        return feats @ self.g.to(theta.dtype) + self.const
+        # Follow theta's device as well as its dtype: g is the surrogate fit,
+        # which is produced CPU-side, while theta lives on whatever device the
+        # bridge HMC runs on.
+        return feats @ self.g.to(device=theta.device, dtype=theta.dtype) + self.const
 
     def per_config(self, theta: torch.Tensor) -> torch.Tensor:
         return self.action_fine.per_config(theta) - (1.0 - self.t) * self.g_of(theta)

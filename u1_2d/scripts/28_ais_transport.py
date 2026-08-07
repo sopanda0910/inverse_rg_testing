@@ -99,6 +99,11 @@ def run_case(model, schedule, case, args, action_type, device):
         n_steps=n_steps, step_size=step_size, device=device,
         topological_updates=True, hot_start=coarse_beta < 5,
     )
+    # run_hmc_ensemble is the one function that returns on its `device`; every
+    # consumer below (snis_log_weights, coarse_only_features, the bridge-feature
+    # fits) is CPU-side, matching conditional_ode_sample's CPU return. Without
+    # this the case dies as soon as coarse meets fine on cuda.
+    coarse = coarse.cpu()
     fine, log_q = conditional_ode_sample(
         model, schedule, coarse, fine_beta,
         n_steps=args.ode_steps, n_probes=args.n_probes,
