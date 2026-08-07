@@ -1,5 +1,45 @@
 """Generalization diagnostic for the inverse-RG conditional diffusion model.
 
+PARALLELISM (--shard) -- read this before a long rerun
+------------------------------------------------------
+Why: this stage is latency-bound, not throughput-bound. One case alternates
+16-chain reference HMC with batch-32 ladder sampling at L=32-64; measured on
+the RTX 5060 that holds the GPU at ~32% and the CPU at ~3%. Neither processor
+is saturated and no per-case setting can fix that -- the batches are small
+because the physics says so. The only way to use the machine is to run several
+cases at once.
+
+Recipe (N = 3 or 4 on an 8 GiB card; each shard holds its own CUDA context and
+model, ~0.5-0.7 GiB, and the win flattens once the GPU actually saturates):
+
+    for i in 0 1 2 3:  06_generalization_study.py --shard i/4 --out-dir DIR ...
+    wait for all four
+    06_generalization_study.py --merge-shards --out-dir DIR ...
+
+Why it is safe, precisely:
+  * cases are independent -- each derives its own seed from `seed + crc32(run_id)`,
+    so a case computes the same thing regardless of which shard runs it or what
+    order it runs in. Sharding is a scheduling change, not a numerical one.
+  * shards never share a summary file. Each writes summary.shard<I>.json;
+    --merge-shards folds them into summary.json. Without this the shards would
+    race: save_json is atomic, so no file is ever corrupt, but last-writer-wins
+    would silently drop the other shards' cases.
+  * a shard reads summary.json first, so it still skips cases an earlier
+    unsharded run completed. Resume works across a change of shard count.
+  * figures/tables are DEFERRED in a shard. A shard sees only its slice, and
+    the scan figures built from a fraction of the cases would look perfectly
+    valid. Only --merge-shards draws them.
+
+The one genuine race is benign: two shards can generate the same cached base
+ensemble at once (bases/ is keyed by (L, beta), which several cases share).
+save_ensemble writes to a temp file and renames, so the loser just wastes the
+work; nothing is corrupted. Pre-populating bases/ avoids even that.
+
+Expected: cases cost ~160 s (E/F, burn_in 600) to ~500 s (D, burn_in 2000), so
+round-robin interleaving -- not contiguous blocks -- is what keeps shards even.
+This mirrors 01_generate_data.py --shard, which took data generation from
+21.7 min to 3.2.
+
 As of the v6 checkpoint (u1_2d/configs/demo_v6.yaml), training couplings
 are drawn continuously (log-uniform, `data.random_rungs`, see
 `diffusion.utils.expand_rungs`), not from a fixed discrete grid: 64 rungs at
@@ -559,13 +599,44 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=1234,
                         help="base seed; each case derives its own seed from this + run_id, "
                         "so different values give independent sampler noise")
+    parser.add_argument("--shard", default=None, metavar="I/N",
+                        help="run only cases with index %% N == I, writing "
+                        "summary.shard<I>.json instead of summary.json. Cases are "
+                        "independent and each derives its own seed from run_id, so "
+                        "sharding changes nothing about the results -- see the "
+                        "PARALLELISM note in this file's header for the recipe. "
+                        "Combine the shards with --merge-shards.")
+    parser.add_argument("--merge-shards", action="store_true",
+                        help="fold summary.shard*.json into summary.json, delete "
+                        "them, and build the figures/tables from the merged set "
+                        "(run once after a sharded run)")
     args = parser.parse_args()
+    shard_index = shard_count = None
+    if args.shard is not None:
+        shard_index, shard_count = (int(x) for x in args.shard.split("/"))
+        if not 0 <= shard_index < shard_count:
+            parser.error(f"--shard {args.shard}: need 0 <= I < N")
     out = Path(args.out_dir) if args.out_dir else (OUT_DIR / "smoke" if args.smoke else OUT_DIR)
     out.mkdir(parents=True, exist_ok=True)
     summary_path = out / "summary.json"
     records: dict = {}
     if summary_path.exists():
         records = json.loads(summary_path.read_text(encoding="utf-8"))
+    # A shard writes its own file so concurrent shards cannot clobber each
+    # other's results (save_json is atomic, but last-writer-wins would still
+    # drop the other shards' cases). It still READS summary.json above, so a
+    # sharded rerun skips work an earlier unsharded run already finished.
+    if shard_count is not None:
+        summary_path = out / f"summary.shard{shard_index}.json"
+        if summary_path.exists():
+            records.update(json.loads(summary_path.read_text(encoding="utf-8")))
+    if args.merge_shards:
+        for shard_file in sorted(out.glob("summary.shard*.json")):
+            records.update(json.loads(shard_file.read_text(encoding="utf-8")))
+            shard_file.unlink()
+            print(f"merged {shard_file.name}", flush=True)
+        summary_path = out / "summary.json"
+        save_json(summary_path, records)
 
     if not args.report_only:
         set_seed(args.seed)
@@ -588,6 +659,13 @@ def main() -> None:
             if missing:
                 raise SystemExit(f"unknown case ids: {sorted(missing)}")
             cases = [c for c in cases if c.run_id in wanted]
+        if shard_count is not None:
+            # Round-robin, not contiguous blocks: the expensive cases cluster by
+            # family (the D_* set carries burn_in 2000 and costs ~500 s against
+            # ~160 s for E_*), so interleaving spreads them evenly instead of
+            # loading one shard with all of them.
+            cases = [c for i, c in enumerate(cases) if i % shard_count == shard_index]
+            print(f"shard {shard_index}/{shard_count}: {len(cases)} cases", flush=True)
         print(f"{len(cases)} cases, output -> {out}", flush=True)
         for i, case in enumerate(cases):
             if case.run_id in records and "rows" in records[case.run_id]:
@@ -612,6 +690,14 @@ def main() -> None:
             records[case.run_id]["total_seconds"] = time.time() - t0
             save_json(summary_path, records)
             print(f"    case done in {time.time()-t0:.0f}s", flush=True)
+
+    if shard_count is not None:
+        # A shard only holds its own slice, so the scan figures would be built
+        # from a fraction of the cases and silently look fine. --merge-shards
+        # makes them once the full set is back together.
+        print(f"shard summary: {summary_path}", flush=True)
+        print("figures/tables deferred -- rerun with --merge-shards", flush=True)
+        return
 
     complete = {k: v for k, v in records.items() if "rows" in v}
     make_summary_figures(complete, out)

@@ -146,12 +146,55 @@ kernel launch. `utils.configure_device` checks for this and refuses to start.
 
 ## Compute (this machine)
 
-**Current: RTX 5060 Laptop (8 GiB, sm_120), CUDA 12.8, driver 573.24.**
-Training runs on GPU — `device: auto` in every config resolves to `cuda`.
-Override per-run with `--device cpu` or the `U1_2D_DEVICE` env var. The HMC data
-generation, measurement, and validation stages are still CPU tensor code and are
-unaffected. 8 GiB is ample: the whole v3_scale training set resident on-device is
-well under 1 GiB, so `_prepare_rung` moves every rung up front and leaves it there.
+**Current: RTX 5060 Laptop (8 GiB, sm_120) + Ryzen 7 260 (8c/16t), CUDA 12.8.**
+`device: auto` resolves to `cuda`; override with `--device` or `U1_2D_DEVICE`.
+8 GiB is ample — the whole v3_scale training set on-device is well under 1 GiB.
+
+**Pick the device per stage from measurement, not intuition.** Batched HMC is
+kernel-launch-bound at this project's volumes and is often *faster on CPU*
+(sweeps/s, GPU÷CPU): 16 chains — L=16 0.43×, L=32 0.50×, L=64 1.36×; 64 chains —
+L=16 0.79×, L=32 1.13×, L=64 3.08×. So the crossover is ~L=64 at 16 chains and
+~L=32 at 64 chains. Model sampling and training always want the GPU.
+
+| stage | device | why |
+|---|---|---|
+| 01 data | **cpu**, 8 shards | pure HMC at L≤32 |
+| 02 train | cuda | score net |
+| 03 ladder | cuda | sampler-dominated |
+| 04 validate | **cpu** | reference HMC at L=16/32 |
+| 05 therm | cuda | 64-chain baselines at L≥32 |
+| 06 study | cuda | ladder sampling dominates |
+
+**Parallelism: fan out over units, not threads.** Both heavy stages are
+latency-bound — 01 holds one core, 06 holds the GPU at ~32% — and the batch
+sizes are fixed by the physics, so the only lever is running units
+concurrently. Threads inside one unit make it *worse*: 01 measures 154
+sweeps/s on 1 torch thread, 142 on 8, 91 on 12.
+
+```bash
+# 01: N = physical cores, one thread each. 21.7 min -> 3.2 min.
+for i in 0..7: 01_generate_data.py --shard $i/8 &   # U1_2D_TORCH_THREADS=1
+01_generate_data.py --merge-shards
+
+# 06: N = 3-4 on 8 GiB (each shard carries its own CUDA context + model)
+for i in 0..3: 06_generalization_study.py --shard $i/4 --out-dir DIR &
+06_generalization_study.py --merge-shards --out-dir DIR
+```
+
+`u1_2d/scripts/shard_runner.py` holds the helper and the full contract a
+shardable stage must honor (own per-shard result file, aggregates deferred to
+the merge, round-robin so expensive families spread evenly). Read it before
+adding `--shard` to another stage.
+
+**Device convention — the bug class CPU-only machines cannot show you.**
+Ensembles are CPU-resident (`load_ensemble` pins `map_location`, `save_ensemble`
+calls `.cpu()`, `generate_fine_from_coarse` returns CPU chunks); only the model
+forward and the HMC integrator run on `device`. `run_hmc_ensemble` is the **one**
+function that returns tensors on its `device`, so normalize its output before it
+meets anything else. Three real bugs came from violating this (06, 27, 28, plus
+`model/ais.py` `g_of` converting dtype but not device). Guard:
+`python u1_2d/scripts/32_gpu_smoke.py` runs every compute-bearing script once on
+the GPU and flags `DEVICE-BUG` separately from ordinary failures.
 
 Historical (Snapdragon X Elite, CPU-only) — still the recipe if a run moves back
 to that laptop: EcoQoS as-is, **no priority games**, `U1_2D_TORCH_THREADS=8` as

@@ -21,13 +21,19 @@ FIG_DIR = OUT / "paper_appendix" / "figures"
 GEN_COLOR = "#2a78d6"
 HMC_COLOR = "#d64550"
 
-# One-time cost of the campaign that produced the deployed checkpoint, from
-# out/u1_2d/run.log: STAGE_DATA_DONE (21.7 min) + STAGE_TRAIN_DONE (125.3 min).
-# The head-to-head charges the instanton-HMC arm its burn-in, so the diffusion
-# arm must be charged its own entry cost or Fig 18 compares a one-time cost
-# against a marginal one.
-CAMPAIGN_DATA_SECONDS = 21.7 * 60.0
-CAMPAIGN_TRAIN_SECONDS = 125.3 * 60.0
+# One-time cost of the campaign that produced the deployed checkpoint. The
+# head-to-head charges the instanton-HMC arm its burn-in, so the diffusion arm
+# must be charged its own entry cost or Fig 18 compares a one-time cost against
+# a marginal one.
+#
+# RTX 5060 Laptop + Ryzen 7 260 (2026-08-06), replacing the Snapdragon numbers
+# (21.7 / 125.3 min). Data is the measured sentinel: 3.2 min, 8 single-threaded
+# shards. Training is NOT its sentinel (188.9 min) -- that run was interrupted by
+# Modern Standby, so its wall clock counts sleep as compute. The figure needs
+# compute cost, so this is the measured rate instead: 100 epochs x 728 steps at
+# the observed 45 s/epoch.
+CAMPAIGN_DATA_SECONDS = 3.2 * 60.0
+CAMPAIGN_TRAIN_SECONDS = 100 * 45.0
 CAMPAIGN_ONE_TIME_SECONDS = CAMPAIGN_DATA_SECONDS + CAMPAIGN_TRAIN_SECONDS
 # 38 study cases x 128 configs: what the single checkpoint actually served.
 STUDY_CONFIGS_GENERATED = 38 * 128
