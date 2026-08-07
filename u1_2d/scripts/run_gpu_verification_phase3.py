@@ -46,7 +46,16 @@ CANON_CKPT = CANON / "checkpoints" / "score_net.pt"
 SAMPLER_FLAGS = ["--physics-blend", "1.0", "--physics-blend-beta-min", "5.0",
                  "--sigma-floor-coef", "0.1"]
 CASES = ["16:14.1464", "16:55.0237", "32:55.0237", "32:218.58"]
-WAIT_TIMEOUT_H = 12.0
+# Shard counts are VRAM-bounded, not core-bounded: every concurrent process
+# carries its own CUDA context plus the score net (~0.5-0.7 GiB of 8 GiB). Four
+# shards plus the four-way concurrent group never overlap in this driver.
+SECTOR_SHARDS = 4
+# Generous because phase 2's THERM is the long pole and was badly misjudged:
+# measured ~28 min/case over 29 cases (~13.5 h), not the 1-2 h first estimated.
+# It computes its own hot/cold baselines (32 chains x 640 trajectories each) --
+# the original campaign passed --reuse-baselines and skipped that entirely, which
+# is why its 297 min is not a comparable number.
+WAIT_TIMEOUT_H = 36.0
 
 
 def log(msg: str) -> None:
@@ -96,6 +105,62 @@ def run_stage(name: str, cmd: list[str], device: str | None = None,
     return False
 
 
+def run_concurrent(stages: list[tuple[str, list[str]]], device: str | None = None) -> list[str]:
+    """Run independent stages at once; return the names that failed.
+
+    Each still gets its own sentinel, so a partial failure re-runs only the
+    stages that did not finish.
+    """
+    pending = [(n, c) for n, c in stages if not (STATE / f"stage_{n}.done").exists()]
+    for name, _ in stages:
+        if (STATE / f"stage_{name}.done").exists():
+            log(f"STAGE_{name}: sentinel present, skipping")
+    if not pending:
+        return []
+    log(f"CONCURRENT_START: {', '.join(n for n, _ in pending)}")
+    env = {**os.environ, "PYTHONUNBUFFERED": "1"}
+    if device:
+        env["U1_2D_DEVICE"] = device
+    t0 = time.time()
+    procs = [(n, subprocess.Popen(c, cwd=REPO, env=env)) for n, c in pending]
+    failed = []
+    for name, proc in procs:
+        rc = proc.wait()
+        if rc == 0:
+            (STATE / f"stage_{name}.done").write_text(
+                f"done {time.strftime('%Y-%m-%d %H:%M:%S')} (concurrent)\n")
+            log(f"STAGE_{name}_DONE")
+        else:
+            log(f"STAGE_{name}_FAILED rc={rc}")
+            failed.append(name)
+    log(f"CONCURRENT_DONE ({(time.time()-t0)/60:.1f} min)")
+    return failed
+
+
+def run_sharded_stage(name: str, base_args: list[str], n_shards: int) -> bool:
+    """A --shard/--merge-shards stage (06). See shard_runner.py for the contract."""
+    sentinel = STATE / f"stage_{name}.done"
+    if sentinel.exists():
+        log(f"STAGE_{name}: sentinel present, skipping")
+        return True
+    log(f"STAGE_{name}_START: {n_shards} shards")
+    env = {**os.environ, "PYTHONUNBUFFERED": "1"}
+    t0 = time.time()
+    procs = [subprocess.Popen([*base_args, "--shard", f"{i}/{n_shards}"],
+                              cwd=REPO, env=env) for i in range(n_shards)]
+    if any(p.wait() for p in procs):
+        log(f"STAGE_{name}_FAILED in shards ({(time.time()-t0)/60:.1f} min)")
+        return False
+    if subprocess.run([*base_args, "--merge-shards"], cwd=REPO, env=env).returncode != 0:
+        log(f"STAGE_{name}_FAILED at merge")
+        return False
+    dt = (time.time() - t0) / 60
+    sentinel.write_text(f"done {time.strftime('%Y-%m-%d %H:%M:%S')} "
+                        f"({dt:.1f} min, {n_shards} shards)\n")
+    log(f"STAGE_{name}_DONE ({dt:.1f} min)")
+    return True
+
+
 def promote() -> bool:
     """Move the verification run into the canonical tree it will be read from."""
     sentinel = STATE / "stage_PROMOTE.done"
@@ -134,33 +199,48 @@ def main() -> None:
     failures = []
     # Every stage below uses its published invocation and default paths, which
     # now resolve to the promoted checkpoint.
-    data_stages = [
+    #
+    # GROUP 1 -- mutually independent, so run concurrently. Each reads only the
+    # checkpoint and writes its own output directory; none consumes another's
+    # result. Serially these are ~2 h of mostly-idle machine (a single-threaded
+    # dispatcher against a GPU that sits at 5-30% on these batch sizes), so
+    # overlapping them is close to free.
+    group1 = [
         ("HEADTOHEAD", [PY, "u1_2d/scripts/14_diffusion_vs_instanton_hmc.py",
-                        "--config", CONFIG], "cuda"),
+                        "--config", CONFIG]),
         ("ESS", [PY, "u1_2d/scripts/15_model_ess.py", "--config", CONFIG,
-                 "--cases", *CASES, "--n-configs", "64"], "cuda"),
+                 "--cases", *CASES, "--n-configs", "64"]),
         ("ESS_NOGUIDE", [PY, "u1_2d/scripts/15_model_ess.py", "--config", CONFIG,
                          "--cases", *CASES, "--n-configs", "64",
                          "--consistency-weight", "0.0",
-                         "--out", str(CANON / "model_ess_noguide")], "cuda"),
+                         "--out", str(CANON / "model_ess_noguide")]),
         ("BURNIN_SCAN", [PY, "u1_2d/scripts/16_h2h_burnin_scan.py",
-                         "--config", CONFIG], "cuda"),
-        ("SECTOR_STUDY", [PY, "u1_2d/scripts/06_generalization_study.py",
-                          *SAMPLER_FLAGS, "--seed", "20260730", "--device", "cuda",
-                          "--symmetrize-base", "--sector-mode", "exact",
-                          "--out-dir", str(CANON / "generalization_exact_sectors")], None),
+                         "--config", CONFIG]),
+    ]
+    failures += run_concurrent(group1, device="cuda")
+
+    # SECTOR_STUDY is 06 again (exact-sector arm, figure 20), so it shards the
+    # same way the main study does.
+    sector_args = [PY, "u1_2d/scripts/06_generalization_study.py",
+                   *SAMPLER_FLAGS, "--seed", "20260730", "--device", "cuda",
+                   "--symmetrize-base", "--sector-mode", "exact",
+                   "--out-dir", str(CANON / "generalization_exact_sectors")]
+    if not run_sharded_stage("SECTOR_STUDY", sector_args, SECTOR_SHARDS):
+        failures.append("SECTOR_STUDY")
+
+    # GROUP 2 -- ordered. PQ_TAIL reads the generalization output; the Tier-0
+    # sweep must precede the ESS chain because run_ess_chain picks its knobs
+    # from sweep_summary.md and blocks waiting for it otherwise.
+    for name, cmd, dev in [
         ("PQ_TAIL", [PY, "u1_2d/scripts/18_pq_hmc_tail.py", "--device", "cuda",
                      "--gen-dir", str(CANON / "generalization"),
                      "--n-traj", "200"], None),
-        # Tier-0 sweep must precede the ESS chain: run_ess_chain picks its knobs
-        # from sweep_summary.md and blocks waiting for it otherwise.
         ("ODE_SWEEP", [PY, "u1_2d/scripts/run_ode_sweep.py"], "cuda"),
         ("ESS_CHAIN", [PY, "u1_2d/scripts/run_ess_chain.py"], "cuda"),
         ("VERDICT", [PY, "u1_2d/scripts/12_campaign_verdict.py",
                      "--study", str(CANON / "generalization"),
                      "--out", str(CANON / "verdict")], None),
-    ]
-    for name, cmd, dev in data_stages:
+    ]:
         if not run_stage(name, cmd, device=dev):
             failures.append(name)
 

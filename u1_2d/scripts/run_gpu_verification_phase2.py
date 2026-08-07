@@ -44,6 +44,9 @@ SAMPLER_FLAGS = ["--physics-blend", "1.0", "--physics-blend-beta-min", "5.0",
                  "--sigma-floor-coef", "0.1"]
 
 WAIT_TIMEOUT_H = 6.0
+# 05 shards share the GPU, so this is bounded by VRAM rather than by cores: each
+# shard holds its own CUDA context plus the score net (~0.5-0.7 GiB of 8 GiB).
+THERM_SHARDS = 4
 
 
 def log(msg: str) -> None:
@@ -96,6 +99,40 @@ def run_stage(name: str, cmd: list[str], threads: str | None = None,
     return False
 
 
+def run_therm_sharded(base_args: list[str], n_shards: int) -> bool:
+    """05 as N concurrent shards, then one unsharded pass to build the aggregates.
+
+    05 needs no data merge -- each case writes its own L*_beta*/ directory, so
+    concurrent shards never contend for a file. Only timescales.png,
+    beta_scan.png and report.md are global, and the merge pass rebuilds them by
+    re-walking every case through --skip-cached (seconds, since all are cached).
+    """
+    sentinel = STATE / "stage_THERM.done"
+    if sentinel.exists():
+        log("STAGE_THERM: sentinel present, skipping")
+        return True
+    log(f"STAGE_THERM_START: {n_shards} shards")
+    env = {**os.environ, "PYTHONUNBUFFERED": "1", "U1_2D_DEVICE": "cuda"}
+    t0 = time.time()
+    procs = [subprocess.Popen([*base_args, "--shard", f"{i}/{n_shards}"],
+                              cwd=REPO, env=env) for i in range(n_shards)]
+    codes = [p.wait() for p in procs]
+    dt = (time.time() - t0) / 60
+    if any(codes):
+        log(f"STAGE_THERM_FAILED shard rcs={codes} ({dt:.1f} min)")
+        return False
+    log(f"shards done ({dt:.1f} min); building aggregates")
+    merge = subprocess.run(base_args, cwd=REPO, env=env)
+    if merge.returncode != 0:
+        log(f"STAGE_THERM_FAILED at aggregate pass rc={merge.returncode}")
+        return False
+    dt = (time.time() - t0) / 60
+    sentinel.write_text(f"done {time.strftime('%Y-%m-%d %H:%M:%S')} "
+                        f"({dt:.1f} min, {n_shards} shards)\n")
+    log(f"STAGE_THERM_DONE ({dt:.1f} min)")
+    return True
+
+
 def main() -> None:
     STATE.mkdir(parents=True, exist_ok=True)
     GEN_DIR.mkdir(parents=True, exist_ok=True)
@@ -119,15 +156,18 @@ def main() -> None:
     # cuda, on measurement rather than the L<=32 rule of thumb: this stage's
     # baseline HMC runs 64 chains, not the 16 the earlier crossover was measured
     # at, and the bigger batch moves the crossover down. At 64 chains the GPU
-    # wins from L=32 up (L=32 1.13x, L=64 3.08x, and those were sampled while
-    # the card was busy, so the real margin is larger). Smoke-verified on cuda.
-    ok &= run_stage("THERM", [PY, "u1_2d/scripts/05_hmc_thermalization.py",
-                              "--config", CONFIG,
-                              f"--generalization={GEN_DIR}",
-                              "--parts", "A,D,E,F", "--skip-cached",
-                              "--checkpoint", CKPT, *SAMPLER_FLAGS,
-                              "--out", str(THERM_DIR)],
-                    device="cuda")
+    # wins from L=32 up (L=32 1.13x, L=64 3.08x).
+    #
+    # Sharded because serial it uses almost none of the machine: measured one
+    # core at 89% (6% of 16 logical) and the GPU at 5%. Both idle for the same
+    # reason -- 32-128 chains at L=32 is too small to fill the card, and one
+    # Python thread issues the launches. Cases are independent and each owns its
+    # own L*_beta*/ directory, so the only thing deferred is the aggregate.
+    therm_args = [PY, "u1_2d/scripts/05_hmc_thermalization.py",
+                  "--config", CONFIG, f"--generalization={GEN_DIR}",
+                  "--parts", "A,D,E,F", "--skip-cached",
+                  "--checkpoint", CKPT, *SAMPLER_FLAGS, "--out", str(THERM_DIR)]
+    ok &= run_therm_sharded(therm_args, THERM_SHARDS)
     # Figure 16's source; cheap, and reads only THERM_DIR.
     ok &= run_stage("AUTOCORR", [PY, "u1_2d/scripts/11_autocorrelation.py",
                                  "--dir", str(THERM_DIR)])

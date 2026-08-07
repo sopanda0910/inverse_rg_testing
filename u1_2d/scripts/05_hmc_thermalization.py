@@ -1069,6 +1069,16 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
                  if any(abs(float(r["target_beta"]) - w) < 1e-3 for w in wanted)]
     if not cases:
         raise SystemExit(f"no completed generalization cases for parts {sorted(parts)}")
+    if args.shard is not None:
+        shard_index, shard_count = (int(x) for x in args.shard.split("/"))
+        if not 0 <= shard_index < shard_count:
+            raise SystemExit(f"--shard {args.shard}: need 0 <= I < N")
+        # Round-robin over the beta-sorted case list. Cost climbs steeply with
+        # beta (burn-in and trajectory count both grow), so interleaving gives
+        # every shard a mix of cheap and expensive rungs; contiguous blocks
+        # would leave one shard holding all the slow high-beta cases.
+        cases = [c for i, c in enumerate(cases) if i % shard_count == shard_index]
+        print(f"shard {shard_index}/{shard_count}: {len(cases)} cases", flush=True)
     out_dir = Path(args.out) if args.out else gen_dir.parent / "thermalization" / "generalization"
     if args.replot:
         replot_relaxations(out_dir, action_type)
@@ -1135,6 +1145,18 @@ def run_generalization_scan(args, config: dict, device: str) -> None:
                                 device, out_dir, label=label,
                                 baseline_cache=baseline_cache))
 
+    if args.shard is not None:
+        # A shard holds only its slice, so timescales.png / beta_scan.png /
+        # report.md built here would silently cover a fraction of the beta scan.
+        # No merge step is needed for the DATA -- each case owns its own
+        # L*_beta*/ directory, so shards never touch the same file. The merge is
+        # just a final unsharded pass with --skip-cached: every case hits
+        # cached_rung_record, so it costs seconds and rebuilds the aggregates
+        # from the complete set.
+        print(f"shard done; aggregates deferred. Merge with the same command "
+              f"minus --shard (keep --skip-cached).", flush=True)
+        return
+
     summaries = [res["summary"] for res in results]
     plot_timescales(summaries, out_dir / "timescales.png")
     plot_beta_scan(summaries, out_dir / "beta_scan.png")
@@ -1184,6 +1206,14 @@ def main() -> None:
                         help="generalization mode: reuse completed cases' saved "
                         "benchmark outputs (series/summary/after_hmc) instead of "
                         "re-running their HMC; validation rows are recomputed")
+    parser.add_argument("--shard", default=None, metavar="I/N",
+                        help="run only cases with index %% N == I of the beta-sorted "
+                        "list. Cases are independent and each owns its own "
+                        "L*_beta*/ output directory, so shards never share a file "
+                        "and no merge of DATA is required -- only the aggregate "
+                        "figures/report are deferred. Rebuild those with a final "
+                        "unsharded pass carrying --skip-cached, which reuses every "
+                        "case and costs seconds. N=3-4 on an 8 GiB card.")
     parser.add_argument("--replot", action="store_true",
                         help="regenerate the relaxation figures from cached per-case "
                         "series under the mode's output directory; no HMC is run")
