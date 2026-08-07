@@ -1,0 +1,251 @@
+ 
+======== launch Thu 08/06/2026 17:18:27.69 ======== 
+[2026-08-06 17:18:27] PHASE2_START
+[2026-08-06 17:18:27] waiting for phase 1 (stage_COMPARE.done), timeout 6.0 h
+[2026-08-06 18:11:45] phase 1 complete, starting phase 2
+[2026-08-06 18:11:45] STAGE_STUDY_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 20260730 --device cuda --checkpoint artifacts/gpu_verify/checkpoints/score_net.pt --out-dir C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+38 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+[1/38] A_bc0.25: base L=16 beta=0.25 -> L=32 beta=1.4892 (matched pair 0.25 -> 1.4892)
+    HMC L=16 beta=0.25: 128 configs, acc 1.000, hot start, burn 200, 9s
+    generated 128 configs L=32 beta=1.4892 in 32s
+    HMC L=32 beta=1.4892: 192 configs, acc 0.978, hot start, burn 200, 9s
+    case done in 63s
+[2/38] A_bc0.5: base L=16 beta=0.5 -> L=32 beta=2.02441 (matched pair 0.5 -> 2.0244)
+    HMC L=16 beta=0.5: 128 configs, acc 0.995, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=2.02441 in 28s
+    HMC L=32 beta=2.02441: 192 configs, acc 0.969, hot start, burn 200, 8s
+    case done in 56s
+[3/38] A_bc0.75: base L=16 beta=0.75 -> L=32 beta=2.5435 (matched pair 0.75 -> 2.5435)
+    HMC L=16 beta=0.75: 128 configs, acc 0.989, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=2.5435 in 30s
+    HMC L=32 beta=2.5435: 192 configs, acc 0.964, hot start, burn 200, 7s
+    case done in 56s
+[4/38] A_bc1: base L=16 beta=1 -> L=32 beta=3.10399 (matched pair 1 -> 3.1040)
+    HMC L=16 beta=1: 128 configs, acc 0.994, hot start, burn 200, 6s
+    generated 128 configs L=32 beta=3.10399 in 25s
+    HMC L=32 beta=3.10399: 192 configs, acc 0.961, hot start, burn 200, 7s
+    case done in 49s
+[5/38] A_bc1.5: base L=16 beta=1.5 -> L=32 beta=4.44493 (matched pair 1.5 -> 4.4449)
+    HMC L=16 beta=1.5: 128 configs, acc 0.978, hot start, burn 200, 6s
+    generated 128 configs L=32 beta=4.44493 in 29s
+    HMC L=32 beta=4.44493: 192 configs, acc 0.958, hot start, burn 200, 9s
+    case done in 58s
+[6/38] A_bc2: base L=16 beta=2 -> L=32 beta=6.10518 (matched pair 2 -> 6.1052)
+    HMC L=16 beta=2: 128 configs, acc 0.977, hot start, burn 200, 10s
+    generated 128 configs L=32 beta=6.10518 in 34s
+    HMC L=32 beta=6.10518: 192 configs, acc 0.980, hot start, burn 200, 11s
+    case done in 70s
+[7/38] A_bc3: base L=16 beta=3 -> L=32 beta=10.015 (matched pair 3 -> 10.0150)
+    HMC L=16 beta=3: 128 configs, acc 0.980, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=10.015 in 30s
+    HMC L=32 beta=10.015: 192 configs, acc 0.978, cold start, burn 600, 33s
+    case done in 83s
+[8/38] A_bc4: base L=16 beta=4 -> L=32 beta=14.1464 (matched pair 4 -> 14.1464)
+    HMC L=16 beta=4: 128 configs, acc 0.980, hot start, burn 200, 8s
+    generated 128 configs L=32 beta=14.1464 in 30s
+    HMC L=32 beta=14.1464: 192 configs, acc 0.989, cold start, burn 600, 36s
+    case done in 88s
+[9/38] A_bc5: base L=16 beta=5 -> L=32 beta=18.2524 (matched pair 5 -> 18.2524)
+    HMC L=16 beta=5: 128 configs, acc 0.991, hot start, burn 200, 8s
+    generated 128 configs L=32 beta=18.2524 in 32s
+    HMC L=32 beta=18.2524: 192 configs, acc 0.974, cold start, burn 600, 42s
+    case done in 96s
+[10/38] A_bc6: base L=16 beta=6 -> L=32 beta=22.3151 (matched pair 6 -> 22.3151)
+    HMC L=16 beta=6: 128 configs, acc 0.994, hot start, burn 200, 10s
+    generated 128 configs L=32 beta=22.3151 in 31s
+    HMC L=32 beta=22.3151: 192 configs, acc 0.983, cold start, burn 2000, 146s
+    case done in 201s
+[11/38] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    HMC L=16 beta=8: 128 configs, acc 0.989, cold start, burn 600, 30s
+    generated 128 configs L=32 beta=30.3772 in 34s
+[2026-08-06 18:28:04] STAGE_STUDY_FAILED rc=1073807364 (16.3 min)
+[2026-08-06 18:28:04] STAGE_THERM_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/05_hmc_thermalization.py --config u1_2d/configs/v2_gpu_verify.yaml --generalization=C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization --parts A,D,E,F --skip-cached --checkpoint artifacts/gpu_verify/checkpoints/score_net.pt --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --out C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\thermalization
+[2026-08-06 18:28:04] STAGE_THERM_FAILED rc=3221225794 (0.0 min)
+[2026-08-06 18:28:04] STAGE_AUTOCORR_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/11_autocorrelation.py --dir C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\thermalization
+[2026-08-06 18:28:04] STAGE_AUTOCORR_FAILED rc=3221225794 (0.0 min)
+[2026-08-06 18:28:04] PHASE2_DONE_WITH_ERRORS
+ 
+======== launch Thu 08/06/2026 18:34:09.78 ======== 
+[2026-08-06 18:34:10] PHASE2_START
+[2026-08-06 18:34:10] phase 1 already complete
+[2026-08-06 18:34:10] STAGE_STUDY_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 20260730 --device cuda --checkpoint artifacts/gpu_verify/checkpoints/score_net.pt --out-dir C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+38 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+[1/38] A_bc0.25: already done, skipping
+[2/38] A_bc0.5: already done, skipping
+[3/38] A_bc0.75: already done, skipping
+[4/38] A_bc1: already done, skipping
+[5/38] A_bc1.5: already done, skipping
+[6/38] A_bc2: already done, skipping
+[7/38] A_bc3: already done, skipping
+[8/38] A_bc4: already done, skipping
+[9/38] A_bc5: already done, skipping
+[10/38] A_bc6: already done, skipping
+[11/38] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    loaded cached generation A_bc8_wilson_L32_beta30.3772.pt
+    HMC L=32 beta=30.3772: 192 configs, acc 0.980, cold start, burn 2000, 156s
+    case done in 160s
+[12/38] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+    HMC L=16 beta=14.1464: 128 configs, acc 0.994, cold start, burn 600, 28s
+    generated 128 configs L=32 beta=55.0237 in 23s
+    HMC L=32 beta=55.0237: 192 configs, acc 0.984, cold start, burn 2000, 194s
+    case done in 257s
+[13/38] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    HMC L=16 beta=20: 128 configs, acc 0.994, cold start, burn 2000, 111s
+    generated 128 configs L=32 beta=78.4578 in 23s
+[2026-08-06 18:46:48] STAGE_STUDY_FAILED rc=4294967295 (12.6 min)
+[2026-08-06 18:46:48] STAGE_THERM_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/05_hmc_thermalization.py --config u1_2d/configs/v2_gpu_verify.yaml --generalization=C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization --parts A,D,E,F --skip-cached --checkpoint artifacts/gpu_verify/checkpoints/score_net.pt --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --out C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\thermalization
+12 matched-pair cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\thermalization
+A_bc0.25_L32_beta1.4892: sampling 128 raw seeds from wilson_L16_beta0.25.pt
+[2026-08-06 18:48:37] STAGE_THERM_FAILED rc=4294967295 (1.8 min)
+[2026-08-06 18:48:37] STAGE_AUTOCORR_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/11_autocorrelation.py --dir C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\thermalization
+no *_series.npz under C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\thermalization; run 05_hmc_thermalization.py first
+[2026-08-06 18:48:43] STAGE_AUTOCORR_FAILED rc=1 (0.1 min)
+[2026-08-06 18:48:43] PHASE2_DONE_WITH_ERRORS
+ 
+======== launch Thu 08/06/2026 18:48:56.73 ======== 
+[2026-08-06 18:48:56] PHASE2_START
+[2026-08-06 18:48:56] phase 1 already complete
+[2026-08-06 18:48:56] STAGE_STUDY_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 20260730 --device cuda --checkpoint artifacts/gpu_verify/checkpoints/score_net.pt --out-dir C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+38 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+[1/38] A_bc0.25: already done, skipping
+[2/38] A_bc0.5: already done, skipping
+[3/38] A_bc0.75: already done, skipping
+[4/38] A_bc1: already done, skipping
+[5/38] A_bc1.5: already done, skipping
+[6/38] A_bc2: already done, skipping
+[7/38] A_bc3: already done, skipping
+[8/38] A_bc4: already done, skipping
+[9/38] A_bc5: already done, skipping
+[10/38] A_bc6: already done, skipping
+[11/38] A_bc8: already done, skipping
+[12/38] D_bc14.1464: already done, skipping
+[13/38] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    loaded cached generation D_bc20_wilson_L32_beta78.4578.pt
+    HMC L=32 beta=78.4578: 192 configs, acc 0.978, cold start, burn 2000, 212s
+    case done in 218s
+[14/38] D_bc30: base L=16 beta=30 -> L=32 beta=118.473 (matched pair 30 -> 118.4726 (beyond training range))
+    HMC L=16 beta=30: 128 configs, acc 0.992, cold start, burn 2000, 142s
+    generated 128 configs L=32 beta=118.473 in 26s
+    HMC L=32 beta=118.473: 192 configs, acc 0.975, cold start, burn 2000, 274s
+    case done in 454s
+[15/38] D_bc40: base L=16 beta=40 -> L=32 beta=158.48 (matched pair 40 -> 158.4797 (beyond training range))
+    HMC L=16 beta=40: 128 configs, acc 0.986, cold start, burn 2000, 164s
+    generated 128 configs L=32 beta=158.48 in 25s
+    HMC L=32 beta=158.48: 192 configs, acc 0.981, cold start, burn 2000, 310s
+    case done in 511s
+[16/38] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+[2026-08-06 19:10:44] STAGE_STUDY_FAILED rc=1073807364 (21.8 min)
+[2026-08-06 19:10:44] PHASE2_ABORTED: downstream stages depend on this one
+ 
+======== launch Fri 08/07/2026  9:25:11.80 ======== 
+[2026-08-07 09:25:12] PHASE2_START
+[2026-08-07 09:25:12] phase 1 already complete
+[2026-08-07 09:25:12] STAGE_STUDY_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u1_2d/scripts/06_generalization_study.py --physics-blend 1.0 --physics-blend-beta-min 5.0 --sigma-floor-coef 0.1 --seed 20260730 --device cuda --checkpoint artifacts/gpu_verify/checkpoints/score_net.pt --out-dir C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+38 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\gpu_verification\generalization
+[1/38] A_bc0.25: already done, skipping
+[2/38] A_bc0.5: already done, skipping
+[3/38] A_bc0.75: already done, skipping
+[4/38] A_bc1: already done, skipping
+[5/38] A_bc1.5: already done, skipping
+[6/38] A_bc2: already done, skipping
+[7/38] A_bc3: already done, skipping
+[8/38] A_bc4: already done, skipping
+[9/38] A_bc5: already done, skipping
+[10/38] A_bc6: already done, skipping
+[11/38] A_bc8: already done, skipping
+[12/38] D_bc14.1464: already done, skipping
+[13/38] D_bc20: already done, skipping
+[14/38] D_bc30: already done, skipping
+[15/38] D_bc40: already done, skipping
+[16/38] D_bc55.0237: base L=16 beta=55.0237 -> L=32 beta=218.58 (matched pair 55.0237 -> 218.5802 (beyond training range))
+    HMC L=16 beta=55.0237: 128 configs, acc 0.986, cold start, burn 2000, 237s
+    generated 128 configs L=32 beta=218.58 in 27s
+    HMC L=32 beta=218.58: 192 configs, acc 0.976, cold start, burn 2000, 392s
+    case done in 673s
+[17/38] E_bc1.2: base L=16 beta=1.2 -> L=32 beta=3.6012 (out-of-sample matched pair 1.2 -> 3.6012)
+    HMC L=16 beta=1.2: 128 configs, acc 0.988, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=3.6012 in 24s
+    HMC L=32 beta=3.6012: 192 configs, acc 0.970, hot start, burn 200, 7s
+    case done in 50s
+[18/38] E_bc2.7: base L=16 beta=2.7 -> L=32 beta=8.79549 (out-of-sample matched pair 2.7 -> 8.7955)
+    HMC L=16 beta=2.7: 128 configs, acc 0.984, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=8.79549 in 23s
+    HMC L=32 beta=8.79549: 192 configs, acc 0.978, cold start, burn 600, 25s
+    case done in 67s
+[19/38] E_bc3.4: base L=16 beta=3.4 -> L=32 beta=11.6638 (out-of-sample matched pair 3.4 -> 11.6638)
+    HMC L=16 beta=3.4: 128 configs, acc 0.977, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=11.6638 in 26s
+    HMC L=32 beta=11.6638: 192 configs, acc 0.989, cold start, burn 600, 33s
+    case done in 79s
+[20/38] E_bc4.5: base L=16 beta=4.5 -> L=32 beta=16.2057 (out-of-sample matched pair 4.5 -> 16.2057)
+    HMC L=16 beta=4.5: 128 configs, acc 0.986, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=16.2057 in 22s
+    HMC L=32 beta=16.2057: 192 configs, acc 0.968, cold start, burn 600, 31s
+    case done in 71s
+[21/38] E_bc5.8: base L=16 beta=5.8 -> L=32 beta=21.5051 (out-of-sample matched pair 5.8 -> 21.5051)
+    HMC L=16 beta=5.8: 128 configs, acc 0.981, hot start, burn 200, 7s
+    generated 128 configs L=32 beta=21.5051 in 21s
+    HMC L=32 beta=21.5051: 192 configs, acc 0.977, cold start, burn 2000, 118s
+    case done in 158s
+[22/38] E_bc9: base L=16 beta=9 -> L=32 beta=34.3944 (out-of-sample matched pair 9 -> 34.3944)
+    HMC L=16 beta=9: 128 configs, acc 0.989, cold start, burn 600, 26s
+    generated 128 configs L=32 beta=34.3944 in 27s
+    HMC L=32 beta=34.3944: 192 configs, acc 0.979, cold start, burn 2000, 151s
+    case done in 217s
+[23/38] E_bc11.8: base L=16 beta=11.8 -> L=32 beta=45.6238 (out-of-sample matched pair 11.8 -> 45.6238)
+    HMC L=16 beta=11.8: 128 configs, acc 0.989, cold start, burn 600, 27s
+    generated 128 configs L=32 beta=45.6238 in 24s
+    HMC L=32 beta=45.6238: 192 configs, acc 0.979, cold start, burn 2000, 175s
+    case done in 238s
+[24/38] E_bc18: base L=16 beta=18 -> L=32 beta=70.4526 (out-of-sample matched pair 18 -> 70.4526)
+    HMC L=16 beta=18: 128 configs, acc 0.994, cold start, burn 600, 53s
+    generated 128 configs L=32 beta=70.4526 in 25s
+    HMC L=32 beta=70.4526: 192 configs, acc 0.976, cold start, burn 2000, 233s
+    case done in 326s
+[25/38] E_bc35: base L=16 beta=35 -> L=32 beta=138.477 (out-of-sample matched pair 35 -> 138.4767)
+    HMC L=16 beta=35: 128 configs, acc 0.995, cold start, burn 2000, 176s
+    generated 128 configs L=32 beta=138.477 in 29s
+    HMC L=32 beta=138.477: 192 configs, acc 0.976, cold start, burn 2000, 304s
+    case done in 523s
+[26/38] E_bc45: base L=16 beta=45 -> L=32 beta=178.482 (out-of-sample matched pair 45 -> 178.4821)
+    HMC L=16 beta=45: 128 configs, acc 0.991, cold start, burn 2000, 173s
+    generated 128 configs L=32 beta=178.482 in 22s
+    HMC L=32 beta=178.482: 192 configs, acc 0.966, cold start, burn 2000, 327s
+    case done in 535s
+[27/38] F_L32_bc100: base L=16 beta=100 -> L=32 beta=398.492 (extrapolation demo 100 -> 398.4921 at L=32)
+    HMC L=16 beta=100: 64 configs, acc 0.978, cold start, burn 2000, 254s
+    generated 64 configs L=32 beta=398.492 in 12s
+    HMC L=32 beta=398.492: 96 configs, acc 0.977, cold start, burn 2000, 494s
+    case done in 770s
+[28/38] F_L32_bc218.58: base L=16 beta=218.58 -> L=32 beta=872.816 (extrapolation demo 218.58 -> 872.8164 at L=32)
+    HMC L=16 beta=218.58: 64 configs, acc 0.994, cold start, burn 2000, 359s
+    generated 64 configs L=32 beta=872.816 in 12s
+    HMC L=32 beta=872.816: 96 configs, acc 0.981, cold start, burn 2000, 706s
+    case done in 1086s
+[29/38] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    HMC L=32 beta=55.0237: 64 configs, acc 0.997, cold start, burn 2000, 192s
+    generated 64 configs L=64 beta=218.58 in 23s
+    HMC L=64 beta=218.58: 96 configs, acc 0.981, cold start, burn 2000, 364s
+    case done in 603s
+[30/38] B_bt6: base L=16 beta=4 -> L=32 beta=6 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=6 in 25s
+    HMC L=32 beta=6: 192 configs, acc 0.966, hot start, burn 200, 8s
+    case done in 46s
+[31/38] B_bt10: base L=16 beta=4 -> L=32 beta=10 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=10 in 22s
+    HMC L=32 beta=10: 192 configs, acc 0.977, cold start, burn 600, 29s
+    case done in 63s
+[32/38] B_bt16: base L=16 beta=4 -> L=32 beta=16 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=16 in 22s
+    HMC L=32 beta=16: 192 configs, acc 0.976, cold start, burn 600, 36s
+    case done in 70s
+[33/38] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=20 in 21s
+    HMC L=32 beta=20: 192 configs, acc 0.984, cold start, burn 2000, 114s
+    case done in 147s
+[34/38] B_bt30: base L=16 beta=4 -> L=32 beta=30 (mismatch: matched target is 14.1464)
+    generated 128 configs L=32 beta=30 in 21s
