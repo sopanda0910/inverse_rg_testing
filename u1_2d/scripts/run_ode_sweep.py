@@ -11,6 +11,7 @@ steps) bound the estimator-noise contribution to the log-weight spread.
     .venv/Scripts/python.exe u1_2d/scripts/run_ode_sweep.py
 """
 
+import argparse
 import json
 import subprocess
 import sys
@@ -41,24 +42,54 @@ POINTS = [
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser()
+    # Points are independent and each writes its own OUT/<label>/ directory, so
+    # they never contend for a file -- the only shared output, sweep_summary.md,
+    # is written after every point is in. Serially this stage leaves the GPU at
+    # ~5-30% (one ODE sample at L=16 is far too small to fill it), so running
+    # several at once is close to free. Bounded by VRAM, not cores: each job
+    # carries its own CUDA context plus the score net, ~0.5-0.7 GiB of 8.
+    parser.add_argument("--jobs", type=int, default=4,
+                        help="sweep points to run concurrently (default 4)")
+    args = parser.parse_args()
+
     OUT.mkdir(parents=True, exist_ok=True)
-    rows = []
-    for label, extra in POINTS:
-        point_dir = OUT / label
-        result_file = point_dir / "reweighting_results.json"
-        if not result_file.exists():
+    todo = [(label, extra) for label, extra in POINTS
+            if not (OUT / label / "reweighting_results.json").exists()]
+    for label, _ in POINTS:
+        if (label, _) not in todo:
+            print(f"[sweep] {label}: cached, skipping", flush=True)
+
+    t_all = time.time()
+    running: list[tuple[str, subprocess.Popen, float]] = []
+    queue = list(todo)
+    while queue or running:
+        while queue and len(running) < max(1, args.jobs):
+            label, extra = queue.pop(0)
             print(f"[sweep] {label}: {' '.join(extra) or '(defaults)'}", flush=True)
-            t0 = time.time()
-            rc = subprocess.run(
+            proc = subprocess.Popen(
                 [sys.executable, str(SCRIPT), "--cases", CASE, "--n-configs", "64",
-                 "--out", str(point_dir), *extra],
+                 "--out", str(OUT / label), *extra],
                 cwd=REPO,
-            ).returncode
-            print(f"[sweep] {label}: rc={rc} ({time.time() - t0:.0f}s)", flush=True)
-            if rc != 0:
-                continue
-        r = json.loads(result_file.read_text())[0]
-        rows.append((label, r))
+            )
+            running.append((label, proc, time.time()))
+        for entry in list(running):
+            label, proc, t0 = entry
+            rc = proc.poll()
+            if rc is not None:
+                print(f"[sweep] {label}: rc={rc} ({time.time() - t0:.0f}s)", flush=True)
+                running.remove(entry)
+        if running:
+            time.sleep(2)
+    print(f"[sweep] all points done in {(time.time() - t_all) / 60:.1f} min", flush=True)
+
+    rows = []
+    for label, _ in POINTS:
+        result_file = OUT / label / "reweighting_results.json"
+        if not result_file.exists():
+            print(f"[sweep] {label}: no result, omitted from summary", flush=True)
+            continue
+        rows.append((label, json.loads(result_file.read_text())[0]))
 
     rows.sort(key=lambda t: -(t[1].get("ess_per_n_fiber") or 0.0))
     lines = [

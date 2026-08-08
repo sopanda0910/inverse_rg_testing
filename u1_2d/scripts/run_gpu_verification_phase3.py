@@ -183,9 +183,49 @@ def promote() -> bool:
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
         log(f"  {name} -> {dst}")
+    invalidate_downstream()
     sentinel.write_text(f"done {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
     log("STAGE_PROMOTE_DONE")
     return True
+
+
+def invalidate_downstream() -> None:
+    """Delete results computed from the checkpoint we just replaced.
+
+    Every stage after PROMOTE is resumable against its OWN cache, independently
+    of this driver's sentinels: run_ess_chain keeps chain_state/stage_*.done,
+    run_ode_sweep skips any point with reweighting_results.json, 06 skips cases
+    whose summary.json entry has "rows", 16 reuses its burnin_scan output. Those
+    caches survive PROMOTE, so without this every one of them looks complete and
+    the stage exits in seconds -- reporting success while the figures quietly
+    rebuild from the previous checkpoint's numbers. That is exactly what
+    happened on the 18:35 run: SECTOR_STUDY "finished" in 0.4 min, ODE_SWEEP and
+    ESS_CHAIN in 0.0, against results dated 2026-08-01.
+
+    Promoting a checkpoint invalidates everything derived from the old one, so
+    this is a correctness requirement, not an optimization.
+
+    Kept deliberately: bases/ and reference/ ensembles are direct HMC and carry
+    no model dependence, so they stay and save real time.
+    """
+    log("  invalidating caches derived from the previous checkpoint")
+    for rel in ("ess_chain", "diffusion_vs_instanton/burnin_scan"):
+        path = CANON / rel
+        if path.exists():
+            shutil.rmtree(path)
+            log(f"    removed {rel}")
+    for point in sorted((CANON / "ode_reweighting_sweep").glob("*/reweighting_results.json")):
+        point.unlink()
+    log("    cleared ode_reweighting_sweep point results")
+    sec = CANON / "generalization_exact_sectors"
+    for sub in ("summary.json",):
+        if (sec / sub).exists():
+            (sec / sub).unlink()
+            log(f"    removed generalization_exact_sectors/{sub}")
+    gen = sec / "generated"
+    if gen.exists():
+        shutil.rmtree(gen)
+        log("    removed generalization_exact_sectors/generated")
 
 
 def main() -> None:
@@ -205,19 +245,51 @@ def main() -> None:
     # result. Serially these are ~2 h of mostly-idle machine (a single-threaded
     # dispatcher against a GPU that sits at 5-30% on these batch sizes), so
     # overlapping them is close to free.
+    #
+    # --out/--out-dir are passed EXPLICITLY and are not optional. Both 14 and 15
+    # default to `Path(config["validate"]["out_dir"]).parent / <name>`, which
+    # under v2_gpu_verify.yaml resolves to out/u1_2d/gpu_verification/ -- while
+    # 17 and 26 read the canonical out/u1_2d/<name>. Left to the defaults these
+    # stages write somewhere the figure scripts never look, and the figures
+    # silently rebuild from the OLD frozen data instead.
     group1 = [
         ("HEADTOHEAD", [PY, "u1_2d/scripts/14_diffusion_vs_instanton_hmc.py",
-                        "--config", CONFIG]),
+                        "--config", CONFIG,
+                        "--out-dir", str(CANON / "diffusion_vs_instanton")]),
         ("ESS", [PY, "u1_2d/scripts/15_model_ess.py", "--config", CONFIG,
-                 "--cases", *CASES, "--n-configs", "64"]),
+                 "--cases", *CASES, "--n-configs", "64",
+                 "--out", str(CANON / "model_ess")]),
         ("ESS_NOGUIDE", [PY, "u1_2d/scripts/15_model_ess.py", "--config", CONFIG,
                          "--cases", *CASES, "--n-configs", "64",
                          "--consistency-weight", "0.0",
                          "--out", str(CANON / "model_ess_noguide")]),
-        ("BURNIN_SCAN", [PY, "u1_2d/scripts/16_h2h_burnin_scan.py",
-                         "--config", CONFIG]),
+        # The deployment-knob ODE reweighting baseline. Figures 23 and 26 both
+        # read out/u1_2d/ode_reweighting/reweighting_results.json (26 labels it
+        # "v2 ckpt, ladder knobs"), and nothing else in this driver produces it
+        # -- run_ess_chain's 19 invocations write to ess_chain/verify_*. Without
+        # this the baseline series in those figures stays on the old checkpoint.
+        # Parameters recovered from the frozen result: 4 cases, n=64,
+        # ode_steps=120, n_probes=2. Note 19 spells the noise floor
+        # --sigma-min-coef, not --sigma-floor-coef, so SAMPLER_FLAGS cannot be
+        # spread here verbatim.
+        ("ODE_BASELINE", [PY, "u1_2d/scripts/19_ode_reweighting.py",
+                          "--config", CONFIG, "--cases", *CASES,
+                          "--n-configs", "64", "--ode-steps", "120",
+                          "--n-probes", "2",
+                          "--physics-blend", "1.0",
+                          "--physics-blend-beta-min", "5.0",
+                          "--sigma-min-coef", "0.1",
+                          "--out", str(CANON / "ode_reweighting")]),
     ]
     failures += run_concurrent(group1, device="cuda")
+
+    # NOT in group 1: 16 reads --baseline-summary, which defaults to
+    # out/u1_2d/diffusion_vs_instanton/summary.json -- HEADTOHEAD's output. Run
+    # concurrently it would race, reading either the previous campaign's summary
+    # or a half-written one.
+    if not run_stage("BURNIN_SCAN", [PY, "u1_2d/scripts/16_h2h_burnin_scan.py",
+                                     "--config", CONFIG], device="cuda"):
+        failures.append("BURNIN_SCAN")
 
     # SECTOR_STUDY is 06 again (exact-sector arm, figure 20), so it shards the
     # same way the main study does.
