@@ -1,1 +1,1 @@
-{"label": "sigmin0.03", "args": ["--sigma-min-coef", "0.03"]}
+{"label": "cw2", "args": ["--consistency-weight", "2"]}

@@ -1,0 +1,6 @@
+ 
+======== launch Sat 08/08/2026 16:03:39.03 ======== 
+[2026-08-08 16:03:39] PHASE5_START
+[2026-08-08 16:03:39] STAGE_EXACTNESS_SUITE_START
+[2026-08-08 16:03:39] STAGE_FRONTIER_RKL2_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\19_ode_reweighting.py --checkpoint C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\checkpoints\score_net_rkl2.pt --exact-ref --n-configs 256 --cases 8:2.0 8:4.0 8:8.0 8:14.1464 16:4.0 16:8.0 16:14.1464 16:25.0 16:55.0237 --out C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\frontier_rkl2
+case L=8 beta=2.0 ...

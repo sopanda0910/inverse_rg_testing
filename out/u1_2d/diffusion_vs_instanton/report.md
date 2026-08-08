@@ -19,4 +19,4 @@ Arm B cost includes everything: matched-coarse HMC base (with Q-hops), condition
 
 Notes. (1) Diffusion configs are conditionally independent given the coarse ensemble; residual correlation enters only through the thinned coarse HMC chains. (2) Instanton-HMC tau_int is per-observable Madras-Sokal on per-chain series, discarding the first 25%; its Q mixing is genuine (tunnelings counted), unlike the pipeline's structurally transported sector. (3) Quality threshold |z| <= 2.5. (4) The diffusion per-config cost amortizes the coarse base over the batch; scaling the batch up lowers it further, while the HMC interval cost is irreducible per config.
 
-Settings: chains=32, burn-in=500, production=640 traj, n_gen=128, seed=20260731, checkpoint=out/u1_2d/v2/checkpoints/score_net.pt.
+Settings: chains=32, burn-in=500, production=640 traj, n_gen=128, seed=20260731, checkpoint=artifacts/gpu_verify/checkpoints/score_net.pt.

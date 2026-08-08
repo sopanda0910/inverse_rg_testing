@@ -1,6 +1,0 @@
-﻿2026-08-01 21:17:12 another watcher (pid 14292) is running; exiting pid 26180
-2026-08-01 21:17:47 another watcher (pid 4980) is running; exiting pid 26432
-2026-08-01 21:19:12 watcher started (pid 24148, lookback 08/01/2026 20:19:12)
-2026-08-01 21:21:12 chain process gone (no critical events) -> relaunch #1 (8 threads)
-2026-08-02 03:46:31 CHAIN_DONE seen; removing startup entry and exiting
-2026-08-02 03:46:31 watcher exited (pid 24148)

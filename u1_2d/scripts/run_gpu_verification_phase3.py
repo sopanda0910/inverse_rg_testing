@@ -183,6 +183,19 @@ def promote() -> bool:
             shutil.rmtree(dst)
         shutil.copytree(src, dst)
         log(f"  {name} -> {dst}")
+    # The training ensembles, too. run_ess_chain calls 20/21 with no --config,
+    # so they resolve data.out_dir through v2.yaml to out/u1_2d/data -- while
+    # this run generated into artifacts/gpu_verify/data. Without this the
+    # likelihood fine-tune dies on "no rungs with beta >= 10.0 under
+    # out\u1_2d\data" and takes FIG_23 and FIG_26 down with it. 33 MB.
+    data_src = REPO / "artifacts" / "gpu_verify" / "data"
+    if data_src.exists():
+        data_dst = CANON / "data"
+        data_dst.mkdir(parents=True, exist_ok=True)
+        for f in data_src.iterdir():
+            if f.is_file():
+                shutil.copy2(f, data_dst / f.name)
+        log(f"  data -> {data_dst} ({len(list(data_dst.glob('*.pt')))} ensembles)")
     invalidate_downstream()
     sentinel.write_text(f"done {time.strftime('%Y-%m-%d %H:%M:%S')}\n")
     log("STAGE_PROMOTE_DONE")
