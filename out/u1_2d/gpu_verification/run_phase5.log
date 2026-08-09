@@ -4,3 +4,94 @@
 [2026-08-08 16:03:39] STAGE_EXACTNESS_SUITE_START
 [2026-08-08 16:03:39] STAGE_FRONTIER_RKL2_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\19_ode_reweighting.py --checkpoint C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\checkpoints\score_net_rkl2.pt --exact-ref --n-configs 256 --cases 8:2.0 8:4.0 8:8.0 8:14.1464 16:4.0 16:8.0 16:14.1464 16:25.0 16:55.0237 --out C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\frontier_rkl2
 case L=8 beta=2.0 ...
+  {"n": 256, "ess_per_n": 0.003906441852450371, "log_weight_std": 6.777329444885254, "log_weight_range": 46.022735595703125, "ess_per_n_fiber": 0.003906261175870895, "log_weight_std_fiber": 6.684728145599365, "log_weight_range_fiber": 48.81610107421875, "free_energy_certificate": {"log_mean_w": 196.66946936397457, "exact_delta_F": 287.0446936122223, "gap": -90.37522424824775, "sem": 0.999998571710828, "n": 256, "kl_from_mean_log_w": 120.2084899774834, "kl_sem": 0.4177955166338421, "kl_per_site": 0.939128827949089}, "fine_L": 8, "fine_beta": 2.0, "coarse_L": 4, "coarse_beta": 0.488104328097667, "imh_acceptance": 0.0392156862745098, "seconds_hmc_base": 6.7, "seconds_ode_sample": 321.1, "ode_steps": 120, "n_probes": 2}
+case L=8 beta=4.0 ...
+  {"n": 256, "ess_per_n": 0.005643482785671949, "log_weight_std": 6.589621067047119, "log_weight_range": 37.21830749511719, "ess_per_n_fiber": 0.007698154076933861, "log_weight_std_fiber": 5.752120494842529, "log_weight_range_fiber": 35.98469543457031, "free_energy_certificate": {"log_mean_w": 272.6454054489137, "exact_delta_F": 383.87538383701826, "gap": -111.22997838810454, "sem": 0.7109817731361842, "n": 256, "kl_from_mean_log_w": 122.16742829779173, "kl_sem": 0.3595075418338578, "kl_per_site": 0.9544330335764979}, "fine_L": 8, "fine_beta": 4.0, "coarse_L": 4, "coarse_beta": 1.3471894926775612, "imh_acceptance": 0.027450980392156862, "seconds_hmc_base": 5.8, "seconds_ode_sample": 313.8, "ode_steps": 120, "n_probes": 2}
+case L=8 beta=8.0 ...
+  {"n": 256, "ess_per_n": 0.003920821938663721, "log_weight_std": 8.36941909790039, "log_weight_range": 62.949310302734375, "ess_per_n_fiber": 0.004340509418398142, "log_weight_std_fiber": 7.849806308746338, "log_weight_range_fiber": 61.495574951171875, "free_energy_certificate": {"log_mean_w": 499.8031809790576, "exact_delta_F": 603.9086937648325, "gap": -104.10551278577492, "sem": 0.9484511391334522, "n": 256, "kl_from_mean_log_w": 119.80611882033634, "kl_sem": 0.4906128894391016, "kl_per_site": 0.9359853032838776}, "fine_L": 8, "fine_beta": 8.0, "coarse_L": 4, "coarse_beta": 2.500394100600896, "imh_acceptance": 0.047058823529411764, "seconds_hmc_base": 6.2, "seconds_ode_sample": 322.9, "ode_steps": 120, "n_probes": 2}
+case L=8 beta=14.1464 ...
+  {"n": 256, "ess_per_n": 0.005144335795193911, "log_weight_std": 8.201812744140625, "log_weight_range": 69.61883544921875, "ess_per_n_fiber": 0.004142921883612871, "log_weight_std_fiber": 7.396190643310547, "log_weight_range_fiber": 62.11822509765625, "free_energy_certificate": {"log_mean_w": 848.725693040195, "exact_delta_F": 958.8107737566581, "gap": -110.08508071646315, "sem": 0.9709010835480982, "n": 256, "kl_from_mean_log_w": 122.80702390924603, "kl_sem": 0.4622619248489365, "kl_per_site": 0.9594298742909846}, "fine_L": 8, "fine_beta": 14.1464, "coarse_L": 4, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.043137254901960784, "seconds_hmc_base": 6.1, "seconds_ode_sample": 303.3, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=4.0 ...
+  {"n": 256, "ess_per_n": 0.003981366753578186, "log_weight_std": 13.83039379119873, "log_weight_range": 82.72412109375, "ess_per_n_fiber": 0.003933346830308437, "log_weight_std_fiber": 11.725831031799316, "log_weight_range_fiber": 67.9781494140625, "free_energy_certificate": {"log_mean_w": 1068.5204179141997, "exact_delta_F": 1535.501535348079, "gap": -466.98111743387926, "sem": 0.9965358924957977, "n": 256, "kl_from_mean_log_w": 498.5244211474869, "kl_sem": 0.7328644519220908, "kl_per_site": 0.9736805100536854}, "fine_L": 16, "fine_beta": 4.0, "coarse_L": 8, "coarse_beta": 1.3471894926775612, "imh_acceptance": 0.00784313725490196, "seconds_hmc_base": 6.4, "seconds_ode_sample": 312.1, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=8.0 ...
+  {"n": 256, "ess_per_n": 0.005399954039603472, "log_weight_std": 16.739736557006836, "log_weight_range": 95.6279296875, "ess_per_n_fiber": 0.006290643475949764, "log_weight_std_fiber": 14.437009811401367, "log_weight_range_fiber": 82.5679931640625, "free_energy_certificate": {"log_mean_w": 1952.8364390795257, "exact_delta_F": 2415.634776810578, "gap": -462.79833773105224, "sem": 0.7870675961489494, "n": 256, "kl_from_mean_log_w": 487.40490553753716, "kl_sem": 0.9023131007020952, "kl_per_site": 0.9519627061280023}, "fine_L": 16, "fine_beta": 8.0, "coarse_L": 8, "coarse_beta": 2.500394100600896, "imh_acceptance": 0.047058823529411764, "seconds_hmc_base": 6.6, "seconds_ode_sample": 313.2, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=14.1464 ...
+  {"n": 256, "ess_per_n": 0.003906761296093464, "log_weight_std": 18.602947235107422, "log_weight_range": 119.759521484375, "ess_per_n_fiber": 0.004635661840438843, "log_weight_std_fiber": 17.793092727661133, "log_weight_range_fiber": 111.254150390625, "free_energy_certificate": {"log_mean_w": 3374.8723668554258, "exact_delta_F": 3835.243320031347, "gap": -460.3709531759214, "sem": 0.9176247346505054, "n": 256, "kl_from_mean_log_w": 495.8010039760493, "kl_sem": 1.112068266616459, "kl_per_site": 0.9683613358907213}, "fine_L": 16, "fine_beta": 14.1464, "coarse_L": 8, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.011764705882352941, "seconds_hmc_base": 5.8, "seconds_ode_sample": 307.6, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=25.0 ...
+  {"n": 256, "ess_per_n": 0.004060262348502874, "log_weight_std": 17.410728454589844, "log_weight_range": 108.03857421875, "ess_per_n_fiber": 0.004078797530382872, "log_weight_std_fiber": 16.77019691467285, "log_weight_range_fiber": 112.68505859375, "free_energy_certificate": {"log_mean_w": 5903.041042610053, "exact_delta_F": 6386.7074078559235, "gap": -483.6663652458701, "sem": 0.9785347427039285, "n": 256, "kl_from_mean_log_w": 517.3186406134919, "kl_sem": 1.0481373250275565, "kl_per_site": 1.0103879699482263}, "fine_L": 16, "fine_beta": 25.0, "coarse_L": 8, "coarse_beta": 6.664497345252339, "imh_acceptance": 0.01568627450980392, "seconds_hmc_base": 16.6, "seconds_ode_sample": 317.1, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=55.0237 ...
+  {"n": 256, "ess_per_n": 0.008605829440057278, "log_weight_std": 30.80258560180664, "log_weight_range": 305.2041015625, "ess_per_n_fiber": 0.005715544335544109, "log_weight_std_fiber": 30.644481658935547, "log_weight_range_fiber": 302.9365234375, "free_energy_certificate": {"log_mean_w": 12996.06516087422, "exact_delta_F": 13517.04287315473, "gap": -520.9777122805117, "sem": 0.8259550979865401, "n": 256, "kl_from_mean_log_w": 552.799209366889, "kl_sem": 1.9152801531723511, "kl_per_site": 1.0796859557947052}, "fine_L": 16, "fine_beta": 55.0237, "coarse_L": 8, "coarse_beta": 14.146404977472109, "imh_acceptance": 0.00784313725490196, "seconds_hmc_base": 23.8, "seconds_ode_sample": 306.2, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\frontier_rkl2\report.md
+[2026-08-08 16:52:14] STAGE_FRONTIER_RKL2_DONE (48.6 min)
+[2026-08-08 16:52:14] STAGE_FRONTIER_V2_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\19_ode_reweighting.py --exact-ref --n-configs 256 --cases 8:2.0 8:4.0 8:14.1464 16:4.0 16:14.1464 --out C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\frontier_v2
+case L=8 beta=2.0 ...
+  {"n": 256, "ess_per_n": 0.00390625, "log_weight_std": 8.265033721923828, "log_weight_range": 71.64926147460938, "ess_per_n_fiber": 0.00390625, "log_weight_std_fiber": 8.225933074951172, "log_weight_range_fiber": 74.47660827636719, "free_energy_certificate": {"log_mean_w": 204.68767167661423, "exact_delta_F": 287.0446936122223, "gap": -82.35702193560809, "sem": 0.9999999999999638, "n": 256, "kl_from_mean_log_w": 131.3173331848427, "kl_sem": 0.5141208298844003, "kl_per_site": 1.0259166655065837}, "fine_L": 8, "fine_beta": 2.0, "coarse_L": 4, "coarse_beta": 0.488104328097667, "imh_acceptance": 0.023529411764705882, "seconds_hmc_base": 7.3, "seconds_ode_sample": 313.8, "ode_steps": 120, "n_probes": 2}
+case L=8 beta=4.0 ...
+  {"n": 256, "ess_per_n": 0.0137166203930974, "log_weight_std": 6.344340801239014, "log_weight_range": 35.4866943359375, "ess_per_n_fiber": 0.010430370457470417, "log_weight_std_fiber": 5.607002258300781, "log_weight_range_fiber": 34.2110595703125, "free_energy_certificate": {"log_mean_w": 261.78885829003445, "exact_delta_F": 383.87538383701826, "gap": -122.08652554698381, "sem": 0.6099625603101877, "n": 256, "kl_from_mean_log_w": 133.4786559174397, "kl_sem": 0.35043763187280647, "kl_per_site": 1.0428019993549977}, "fine_L": 8, "fine_beta": 4.0, "coarse_L": 4, "coarse_beta": 1.3471894926775612, "imh_acceptance": 0.03137254901960784, "seconds_hmc_base": 6.5, "seconds_ode_sample": 316.4, "ode_steps": 120, "n_probes": 2}
+case L=8 beta=14.1464 ...
+  {"n": 256, "ess_per_n": 0.004201072733849287, "log_weight_std": 10.012450218200684, "log_weight_range": 73.25115966796875, "ess_per_n_fiber": 0.003942524548619986, "log_weight_std_fiber": 9.201184272766113, "log_weight_range_fiber": 71.12286376953125, "free_energy_certificate": {"log_mean_w": 841.3329221913056, "exact_delta_F": 958.8107737566581, "gap": -117.47785156535258, "sem": 0.9953707378764077, "n": 256, "kl_from_mean_log_w": 133.91997208849102, "kl_sem": 0.575074044179809, "kl_per_site": 1.046249781941336}, "fine_L": 8, "fine_beta": 14.1464, "coarse_L": 4, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.027450980392156862, "seconds_hmc_base": 5.9, "seconds_ode_sample": 314.2, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=4.0 ...
+  {"n": 256, "ess_per_n": 0.004862016998231411, "log_weight_std": 14.550275802612305, "log_weight_range": 91.50115966796875, "ess_per_n_fiber": 0.004339286591857672, "log_weight_std_fiber": 13.478253364562988, "log_weight_range_fiber": 77.8896484375, "free_energy_certificate": {"log_mean_w": 1027.9472749445476, "exact_delta_F": 1535.501535348079, "gap": -507.5542604035313, "sem": 0.9485853774756876, "n": 256, "kl_from_mean_log_w": 543.9391099730942, "kl_sem": 0.8423908398206412, "kl_per_site": 1.0623810741661996}, "fine_L": 16, "fine_beta": 4.0, "coarse_L": 8, "coarse_beta": 1.3471894926775612, "imh_acceptance": 0.00392156862745098, "seconds_hmc_base": 6.5, "seconds_ode_sample": 331.4, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=14.1464 ...
+  {"n": 256, "ess_per_n": 0.004399254452437162, "log_weight_std": 20.569053649902344, "log_weight_range": 142.008544921875, "ess_per_n_fiber": 0.007290716748684645, "log_weight_std_fiber": 18.62906837463379, "log_weight_range_fiber": 126.78515625, "free_energy_certificate": {"log_mean_w": 3324.3854872825295, "exact_delta_F": 3835.243320031347, "gap": -510.8578327488176, "sem": 0.7307282839313729, "n": 256, "kl_from_mean_log_w": 540.7378201915644, "kl_sem": 1.1643167964829808, "kl_per_site": 1.0561285550616493}, "fine_L": 16, "fine_beta": 14.1464, "coarse_L": 8, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.0196078431372549, "seconds_hmc_base": 6.1, "seconds_ode_sample": 314.3, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\frontier_v2\report.md
+[2026-08-08 17:19:29] STAGE_FRONTIER_V2_DONE (27.3 min)
+[2026-08-08 17:19:29] STAGE_SMC_START: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\24_smc_ladder.py --n-configs 192
+base: L=8 beta=1.3472 x 192
+{"level": 1, "arm": "transport", "ess": 0.0069, "log_w_std": 11.24, "sec": 230.7}
+{"level": 1, "arm": "smc", "ess": 0.0066, "log_w_std": 11.83, "sec": 241.4}
+{"level": 2, "arm": "transport", "ess": 0.0052, "log_w_std": 38.34, "sec": 228.3}
+{"level": 2, "arm": "smc", "ess": 0.0052, "log_w_std": 39.99, "sec": 245.1}
+wrote out\u1_2d\ess_chain\smc_ladder\report.md
+[2026-08-08 17:35:29] STAGE_SMC_DONE (16.0 min)
+[2026-08-08 17:35:29] report: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\exactness_report.md
+[2026-08-08 17:35:29] CHAIN_DONE
+[2026-08-08 17:35:29] STAGE_EXACTNESS_SUITE_DONE (91.8 min)
+[2026-08-08 17:35:29] STAGE_RKL2_EXTRA_START
+case L=32 beta=14.1464 ...
+  {"n": 64, "ess_per_n": 0.01562613621354103, "log_weight_std": 40.20628356933594, "log_weight_range": 214.8974609375, "ess_per_n_fiber": 0.032257672399282455, "log_weight_std_fiber": 37.53770065307617, "log_weight_range_fiber": 211.2265625, "free_energy_certificate": {"log_mean_w": 13426.361669686932, "exact_delta_F": 15340.973280125389, "gap": -1914.6116104384564, "sem": 0.6900699129089103, "n": 64, "kl_from_mean_log_w": 1978.586164646873, "kl_sem": 4.69221268903838, "kl_per_site": 0.9661065257064809}, "fine_L": 32, "fine_beta": 14.1464, "coarse_L": 16, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.031746031746031744, "seconds_hmc_base": 4.9, "seconds_ode_sample": 77.9, "ode_steps": 120, "n_probes": 2}
+case L=32 beta=110.0 ...
+  {"n": 64, "ess_per_n": 0.015625, "log_weight_std": 118.34966278076172, "log_weight_range": 584.59375, "ess_per_n_fiber": 0.015625, "log_weight_std_fiber": 115.72773742675781, "log_weight_range_fiber": 586.9375, "free_energy_certificate": {"log_mean_w": 103888.76299191664, "exact_delta_F": 106579.67083482062, "gap": -2690.90784290398, "sem": 0.9999999999999168, "n": 64, "kl_from_mean_log_w": 2939.125790875303, "kl_sem": 14.465967583462504, "kl_per_site": 1.4351200150758316}, "fine_L": 32, "fine_beta": 110.0, "coarse_L": 16, "coarse_beta": 27.882398426701307, "imh_acceptance": 0.047619047619047616, "seconds_hmc_base": 106.7, "seconds_ode_sample": 83.7, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\verify_rkl2_extra\report.md
+[2026-08-08 17:40:13] STAGE_RKL2_EXTRA_DONE (4.7 min)
+[2026-08-08 17:40:13] STAGE_FIG_26_START
+wrote out\u1_2d\paper_appendix\figures\26_three_way.png
+wrote out\u1_2d\paper_appendix\figures\27_program_optimum.png
+[2026-08-08 17:40:16] STAGE_FIG_26_DONE (0.0 min)
+[2026-08-08 17:40:16] STAGE_ASSEMBLE_START
+[rebuild] 01_ladder_drift.png  <- rebuilt from out\u1_2d\validation\report.md (3 rungs)
+[rebuild] 02_ladder_topology.png  <- rebuilt from out\u1_2d\validation\report.md (3 rungs)
+[ok     ] 03_ladder_rung_L64.png  <- validation/rung2_L64_beta55.0237.png
+[ok     ] 04_matched_scan.png  <- generalization/fig_matched_scan.png
+[ok     ] 05_mismatch_scan.png  <- generalization/fig_mismatch_scan.png
+[ok     ] 06_size_scan.png  <- generalization/fig_size_scan.png
+[ok     ] 07_raw_topology.png  <- generalization/fig_raw_topology.png
+[ok     ] 08_case_low.png  <- generalization/figures/A_bc1.png
+[ok     ] 09_case_high.png  <- generalization/figures/D_bc55.0237.png
+[ok     ] 10_case_extrapolation.png  <- generalization/figures/F_L32_bc218.58.png
+[ok     ] 11_case_L64.png  <- generalization/figures/F_L64_bc55.0237.png
+[ok     ] 12_timescales.png  <- thermalization/timescales.png
+[ok     ] 13_beta_scan.png  <- thermalization/beta_scan.png
+[ok     ] 14_relaxation_mid.png  <- thermalization/L32_beta55.0237/D_bc14.1464_L32_beta55.0237_relaxation.png
+[ok     ] 15_relaxation_high.png  <- thermalization/L32_beta218.58/D_bc55.0237_L32_beta218.58_relaxation.png
+[ok     ] 16_autocorrelation_modes.png  <- thermalization/autocorrelation_modes.png
+[script ] 17_headtohead_cost.png  <- u1_2d/scripts/17_appendix_figures.py
+[script ] 18_entry_cost.png  <- u1_2d/scripts/17_appendix_figures.py
+[script ] 19_ess_weights.png  <- u1_2d/scripts/17_appendix_figures.py
+[ok     ] 20_mismatch_exact_sectors.png  <- generalization_exact_sectors/fig_mismatch_scan.png
+[ok     ] 21_pq_tail_mismatch.png  <- pq_hmc_tail/B_bt6_pq_tail.png
+[ok     ] 22_pq_tail_L64.png  <- pq_hmc_tail/C_L64_pq_tail.png
+[script ] 23_ess_progress.png  <- u1_2d/scripts/23_ess_progress_figures.py
+[script ] 24_proposal_sweep.png  <- u1_2d/scripts/23_ess_progress_figures.py
+[script ] 25_finetune_dynamics.png  <- u1_2d/scripts/23_ess_progress_figures.py
+[script ] 26_three_way.png  <- u1_2d/scripts/26_final_results_figures.py
+[script ] 27_program_optimum.png  <- u1_2d/scripts/26_final_results_figures.py
+
+wrote out\u1_2d\paper_appendix\figures\MANIFEST.md
+
+27 figures tracked; 0 stale, 0 missing, 0 untracked on disk
+
+figure directory is consistent
+[2026-08-08 17:40:22] STAGE_ASSEMBLE_DONE (0.1 min)
+[2026-08-08 17:40:22] PHASE5_DONE
+======== exit code 0 at Sat 08/08/2026 17:40:22.81 ======== 

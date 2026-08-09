@@ -1,6 +1,6 @@
 # Appendix figure manifest
 
-Assembled 2026-08-08 16:19 UTC by `u1_2d/scripts/30_assemble_appendix_figures.py`.
+Assembled 2026-08-08 22:40 UTC by `u1_2d/scripts/30_assemble_appendix_figures.py`.
 
 | figure | source | sha256 (12) | source mtime |
 |---|---|---|---|
@@ -30,4 +30,4 @@ Assembled 2026-08-08 16:19 UTC by `u1_2d/scripts/30_assemble_appendix_figures.py
 | 24_proposal_sweep.png | `u1_2d/scripts/23_ess_progress_figures.py` | `d227cd66fbb8` | 2026-08-08 |
 | 25_finetune_dynamics.png | `u1_2d/scripts/23_ess_progress_figures.py` | `9a0ce279ba03` | 2026-08-08 |
 | 26_three_way.png | `u1_2d/scripts/26_final_results_figures.py` | `29a978793149` | 2026-08-08 |
-| 27_program_optimum.png | `u1_2d/scripts/26_final_results_figures.py` | `09e291439c8e` | 2026-08-07 |
+| 27_program_optimum.png | `u1_2d/scripts/26_final_results_figures.py` | `62d570cf37a5` | 2026-08-08 |

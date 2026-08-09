@@ -1217,7 +1217,8 @@ trajectory (the reparameterization trick — possible only *because* the
 sampler is an ODE), trained at the single case $16{:}55$. Its own evaluation
 ESS doubled. Fresh-seed verification then showed the gain was **selection
 noise on a fixed evaluation set** — and worse, the never-trained
-extrapolation coupling had been destroyed (std 2202 at $32{:}218.6$). Both
+extrapolation coupling had been destroyed (std 555 at $32{:}218.6$, against
+161 for the untouched baseline). Both
 failure modes were promptly engineered away:
 
 **Tier 3, second attempt — rkl2 (the one genuine model improvement).**
@@ -1228,21 +1229,31 @@ simultaneously — mean ESS improvement *and* a never-trained extrapolation
 monitor staying below $1.5\times$ its initial spread. The guard did real
 work: it blocked 4 of 6 save opportunities, including the
 highest-training-ESS state. Result under fresh-seed verification: **spread
-roughly halved at every coupling** — 15.1 / 19.7 / 40.8 / 102.6 on the four
-standard cases — including on cases never trained on, later extended to five
-never-trained points from $\beta = 2$ to $218$. Generalizable, kept, and now
-the default checkpoint. But keep the honest frame: ESS stayed at $1/N$.
-Halving $42 \to 20$ is real progress measured against a bar of $O(1{-}3)$ —
-it is progress on a logarithmic journey of which this is the first step, not
+reduced by $1.33\times$ on the geometric mean over the four standard cases**
+— 19.2 / 18.3 / 53.9 / 127.8 against a baseline of 17.5 / 42.0 / 63.2 /
+161.1 — including on cases never trained on, later extended to five
+never-trained points from $\beta = 2$ to $218$. The gain is **not uniform**,
+and the original claim that it halved the spread at *every* coupling does not
+survive regeneration: it is $2.3\times$ at $16{:}55$, where the spread was
+largest, $1.2$–$1.3\times$ at the two $L=32$ cases, and $1.09\times$
+*negative* at the mildest case $16{:}14.1$. It remains the unique optimum on
+the guard protocol's aggregate criterion, so it is kept and is the default
+checkpoint — but the honest frame tightens rather than loosens: ESS stayed at
+$1/N$, and $42 \to 18$ at one case out of four is a modest step measured
+against a bar of $O(1{-}3)$ — the first step on a logarithmic journey, not
 the last.
 
 **Capacity/data scale-up (negative — the "just scale it" falsification).**
 Hypothesis: the density gap is a capacity/coverage problem, so a bigger
 network with more data closes it. Test: $3.7\times$ parameters, 24 additional
-$L=32$ training ensembles, fresh training ($\sim 4.7$ h). Result: better
-only exactly where the new data was (in-range $L=32$), *worse* at
-extrapolation (211.9 vs 163.7 at $32{:}218.6$), and strictly worse than the
-small-net rkl2 checkpoint everywhere; under subsequent reverse-KL pressure
+$L=32$ training ensembles, fresh training ($59$ min on the RTX 5060, against
+$\sim 4.7$ h for the same config on the Snapdragon CPU). Result:
+better than the baseline at every monitor but worse than rkl2 on the
+aggregate (geometric mean 45.5 against rkl2's 39.4), and — a detail the
+frozen campaign's numbers hid — it is actually the *best* variant at the
+mildest monitor ($15.0$ at $16{:}14.1$, beating both baseline and rkl2). The
+verdict "discarded" therefore rests on the aggregate criterion, not on a
+clean sweep; under subsequent reverse-KL pressure
 its extrapolation collapsed immediately (every save guard-blocked).
 Interpretation, two-fold: DSM's pointwise regression objective simply does
 not target the *integrated transport error* that determines $\log q$ — being
@@ -1272,7 +1283,7 @@ $L \in \{8, 16\}$, $\beta \in [2, 55]$:
   already be in usable-ESS territory was wrong for exactly this reason.
 - **The bar, quantified.** Usable ESS needs total spread $O(1{-}3)$, which
   at these volumes means **per-site error below $\sim 0.005$ nats**. The
-  current best is 4–10× away from that bar, *everywhere* in the scanned
+  current best is 3.7–12.5× away from that bar, *everywhere* in the scanned
   region — there is no corner of parameter space where the certificate
   almost works.
 
@@ -1516,7 +1527,7 @@ week's products:
 
 - **As an exact sampler certified by importance weights** (the flow papers'
   claim): now *quantified* as out of reach — per-site density error of
-  0.02–0.07 nats against a bar of $\sim 0.005$ — with a documented
+  0.018–0.062 nats against a bar of $\sim 0.005$ — with a documented
   falsification chain showing that sampler knobs, both directions of
   KL fine-tuning, capacity/data scaling, and estimator restructuring do not
   close the gap. And in the non-abelian target theory this route is
@@ -1721,7 +1732,7 @@ adopted, or closed by a converged measurement with an understood mechanism.
   sector-crutch-alone and bridge-alone exactness (each removes only its own
   component of a now fully decomposed gap).
 * **Measured and named as residual:** the $\approx 1$ nat/site mean density
-  offset; the $0.02$–$0.07$ nats/site spread; the volume-growing raw $Q^2$
+  offset; the $0.018$–$0.062$ nats/site spread; the volume-growing raw $Q^2$
   excess (rescued only by the abelian $P(Q)$ crutch); the repeatable
   Wilson-loop distribution-shape (KS) mismatch at the farthest extrapolation
   point, whose means nonetheless pass.

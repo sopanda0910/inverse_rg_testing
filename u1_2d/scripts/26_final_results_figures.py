@@ -151,11 +151,28 @@ def fig_program_optimum():
     ax_a.set_xticklabels([t[0] for t in interventions], fontsize=7.5, rotation=12)
     ax_a.set_yscale("log")
     ax_a.axhspan(1.0, 3.0, color=GOOD_GREEN, alpha=0.15)
-    ax_a.text(len(interventions) - 0.4, 1.65, "usable-certificate band\n(total spread O(1-3))",
-              fontsize=8, color=GOOD_GREEN, ha="right")
+    # Above the bars, not inside the band: bars run from the axis floor upward
+    # and the verdict notes occupy the band itself, so anything placed at
+    # band height is overdrawn. This is the only band of clear space.
+    ax_a.set_ylim(bottom=0.62, top=340)
+    ax_a.text((len(interventions) - 1) / 2, 190,
+              "shaded: usable-certificate band (total spread O(1-3))",
+              fontsize=8, color=GOOD_GREEN, ha="center", va="center", zorder=5)
     ax_a.set_ylabel("fiber log-weight std (L16, $\\beta$=55, fresh seeds)")
+    # Derived like panel (b)'s range: the correction head is off-scale here, so
+    # its penalty is quoted in the title, computed against the rkl2 checkpoint
+    # on the disjoint grid it was judged on rather than written in by hand.
+    corr = _load(OUT / "ess_chain" / "verify_correction" / "reweighting_results.json")
+    ref = {}
+    for src in ("frontier_rkl2", "verify_rkl2_extra"):
+        for r in _load(OUT / "ess_chain" / src / "reweighting_results.json"):
+            ref[(r["fine_L"], round(r["fine_beta"], 4))] = r["log_weight_std_fiber"]
+    factors = [r["log_weight_std_fiber"] / ref[(r["fine_L"], round(r["fine_beta"], 4))]
+               for r in corr if (r["fine_L"], round(r["fine_beta"], 4)) in ref]
+    penalty = (f"({min(factors):.1f}-{max(factors):.1f}$\\times$ worse on its disjoint grid)"
+               if factors else "(off scale on its disjoint grid)")
     ax_a.set_title("(a) every intervention, chronological; correction head\n"
-                   "(2-6$\\times$ worse on its disjoint grid) omitted for scale", fontsize=9.5)
+                   f"{penalty} omitted for scale", fontsize=9.5)
 
     sources = [
         (OUT / "ess_chain" / "frontier_rkl2" / "reweighting_results.json", None),
@@ -164,6 +181,7 @@ def fig_program_optimum():
     ]
     markers = {8: "o", 16: "s", 32: "D"}
     seen = set()
+    per_sites = []
     for path, _ in sources:
         for r in _load(path):
             key = (r["fine_L"], round(r["fine_beta"], 3))
@@ -171,6 +189,7 @@ def fig_program_optimum():
                 continue
             seen.add(key)
             per_site = r["log_weight_std_fiber"] / (2 * r["fine_L"] ** 2)
+            per_sites.append(per_site)
             ax_b.plot([r["fine_beta"]], [per_site], marker=markers[r["fine_L"]],
                       ms=8, color=GEN_COLOR, mfc=GEN_COLOR, ls="none")
     for L, m in markers.items():
@@ -181,8 +200,12 @@ def fig_program_optimum():
     ax_b.set_yscale("log")
     ax_b.set_xlabel(r"fine coupling $\beta_f$")
     ax_b.set_ylabel("per-site density gap (nats), rkl2 checkpoint")
-    ax_b.set_title("(b) the quantified remainder: 4-10$\\times$ above the bar,\n"
-                   "everywhere -- the measured end state of the program", fontsize=9.5)
+    # Derived, never hardcoded: this range moved from 4-10x to 3.7-12.5x when
+    # the campaign was regenerated on GPU, and a literal in the title silently
+    # outlived the data it described.
+    lo, hi = min(per_sites) / 0.005, max(per_sites) / 0.005
+    ax_b.set_title(f"(b) the quantified remainder: {lo:.1f}-{hi:.1f}$\\times$ above the\n"
+                   "bar, everywhere -- the measured end state of the program", fontsize=9.5)
     ax_b.legend(frameon=False, fontsize=8, loc="upper left")
 
     fig.tight_layout()

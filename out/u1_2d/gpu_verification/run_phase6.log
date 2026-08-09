@@ -1,0 +1,420 @@
+ 
+======== launch Sat 08/08/2026 18:06:01.67 ======== 
+[2026-08-08 18:06:01] PHASE6_START
+[2026-08-08 18:06:01] STAGE_CORRECTION_START
+correction params: 354; train rungs: 82; val rungs: ['L8_beta1.4347', 'L8_beta2.4786', 'L16_beta1.7484', 'L16_beta2.1757', 'L16_beta3.1518', 'L16_beta3.6231', 'L16_beta5.586', 'L16_beta8.7139', 'L16_beta11.8501', 'L16_beta17.502', 'L16_beta25', 'L16_beta33.325', 'L16_beta47.4228', 'L32_beta2.1926', 'L32_beta12.3504', 'L32_beta52.6284']
+initial val log q/dof: -1.0282
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\25_score_correction.py:138: UserWarning: Converting a tensor with requires_grad=True to a scalar may lead to unexpected behavior.
+Consider using tensor.detach() first. (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\torch\csrc\autograd\generated\python_variable_methods.cpp:837.)
+  rec = {"step": step, "rung": r["name"], "loss_ml_per_dof": float(loss),
+{'step': 1, 'rung': 'L16_beta1.0743', 'loss_ml_per_dof': 1.3798329830169678, 'seconds': 4.9}
+{'step': 2, 'rung': 'L16_beta3.1518', 'loss_ml_per_dof': 0.8670326471328735, 'seconds': 4.1}
+{'step': 3, 'rung': 'L8_beta1.4347', 'loss_ml_per_dof': 1.2875018119812012, 'seconds': 4.2}
+{'step': 4, 'rung': 'L16_beta9.571', 'loss_ml_per_dof': 0.6337327361106873, 'seconds': 4.2}
+{'step': 5, 'rung': 'L16_beta27.3387', 'loss_ml_per_dof': 0.6577284336090088, 'seconds': 4.1}
+{'step': 6, 'rung': 'L16_beta6.4184', 'loss_ml_per_dof': 0.6795750856399536, 'seconds': 4.3}
+{'step': 7, 'rung': 'L16_beta21.8857', 'loss_ml_per_dof': 0.669305682182312, 'seconds': 4.6}
+{'step': 8, 'rung': 'L16_beta1.8781', 'loss_ml_per_dof': 1.289226770401001, 'seconds': 4.3}
+{'step': 9, 'rung': 'L32_beta2.4697', 'loss_ml_per_dof': 1.262712001800537, 'seconds': 6.2}
+{'step': 10, 'rung': 'L32_beta2.8622', 'loss_ml_per_dof': 1.0268745422363281, 'seconds': 5.6}
+{'step': 11, 'rung': 'L16_beta1.0397', 'loss_ml_per_dof': 1.3736696243286133, 'seconds': 4.2}
+{'step': 12, 'rung': 'L32_beta52.6284', 'loss_ml_per_dof': 0.6465033292770386, 'seconds': 5.4}
+{'step': 13, 'rung': 'L16_beta2.2983', 'loss_ml_per_dof': 1.2603099346160889, 'seconds': 3.8}
+{'step': 14, 'rung': 'L16_beta3.1518', 'loss_ml_per_dof': 0.9625216722488403, 'seconds': 3.7}
+{'step': 15, 'rung': 'L16_beta55.0237', 'loss_ml_per_dof': 0.6124752759933472, 'seconds': 3.8}
+{'step': 16, 'rung': 'L16_beta2.2983', 'loss_ml_per_dof': 1.2012947797775269, 'seconds': 3.8}
+{'step': 17, 'rung': 'L16_beta12.9259', 'loss_ml_per_dof': 0.6163183450698853, 'seconds': 3.6}
+{'step': 18, 'rung': 'L16_beta33.325', 'loss_ml_per_dof': 0.5340868234634399, 'seconds': 3.8}
+{'step': 19, 'rung': 'L16_beta2.3454', 'loss_ml_per_dof': 1.1390975713729858, 'seconds': 4.0}
+{'step': 20, 'rung': 'L32_beta2.8622', 'loss_ml_per_dof': 0.9557282328605652, 'seconds': 5.4}
+{'step': 21, 'rung': 'L16_beta8.3946', 'loss_ml_per_dof': 0.6146591305732727, 'seconds': 4.3}
+{'step': 22, 'rung': 'L16_beta19.403', 'loss_ml_per_dof': 0.587922990322113, 'seconds': 4.3}
+{'step': 23, 'rung': 'L16_beta5.586', 'loss_ml_per_dof': 0.5684682726860046, 'seconds': 4.1}
+{'step': 24, 'rung': 'L16_beta56.1944', 'loss_ml_per_dof': 0.5869050025939941, 'seconds': 4.4}
+{'step': 25, 'rung': 'L16_beta30.5978', 'loss_ml_per_dof': 0.4886952340602875, 'seconds': 4.3, 'val_logq_per_dof': -0.8621787540614605, 'coeffs_beta4': [[0.1352, -0.0073], [0.0218, -0.0966], [-0.1006, -0.2329]], 'coeffs_beta55': [[0.1247, -0.0234], [0.0148, -0.1128], [-0.115, -0.258]], 'saved': 'C:\\Users\\ompan\\Desktop\\Lattice QCD\\inverse_rg_testing\\out\\u1_2d\\checkpoints\\score_correction.pt'}
+{'step': 26, 'rung': 'L16_beta55.0237', 'loss_ml_per_dof': 0.4951796531677246, 'seconds': 4.7}
+{'step': 27, 'rung': 'L32_beta4.994', 'loss_ml_per_dof': 0.5211793780326843, 'seconds': 5.8}
+{'step': 28, 'rung': 'L32_beta2.8622', 'loss_ml_per_dof': 0.8166067004203796, 'seconds': 5.5}
+{'step': 29, 'rung': 'L16_beta6.8771', 'loss_ml_per_dof': 0.4714450538158417, 'seconds': 4.0}
+{'step': 30, 'rung': 'L16_beta3.4006', 'loss_ml_per_dof': 0.8177249431610107, 'seconds': 3.9}
+{'step': 31, 'rung': 'L16_beta4.0764', 'loss_ml_per_dof': 0.5924566984176636, 'seconds': 4.0}
+{'step': 32, 'rung': 'L16_beta47.4228', 'loss_ml_per_dof': 0.42408519983291626, 'seconds': 4.0}
+{'step': 33, 'rung': 'L16_beta47.0386', 'loss_ml_per_dof': 0.4005632996559143, 'seconds': 4.0}
+{'step': 34, 'rung': 'L16_beta3.6231', 'loss_ml_per_dof': 0.6246645450592041, 'seconds': 4.1}
+{'step': 35, 'rung': 'L16_beta3.7225', 'loss_ml_per_dof': 0.7552752494812012, 'seconds': 4.0}
+{'step': 36, 'rung': 'L32_beta18.6487', 'loss_ml_per_dof': 0.4031318426132202, 'seconds': 5.2}
+{'step': 37, 'rung': 'L16_beta8.4548', 'loss_ml_per_dof': 0.4357015788555145, 'seconds': 4.1}
+{'step': 38, 'rung': 'L32_beta18.0708', 'loss_ml_per_dof': 0.42233723402023315, 'seconds': 5.5}
+{'step': 39, 'rung': 'L16_beta12.9259', 'loss_ml_per_dof': 0.4218835234642029, 'seconds': 4.1}
+{'step': 40, 'rung': 'L16_beta2.1862', 'loss_ml_per_dof': 1.0695538520812988, 'seconds': 4.0}
+{'step': 41, 'rung': 'L32_beta11.2015', 'loss_ml_per_dof': 0.40931305289268494, 'seconds': 5.3}
+{'step': 42, 'rung': 'L16_beta9.571', 'loss_ml_per_dof': 0.4400120675563812, 'seconds': 4.0}
+{'step': 43, 'rung': 'L16_beta1.8781', 'loss_ml_per_dof': 1.0466694831848145, 'seconds': 4.0}
+{'step': 44, 'rung': 'L16_beta1.8781', 'loss_ml_per_dof': 1.0627272129058838, 'seconds': 4.0}
+{'step': 45, 'rung': 'L16_beta1.7484', 'loss_ml_per_dof': 1.0644609928131104, 'seconds': 4.0}
+{'step': 46, 'rung': 'L16_beta17.502', 'loss_ml_per_dof': 0.3259159326553345, 'seconds': 4.0}
+{'step': 47, 'rung': 'L32_beta14.1441', 'loss_ml_per_dof': 0.3784746527671814, 'seconds': 5.3}
+{'step': 48, 'rung': 'L16_beta30.5978', 'loss_ml_per_dof': 0.19485971331596375, 'seconds': 3.9}
+{'step': 49, 'rung': 'L16_beta34.3422', 'loss_ml_per_dof': 0.20486357808113098, 'seconds': 4.0}
+{'step': 50, 'rung': 'L16_beta2.1862', 'loss_ml_per_dof': 1.0046536922454834, 'seconds': 4.0, 'val_logq_per_dof': -0.6019989140331745, 'coeffs_beta4': [[0.1219, -0.0149], [-0.051, -0.2267], [-0.4222, -0.8202]], 'coeffs_beta55': [[0.0918, -0.0632], [-0.1056, -0.3233], [-0.5304, -0.9999]], 'saved': 'C:\\Users\\ompan\\Desktop\\Lattice QCD\\inverse_rg_testing\\out\\u1_2d\\checkpoints\\score_correction.pt'}
+{'step': 51, 'rung': 'L16_beta1.2464', 'loss_ml_per_dof': 1.098606824874878, 'seconds': 4.2}
+{'step': 52, 'rung': 'L16_beta25', 'loss_ml_per_dof': 0.2484947144985199, 'seconds': 4.3}
+{'step': 53, 'rung': 'L16_beta54.11', 'loss_ml_per_dof': 0.14787894487380981, 'seconds': 4.5}
+{'step': 54, 'rung': 'L16_beta1.7484', 'loss_ml_per_dof': 1.0436087846755981, 'seconds': 4.3}
+{'step': 55, 'rung': 'L32_beta4.994', 'loss_ml_per_dof': 0.4953106641769409, 'seconds': 5.6}
+{'step': 56, 'rung': 'L16_beta54.11', 'loss_ml_per_dof': 0.14240601658821106, 'seconds': 4.1}
+{'step': 57, 'rung': 'L16_beta6.2411', 'loss_ml_per_dof': 0.455488920211792, 'seconds': 4.1}
+{'step': 58, 'rung': 'L16_beta8.4548', 'loss_ml_per_dof': 0.42253053188323975, 'seconds': 4.2}
+{'step': 59, 'rung': 'L16_beta2.3046', 'loss_ml_per_dof': 0.9607731699943542, 'seconds': 4.2}
+{'step': 60, 'rung': 'L16_beta9.571', 'loss_ml_per_dof': 0.42439907789230347, 'seconds': 4.2}
+{'step': 61, 'rung': 'L8_beta1.4977', 'loss_ml_per_dof': 1.0074435472488403, 'seconds': 4.0}
+{'step': 62, 'rung': 'L16_beta57.2189', 'loss_ml_per_dof': 0.08835538476705551, 'seconds': 3.9}
+{'step': 63, 'rung': 'L16_beta55.0237', 'loss_ml_per_dof': 0.11935459077358246, 'seconds': 3.9}
+{'step': 64, 'rung': 'L16_beta9.8499', 'loss_ml_per_dof': 0.40579599142074585, 'seconds': 4.4}
+{'step': 65, 'rung': 'L16_beta8.3946', 'loss_ml_per_dof': 0.457639217376709, 'seconds': 4.1}
+{'step': 66, 'rung': 'L16_beta54.11', 'loss_ml_per_dof': 0.11635323613882065, 'seconds': 4.1}
+{'step': 67, 'rung': 'L16_beta47.0386', 'loss_ml_per_dof': 0.16123053431510925, 'seconds': 4.2}
+{'step': 68, 'rung': 'L16_beta27.0442', 'loss_ml_per_dof': 0.271020770072937, 'seconds': 4.1}
+{'step': 69, 'rung': 'L16_beta57.2189', 'loss_ml_per_dof': 0.09331536293029785, 'seconds': 4.0}
+{'step': 70, 'rung': 'L32_beta8.069', 'loss_ml_per_dof': 0.4208204746246338, 'seconds': 5.4}
+{'step': 71, 'rung': 'L16_beta1.8781', 'loss_ml_per_dof': 1.018276572227478, 'seconds': 3.9}
+{'step': 72, 'rung': 'L16_beta3.7225', 'loss_ml_per_dof': 0.5745325088500977, 'seconds': 3.9}
+{'step': 73, 'rung': 'L16_beta2.1285', 'loss_ml_per_dof': 0.854613184928894, 'seconds': 3.9}
+{'step': 74, 'rung': 'L16_beta3.1669', 'loss_ml_per_dof': 0.7982799410820007, 'seconds': 3.8}
+{'step': 75, 'rung': 'L32_beta12.3504', 'loss_ml_per_dof': 0.36373481154441833, 'seconds': 5.9, 'val_logq_per_dof': -0.6050379779189825, 'coeffs_beta4': [[0.0133, 0.3151], [-0.0304, 0.054], [-0.2874, -1.1388]], 'coeffs_beta55': [[0.0123, 0.3021], [-0.0377, 0.025], [-0.3315, -1.3346]]}
+{'step': 76, 'rung': 'L16_beta40', 'loss_ml_per_dof': 0.17696791887283325, 'seconds': 4.5}
+{'step': 77, 'rung': 'L32_beta2.8622', 'loss_ml_per_dof': 0.6647534370422363, 'seconds': 5.3}
+{'step': 78, 'rung': 'L8_beta1.4977', 'loss_ml_per_dof': 1.0321706533432007, 'seconds': 4.0}
+{'step': 79, 'rung': 'L16_beta8.3946', 'loss_ml_per_dof': 0.43072235584259033, 'seconds': 4.0}
+{'step': 80, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.39270028471946716, 'seconds': 4.0}
+{'step': 81, 'rung': 'L16_beta2.1285', 'loss_ml_per_dof': 0.9680474996566772, 'seconds': 4.2}
+{'step': 82, 'rung': 'L16_beta3.1518', 'loss_ml_per_dof': 0.6680721044540405, 'seconds': 4.0}
+{'step': 83, 'rung': 'L16_beta4.7632', 'loss_ml_per_dof': 0.48563215136528015, 'seconds': 4.1}
+{'step': 84, 'rung': 'L16_beta19.403', 'loss_ml_per_dof': 0.2637512981891632, 'seconds': 4.1}
+{'step': 85, 'rung': 'L16_beta4.7323', 'loss_ml_per_dof': 0.4809018075466156, 'seconds': 4.2}
+{'step': 86, 'rung': 'L16_beta21.8857', 'loss_ml_per_dof': 0.30678319931030273, 'seconds': 4.3}
+{'step': 87, 'rung': 'L8_beta1.7872', 'loss_ml_per_dof': 1.0464298725128174, 'seconds': 4.1}
+{'step': 88, 'rung': 'L32_beta2.4697', 'loss_ml_per_dof': 0.9380700588226318, 'seconds': 5.4}
+{'step': 89, 'rung': 'L16_beta4.7632', 'loss_ml_per_dof': 0.5271161794662476, 'seconds': 4.0}
+{'step': 90, 'rung': 'L16_beta55.0237', 'loss_ml_per_dof': 0.09847017377614975, 'seconds': 4.0}
+{'step': 91, 'rung': 'L32_beta12.688', 'loss_ml_per_dof': 0.3546905517578125, 'seconds': 5.5}
+{'step': 92, 'rung': 'L16_beta21.8857', 'loss_ml_per_dof': 0.27679410576820374, 'seconds': 3.9}
+{'step': 93, 'rung': 'L16_beta21.8857', 'loss_ml_per_dof': 0.2901996374130249, 'seconds': 4.0}
+{'step': 94, 'rung': 'L16_beta40', 'loss_ml_per_dof': 0.1894487738609314, 'seconds': 3.9}
+{'step': 95, 'rung': 'L8_beta2.4006', 'loss_ml_per_dof': 0.7736736536026001, 'seconds': 4.0}
+{'step': 96, 'rung': 'L16_beta6.4184', 'loss_ml_per_dof': 0.4422449469566345, 'seconds': 4.0}
+{'step': 97, 'rung': 'L16_beta11.8501', 'loss_ml_per_dof': 0.3762698173522949, 'seconds': 4.1}
+{'step': 98, 'rung': 'L32_beta18.0708', 'loss_ml_per_dof': 0.3115290403366089, 'seconds': 5.4}
+{'step': 99, 'rung': 'L16_beta47.4228', 'loss_ml_per_dof': 0.13271789252758026, 'seconds': 4.1}
+{'step': 100, 'rung': 'L16_beta1.2749', 'loss_ml_per_dof': 1.124638557434082, 'seconds': 3.9, 'val_logq_per_dof': -0.6491532698273659, 'coeffs_beta4': [[-0.1953, 0.8511], [-0.0786, 0.38], [-0.1538, -1.3871]], 'coeffs_beta55': [[-0.1948, 0.846], [-0.0763, 0.3964], [-0.1655, -1.5831]]}
+{'step': 101, 'rung': 'L32_beta2.8622', 'loss_ml_per_dof': 0.7996343970298767, 'seconds': 5.7}
+{'step': 102, 'rung': 'L16_beta6.4184', 'loss_ml_per_dof': 0.5209425687789917, 'seconds': 4.6}
+{'step': 103, 'rung': 'L16_beta2.122', 'loss_ml_per_dof': 1.0023434162139893, 'seconds': 4.3}
+{'step': 104, 'rung': 'L32_beta18.6487', 'loss_ml_per_dof': 0.2912989556789398, 'seconds': 5.5}
+{'step': 105, 'rung': 'L16_beta3.1669', 'loss_ml_per_dof': 0.8896052241325378, 'seconds': 3.9}
+{'step': 106, 'rung': 'L16_beta8.3946', 'loss_ml_per_dof': 0.4774324297904968, 'seconds': 3.9}
+{'step': 107, 'rung': 'L16_beta30.5978', 'loss_ml_per_dof': 0.19098341464996338, 'seconds': 4.0}
+{'step': 108, 'rung': 'L16_beta9.8499', 'loss_ml_per_dof': 0.41364049911499023, 'seconds': 4.0}
+{'step': 109, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.40823882818222046, 'seconds': 3.9}
+{'step': 110, 'rung': 'L16_beta1.0743', 'loss_ml_per_dof': 1.18205726146698, 'seconds': 4.1}
+{'step': 111, 'rung': 'L16_beta15.5366', 'loss_ml_per_dof': 0.2989707589149475, 'seconds': 3.9}
+{'step': 112, 'rung': 'L16_beta2.1285', 'loss_ml_per_dof': 0.9943997263908386, 'seconds': 3.8}
+{'step': 113, 'rung': 'L16_beta9.287', 'loss_ml_per_dof': 0.4506044089794159, 'seconds': 3.8}
+{'step': 114, 'rung': 'L16_beta33.325', 'loss_ml_per_dof': 0.1747957170009613, 'seconds': 4.0}
+{'step': 115, 'rung': 'L32_beta52.6284', 'loss_ml_per_dof': 0.11105851829051971, 'seconds': 5.4}
+{'step': 116, 'rung': 'L16_beta5.586', 'loss_ml_per_dof': 0.618660569190979, 'seconds': 4.0}
+{'step': 117, 'rung': 'L16_beta54.11', 'loss_ml_per_dof': 0.083169125020504, 'seconds': 3.7}
+{'step': 118, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.47980374097824097, 'seconds': 3.9}
+{'step': 119, 'rung': 'L16_beta34.3422', 'loss_ml_per_dof': 0.19445377588272095, 'seconds': 3.8}
+{'step': 120, 'rung': 'L16_beta1.0743', 'loss_ml_per_dof': 1.1424248218536377, 'seconds': 3.9}
+{'step': 121, 'rung': 'L32_beta52.6284', 'loss_ml_per_dof': 0.1259092092514038, 'seconds': 5.4}
+{'step': 122, 'rung': 'L32_beta52.6284', 'loss_ml_per_dof': 0.12162244319915771, 'seconds': 5.4}
+{'step': 123, 'rung': 'L16_beta14.4687', 'loss_ml_per_dof': 0.3895495533943176, 'seconds': 3.9}
+{'step': 124, 'rung': 'L16_beta1.2464', 'loss_ml_per_dof': 1.1357182264328003, 'seconds': 3.8}
+{'step': 125, 'rung': 'L16_beta9.8499', 'loss_ml_per_dof': 0.49498462677001953, 'seconds': 3.8, 'val_logq_per_dof': -0.7563584819436073, 'coeffs_beta4': [[-0.9564, 3.002], [-0.2436, 0.961], [-0.0609, -1.6853]], 'coeffs_beta55': [[-0.9725, 3.0618], [-0.2423, 1.0069], [-0.0628, -1.965]]}
+{'step': 126, 'rung': 'L16_beta1.0743', 'loss_ml_per_dof': 1.1842379570007324, 'seconds': 3.9}
+{'step': 127, 'rung': 'L32_beta18.6487', 'loss_ml_per_dof': 0.353494256734848, 'seconds': 5.3}
+{'step': 128, 'rung': 'L8_beta2.4006', 'loss_ml_per_dof': 1.122082233428955, 'seconds': 4.4}
+{'step': 129, 'rung': 'L32_beta2.8622', 'loss_ml_per_dof': 0.9534298777580261, 'seconds': 5.5}
+{'step': 130, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.5654147863388062, 'seconds': 3.8}
+{'step': 131, 'rung': 'L16_beta27.7875', 'loss_ml_per_dof': 0.3014026880264282, 'seconds': 3.8}
+{'step': 132, 'rung': 'L16_beta2.3046', 'loss_ml_per_dof': 1.0759027004241943, 'seconds': 4.1}
+{'step': 133, 'rung': 'L16_beta12.9259', 'loss_ml_per_dof': 0.4489244818687439, 'seconds': 3.8}
+{'step': 134, 'rung': 'L16_beta17.502', 'loss_ml_per_dof': 0.4068082273006439, 'seconds': 3.8}
+{'step': 135, 'rung': 'L16_beta1.8367', 'loss_ml_per_dof': 1.141480803489685, 'seconds': 3.8}
+{'step': 136, 'rung': 'L16_beta11.8784', 'loss_ml_per_dof': 0.5050946474075317, 'seconds': 3.8}
+{'step': 137, 'rung': 'L8_beta1.9783', 'loss_ml_per_dof': 1.1755911111831665, 'seconds': 3.6}
+{'step': 138, 'rung': 'L16_beta2.3046', 'loss_ml_per_dof': 1.1548948287963867, 'seconds': 3.7}
+{'step': 139, 'rung': 'L16_beta9.8499', 'loss_ml_per_dof': 0.6345324516296387, 'seconds': 3.8}
+{'step': 140, 'rung': 'L16_beta25', 'loss_ml_per_dof': 0.4308549761772156, 'seconds': 3.8}
+{'step': 141, 'rung': 'L32_beta11.2015', 'loss_ml_per_dof': 0.5598286986351013, 'seconds': 5.4}
+{'step': 142, 'rung': 'L16_beta27.3387', 'loss_ml_per_dof': 0.4461516737937927, 'seconds': 3.8}
+{'step': 143, 'rung': 'L32_beta11.2015', 'loss_ml_per_dof': 0.5662645101547241, 'seconds': 5.7}
+{'step': 144, 'rung': 'L16_beta9.287', 'loss_ml_per_dof': 0.6493657231330872, 'seconds': 4.3}
+{'step': 145, 'rung': 'L16_beta9.8499', 'loss_ml_per_dof': 0.6573652625083923, 'seconds': 4.4}
+{'step': 146, 'rung': 'L16_beta2.3454', 'loss_ml_per_dof': 1.199378490447998, 'seconds': 4.5}
+{'step': 147, 'rung': 'L16_beta4.0764', 'loss_ml_per_dof': 1.0221294164657593, 'seconds': 4.5}
+{'step': 148, 'rung': 'L16_beta8.3946', 'loss_ml_per_dof': 0.6918889880180359, 'seconds': 4.4}
+{'step': 149, 'rung': 'L16_beta17.502', 'loss_ml_per_dof': 0.5374908447265625, 'seconds': 4.6}
+{'step': 150, 'rung': 'L8_beta2.4006', 'loss_ml_per_dof': 1.183072566986084, 'seconds': 4.3, 'val_logq_per_dof': -1.0351665765047073, 'coeffs_beta4': [[-3.5415, 7.4093], [-0.891, 1.9943], [0.1268, -1.8071]], 'coeffs_beta55': [[-3.625, 7.6289], [-0.904, 2.0642], [0.1529, -2.2102]]}
+{'step': 151, 'rung': 'L32_beta8.069', 'loss_ml_per_dof': 0.7864798903465271, 'seconds': 5.4}
+{'step': 152, 'rung': 'L16_beta27.0442', 'loss_ml_per_dof': 0.46598005294799805, 'seconds': 4.3}
+{'step': 153, 'rung': 'L16_beta6.8771', 'loss_ml_per_dof': 0.8782450556755066, 'seconds': 4.1}
+{'step': 154, 'rung': 'L16_beta10.2188', 'loss_ml_per_dof': 0.6775652170181274, 'seconds': 4.2}
+{'step': 155, 'rung': 'L16_beta6.8771', 'loss_ml_per_dof': 0.8789600729942322, 'seconds': 4.1}
+{'step': 156, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.7933060526847839, 'seconds': 4.1}
+{'step': 157, 'rung': 'L16_beta47.4228', 'loss_ml_per_dof': 0.7076742649078369, 'seconds': 4.1}
+{'step': 158, 'rung': 'L16_beta40', 'loss_ml_per_dof': 0.6234521865844727, 'seconds': 4.4}
+{'step': 159, 'rung': 'L16_beta3.1669', 'loss_ml_per_dof': 1.3429429531097412, 'seconds': 4.2}
+{'step': 160, 'rung': 'L16_beta47.0386', 'loss_ml_per_dof': 0.655535101890564, 'seconds': 4.4}
+{'step': 161, 'rung': 'L16_beta3.2922', 'loss_ml_per_dof': 1.3054202795028687, 'seconds': 4.2}
+{'step': 162, 'rung': 'L16_beta17.7602', 'loss_ml_per_dof': 0.6383967399597168, 'seconds': 4.1}
+{'step': 163, 'rung': 'L16_beta20.2412', 'loss_ml_per_dof': 0.5864889621734619, 'seconds': 4.4}
+{'step': 164, 'rung': 'L16_beta1.8367', 'loss_ml_per_dof': 1.5291017293930054, 'seconds': 4.7}
+{'step': 165, 'rung': 'L16_beta38.5957', 'loss_ml_per_dof': 0.7048019170761108, 'seconds': 4.2}
+{'step': 166, 'rung': 'L16_beta9.287', 'loss_ml_per_dof': 0.8610333204269409, 'seconds': 4.1}
+{'step': 167, 'rung': 'L16_beta3.3842', 'loss_ml_per_dof': 1.373787760734558, 'seconds': 4.1}
+{'step': 168, 'rung': 'L16_beta39.6475', 'loss_ml_per_dof': 0.7003964185714722, 'seconds': 4.0}
+{'step': 169, 'rung': 'L16_beta47.4228', 'loss_ml_per_dof': 0.6655928492546082, 'seconds': 4.4}
+{'step': 170, 'rung': 'L32_beta12.3504', 'loss_ml_per_dof': 0.7860028147697449, 'seconds': 5.5}
+{'step': 171, 'rung': 'L16_beta27.7875', 'loss_ml_per_dof': 0.6375564336776733, 'seconds': 4.1}
+{'step': 172, 'rung': 'L32_beta12.3504', 'loss_ml_per_dof': 0.7254006862640381, 'seconds': 5.8}
+{'step': 173, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.8998100161552429, 'seconds': 4.5}
+{'step': 174, 'rung': 'L16_beta55.0237', 'loss_ml_per_dof': 0.5967897176742554, 'seconds': 4.8}
+{'step': 175, 'rung': 'L16_beta1.8367', 'loss_ml_per_dof': 1.5699317455291748, 'seconds': 4.7, 'val_logq_per_dof': -1.2367965281009674, 'coeffs_beta4': [[-4.9169, 11.4643], [-1.1398, 2.5306], [0.1815, -2.1149]], 'coeffs_beta55': [[-4.9588, 11.6569], [-1.0496, 2.2239], [0.2302, -2.865]]}
+{'step': 176, 'rung': 'L32_beta14.1441', 'loss_ml_per_dof': 0.6879119873046875, 'seconds': 5.4}
+{'step': 177, 'rung': 'L8_beta1.4977', 'loss_ml_per_dof': 1.5441935062408447, 'seconds': 4.6}
+{'step': 178, 'rung': 'L16_beta12.9259', 'loss_ml_per_dof': 0.7293823957443237, 'seconds': 4.4}
+{'step': 179, 'rung': 'L16_beta2.3454', 'loss_ml_per_dof': 1.5214905738830566, 'seconds': 4.4}
+{'step': 180, 'rung': 'L16_beta2.1757', 'loss_ml_per_dof': 1.5649421215057373, 'seconds': 3.9}
+{'step': 181, 'rung': 'L32_beta18.6487', 'loss_ml_per_dof': 0.6770245432853699, 'seconds': 5.5}
+{'step': 182, 'rung': 'L16_beta39.6475', 'loss_ml_per_dof': 0.6864013671875, 'seconds': 4.3}
+{'step': 183, 'rung': 'L16_beta1.2749', 'loss_ml_per_dof': 1.5470885038375854, 'seconds': 4.4}
+{'step': 184, 'rung': 'L16_beta21.8857', 'loss_ml_per_dof': 0.6634358167648315, 'seconds': 4.4}
+{'step': 185, 'rung': 'L16_beta3.1669', 'loss_ml_per_dof': 1.4595974683761597, 'seconds': 4.1}
+{'step': 186, 'rung': 'L16_beta9.287', 'loss_ml_per_dof': 0.8196649551391602, 'seconds': 4.3}
+{'step': 187, 'rung': 'L16_beta56.1944', 'loss_ml_per_dof': 0.7746164798736572, 'seconds': 4.0}
+{'step': 188, 'rung': 'L32_beta11.2015', 'loss_ml_per_dof': 0.7912465929985046, 'seconds': 5.9}
+{'step': 189, 'rung': 'L16_beta1.7484', 'loss_ml_per_dof': 1.6521785259246826, 'seconds': 4.2}
+{'step': 190, 'rung': 'L16_beta2.3454', 'loss_ml_per_dof': 1.5877470970153809, 'seconds': 4.2}
+{'step': 191, 'rung': 'L16_beta8.7139', 'loss_ml_per_dof': 0.919148325920105, 'seconds': 4.2}
+{'step': 192, 'rung': 'L32_beta2.1926', 'loss_ml_per_dof': 1.6387513875961304, 'seconds': 5.3}
+{'step': 193, 'rung': 'L16_beta39.6475', 'loss_ml_per_dof': 0.8612989187240601, 'seconds': 3.8}
+{'step': 194, 'rung': 'L16_beta54.11', 'loss_ml_per_dof': 0.7577444314956665, 'seconds': 3.8}
+{'step': 195, 'rung': 'L16_beta6.4184', 'loss_ml_per_dof': 1.1591626405715942, 'seconds': 4.1}
+{'step': 196, 'rung': 'L16_beta3.4006', 'loss_ml_per_dof': 1.5027345418930054, 'seconds': 4.0}
+{'step': 197, 'rung': 'L16_beta1.0119', 'loss_ml_per_dof': 1.5842838287353516, 'seconds': 3.8}
+{'step': 198, 'rung': 'L16_beta1.0119', 'loss_ml_per_dof': 1.5595293045043945, 'seconds': 3.8}
+{'step': 199, 'rung': 'L16_beta3.7225', 'loss_ml_per_dof': 1.5128850936889648, 'seconds': 3.9}
+{'step': 200, 'rung': 'L32_beta12.688', 'loss_ml_per_dof': 0.7633029818534851, 'seconds': 5.3, 'val_logq_per_dof': -1.2931405939161777, 'coeffs_beta4': [[-5.2896, 13.9575], [-1.102, 2.6811], [0.1641, -1.9437]], 'coeffs_beta55': [[-5.1846, 13.7655], [-0.8729, 1.8691], [0.2021, -2.7211]]}
+best val log q/dof: -0.6020 (initial -1.0282)
+correction: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\checkpoints\score_correction.pt
+[2026-08-08 18:30:27] STAGE_CORRECTION_DONE (24.4 min)
+[2026-08-08 18:30:27] STAGE_VERIFY_CORRECTION_START
+case L=8 beta=8.0 ...
+  {"n": 64, "ess_per_n": 0.016495464369654655, "log_weight_std": 20.242788314819336, "log_weight_range": 95.74514770507812, "ess_per_n_fiber": 0.023238249123096466, "log_weight_std_fiber": 19.11787986755371, "log_weight_range_fiber": 93.10867309570312, "free_energy_certificate": {"log_mean_w": 479.8615513459933, "exact_delta_F": 603.9086937648325, "gap": -124.0471424188392, "sem": 0.8168124599417935, "n": 64, "kl_from_mean_log_w": 152.30036685290622, "kl_sem": 2.389734946483588, "kl_per_site": 1.1898466160383299}, "fine_L": 8, "fine_beta": 8.0, "coarse_L": 4, "coarse_beta": 2.500394100600896, "imh_acceptance": 0.047619047619047616, "seconds_hmc_base": 5.6, "seconds_ode_sample": 93.5, "ode_steps": 120, "n_probes": 2}
+case L=16 beta=25.0 ...
+  {"n": 64, "ess_per_n": 0.015625, "log_weight_std": 80.350830078125, "log_weight_range": 399.884765625, "ess_per_n_fiber": 0.015625, "log_weight_std_fiber": 80.41936492919922, "log_weight_range_fiber": 386.59033203125, "free_energy_certificate": {"log_mean_w": 5801.886038791651, "exact_delta_F": 6386.7074078559235, "gap": -584.8213690642724, "sem": 0.9999999999891037, "n": 64, "kl_from_mean_log_w": 733.908327960904, "kl_sem": 10.052420940342829, "kl_per_site": 1.4334147030486406}, "fine_L": 16, "fine_beta": 25.0, "coarse_L": 8, "coarse_beta": 6.664497345252339, "imh_acceptance": 0.031746031746031744, "seconds_hmc_base": 16.5, "seconds_ode_sample": 87.5, "ode_steps": 120, "n_probes": 2}
+case L=32 beta=14.1464 ...
+  {"n": 64, "ess_per_n": 0.015625, "log_weight_std": 149.51681518554688, "log_weight_range": 645.3740234375, "ess_per_n_fiber": 0.01562517136335373, "log_weight_std_fiber": 148.51025390625, "log_weight_range_fiber": 616.0732421875, "free_energy_certificate": {"log_mean_w": 12928.543270883318, "exact_delta_F": 15340.973280125389, "gap": -2412.430009242071, "sem": 0.9999943830885336, "n": 64, "kl_from_mean_log_w": 2677.3942090804667, "kl_sem": 18.563781104238043, "kl_per_site": 1.3073213911525716}, "fine_L": 32, "fine_beta": 14.1464, "coarse_L": 16, "coarse_beta": 3.9999887248909847, "imh_acceptance": 0.015873015873015872, "seconds_hmc_base": 5.0, "seconds_ode_sample": 82.8, "ode_steps": 120, "n_probes": 2}
+wrote C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\ess_chain\verify_correction\report.md
+[2026-08-08 18:35:29] STAGE_VERIFY_CORRECTION_DONE (5.0 min)
+[2026-08-08 18:35:29] STAGE_GEN_FRESH_START: 2 seeds x 2 shards
+usage: 06_generalization_study.py [-h] [--smoke] [--report-only]
+                                  [--out-dir OUT_DIR] [--cases CASES]
+                                  [--checkpoint CHECKPOINT]
+                                  [--physics-blend PHYSICS_BLEND]
+                                  [--physics-blend-beta-min PHYSICS_BLEND_BETA_MIN]
+                                  [--retherm-qhops] [--symmetrize-base]
+                                  [--sector-mode {transport,exact}]
+                                  [--sigma-floor-coef SIGMA_FLOOR_COEF]
+                                  [--device DEVICE] [--seed SEED]
+                                  [--shard I/N] [--merge-shards]
+06_generalization_study.py: error: unrecognized arguments: --config u1_2d/configs/v2_gpu_verify.yaml
+usage: 06_generalization_study.py [-h] [--smoke] [--report-only]
+                                  [--out-dir OUT_DIR] [--cases CASES]
+                                  [--checkpoint CHECKPOINT]
+                                  [--physics-blend PHYSICS_BLEND]
+                                  [--physics-blend-beta-min PHYSICS_BLEND_BETA_MIN]
+                                  [--retherm-qhops] [--symmetrize-base]
+                                  [--sector-mode {transport,exact}]
+                                  [--sigma-floor-coef SIGMA_FLOOR_COEF]
+                                  [--device DEVICE] [--seed SEED]
+                                  [--shard I/N] [--merge-shards]
+06_generalization_study.py: error: unrecognized arguments: --config u1_2d/configs/v2_gpu_verify.yaml
+usage: 06_generalization_study.py [-h] [--smoke] [--report-only]
+                                  [--out-dir OUT_DIR] [--cases CASES]
+                                  [--checkpoint CHECKPOINT]
+                                  [--physics-blend PHYSICS_BLEND]
+                                  [--physics-blend-beta-min PHYSICS_BLEND_BETA_MIN]
+                                  [--retherm-qhops] [--symmetrize-base]
+                                  [--sector-mode {transport,exact}]
+                                  [--sigma-floor-coef SIGMA_FLOOR_COEF]
+                                  [--device DEVICE] [--seed SEED]
+                                  [--shard I/N] [--merge-shards]
+06_generalization_study.py: error: unrecognized arguments: --config u1_2d/configs/v2_gpu_verify.yaml
+[2026-08-08 18:35:35] STAGE_GEN_FRESH_FAILED in shards
+[2026-08-08 18:35:35] PHASE6_DONE_WITH_ERRORS: ['GEN_FRESH']
+usage: 06_generalization_study.py [-h] [--smoke] [--report-only]
+                                  [--out-dir OUT_DIR] [--cases CASES]
+                                  [--checkpoint CHECKPOINT]
+                                  [--physics-blend PHYSICS_BLEND]
+                                  [--physics-blend-beta-min PHYSICS_BLEND_BETA_MIN]
+                                  [--retherm-qhops] [--symmetrize-base]
+                                  [--sector-mode {transport,exact}]
+                                  [--sigma-floor-coef SIGMA_FLOOR_COEF]
+                                  [--device DEVICE] [--seed SEED]
+                                  [--shard I/N] [--merge-shards]
+06_generalization_study.py: error: unrecognized arguments: --config u1_2d/configs/v2_gpu_verify.yaml
+ 
+======== launch Sat 08/08/2026 19:58:29.83 ======== 
+[2026-08-08 19:58:30] PHASE6_START
+[2026-08-08 19:58:30] STAGE_CORRECTION: sentinel present, skipping
+[2026-08-08 19:58:30] STAGE_VERIFY_CORRECTION: sentinel present, skipping
+[2026-08-08 19:58:30] STAGE_GEN_FRESH_START: 2 seeds x 2 shards
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+shard 1/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4
+[1/2] D_bc14.1464: already done, skipping
+[2/2] B_bt20: already done, skipping
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary.shard1.json
+figures/tables deferred -- rerun with --merge-shards
+shard 1/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3
+[1/2] D_bc14.1464: already done, skipping
+[2/2] B_bt20: already done, skipping
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary.shard1.json
+figures/tables deferred -- rerun with --merge-shards
+shard 0/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3
+[1/2] A_bc8: already done, skipping
+[2/2] F_L64_bc55.0237: already done, skipping
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary.shard0.json
+figures/tables deferred -- rerun with --merge-shards
+shard 0/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4
+[1/2] A_bc8: already done, skipping
+[2/2] F_L64_bc55.0237: already done, skipping
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary.shard0.json
+figures/tables deferred -- rerun with --merge-shards
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+4 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3
+[1/4] A_bc8: already done, skipping
+[2/4] D_bc14.1464: already done, skipping
+[3/4] F_L64_bc55.0237: already done, skipping
+[4/4] B_bt20: already done, skipping
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\06_generalization_study.py:457: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary.json
+tables:  C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary_tables.md
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+4 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4
+[1/4] A_bc8: already done, skipping
+[2/4] D_bc14.1464: already done, skipping
+[3/4] F_L64_bc55.0237: already done, skipping
+[4/4] B_bt20: already done, skipping
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\06_generalization_study.py:457: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary.json
+tables:  C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary_tables.md
+[2026-08-08 19:59:00] STAGE_GEN_FRESH_DONE (0.5 min)
+[2026-08-08 19:59:00] PHASE6_DONE
+======== exit code 0 at Sat 08/08/2026 19:59:00.09 ======== 
+ 
+======== launch Sat 08/08/2026 20:00:59.13 ======== 
+[2026-08-08 20:00:59] PHASE6_START
+[2026-08-08 20:00:59] STAGE_CORRECTION: sentinel present, skipping
+[2026-08-08 20:00:59] STAGE_VERIFY_CORRECTION: sentinel present, skipping
+[2026-08-08 20:00:59] STAGE_GEN_FRESH_START: 2 seeds x 2 shards
+[2026-08-08 20:00:59]   s3: moved pre-campaign summary.json aside
+[2026-08-08 20:00:59]   s4: moved pre-campaign summary.json aside
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 offdevice: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+shard 0/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3
+[1/2] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+shard 1/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4
+[1/2] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+shard 1/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3
+[1/2] D_bc14.1464: base L=16 beta=14.1464 -> L=32 beta=55.0237 (matched pair 14.1464 -> 55.0237)
+shard 0/2: 2 cases
+2 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4
+[1/2] A_bc8: base L=16 beta=8 -> L=32 beta=30.3772 (matched pair 8 -> 30.3772)
+    HMC L=16 beta=8: 128 configs, acc 0.989, cold start, burn 600, 29s
+    HMC L=16 beta=8: 128 configs, acc 0.991, cold start, burn 600, 29s
+    HMC L=16 beta=14.1464: 128 configs, acc 0.992, cold start, burn 600, 37s
+    HMC L=16 beta=14.1464: 128 configs, acc 0.995, cold start, burn 600, 37s
+    generated 128 configs L=32 beta=30.3772 in 45s
+    generated 128 configs L=32 beta=30.3772 in 45s
+    generated 128 configs L=32 beta=55.0237 in 43s
+    generated 128 configs L=32 beta=55.0237 in 43s
+    HMC L=32 beta=30.3772: 192 configs, acc 0.981, cold start, burn 2000, 169s
+    HMC L=32 beta=30.3772: 192 configs, acc 0.976, cold start, burn 2000, 171s
+    case done in 262s
+[2/2] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    case done in 264s
+[2/2] F_L64_bc55.0237: base L=32 beta=55.0237 -> L=64 beta=218.58 (extrapolation demo 55.0237 -> 218.5802 at L=64)
+    HMC L=32 beta=55.0237: 192 configs, acc 0.982, cold start, burn 2000, 222s
+    HMC L=32 beta=55.0237: 192 configs, acc 0.985, cold start, burn 2000, 223s
+    case done in 322s
+[2/2] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    case done in 324s
+[2/2] B_bt20: base L=16 beta=4 -> L=32 beta=20 (mismatch: matched target is 14.1464)
+    HMC L=16 beta=4: 128 configs, acc 0.984, hot start, burn 200, 8s
+    HMC L=16 beta=4: 128 configs, acc 0.975, hot start, burn 200, 8s
+    generated 128 configs L=32 beta=20 in 35s
+    generated 128 configs L=32 beta=20 in 35s
+    HMC L=32 beta=55.0237: 64 configs, acc 0.984, cold start, burn 2000, 223s
+    HMC L=32 beta=55.0237: 64 configs, acc 0.959, cold start, burn 2000, 225s
+    HMC L=32 beta=20: 192 configs, acc 0.990, cold start, burn 2000, 154s
+    HMC L=32 beta=20: 192 configs, acc 0.986, cold start, burn 2000, 156s
+    case done in 213s
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary.shard1.json
+figures/tables deferred -- rerun with --merge-shards
+    case done in 215s
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary.shard1.json
+figures/tables deferred -- rerun with --merge-shards
+    generated 64 configs L=64 beta=218.58 in 72s
+    generated 64 configs L=64 beta=218.58 in 70s
+    HMC L=64 beta=218.58: 96 configs, acc 0.946, cold start, burn 2000, 330s
+    HMC L=64 beta=218.58: 96 configs, acc 0.952, cold start, burn 2000, 329s
+    case done in 649s
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary.shard0.json
+figures/tables deferred -- rerun with --merge-shards
+    case done in 648s
+shard summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary.shard0.json
+figures/tables deferred -- rerun with --merge-shards
+merged summary.shard0.json
+merged summary.shard1.json
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+4 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3
+[1/4] A_bc8: already done, skipping
+[2/4] D_bc14.1464: already done, skipping
+[3/4] F_L64_bc55.0237: already done, skipping
+[4/4] B_bt20: already done, skipping
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\06_generalization_study.py:457: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary.json
+tables:  C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s3\summary_tables.md
+merged summary.shard0.json
+merged summary.shard1.json
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+4 cases, output -> C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4
+[1/4] A_bc8: already done, skipping
+[2/4] D_bc14.1464: already done, skipping
+[3/4] F_L64_bc55.0237: already done, skipping
+[4/4] B_bt20: already done, skipping
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\scripts\06_generalization_study.py:457: UserWarning: No artists with labels found to put in legend.  Note that artists whose label start with an underscore are ignored when legend() is called with no argument.
+  axes[0].legend(fontsize=8, frameon=False)
+summary: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary.json
+tables:  C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\generalization_fresh_s4\summary_tables.md
+[2026-08-08 20:16:46] STAGE_GEN_FRESH_DONE (15.8 min)
+[2026-08-08 20:16:46] PHASE6_DONE
+======== exit code 0 at Sat 08/08/2026 20:16:46.90 ======== 

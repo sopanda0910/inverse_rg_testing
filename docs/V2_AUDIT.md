@@ -1,5 +1,17 @@
 # u1_2d Final Audit — Known Problems and Remaining Work
 
+> **Numbers below are the 2026-08-02 frozen campaign's and are deliberately
+> left as written.** This is a dated audit of a specific set of artifacts, not
+> a living results document; rewriting its figures would destroy the record of
+> what was actually reviewed. The campaign was regenerated end to end on GPU
+> on 2026-08-06/08 and the ESS-program numbers moved — same qualitative
+> verdicts, different magnitudes. Two conclusions stated here as clean sweeps
+> are weaker on the regenerated data: rkl2 does **not** halve the spread at
+> every case (it is 2.3× at 16:55, ≤1.3× at the L=32 cases, and 1.09× *worse*
+> at 16:14.1; it is the optimum only on the geometric mean over the four
+> monitors), and the big net wins the mildest monitor outright. The current
+> numbers of record are Table S5 of `out/u1_2d/paper_appendix/appendix.md`.
+
 **Date:** 2026-08-02
 **Scope:** full review of `u1_2d/` (model core, lattice/validation layers, exactness scripts 19–26, campaign result artifacts under `out/u1_2d/`) conducted before moving on to SU(2) 2D.
 

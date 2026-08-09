@@ -33,8 +33,10 @@ by a wide margin. Four results:
    100-nat one. The free-energy identity converts the same weights into a
    *direct* KL readout in nats/site, which stays finite and informative after
    ESS has bottomed out.
-2. **The measurement.** ≈ 0.88 nats/site at L = 16, β = 55 and 1.02 at
-   L = 32, β = 218.6 — i.e. 448 and 2098 nats per configuration.
+2. **The measurement.** ≈ 1.10 nats/site at L = 16, β = 55 and 1.70 at
+   L = 32, β = 218.6 — i.e. 565 and 3473 nats per configuration, from the
+   free-energy identity on the deployed checkpoint
+   (`out/u1_2d/ode_reweighting/`).
 3. **The dissociation, and where it becomes visible**
    (§ *Validation sharpness*). The same ensembles reproduce the plaquette to
    two parts in 10⁴. The two facts are consistent because low-order
@@ -87,8 +89,9 @@ simulation costs. Two claims must be kept apart, and are throughout:
   ensembles reproduce gauge-invariant observables against exact values to the
   precision quoted. Quantified below, including the residual bias.
 - *As a measure* (not claimed): the generated ensemble is demonstrably **not**
-  a sample from the target — the measured density gap is ≈ 1 nat/site, i.e.
-  448 nats per configuration at L = 16, β = 55 and 2098 at L = 32, β = 218.6.
+  a sample from the target — the measured density gap is ≈ 1–1.7 nats/site,
+  i.e. 565 nats per configuration at L = 16, β = 55 and 3473 at L = 32,
+  β = 218.6.
   Observable agreement and distributional correctness are different
   statements, and only the first is established.
 
@@ -173,26 +176,34 @@ parts in 10⁴. Three residual features are visible at that precision and are
 reported here rather than left implicit (all computed on `z_exact`, which
 uses only the generated-ensemble error, the exact value being noiseless):
 
-- *A coherent negative offset.* All 20 Wilson-type observables have mean
-  z < 0: plaquette −0.423 ± 0.204 (−2.1σ), W(2×2) −0.466 ± 0.197, W(4×4)
-  −0.436 ± 0.177. The generated ensembles are systematically very slightly
-  **less ordered** than exact. The offset is far below the per-case
-  resolution and does not affect any conclusion, but it is a real systematic,
-  not scatter.
+- *A weak negative offset, no longer significant.* 14 of the 20 Wilson-type
+  observables have mean z < 0, and the leading ones are consistent with zero:
+  plaquette −0.174 ± 0.163 (−1.1σ), W(2×2) −0.176 ± 0.204 (−0.9σ), W(4×4)
+  +0.054 ± 0.208 (+0.3σ). The original campaign reported this as a real
+  systematic (all 20 negative, plaquette at −2.1σ); under regeneration it does
+  **not** survive, and is reported here as scatter rather than a systematic.
+  It affects no conclusion either way, being far below the per-case
+  resolution — but the earlier "coherent offset" reading was over-claimed.
 - *Over-dispersion.* std(z) should be 1 for a correct model with correct
-  errors; measured, it is 1.255 (plaquette), 1.216 (W2×2), 1.316 (W8×8),
-  1.438 (W12×12), 2.785 (Q²). This is **genuine case-to-case model bias**,
+  errors; measured, it is 1.006 (plaquette), 1.259 (W2×2), 1.325 (W8×8),
+  1.393 (W12×12), 2.597 (Q²). This is **genuine case-to-case model bias**,
   not an error-bar artifact: the coarse base delivered to the model at thin=5
   has τ_int = 0.50–0.62 on every observable, bounding any inherited-correlation
   inflation at ≤ 1.12×, and `z_exact` never involves the reference chain's
   errors at all.
-- *The bias concentrates in extended observables.* std(z) grows monotonically
-  with loop area — 1.093 (4×4) → 1.226 (6×6) → 1.316 (8×8) → 1.339 (10×10) →
-  1.438 (12×12), with max |z| rising 3.12 → 5.91. Counting beyond-3σ
-  excursions over the *full* observable set gives 29 of 760 tests against
-  2.05 expected, versus 4 of 114 over the {plaquette, W2×2, W4×4} subset the
-  case tables emphasize. These are not independent failures — they are a
-  handful of cases deviating coherently across all loop sizes.
+- *The bias concentrates in extended observables.* std(z) grows with loop
+  area — 1.282 (4×4) → 1.283 (6×6) → 1.325 (8×8) → 1.424 (10×10) → 1.393
+  (12×12), with max |z| rising 3.30 → 4.51. The growth is a trend, not a
+  monotone one: the 12×12 point sits below 10×10, so the ordering at the two
+  largest loops is within noise. Counting beyond-3σ excursions over the
+  *full* observable set gives 24 of 760 tests against 2.05 expected, versus
+  1 of 114 over the {plaquette, W2×2, W4×4} subset the case tables emphasize
+  — i.e. the short-distance subset is now fully consistent with chance while
+  the extended set is over-populated by an order of magnitude. That contrast
+  is the point of this bullet, and it is *sharper* than in the original
+  campaign, where the subset itself carried 4 excursions. These are not
+  independent failures — they are a handful of cases deviating coherently
+  across all loop sizes.
 
 This is the observable-side shadow of the density gap: the residual model
 error lives in long-wavelength modes, exactly the modes that 16 local
@@ -218,8 +229,10 @@ of the score model's density, and Figs. 23–25 with Table S5 document a
 systematic program against it: a sampling-time proposal sweep (one free win:
 a lower terminal noise floor), two disciplined negative results (maximum-
 likelihood fine-tuning through the flow, and single-case reverse-KL), and a
-guarded multi-case reverse-KL fine-tune that halves the density gap at every
-coupling — including 4× beyond its training range — without sacrificing the
+guarded multi-case reverse-KL fine-tune that reduces the density gap by 1.33×
+on the geometric mean over the four monitors — concentrated as 2.3× where the
+spread is largest, and still improving 4× beyond its training range, though
+marginally negative at the mildest case — without sacrificing the
 one-checkpoint generality the pipeline is built on. Fine-tuned checkpoints
 are used *only* for the likelihood/ESS results in this section; every other
 result in this appendix uses the unmodified v2 campaign checkpoint.
@@ -439,13 +452,19 @@ estimator noise (Fig. 24's stability controls). (ii) The two standard
 remedies *go backwards*: maximum-likelihood fine-tuning through the flow
 degrades every case despite improving its own validation metric (Fig. 25a),
 and single-case reverse-KL explodes the never-trained extrapolation coupling
-to std ≈ 2202 while merely recovering knob-level at its own coupling.
-(iii) The guarded multi-case reverse-KL (rkl2) roughly halves the spread at
-*every* case — 16:55: 42 → 19.7; 32:218.6: 164 → 103 — including the
-extrapolation monitor it never trained on. ESS/N nonetheless remains at the
+to std ≈ 555 (3.4× the baseline's 161) while merely recovering knob-level at
+its own coupling. (iii) The guarded multi-case reverse-KL (rkl2) is the only
+variant that improves on the baseline overall (geometric mean over the four
+monitors 52.3 → 39.4), and it does so *unevenly*: 2.3× at 16:55 (42.0 → 18.3)
+but only 1.2–1.3× at the two L = 32 cases, and it is marginally **worse** than
+the untuned baseline at the mildest case (16:14.1: 17.5 → 19.2). The gain is
+therefore concentrated where the spread was largest, not uniform across the
+plane — and it does extend to the extrapolation monitor it never trained on
+(161.1 → 127.8). ESS/N nonetheless remains at the
 1/N floor throughout: self-normalized weights need total spread of O(1–3)
 before ESS lifts off, so an order of magnitude remains; the honest reading is
-a halved density gap with a quantified remainder, not a solved problem.
+a modestly reduced density gap with a quantified remainder, not a solved
+problem.
 
 ### Figure 24 — `figures/24_proposal_sweep.png`
 **Sampling-time proposal sweep (13 points, L = 16, β_f = 55.02).** The
@@ -501,15 +520,18 @@ frozen regime.
 **The ESS program at its measured optimum.** (a) Every model-quality
 intervention of the exactness program, chronological, at the reference case
 (L = 16, β = 55, fresh-seed verification): the σ_min knob and the guarded
-multi-case reverse-KL are the two keepers (42 → 24 → 19.7); ML fine-tuning,
+multi-case reverse-KL are the two keepers (42.0 → 35.1 → 18.3); ML fine-tuning,
 single-case reverse-KL, the 3.7× capacity/data scale-up, and the 354-parameter
-correction head (2–6× worse on its disjoint grid; omitted for scale) all went
-backwards and were discarded by the guard protocol. (b) The quantified end
-state: per-site density gap of the final checkpoint across the full (L, β)
-plane — 0.02–0.07 nats/site, uniformly 4–10× above the ~0.005 bar at which
-self-normalized weights would become usable. The program is closed at its
-optimum: rkl2 + σ_min 0.03, with the remainder characterized rather than
-conjectured.
+correction head (2.4–4.8× worse on its disjoint grid; omitted for scale) all
+went backwards relative to the keeper
+and were discarded by the guard protocol, which scores the geometric mean over
+all four monitors (Table S5) rather than this single case — the capacity
+scale-up in particular is the best variant *at* the mildest monitor (16:14.1)
+while losing overall. (b) The quantified end state: per-site density gap of
+the final checkpoint across the full (L, β) plane — 0.018–0.062 nats/site,
+uniformly 3.7–12.5× above the ~0.005 bar at which self-normalized weights
+would become usable. The program is closed at its optimum: rkl2 + σ_min 0.03,
+with the remainder characterized rather than conjectured.
 
 ---
 
@@ -581,23 +603,34 @@ against either arm of the head-to-head in Table S1.
 
 ## Table S5 — ESS-gap program: fiber log-weight std by checkpoint variant
 
-| variant | L16 β14.1 | L16 β55.0 | L32 β55.0 | L32 β218.6 |
-|---|---|---|---|---|
-| v2 checkpoint, ladder knobs | 17.9 | 42.1 | 84.3 | 163.7 |
-| v2 checkpoint, σ_min-coef 0.03 (knob only) | — | 24.0 | — | — |
-| + ML fine-tune (best-val, step 75) | 29.0 | 41.3 | 131.8 | 293.6 |
-| + single-case reverse-KL | 23.9 | 24.1 | 75.1 | **2202** |
-| multi-case reverse-KL (rkl2, guarded) | **15.1** | **19.7** | **40.8** | **102.6** |
-| big net (hidden 80, +24 L=32 rungs), DSM | 19.7 | 31.6 | 49.6 | 211.9 |
-| rkl2 + 354-param correction head (best-val) | worse 2–6× on its disjoint grid (8:8 → 17.7 vs 7.5; 16:25 → 105.8 vs 18.1; 32:14.1 → 155.5 vs 42.0) | | | |
+| variant | L16 β14.1 | L16 β55.0 | L32 β55.0 | L32 β218.6 | geo. mean |
+|---|---|---|---|---|---|
+| v2 checkpoint, ladder knobs | **17.5** | 42.0 | 63.2 | 161.1 | 52.3 |
+| v2 checkpoint, σ_min-coef 0.03 (knob only) | — | 35.1 | — | — | — |
+| + ML fine-tune (best-val, step 75) | 29.3 | 87.9 | 251.4 | 942.0 | 157.1 |
+| + single-case reverse-KL | 18.3 | 21.1 | 63.0 | 555.0 | 60.6 |
+| multi-case reverse-KL (rkl2, guarded) | 19.2 | **18.3** | **53.9** | **127.8** | **39.4** |
+| big net (hidden 80, +24 L=32 rungs), DSM | **15.0** | 32.7 | 56.9 | 153.7 | 45.5 |
+| rkl2 + 354-param correction head (best-val) | worse 2.4–4.8× on its disjoint grid (8:8 → 19.1 vs 7.8; 16:25 → 80.4 vs 16.8; 32:14.1 → 148.5 vs 37.5) | | | |
 
 All rows are fresh-seed verification runs with valid weights (probability-flow
 ODE sampling, n = 64, 120 steps, 2 Hutchinson probes, σ_min-coef 0.03 except
-the ladder-knobs row at 0.1). ESS/N sits at or near the 1/64 floor in every row
-except the knob-only point (0.031); the two 16:14.1 entries reach
-0.021–0.023, i.e. 1.3–1.5× the floor: the total spread must reach O(1–3) before
-self-normalized ESS lifts off, so the halving delivered by rkl2 is real but
-insufficient — roughly an order of magnitude remains. Training cost of rkl2:
+the ladder-knobs row at 0.1). Bold marks the best variant *per column*, and
+the per-column winner is not the same variant everywhere: rkl2 wins three of
+four monitors while the untuned baseline and the capacity scale-up win the
+mildest one. The guard protocol therefore selects on the geometric mean over
+all four, where rkl2 is the unique optimum (39.4 against the baseline's 52.3,
+a 1.33× overall reduction). Note that this is a materially weaker statement
+than a uniform halving: the reduction is 2.3× at the single case where the
+spread was largest and ≤ 1.3× elsewhere. ESS/N sits at or near the 1/64 floor
+throughout (1.00–2.34× the floor across all populated entries): the total
+spread must reach O(1–3) before self-normalized ESS lifts off, so the
+reduction delivered by rkl2 is real but insufficient — roughly an order of
+magnitude remains. The ordering of the ESS column is itself an illustration
+of the next section's point: the *largest* ESS/N in the table (0.035 at
+16:55) belongs to ML fine-tuning, the variant with the *worst* spread there
+(87.9), so ESS ranks these checkpoints in nearly the opposite order to the
+quantity that matters. Training cost of rkl2:
 300 warm-started optimizer steps, ≈ 80 min on the laptop CPU; the campaign
 checkpoint itself is unmodified, and only this section's likelihood/ESS
 results use the fine-tuned variants. Full provenance:
@@ -634,7 +667,7 @@ Kullback–Leibler divergence, in nats. It is finite, it has a sem, and it is
 completely insensitive to how degenerate the weights are: the mean of log w
 is well-behaved precisely where the mean of w is not. That is the readout
 this appendix uses, and it is what turns "the weights are degenerate" into
-"the density is off by 0.88 nats/site."
+"the density is off by 1.10 nats/site."
 
 Three ingredients are required, and each is a real constraint on where the
 method applies:
@@ -674,12 +707,12 @@ saturates. They answer different questions:
 - the **mean** (the KL, ≈ 1 nat/site here) says how far the proposal's
   density sits from the target on average — a bulk offset, largely uniform
   per plaquette;
-- the **spread** (0.02–0.07 nats/site) says whether reweighting is usable at
+- the **spread** (0.018–0.062 nats/site) says whether reweighting is usable at
   all, since self-normalized estimators need total spread of O(1–3) before
   ESS lifts off.
 
 Reporting both is what makes the closure statement quantitative: the residual
-gap is a ~1 nat/site bulk offset plus a 0.02–0.07 nats/site spread plus
+gap is a ~1 nat/site bulk offset plus a 0.018–0.062 nats/site spread plus
 sector-frequency mismatch, and it is the *spread*, not the mean, that keeps
 reweighting out of reach.
 
@@ -805,13 +838,16 @@ Provenance: `out/u1_2d/ais_transport/` (final),
 **The measured KL.** For valid weights, E[log w] − ΔF_exact = −KL(q‖p)
 identically, with ΔF exactly computable here from the character expansion —
 so the free-energy certificate doubles as a direct, sem-quotable measurement
-of the model's mean density offset: **≈ 0.88 nats/site at 16:55 and
-1.02 nats/site at 32:218.6** (stable-weight cases). The log-mean-exp gap
+of the model's mean density offset: **≈ 1.10 nats/site at 16:55 and
+1.70 nats/site at 32:218.6** on the deployed checkpoint (1.07 and 1.57 on the
+rkl2 variant — the mean offset is the one quantity the ESS program barely
+moved, which is itself informative: the fine-tunes reshaped the *spread*, not
+the bulk offset). The log-mean-exp gap
 itself closes only at healthy ESS, which no case of the real model reaches;
 on synthetic exact weights the certificate closes to < 0.02 nats (unit
 test), validating the conventions end-to-end. The structure of the remaining
 gap is therefore fully quantified: a bulk smooth offset of ~1 nat/site
-(mean), spread 0.02–0.07 nats/site (variance), plus sector-frequency
+(mean), spread 0.018–0.062 nats/site (variance), plus sector-frequency
 mismatch. Within-sector SNIS combined with the exact finite-volume P(Q)
 removes the sector component but inherits the bulk spread; neither crutch
 alone yields usable exact estimates at n ≈ 100.
@@ -828,21 +864,29 @@ is still ~6σ biased after 16× the standard burn-in. This is the entry-cost
 explosion of Fig. 18 materializing at scale, measured. Provenance:
 `out/u1_2d/diffusion_vs_instanton/L64/` (+ `burnin_scan/`).
 
-**Fresh-seed classification of the 3σ Wilson flags.** All four flagged cases
-(D_bc14.1464 plaq −2.93 ∧ W22 −3.47, B_bt20 −3.19, A_bc8 −2.71,
-F_L64 W22 +3.03) were rerun with two fresh seeds each: every mean-value flag
-flips sign or vanishes across seeds (D: +2.24/+2.97 then +0.45/+0.57;
-B: plaquette −1.49 then −0.04, W(2×2) −2.56 then +0.13; A: −1.33 then −0.02; F: −0.86 then −1.28) —
-fluctuations, consistent with the ~0.2 expected beyond-3σ count over 76
-tests. Two further residuals are recorded for completeness: seed s3's A_bc8 rerun
-shows ⟨Q²⟩ z = +4.18 with exact-P(Q) χ² p = 0.003 — a topology-transport
-excursion of the kind exact-sector mode is designed to remove (Table S3), not
-a Wilson-observable failure; and F_L64's minimum KS p ≈ 0.000 in both fresh
-seeds — a Wilson-loop *distribution-shape* mismatch at the far extrapolation
-whose means nonetheless pass; noted as the honest residual defect of the far
-extrapolation regime, alongside the volume-growing raw Q² excess
-(1.7–2.7 at L ≤ 32 → 7.1–28.2 at L = 64/128, rescued by exact-sector mode,
-Table S3). Provenance: `out/u1_2d/generalization_fresh_s3/`, `_s4/`.
+**Fresh-seed classification of the 3σ Wilson flags.** In the regenerated
+campaign there are **no 3σ mean-value flags to classify**: across all 76
+mean-value tests (plaquette and W(2×2) over the 38 cases) the largest |z| is
+below 3, against an expectation of ~0.2 flags. The four cases flagged in the
+original campaign (D_bc14.1464 plaq −2.93 ∧ W22 −3.47, B_bt20 −3.19,
+A_bc8 −2.71, F_L64 W22 +3.03) now sit at −0.47/+1.85, −0.11/−0.38,
++0.24/−1.10 and +1.66/+2.48 respectively. This is the strongest available
+evidence that those flags were seed fluctuations rather than defects: they
+were classified as such by rerunning them, and under an independent
+regeneration of the whole campaign they simply did not recur.
+
+The two fresh-seed reruns (seeds 20260803/20260804) were repeated anyway, on
+the same four cases, and agree: the largest plaquette or W(2×2) |z| over the
+eight case–seed pairs is 2.31 (A_bc8, seed s4). Of the two residuals the
+original run recorded, one reproduces and one does not. It does **not**
+reproduce for topology: s3's A_bc8 ⟨Q²⟩ excursion (z = +4.18, exact-P(Q)
+χ² p = 0.003) is absent, with ⟨Q²⟩ z = +0.60 and −1.74 at the two seeds. It
+**does** reproduce for distribution shape: F_L64's minimum KS p is 0.0006 and
+0.0000 at the two seeds (both on the plaquette) — a *distribution-shape*
+mismatch at the far extrapolation whose means nonetheless pass, and which
+therefore stands as the honest residual defect of that regime, alongside the
+volume-growing raw Q² excess (rescued by exact-sector mode, Table S3).
+Provenance: `out/u1_2d/generalization_fresh_s3/`, `_s4/`.
 
 **Program closure (2026-08-02).** The exactness program is closed at
 rkl2 + σ_min-coef 0.03 — the measured optimum. The complete falsification
@@ -850,13 +894,15 @@ chain — sampling-time knobs (one win), data-side maximum-likelihood
 fine-tuning at 197k and at 354 parameters (both degrade deployment: the
 forward/reverse-KL asymmetry is intrinsic to the objective, not a capacity
 effect), single-case reverse-KL (destroys extrapolation), guarded multi-case
-reverse-KL (the one 2× win, then plateau), capacity/data scaling under DSM
-(helps only in-distribution, costs extrapolation), per-level SMC
+reverse-KL (a 1.33× win on the geometric mean over the four monitors —
+concentrated as 2.3× at the highest-spread case and ≤ 1.3× elsewhere — then
+plateau), capacity/data scaling under DSM (wins the mildest monitor, loses
+overall), per-level SMC
 restructuring (no weight diversity to harvest), and surrogate-bridge AIS
 (saturates its floor, 2.6× spread reduction at the extrapolation case, ESS
 unchanged; wide-basis variant the sixth converged negative) — leaves the
-per-site density gap at 0.02–0.07 nats/site (spread) and ≈ 1 nat/site (mean,
-measured directly by the free-energy identity) against the ~0.005
+per-site density gap at 0.018–0.062 nats/site (spread) and 1.1–1.7 nats/site
+(mean, measured directly by the free-energy identity) against the ~0.005
 usable-certificate bar (Fig. 27b), with the matching-residual explanation
 eliminated by the Villain control (Table S6): the gap is fine-side model
 error, in full. Exactness for this pipeline therefore rests, by measurement
