@@ -741,9 +741,13 @@ difference between them is itself informative.
 
 | arm | L16 β14.1 std/site (R²_c) | L16 β55.0 | L32 β55.0 |
 |---|---|---|---|
-| Wilson (matching residual + model error) | 0.0209 (0.062) | 0.0419 (0.005) | 0.0175 (0.023) |
-| Villain, β_c = β_f/4 exact (corrected) | 0.0298 (0.075) | 0.0914 (0.003) | 0.0406 (0.077) |
+| Wilson (matching residual + model error) | 0.0238 (0.045) | 0.0364 (0.105) | 0.0173 (0.085) |
+| Villain, β_c = β_f/4 exact (corrected) | 0.0257 (0.023) | 0.0366 (0.016) | 0.0187 (0.106) |
 | Villain, β_c = Wilson-matched (original, superseded) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
+
+The superseded row is retained from the original campaign and was not
+re-measured; only the corrected variant carries the exact-matching property
+the control depends on.
 
 **The bug.** `27_matching_residual.py` called
 `approx_matched_coarse_beta(fine_beta)` without `action_type`, whose default
@@ -768,14 +772,24 @@ it because the confound is real and the earlier framing hid it.
 matching residual is, by construction, a function of the coarse configuration
 alone — it is the discrepancy between S_matched(c) and the true blocked action
 evaluated on the same c. Any such term can therefore contribute *only* to the
-coarse-explainable variance R²_c. Wilson's R²_c is **0.062, 0.005, 0.023**: at
-most ~6% of the fiber log-weight variance is coarse-explainable at all, and
+coarse-explainable variance R²_c. Wilson's R²_c is **0.045, 0.105, 0.085**: at
+most ~10% of the fiber log-weight variance is coarse-explainable at all, and
 that figure is itself an upper bound because c-dependent *model* error lands
-there too. The matching floor is negligible, and the measured density gap is
-fine-side model error — and this argument needs no Villain arm. The Villain
-comparison corroborates it (Wilson ≤ Villain at every case, now by a wider
-margin) without being load-bearing. Deployment-settings coarse regressions
-from the AIS samples agree: R²_c = 0.003–0.064.
+there too. Against a measured gap of ≈ 1 nat/site the matching floor is
+therefore negligible, and the density gap is fine-side model error — an
+argument that needs no Villain arm. The Villain comparison corroborates it
+without being load-bearing: Wilson ≤ Villain at every case, so the ordering a
+matching floor would have had to violate is intact, though the margin is
+slim (8%, 0.5%, 8% of the Wilson spread — the middle case is a tie).
+R²_c is the least stable quantity in this table: individual cases moved by up
+to a factor of twenty between campaigns (L16 β55.0: 0.005 → 0.105), which is
+expected for a regression R² from n = 96 against a few coarse observables. The
+argument requires only that R²_c be small, which holds at either value.
+Deployment-settings coarse regressions computed from the AIS baseline samples
+agree, and agree case by case: R²_c = 0.006–0.100, with 0.100 at L16 β55.0
+against 0.105 from the matching-residual arm. These are independent n = 96
+measurements on separately drawn ensembles, so the rise at that case is
+corroborated rather than a single-fit artifact.
 
 **Why the arm was not re-run against a Villain-trained checkpoint.** The
 obvious repair — train a Villain-specific model so the control arm is free of
@@ -932,16 +946,23 @@ what is already computed.
 |z| ≤ 3" is compatible with a badly biased sampler and with underestimated
 errors, and distinguishes neither. Under a correct model with correct errors,
 z across cases is standard normal: report mean(z) and std(z). Here mean(z) is
-−0.42 on the plaquette (a real, coherent negative offset across all 20
-Wilson-type observables) and std(z) is 1.26 (over-dispersed). Both were
-invisible in the pass counts.
+−0.17 ± 0.16 on the plaquette and std(z) is 1.01 (plaquette), 1.26 (W2×2).
+The original campaign measured mean(z) = −0.42 and read it as a coherent
+negative offset across all 20 Wilson-type observables; under regeneration that
+offset did not survive (14 of 20 negative, none individually significant)
+while the over-dispersion did. Both were invisible in the pass counts — and
+that one replicated while the other did not is itself the argument for
+reporting the distribution rather than a verdict.
 
 **2. Report dispersion against observable extent.** Short-distance agreement
 does not certify the measure, and the place the failure becomes visible is
-extended observables. Here std(z) climbs monotonically 1.09 → 1.44 from
-W(4×4) to W(12×12), with max |z| rising 3.1 → 5.9. Quoting only the
-plaquette and small loops — the three least affected quantities — hides
-exactly the signal that matters.
+extended observables. Here std(z) climbs 1.28 → 1.42 from W(4×4) to W(10×10)
+(1.39 at 12×12 — a trend, not a strict monotone), with max |z| rising
+3.3 → 4.5. Sharper still, count beyond-3σ excursions on each: 1 of 114 over
+{plaquette, W2×2, W4×4}, fully consistent with the 0.31 expected by chance,
+against 24 of 760 over the full observable set, an order of magnitude excess.
+Quoting only the plaquette and small loops — the least affected quantities —
+hides exactly the signal that matters.
 
 **3. Eliminate the error-bar explanations before claiming model bias (and
 vice versa).** Over-dispersion has two candidate causes. Both are cheap to

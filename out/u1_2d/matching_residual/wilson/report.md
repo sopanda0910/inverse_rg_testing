@@ -10,15 +10,15 @@ isolates the matching floor.
 
 | action | L | beta_f | log-w std | /site | R^2_c | c-explained std | R^2_x | surrogate resid std | resid /site | dF gap (sem) |
 |--------|---|--------|-----------|-------|-------|-----------------|-------|---------------------|-------------|--------------|
-| wilson | 16 | 14.1464 | 10.7 | 0.0209 | 0.062 | 2.7 | 0.564 | 8.10 | 0.0171 | -456.3 (0.7) |
-| wilson | 16 | 55.0237 | 21.5 | 0.0419 | 0.005 | 1.5 | 0.739 | 11.24 | 0.0253 | -482.0 (0.9) |
-| wilson | 32 | 55.0237 | 35.9 | 0.0175 | 0.023 | 5.4 | 0.594 | 24.49 | 0.0126 | -1951.0 (0.9) |
+| wilson | 16 | 14.1464 | 12.2 | 0.0238 | 0.045 | 2.6 | 0.683 | 8.05 | 0.0182 | -451.9 (1.0) |
+| wilson | 16 | 55.0237 | 18.6 | 0.0364 | 0.105 | 6.0 | 0.584 | 12.69 | 0.0261 | -468.7 (0.9) |
+| wilson | 32 | 55.0237 | 35.4 | 0.0173 | 0.085 | 10.3 | 0.548 | 27.27 | 0.0141 | -1963.5 (1.0) |
 
 Standardized coefficients (nats of log-weight std absorbed per feature):
 
-* wilson 16:14.1464 coarse: {"sum_cos_P": 0.03, "sum_cos_2P": 0.01, "sum_cos_3P": 0.08, "sum_cos_rect": 0.01, "Q_c": -1.06, "Q_c^2": -1.02}
-  fine surrogate: {"S_matched(blocked)": -1.99, "sum_cos_p": -15.27, "sum_cos_2p": 0.9, "sum_cos_3p": 5.53, "sum_cos_rect": 1.9, "sum_cos_2P_blocked": -2.27, "Q_float^2": -2.14}
-* wilson 16:55.0237 coarse: {"sum_cos_P": -0.36, "sum_cos_2P": -0.31, "sum_cos_3P": -0.21, "sum_cos_rect": 0.58, "Q_c": 0.33, "Q_c^2": 0.33}
-  fine surrogate: {"S_matched(blocked)": 3.07, "sum_cos_p": -37.09, "sum_cos_2p": 1.51, "sum_cos_3p": 17.69, "sum_cos_rect": 2.48, "sum_cos_2P_blocked": -9.53, "Q_float^2": -2.56}
-* wilson 32:55.0237 coarse: {"sum_cos_P": 0.6, "sum_cos_2P": 0.9, "sum_cos_3P": 1.37, "sum_cos_rect": -0.89, "Q_c": -1.89, "Q_c^2": 1.6}
-  fine surrogate: {"S_matched(blocked)": -7.43, "sum_cos_p": -21.07, "sum_cos_2p": -8.75, "sum_cos_3p": 12.13, "sum_cos_rect": -8.36, "sum_cos_2P_blocked": -3.62, "Q_float^2": -10.83}
+* wilson 16:14.1464 coarse: {"sum_cos_P": 1.0, "sum_cos_2P": -0.17, "sum_cos_3P": -0.76, "sum_cos_rect": 0.6, "Q_c": 0.47, "Q_c^2": 0.58}
+  fine surrogate: {"S_matched(blocked)": -7.36, "sum_cos_p": -21.0, "sum_cos_2p": 16.84, "sum_cos_3p": 0.41, "sum_cos_rect": -3.7, "sum_cos_2P_blocked": 3.26, "Q_float^2": -6.49}
+* wilson 16:55.0237 coarse: {"sum_cos_P": 0.25, "sum_cos_2P": 0.23, "sum_cos_3P": 0.2, "sum_cos_rect": 0.33, "Q_c": 2.28, "Q_c^2": -2.52}
+  fine surrogate: {"S_matched(blocked)": -2.28, "sum_cos_p": -18.11, "sum_cos_2p": -3.17, "sum_cos_3p": 13.62, "sum_cos_rect": -5.62, "sum_cos_2P_blocked": -2.92, "Q_float^2": -4.15}
+* wilson 32:55.0237 coarse: {"sum_cos_P": 2.36, "sum_cos_2P": 2.2, "sum_cos_3P": 1.9, "sum_cos_rect": 1.51, "Q_c": 1.43, "Q_c^2": -1.29}
+  fine surrogate: {"S_matched(blocked)": -1.85, "sum_cos_p": -38.81, "sum_cos_2p": -11.03, "sum_cos_3p": 33.63, "sum_cos_rect": -3.14, "sum_cos_2P_blocked": -12.94, "Q_float^2": -3.31}

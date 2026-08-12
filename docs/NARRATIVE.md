@@ -1391,14 +1391,22 @@ control depends on.
 
 | arm | 16:14.1 std/site ($R^2_c$) | 16:55.0 | 32:55.0 |
 |---|---|---|---|
-| Wilson (matching residual + model error) | 0.0209 (0.062) | 0.0419 (0.005) | 0.0175 (0.023) |
-| Villain, $\beta_c = \beta_f/4$ (corrected) | 0.0298 (0.075) | 0.0914 (0.003) | 0.0406 (0.077) |
+| Wilson (matching residual + model error) | 0.0238 (0.045) | 0.0364 (0.105) | 0.0173 (0.085) |
+| Villain, $\beta_c = \beta_f/4$ (corrected) | 0.0257 (0.023) | 0.0366 (0.016) | 0.0187 (0.106) |
 | Villain, Wilson-matched $\beta_c$ (superseded) | 0.0287 (0.174) | 0.0459 (0.031) | 0.0268 (0.048) |
+
+The first two rows are the current measurement. The third is retained from the
+original campaign and was **not** re-measured — only the corrected variant is
+worth spending compute on — so it is a historical row, and the
+corrected-vs-superseded comparison below is likewise an observation about that
+campaign rather than a re-verified result.
 
 **The correction made the control's arm worse, not better.** Fixing the
 matching *raised* the Villain spreads by $+4\%$, $+99\%$ and $+51\%$. That is
 the opposite of the expected direction and it deserves an explanation rather
-than a footnote.
+than a footnote. (Read against the corrected row as it now stands, the
+apparent size of this effect is smaller still; the sign, which is what the
+argument turns on, is what the original run established.)
 
 The most likely cause is conditioning-distribution shift. The checkpoint was
 trained on **Wilson** data, and $4.0$ and $14.1464$ are not arbitrary numbers:
@@ -1431,10 +1439,17 @@ Villain-specific checkpoint would not rescue the design: it would replace an
 out-of-distribution confound with a model-identity confound of comparable or
 greater size.
 
-*As a consistency check, yes.* Wilson $\le$ Villain at every case, and by a
-wider margin after the correction. Had the ordering come out reversed, the
-matching-floor explanation would have been live and the whole closure would
-have been in doubt. It was not.
+*As a consistency check, yes --- but a thin one.* Wilson $\le$ Villain at
+every case, so the ordering the matching-floor hypothesis would have had to
+violate is intact: had Wilson come out *above* Villain, the excess would have
+been a candidate matching floor and the whole closure would have been in
+doubt. It did not. The margin, however, is slim --- Villain exceeds Wilson by
+$8\%$, $0.5\%$ and $8\%$ of the Wilson spread, and the middle case is a tie
+within any reasonable error. An earlier draft of this section reported the
+margin as *wide* ($43$–$132\%$); that reading came from a single campaign and
+did not survive re-measurement. The check should therefore be read as "the
+ordering is not violated", which is all the argument needs, and not as
+"Villain is substantially worse", which the data no longer supports.
 
 *And the question it was built for is answered anyway, by a cleaner argument
 that needs no second arm.* The matching residual is, by construction, a
@@ -1443,11 +1458,28 @@ $S_{\rm matched}(c)$ and the true blocked action evaluated on the same $c$.
 Any such term can therefore contribute **only** to the coarse-explainable
 share of the fiber log-weight variance, $R^2_c$. And $R^2_c$ is measured
 directly, within a single arm, with no cross-model comparison: for Wilson it
-is $0.062$, $0.005$, $0.023$. At most about six percent of the variance is
+is $0.045$, $0.105$, $0.085$. At most about **ten percent** of the variance is
 coarse-explainable *at all*, and even that is an upper bound, because
 $c$-dependent **model** error lands in the same regression. The matching floor
-is negligible; the gap is fine-side model error. The Villain arm corroborates
+is therefore negligible against a gap of $\approx 1$ nat/site, and the
+measured density gap is fine-side model error. The Villain arm corroborates
 this. It never had to carry it.
+
+Two honest notes on this number. It is roughly **twice** the bound the
+original campaign reported ($0.062$, $0.005$, $0.023$, quoted then as "about
+six percent"), so the ceiling on any matching-residual contribution is looser
+than previously claimed --- the conclusion is unchanged, the margin is not.
+And $R^2_c$ is the *least* stable quantity in this section: across the two
+campaigns individual cases moved by more than a factor of twenty (Wilson
+$16{:}55$ went $0.005 \to 0.105$), which is unsurprising for a regression
+$R^2$ estimated from $96$ configurations against a handful of coarse
+observables. The argument is robust because it needs only "$R^2_c$ is small",
+a statement that survives at either value; any future use of these numbers
+should carry that caveat rather than treating a specific $R^2_c$ as measured
+to better than a factor of a few. The rise itself is corroborated, though: the
+coarse regressions computed independently from the AIS baseline samples give
+$R^2_c = 0.006$–$0.100$, with $0.100$ at $16{:}55$ against the
+matching-residual arm's $0.105$ on a separately drawn ensemble.
 
 **The transferable lesson.** When the quantity of interest is small compared
 with model-to-model variation, prefer a *within-model decomposition* to a
