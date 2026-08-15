@@ -68,7 +68,10 @@ def main() -> None:
             if train_cfg.get("sigma_min_beta_coef") is not None else None
         ),
         device=device,
-        seed=int(config["seed"]),
+        # `seed` also picks the random rungs above, so varying it would demand
+        # ensembles that were never generated. `train.seed` moves only the
+        # initialization/shuffling, which is what a training-noise floor needs.
+        seed=int(train_cfg.get("seed", config["seed"])),
         topo_weight=float(train_cfg.get("topo_weight", 0.0)),
         early_stop_patience=int(train_cfg.get("early_stop_patience", 0)),
         resume=bool(args.resume),

@@ -403,6 +403,30 @@ structural mechanisms carry the sector instead:
   actually delivered — never what retherm manufactured
   ([local_updates.py:140](../u1_2d/lgt/local_updates.py#L140)).
 
+**How much of the topology is the model's? None, and it gets worse with
+volume** (measured 2026-08-14). "Imposed" is not a hedge here; it is the whole
+of it. With enforcement disabled, the raw model lands in its coarse partner's
+sector 4.7–29% of the time, and that *falls* with volume — 11.5% at $L = 64$,
+6.2% at $L = 128$. Distributionally it is worse than that ratio suggests:
+raw $\langle Q^2\rangle$ / exact is $\approx 1$ where the theory has plenty of
+topology and then runs away exactly where it matters —
+
+| case | $L$ | raw $\langle Q^2\rangle$ | after transport | exact |
+|---|---|---|---|---|
+| A_bc1 | 32 | 9.77 | 10.76 | 10.81 |
+| A_bc4 | 32 | 4.70 | 1.63 | 1.90 |
+| A_bc8 | 32 | 3.99 | 0.88 | 0.87 |
+| E_bc11.8 | 32 | 3.12 | 0.57 | 0.57 |
+| C_L64 | 64 | 19.01 | 6.22 | 7.62 |
+| C_L128 | 128 | 80.64 | 27.56 | 30.46 |
+
+— a $2.5$–$5.4\times$ excess at strong coupling and $2.65\times$ at $L = 128$.
+The model *manufactures* topological charge precisely in the frozen regime the
+method exists to reach, which is the direct empirical statement of the
+locality argument opening this section. The diffusion model supplies
+short-distance fluctuations; the sector is supplied by the B3 identity, and it
+is correct because the ladder preserves $P(Q)$, not because anything learned it.
+
 ---
 
 ## Part D — Grading: the two claims, kept apart
@@ -539,7 +563,7 @@ Six interventions, each converged with an identified mechanism:
 | Multi-case reverse-KL (guarded) | **halves spread everywhere** | kept; the one real win |
 | Capacity/data scale-up (3.7×) | better in-range, worse out | small net *was* the regularizer |
 | Per-level SMC | no gain | no weight diversity to harvest |
-| Surrogate-bridge AIS | saturates its floor, ESS flat | sector component won't regress |
+| Surrogate-bridge AIS | reaches its floor 8 seeds in 10, ESS flat | sector component won't regress; the 2 failures are integrator collapse, not fit |
 
 The recurring mechanism is worth stating once, because it explains three
 separate failures: **maximum likelihood optimizes the wrong direction of KL.**
@@ -620,9 +644,45 @@ Four **[SOLVABLE]** ingredients are load-bearing and none survive the trip to
 | Crutch | Used for | Replacement in 4D |
 |---|---|---|
 | Exact observables ($r_q$, area law) | every z-score | none — validation itself becomes research |
-| Exact finite-volume $P(Q)$ | exact-sector mode, the topology rescue | **none. This is the open problem.** |
+| Exact finite-volume $P(Q)$ | *mostly a diagnostic, not a rescue* — see below | a short instanton-HMC tail; measured cost ≤ 150 traj |
 | Exact $\Delta F$ | the KL measurement of D2 | none — only the spread remains measurable |
 | Exact blocked characters | coupling matching (B2) | numerical matching, with its own error |
+
+**The $P(Q)$ row was rewritten on 2026-08-14, and the demotion is the single
+biggest change to this ledger.** It previously read "exact-sector mode, the
+topology rescue / **none. This is the open problem.**" Three measurements
+moved it:
+
+*Transport already passes.* Regenerated from the current ensembles of record,
+transport-mode $\chi^2$ against exact $P(Q)$ fails 3 of 35 cases against
+exact-sector mode's 2 of 35 — both at the multiple-testing false-positive rate.
+All three transport failures are the deliberately-mismatched track-B controls;
+none is a volume case. At $L = 128$ transport gives $p = 0.87$ (the published
+claim that it gives $0.005$ and passes *only* under exact-sector mode was
+transcribed from a superseded run). What exact-sector mode still buys is a
+tighter $\langle Q^2\rangle$ — worst $|z|$ $10.9 \to 2.8$ — and clearing the
+track-B controls.
+
+*The theory-agnostic replacement is cheap and does not scale.* Fixing $P(Q)$
+with a short instanton-HMC tail needs, at fixed $\beta$ over a $16\times$
+volume range, **100, 0, 0** trajectories at $V = 2048, 8192, 32768$ — while the
+$\chi^2$ test's power *rises* (7, 11, 15 populated bins), so the falling cost
+is not a resolution artifact. Across the $L = 32$ $\beta$-ladder the tail never
+exceeds **150** trajectories. There is no scaling exponent to quote.
+
+*Why this is structural rather than lucky.* It is the B3 identity doing the
+work. Charge projection hands the fine configuration its coarse partner's $Q$,
+and along the ladder $\langle Q^2\rangle \approx V/4\pi^2\beta$ is invariant, so
+the coarse $P(Q)$ *is* the fine theory's. Sector correctness is inherited from
+HMC at the coarse coupling, where HMC still mixes. Nothing in that argument
+needs $P(Q)$ in closed form — only a computable topological charge, which 4D
+SU(3) has.
+
+**What has not moved.** At $\beta \gtrsim 55$ the $\chi^2$ has $\le 3$
+populated bins, and at $\beta = 218.6$, $L = 32$ exactly one. In the
+deep-frozen regime these tests have almost no power, and a "pass" there is
+close to vacuous. That is a limit on the *test*, and it is now the honest
+residual — not a dependency on the crutch.
 
 ### F2. What actually transfers
 

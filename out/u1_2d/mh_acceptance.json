@@ -1,0 +1,58 @@
+{
+  "16:14.1464": {
+    "acceptance": 0.0019545010894855643,
+    "acceptance_is_at_floor": true,
+    "resolution_floor": 0.001953125,
+    "tau_int_proposals": 1022.2790407532652,
+    "proposals_per_independent_config": 1022.2790407532652,
+    "max_weight_share": 0.9999994442844897,
+    "log_w_std": 40.11474129221279,
+    "log_w_range": 243.722412109375,
+    "n": 512,
+    "L": 16,
+    "beta": 14.1464,
+    "src": "out/u1_2d/model_ess_n512"
+  },
+  "16:55.0237": {
+    "acceptance": 0.001981075732045355,
+    "acceptance_is_at_floor": true,
+    "resolution_floor": 0.001953125,
+    "tau_int_proposals": 1008.5525212128598,
+    "proposals_per_independent_config": 1008.5525212128598,
+    "max_weight_share": 0.9941258020225738,
+    "log_w_std": 40.90930909613524,
+    "log_w_range": 235.298828125,
+    "n": 512,
+    "L": 16,
+    "beta": 55.0237,
+    "src": "out/u1_2d/model_ess_n512"
+  },
+  "32:55.0237": {
+    "acceptance": 0.0019430216664772584,
+    "acceptance_is_at_floor": true,
+    "resolution_floor": 0.001953125,
+    "tau_int_proposals": 1028.3246001862885,
+    "proposals_per_independent_config": 1028.3246001862885,
+    "max_weight_share": 0.9999887418971795,
+    "log_w_std": 86.25210555442311,
+    "log_w_range": 493.046875,
+    "n": 512,
+    "L": 32,
+    "beta": 55.0237,
+    "src": "out/u1_2d/model_ess_n512"
+  },
+  "32:218.58": {
+    "acceptance": 0.0019735874089013,
+    "acceptance_is_at_floor": true,
+    "resolution_floor": 0.001953125,
+    "tau_int_proposals": 1012.3830358764823,
+    "proposals_per_independent_config": 1012.3830358764823,
+    "max_weight_share": 0.9981613322736228,
+    "log_w_std": 123.37112448716249,
+    "log_w_range": 727.5625,
+    "n": 512,
+    "L": 32,
+    "beta": 218.58,
+    "src": "out/u1_2d/model_ess_n512_case4"
+  }
+}

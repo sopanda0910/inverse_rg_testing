@@ -1,0 +1,32 @@
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+simulating base rung L=8 beta=1.3472 ...
+  acceptance 0.995
+rung 0: L=16 beta=4.0 plaq=0.8639 (pre-retherm 0.8550) <Q^2>=2.094  [44s]
+rung 1: L=32 beta=14.1464 plaq=0.9641 (pre-retherm 0.9634) <Q^2>=2.094  [68s]
+rung 2: L=64 beta=55.0237 plaq=0.9909 (pre-retherm 0.9907) <Q^2>=2.094  [388s]
+saved artifacts\projsweep\s031_seed12\generated\ladder_rung0_wilson_L16_beta4.pt
+saved artifacts\projsweep\s031_seed12\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+saved artifacts\projsweep\s031_seed12\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s031_seed12\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s031_seed12\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+saved artifacts\projsweep\s031_seed12\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+loaded artifacts\projsweep\s031_seed12\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s031_seed12\generated\ladder_rung0_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s031_seed12\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s031_seed12\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s031_seed12\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded artifacts\projsweep\s031_seed12\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+simulating reference HMC at L=16 beta=4.0 (no Q-hops) ...
+  acceptance 0.979, 10s
+simulating reference HMC at L=32 beta=14.1464 (no Q-hops) ...
+  acceptance 0.986, 15s
+simulating reference HMC at L=64 beta=55.0237 (no Q-hops) ...
+  acceptance 0.955, 31s
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.947
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\u1_2d\proj_sigma_ab\s031_seed12\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0004220076277134943, 'plaq_z': 0.4494292122174548, 'z': {'plaquette': 0.4494292122174548, 'wilson_2x2': 0.6168177505334557, 'wilson_4x4': 1.1092318796200167}}
+{'rung': 1, 'L': 32, 'beta': 14.1464, 'plaq_deviation': 9.216741534534556e-05, 'plaq_z': 0.6881088389846043, 'z': {'plaquette': 0.6881088389846043, 'wilson_2x2': 0.9718455250365621, 'wilson_4x4': 0.49824706346607633}}
+{'rung': 2, 'L': 64, 'beta': 55.0237, 'plaq_deviation': -6.029098346904682e-06, 'plaq_z': -0.4030836726165794, 'z': {'plaquette': -0.4030836726165794, 'wilson_2x2': 0.9510708510539244, 'wilson_4x4': 1.3789769994825867}}

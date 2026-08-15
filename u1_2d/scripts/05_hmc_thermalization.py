@@ -34,6 +34,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.lines as mlines
+import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
 
 from u1_2d.lgt import make_action
@@ -330,17 +331,48 @@ def plot_relaxation(
     plt.close(fig)
 
 
+def interval_status(summary: dict) -> str:
+    """Is the 2 tau_int steady-state interval an honest cost for this rung?
+
+    Two distinct ways it stops being one, and they are not the same statement:
+
+    "unreliable" -- tau_int measures nothing because the chain barely moves
+    (the beta ~ 900 regime; `interval_reliable` is already computed from the
+    static-observable check).
+
+    "q-frozen"   -- the chain IS equilibrated in Wilson observables, so the
+    interval is a real steady-state cost for THOSE, but its topology never
+    tunnels. Quoting it as the cost of an independent configuration would
+    credit HMC with independence it does not have.
+
+    Only "ok" rungs get a plain solid bar. This is the beta-dependence the
+    interval has all along: below the freezing coupling it is the right
+    yardstick; above it the measured value is a lower bound on the real cost,
+    and is drawn that way.
+    """
+    if not summary.get("interval_reliable", True):
+        return "unreliable"
+    if summary.get("q_freezing", {}).get("frozen"):
+        return "q-frozen"
+    return "ok"
+
+
 def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     """The headline figure: per beta, the trajectories needed to obtain one new
     thermalized configuration -- diffusion seed vs fresh hot/cold-start standard
-    HMC (the 2 tau_int interval stays in the report tables but is not plotted:
-    an "equilibrated" chain at large beta has frozen topology, so plotting its
-    steady-state cost as a baseline would flatter HMC misleadingly).
+    HMC, plus the 2 tau_int steady-state interval. Where topology has frozen
+    (see `interval_status`) the interval is drawn as a solid bar for its
+    measured Wilson part plus a hatched extension to the budget, because there
+    it is a lower bound on the cost of an independent config rather than the
+    cost itself -- so HMC is neither flattered nor silently omitted.
     Non-topological observables only (Wilson loops / plaquette)."""
     wilson_obs = ("plaquette", "wilson_2x2", "wilson_4x4")
 
     def slowest(summary, start):
         return max(summary["t_therm"][start][n] for n in wilson_obs)
+
+    def interval(summary):
+        return summary.get("hmc_interval_trajectories", float("nan"))
 
     bars = [
         ("diffusion seed: t_therm", GEN_COLOR,
@@ -349,6 +381,7 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
          lambda s: slowest(s, "hot start")),
         ("fresh cold start: burn-in", COLD_COLOR,
          lambda s: slowest(s, "cold start")),
+        ("equilibrated HMC: 2 tau_int interval", MUTED_BAR, interval),
     ]
     n_group = len(bars)
     height = 0.19
@@ -360,9 +393,38 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
                              squeeze=False)
     for ax, chunk in zip(axes[0], chunks):
         for i, s in enumerate(chunk):
+            status = interval_status(s)
             for j, (name, color, getter) in enumerate(bars):
                 y = i + (j - (n_group - 1) / 2) * (height + 0.03)
                 value = getter(s)
+                is_interval = j == n_group - 1
+                if is_interval and status != "ok":
+                    # Not censored -- bounded below. The Wilson-observable
+                    # interval is real but is not the cost of an INDEPENDENT
+                    # config, because Q never tunnels inside the budget. Draw
+                    # the measured part solid and the unmeasured remainder as
+                    # a hatched extension to the budget, ending in an arrow:
+                    # the true cost is off the right of this axis.
+                    if not math.isfinite(value):
+                        continue
+                    ax.barh(y, value, height=height, color=color,
+                            edgecolor="white", lw=0, alpha=0.55)
+                    ax.barh(y, budget - value, left=value, height=height,
+                            color="none", edgecolor=color, lw=0.7,
+                            hatch="////", alpha=0.75)
+                    ax.annotate("", xy=(budget * 1.06, y), xytext=(budget, y),
+                                arrowprops=dict(arrowstyle="-|>", color=color,
+                                                lw=1.0, shrinkA=0, shrinkB=0))
+                    # The hatch and legend carry "true cost is off-scale";
+                    # the row only needs the Wilson value, styled like the
+                    # other bars so it stays comparable at a glance.
+                    label = ("n/a" if status == "unreliable" else f"{value:.0f}")
+                    ax.annotate(label, (value, y), xytext=(4, 0),
+                                textcoords="offset points", va="center",
+                                fontsize=7.5, color=MUTED_BAR)
+                    continue
+                if is_interval and not math.isfinite(value):
+                    continue
                 if math.isinf(value):
                     ax.plot([budget], [y], marker="x", ms=5.5, mew=1.7, color=color,
                             alpha=0.85, ls="none")
@@ -394,6 +456,10 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     handles.append(mlines.Line2D([], [], color=MUTED_BAR, marker="x", ls="none",
                                  ms=6, mew=1.7,
                                  label=f"never thermalized within the {budget}-trajectory budget"))
+    handles.append(mpatches.Patch(facecolor="none", edgecolor=MUTED_BAR, lw=0.7,
+                                  hatch="////",
+                                  label="Q frozen: Wilson interval is solid, true cost "
+                                        "for an independent config is ≥ budget"))
     fig.legend(handles=handles, fontsize=8, frameon=False, loc="lower center",
                bbox_to_anchor=(0.5, -0.005), ncol=3)
     fig.supxlabel("HMC trajectories per new thermalized, independent config "

@@ -1,0 +1,40 @@
+﻿  base: wilson_L16_beta1.5.pt
+
+=== 32:4.44493 (coarse 16:1.5000), 64 configs ===
+  tile   t_therm(slowest Wilson) = 56     blocking |err| = 3.14e+00  acc = 0.967
+  halve  t_therm(slowest Wilson) = 61     blocking |err| = 1.19e-07  acc = 0.966
+  flux   t_therm(slowest Wilson) = 67     blocking |err| = 2.38e-07  acc = 0.964
+  base: wilson_L16_beta2.pt
+
+=== 32:6.10518 (coarse 16:2.0000), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.973
+  halve  t_therm(slowest Wilson) = 152    blocking |err| = 1.19e-07  acc = 0.974
+  flux   t_therm(slowest Wilson) = 234    blocking |err| = 2.38e-07  acc = 0.975
+  base: wilson_L16_beta4.pt
+
+=== 32:14.1464 (coarse 16:4.0000), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.985
+  halve  t_therm(slowest Wilson) = never  blocking |err| = 1.19e-07  acc = 0.985
+  flux   t_therm(slowest Wilson) = 502    blocking |err| = 2.38e-07  acc = 0.984
+  base: wilson_L16_beta14.1464.pt
+
+=== 32:55.0237 (coarse 16:14.1464), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.976
+  halve  t_therm(slowest Wilson) = never  blocking |err| = 1.19e-07  acc = 0.977
+  flux   t_therm(slowest Wilson) = never  blocking |err| = 2.38e-07  acc = 0.979
+  base: wilson_L16_beta55.0237.pt
+
+=== 32:218.58 (coarse 16:55.0236), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.972
+  halve  t_therm(slowest Wilson) = never  blocking |err| = 1.19e-07  acc = 0.966
+  flux   t_therm(slowest Wilson) = never  blocking |err| = 2.38e-07  acc = 0.975
+
+| case | tile | halve | flux | diffusion seed (Fig. 12) |
+|---|---|---|---|---|
+| 32:4.44493 | 56 | 61 | 67 | 8 |
+| 32:6.10518 | never | 152 | 234 | 4 |
+| 32:14.1464 | never | never | 502 | 0 |
+| 32:55.0237 | never | never | never | 0 |
+| 32:218.58 | never | never | never | 6 |
+
+wrote out\u1_2d\tiling_baseline\tiling_baseline.json

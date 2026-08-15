@@ -1,0 +1,51 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "coarse_L": 16,
+    "coarse_beta": 14.146404977472109,
+    "n_configs": 16,
+    "arms": {
+      "tile": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.141360282897949,
+        "acceptance": 0.95859375
+      },
+      "halve": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 1.1920928955078125e-07,
+        "acceptance": 0.98046875
+      },
+      "flux": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 2.384185791015625e-07,
+        "acceptance": 0.98515625
+      },
+      "ape": {
+        "t_therm": {
+          "plaquette": 62.0,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.124119997024536,
+        "acceptance": 0.97890625
+      }
+    }
+  }
+]

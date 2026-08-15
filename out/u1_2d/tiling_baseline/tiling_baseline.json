@@ -1,0 +1,247 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 4.44493,
+    "coarse_L": 16,
+    "coarse_beta": 1.4999984955246917,
+    "n_configs": 64,
+    "arms": {
+      "tile": {
+        "t_therm": {
+          "plaquette": 63.0,
+          "wilson_2x2": 68.0,
+          "wilson_4x4": 52.0
+        },
+        "t_therm_slowest": 68.0,
+        "blocking_error": 3.1415042877197266,
+        "acceptance": 0.9643798828125
+      },
+      "halve": {
+        "t_therm": {
+          "plaquette": 78.0,
+          "wilson_2x2": 73.0,
+          "wilson_4x4": 31.0
+        },
+        "t_therm_slowest": 78.0,
+        "blocking_error": 1.1920928955078125e-07,
+        "acceptance": 0.96640625
+      },
+      "flux": {
+        "t_therm": {
+          "plaquette": 70.0,
+          "wilson_2x2": 73.0,
+          "wilson_4x4": 25.0
+        },
+        "t_therm_slowest": 73.0,
+        "blocking_error": 2.384185791015625e-07,
+        "acceptance": 0.965625
+      },
+      "ape": {
+        "t_therm": {
+          "plaquette": 35.0,
+          "wilson_2x2": 36.0,
+          "wilson_4x4": 29.0
+        },
+        "t_therm_slowest": 36.0,
+        "blocking_error": 2.071779727935791,
+        "acceptance": 0.9662353515625
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 6.10518,
+    "coarse_L": 16,
+    "coarse_beta": 2.0000012980922417,
+    "n_configs": 64,
+    "arms": {
+      "tile": {
+        "t_therm": {
+          "plaquette": 153.0,
+          "wilson_2x2": 343.0,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.141545534133911,
+        "acceptance": 0.9731201171875
+      },
+      "halve": {
+        "t_therm": {
+          "plaquette": 161.0,
+          "wilson_2x2": 165.0,
+          "wilson_4x4": 53.0
+        },
+        "t_therm_slowest": 165.0,
+        "blocking_error": 1.1920928955078125e-07,
+        "acceptance": 0.9739501953125
+      },
+      "flux": {
+        "t_therm": {
+          "plaquette": 160.0,
+          "wilson_2x2": 165.0,
+          "wilson_4x4": 63.0
+        },
+        "t_therm_slowest": 165.0,
+        "blocking_error": 2.384185791015625e-07,
+        "acceptance": 0.9748291015625
+      },
+      "ape": {
+        "t_therm": {
+          "plaquette": 97.0,
+          "wilson_2x2": 161.0,
+          "wilson_4x4": 13.0
+        },
+        "t_therm_slowest": 161.0,
+        "blocking_error": 2.057892322540283,
+        "acceptance": 0.973095703125
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 14.1464,
+    "coarse_L": 16,
+    "coarse_beta": 3.9999887248909847,
+    "n_configs": 64,
+    "arms": {
+      "tile": {
+        "t_therm": {
+          "plaquette": 237.0,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.1415278911590576,
+        "acceptance": 0.9839111328125
+      },
+      "halve": {
+        "t_therm": {
+          "plaquette": 501.0,
+          "wilson_2x2": 571.0,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 1.1920928955078125e-07,
+        "acceptance": 0.984326171875
+      },
+      "flux": {
+        "t_therm": {
+          "plaquette": 364.0,
+          "wilson_2x2": 322.0,
+          "wilson_4x4": 466.0
+        },
+        "t_therm_slowest": 466.0,
+        "blocking_error": 2.384185791015625e-07,
+        "acceptance": 0.984326171875
+      },
+      "ape": {
+        "t_therm": {
+          "plaquette": 3.0,
+          "wilson_2x2": 135.0,
+          "wilson_4x4": 140.0
+        },
+        "t_therm_slowest": 140.0,
+        "blocking_error": 3.0305280685424805,
+        "acceptance": 0.984521484375
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "coarse_L": 16,
+    "coarse_beta": 14.146404977472109,
+    "n_configs": 64,
+    "arms": {
+      "tile": {
+        "t_therm": {
+          "plaquette": 168.0,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.141590118408203,
+        "acceptance": 0.9762939453125
+      },
+      "halve": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 1.1920928955078125e-07,
+        "acceptance": 0.976806640625
+      },
+      "flux": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 2.384185791015625e-07,
+        "acceptance": 0.977490234375
+      },
+      "ape": {
+        "t_therm": {
+          "plaquette": 64.0,
+          "wilson_2x2": 363.0,
+          "wilson_4x4": 323.0
+        },
+        "t_therm_slowest": 363.0,
+        "blocking_error": 3.141105890274048,
+        "acceptance": 0.9781982421875
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 218.58,
+    "coarse_L": 16,
+    "coarse_beta": 55.02364659738549,
+    "n_configs": 64,
+    "arms": {
+      "tile": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": 104.0,
+          "wilson_4x4": 166.0
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.1413118839263916,
+        "acceptance": 0.97158203125
+      },
+      "halve": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 1.1920928955078125e-07,
+        "acceptance": 0.9645751953125
+      },
+      "flux": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 2.384185791015625e-07,
+        "acceptance": 0.9748779296875
+      },
+      "ape": {
+        "t_therm": {
+          "plaquette": 36.0,
+          "wilson_2x2": 94.0,
+          "wilson_4x4": 164.0
+        },
+        "t_therm_slowest": 164.0,
+        "blocking_error": 3.141514539718628,
+        "acceptance": 0.975732421875
+      }
+    }
+  }
+]

@@ -1,0 +1,9 @@
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+1 cases, output -> out\u1_2d\generalization_exact_sectors_seed2
+[1/1] D_bc20: base L=16 beta=20 -> L=32 beta=78.4578 (matched pair 20 -> 78.4578 (beyond training range))
+    HMC L=16 beta=20: 128 configs, acc 0.991, cold start, burn 2000, 132s
+    generated 128 configs L=32 beta=78.4578 in 28s
+    HMC L=32 beta=78.4578: 192 configs, acc 0.981, cold start, burn 2000, 235s
+    case done in 412s
+summary: out\u1_2d\generalization_exact_sectors_seed2\summary.json
+tables:  out\u1_2d\generalization_exact_sectors_seed2\summary_tables.md

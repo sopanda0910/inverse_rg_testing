@@ -128,7 +128,8 @@ def run_case(model, schedule, case, args, action_type, device):
     n = fine.shape[0]
     fit_idx = torch.arange(0, n, 2)
     hold_idx = torch.arange(1, n, 2)
-    fit = fit_surrogate_cv(feats[fit_idx], target[fit_idx])
+    fit = fit_surrogate_cv(feats[fit_idx], target[fit_idx],
+                           ridge_floor=args.ridge_floor)
     pred_hold = feats[hold_idx].double() @ fit["g"] + fit["const"]
     fit["resid_std_heldout"] = float((target[hold_idx].double() - pred_hold).std())
 
@@ -345,6 +346,13 @@ def main() -> None:
     parser.add_argument("--n-hmc-per-step", type=int, default=2)
     parser.add_argument("--no-q-hops", action="store_true")
     parser.add_argument("--seed", type=int, default=20260802)
+    parser.add_argument(
+        "--ridge-floor", type=float, default=None,
+        help="lower bound on the surrogate ridge grid. Off by default (the "
+             "recorded behaviour). Both divergences in Table S7b selected the "
+             "grid's smallest ridge, 0.001, and no converged run did; use this "
+             "to test whether that association is causal.",
+    )
     parser.add_argument("--sigma-min-coef", type=float, default=0.03)
     parser.add_argument("--physics-blend", type=float, default=None)
     parser.add_argument("--consistency-weight", type=float, default=None)

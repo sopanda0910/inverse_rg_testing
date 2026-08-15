@@ -858,11 +858,57 @@ integer. Three structural mechanisms carry the sector instead:
   $\Delta Q = Q_{\mathrm{coarse}} - Q_{\mathrm{fine}}$ and add the smooth
   instanton field carrying exactly that winding (a deterministic,
   gauge-covariant map that uses only the conditioning input). The timing is
-  delicate and deliberate: enforcement is applied periodically during *late*
-  sampling — after the sector has effectively frozen (around
-  $\sigma \sim O(1)$, below which the model will no longer spontaneously
-  tunnel), but while enough noise remains for the sampler to relax the small
-  uniform strain the shift introduces ($2\pi \Delta Q / V$ per plaquette).
+  deliberate: enforcement is applied periodically during *late* sampling —
+  after the sector has effectively frozen, below which the model will no
+  longer spontaneously tunnel, but while enough noise remains for the sampler
+  to relax the small uniform strain the shift introduces
+  ($2\pi \Delta Q / V$ per plaquette).
+
+  **Where the freezing $\sigma$ actually is (measured 2026-08-14).** This
+  text previously asserted $\sigma \sim O(1)$ without measuring it.
+  `scripts/33_charge_freezing_sigma.py` runs the sampler with enforcement off
+  and records the fraction of configurations changing sector at each $\sigma$
+  step: tunnelling stops at $\sigma_{\text{freeze}} = 0.304$ (16:14.1) and
+  $0.312$ (32:55.0), roughly $3\times$ below the assertion and below the
+  deployed threshold `charge_projection_sigma = 0.5`. The threshold is
+  therefore mis-set *against its own stated criterion* — the first two or so
+  of the ~11 projections fire while the model can still undo them.
+
+  It makes no measurable difference. A 3 × 3 A/B (thresholds 0.20 / 0.31 /
+  0.50 × seeds 11 / 12 / 13, full ladder + validation each) gives mean
+  $|z_{\text{exact}}|$ of 0.812 / 0.814 / 0.768, with between-arm spread
+  (0.026) *smaller* than between-seed spread (0.030): $F(2,6) = 2.30$ against
+  $F_{\text{crit}} = 5.14$. The count of $|z| > 3$ observables is identical
+  across all three arms at every seed (0 / 1 / 0 of 86). Changing the
+  threshold by $2.5\times$ moves nothing across the outlier line, because the
+  projections that fire *after* freezing plus the final post-sampling
+  projection already determine the sector. Recorded as a measured null, not
+  an assumed one; the correction belongs in this paragraph rather than in the
+  config. Provenance: `out/u1_2d/proj_sigma_ab/seed_sweep_summary.json`,
+  `scripts/parse_proj_seed_sweep.py`.
+
+  The same measurement gives the sector-transport machinery's value directly.
+  With projection disabled, the fraction of samples landing in the coarse
+  configuration's sector on their own is:
+
+  | $L$ | $\beta_f$ | $V = 2L^2$ | $\sigma_{\text{freeze}}$ | Q match rate, no projection |
+  |---|---|---|---|---|
+  | 16 | 14.15 | 512 | 0.304 | 0.484 |
+  | 32 | 55.02 | 2048 | 0.312 | 0.234 |
+  | 64 | 218.58 | 8192 | 0.307 | 0.094 |
+
+  Two things to read off this. The match rate roughly **halves for every
+  $4\times$ in volume** (ratios 2.07 and 2.49), so at $L=128$ it would be a
+  few percent: a local score with a finite receptive field cannot control a
+  global integer, and the degradation is quantitative, not incidental. This
+  is the sharpest available statement of the objection in §25.1, and it is
+  the reason the transport machinery is structural rather than a convenience.
+
+  Second, $\sigma_{\text{freeze}}$ is **flat in volume** (0.304, 0.312,
+  0.307 across a $16\times$ range in $V$). So the freezing scale is a
+  property of the noise schedule, not of the lattice, and the threshold
+  conclusion above transfers across volumes rather than needing a per-$L$
+  sweep. Provenance: `out/u1_2d/charge_freezing_L64/charge_freezing.json`.
 
 - **Blocking-consistency guidance.** During sampling, an extra score term
   pulls each $2\times2$ cell's fine-plaquette sum toward its coarse
@@ -1685,20 +1731,74 @@ grows, the delivered log-weight std must converge to
 $\sqrt{1 - R^2}\,\cdot\,\text{std}_{\text{before}}$ and no further. The
 measurement (Table S7 of the appendix): at the extrapolation case
 $32{:}218.6$, predicted floor $47.1$, measured $44.7$ — the bridge saturates
-its floor exactly. The mechanism works as derived; what remains is a
-*basis-representation* question, not a bridging question.
+its floor. What remains is a *basis-representation* question, not a bridging
+question.
 
-**Why the basis cannot simply be widened.** The obvious next move — add
-features until $R^2 \to 1$ — was tried (11 features) and produced the
+**How often that happens (measured 2026-08-14).** The paragraph above rests
+on one seed, which is not enough to say "the mechanism works as derived."
+Repeating the extrapolation case across all ten runs on record at the shipped
+protocol gives a strictly bimodal outcome: **eight reduce the spread by
+1.97–2.71× (mean 2.42×), two diverge by $10^2$–$10^3$.** A 20% failure rate
+(95% CI 6–51%, binomial score interval) belongs in the claim: the floor is
+reachable and is
+reached about four times in five. Table S7b of the appendix carries the
+per-seed table.
+
+**The failure is the surrogate's regularization** (corrected 2026-08-14; this
+paragraph previously concluded "the failure is in the bridge, not the basis").
+Held-out $R^2$ genuinely does not separate the two modes — the diverged seeds
+sit at $0.869$ and $0.940$, at or *above* every healthy seed ($0.756$–$0.909$)
+— and minimum bridge-HMC acceptance genuinely does ($0.052$ and $0.370$ against
+$0.865$–$0.974$), with the worse of the two also collapsing its step size
+$13\times$. Both observations survive. The inference drawn from them did not.
+
+Three quantities move together here — ridge, coefficient norm, and acceptance
+— and reading a cause off their correlation was the mistake. Both divergent
+seeds had also selected the *smallest ridge on the grid*, $0.001$, and no
+converged seed had ($p = 0.022$ under independence), with standardized
+coefficient norms of $231$ and $247$ against $40$–$105$ for the eight
+successes. Intervening settles it: holding the ODE samples, baseline and seed
+byte-identical and varying only a lower bound on the ridge grid moves held-out
+$\sigma$ from $2132$ to $43.1$ at this case. Regularization alone spans both
+modes, so the chain is *under-regularized surrogate $\to$ steep bridge $\to$
+integrator failure*, one mechanism rather than two independent ones.
+
+That also demotes the guard. Acceptance is downstream, and it misses cases: in
+the same scan, $32{:}218.6$ blows up to $18\times$ its baseline while minimum
+acceptance sits unchanged at $0.958$. An acceptance floor would not have fired.
+The quantity to assert on is the surrogate coefficient norm. And the selection
+rule itself is unsound for this problem — `fit_surrogate_cv` scores ridges by
+out-of-fold residual, but its held-out folds come from the same ODE samples as
+the fit folds and therefore lie *on* the fit manifold, precisely where the
+pathological coefficients are well behaved. Cross-validation cannot see this
+failure by construction. Table S7c carries the scan.
+
+An unrelated check on the headline survives all of this: over the eight healthy
+seeds the free-energy certificate returns $1.01$–$1.68$ nats/site (mean
+$1.16$) at this case, an estimator sharing no machinery with the fiber-weight
+route and landing on the same $\sim 1$ nat/site bulk offset — the headline
+density gap is not an artifact of one estimator.
+
+**Why widening the basis is not the answer either.** The obvious next move —
+add features until $R^2 \to 1$ — was tried (11 features) and produced the
 program's sixth converged negative: in-sample $R^2$ rose, and the held-out
 weights exploded by two to three orders of magnitude at two of four cases.
-The mechanism deserves stating because it recurs throughout this project:
-the fit is performed on samples from $q$, but the bridge dynamics *move* the
-samples toward $p$, evaluating $G$ off the fit manifold, where a wide,
-weakly-regularized basis extrapolates wildly. It is the
-deployment-vs-data-side asymmetry of section 18 in yet another costume:
-an in-sample objective improvement bought a deployed-distribution failure,
-now for the surrogate rather than the score.
+The story was that a wide, *weakly-regularized* basis extrapolates wildly once
+the bridge dynamics move samples off the fit manifold — the
+deployment-vs-data-side asymmetry of section 18 in another costume. The
+10-seed repeat shows the *narrow* basis fails at a comparable rate with no
+loss of held-out $R^2$, so width is not the lever it was taken to be. But the
+ridge intervention above vindicates the other half of that story: it is
+exactly regularization, and exactly off-manifold extrapolation, and it fires
+at any basis width. Width was the wrong noun in a sentence that was otherwise
+right — which is why widening did not help and narrowing does not protect.
+
+Two lessons generalize past this project. A mechanism validated on a single
+seed at a single case measures the mechanism *and* the draw, and here the draw
+was carrying 20% of the claim. And when several quantities move together, the
+one that separates your outcomes most cleanly is not thereby the cause — the
+acceptance rate separated the modes perfectly and was still the symptom. Only
+the intervention, holding everything else byte-identical, settled it.
 
 **The sector decomposition of the remaining gap.** The weights after AIS
 still degenerate — but now we can say precisely on what. Write the model's
@@ -1743,6 +1843,129 @@ the program's cleanest statement of where the generative model ends: the
 per-site density offset that five fine-tunes, a capacity scale-up, a
 physics-form correction, and an annealed bridge each confronted, quantified —
 and left standing.
+
+### 21.5 The open problem: topology without an exact $P(Q)$
+
+**Status change, 2026-08-14.** This section was written as an unrun open
+problem. Routes 1 and 2 below have since been measured, and the dependency is
+substantially smaller than the section claimed — the load-bearing number it
+rested on (C_L128 transport χ² p = 0.005) was stale, and the current ensembles
+of record give **0.8663**. The original framing is kept below with corrections
+marked, because the reasoning about *why* the dependency would matter is still
+the right reasoning; it is the premise that failed. The measurements are in
+§21.6.
+
+**The dependency.** Sector statistics in this study are made correct by one of
+two mechanisms, and only one of them exists outside a solvable theory:
+
+- *Transport mode* — the model's own sector, carried up from the coarse
+  configuration by the instanton projection of §13. Available anywhere.
+- *Exact-sector mode* — configurations are resampled so the sector histogram
+  matches the analytically known finite-volume $P(Q)$. Available only where
+  $P(Q)$ is known in closed form, i.e. essentially only here.
+
+~~Exact-sector mode is what rescues the topology results: $\chi^2$ failures
+fall $5/35 \to 1/35$ and worst $|z(\langle Q^2\rangle)|$ falls $11.8 \to 2.8$
+(Table S3). At $L = 128$ the Wilson observables pass in either mode, but the
+topology passes **only** in exact-sector mode ($p:\ 0.005 \to 0.39$). So the
+headline large-volume result rests on a crutch that 4D SU(3) does not
+provide.~~
+
+**Corrected (2026-08-14).** Regenerated from the current ensembles of record
+(Table S3, `42_sector_mode_table.py`), $\chi^2$ failures are $3/35$ transport
+against $2/35$ exact-sector — both at the multiple-testing false-positive rate,
+so the two modes are not distinguishable on that metric. All three transport
+failures are track-B cases whose base coupling is *deliberately* mismatched;
+none is a volume case. At $L = 128$ transport gives $p = 0.8663$ and
+exact-sector $0.3875$, so topology passes **in both**, and the crutch does not
+rescue it. What exact-sector mode still does is tighten
+$\langle Q^2\rangle$ (worst $|z|$: $10.9 \to 2.8$) and clear the track-B
+failures. That is a real but much narrower benefit than "the large-volume
+result rests on it".
+
+**Why it gets worse with volume, measured.** With the projection disabled the
+model lands in its conditioner's sector at a rate that falls roughly by half
+per $4\times$ in volume — 0.484, 0.234, 0.094 at $L = 16, 32, 64$ (§13). The
+raw spurious $\langle Q^2\rangle$ excess moves the same way, from 1.7–2.7 at
+$L \le 32$ to 7.14–28.15 at $L = 64/128$. This is a deficiency that grows in
+precisely the direction the method exists to scale in, which is what makes it
+the central open problem rather than a caveat.
+
+**What would settle it** (not run):
+
+1. *Transport-only at $L = 64$ and $L = 128$, reported without any
+   exact-$P(Q)$ resampling.* The numbers above say what to expect — failure —
+   so the deliverable is the honest failure curve of $\chi^2$ and
+   $z(\langle Q^2\rangle)$ against volume, not a pass.
+2. *An instanton-HMC tail as the sector fixer instead of $P(Q)$.* Table S4
+   already shows a 200-trajectory tail repairing $P(Q)$; the open question is
+   the tail length needed as a function of $V$, and whether it grows fast
+   enough to eat the flat-cost advantage. This is the practical route and it
+   is theory-agnostic.
+3. *A sector-aware training term.* Today's hyperparameter sweep found
+   `topo_weight` to be the one knob that cleared its noise floor, which points
+   here; whether that survives replication is being measured separately.
+
+~~**The honest position.** Route 2 is the one that transfers, and its cost is
+unmeasured. Until it is, the correct statement is that this pipeline
+demonstrates *observable-level* scaling to $L = 128$ and *sector-level*
+correctness only where $P(Q)$ is known analytically.~~ The 2D SU(2) successor
+does not test this — $\pi_1(SU(2))$ is trivial, so there are no sectors to
+get wrong — and that should be said explicitly rather than allowed to read as
+a passed test.
+
+### 21.6 Topology without an exact $P(Q)$: measured
+
+Routes 1 and 2 of §21.5 were run on 2026-08-14
+(`38_sector_tail_scaling.py`, `42_sector_mode_table.py`).
+
+**Route 1 — transport-only, reported without exact-$P(Q)$ resampling.** The
+expected deliverable was "the honest failure curve." There is no failure
+curve. Transport-mode $\chi^2$ against exact $P(Q)$ passes at every volume
+tested: $p = 0.87$ at $L = 128$, $0.24$ at $L = 64$, and across the whole
+$L = 32$ $\beta$-ladder. The only transport failures anywhere are the
+deliberately-mismatched track-B cases.
+
+**Route 2 — instanton-HMC tail as the sector fixer.** The open question was
+how tail length scales with $V$. Measured at fixed $\beta = 14.1464$ over a
+$16\times$ volume range, and across $\beta = 4.4$–$218.6$ at $L = 32$:
+
+| | $V = 2048$ | $8192$ | $32768$ |
+|---|---|---|---|
+| tail needed (traj) | 100 | 0 | 0 |
+| $\chi^2$ testable bins | 7 | 11 | 15 |
+
+No growth — the cost *falls* to zero while the test's power *rises*, so this is
+not a resolution artifact. Over the $\beta$ sweep at $L = 32$ the tail never
+exceeds **150 trajectories** and is usually zero. There is no scaling exponent
+to quote because there is nothing scaling.
+
+**Why transport works, structurally.** This is the ladder fixed point doing the
+work, not the model. Charge projection assigns the fine configuration its
+coarse partner's $Q$, and with $\beta_f = 4\beta_c$, $L_f = 2L_c$ the exact
+$\langle Q^2\rangle \approx V/4\pi^2\beta$ is invariant, so the coarse $P(Q)$
+*is* the fine theory's $P(Q)$. Sector correctness is inherited from HMC at the
+coarse coupling, where HMC still mixes. Nothing about it needs $P(Q)$ in closed
+form, so it transfers to any theory with a computable topological charge.
+
+**What the model itself contributes: nothing, and it degrades with volume.**
+Raw (pre-projection) output lands in the coarse partner's sector 4.7–29% of
+the time, falling to 11.5% at $L = 64$ and 6.2% at $L = 128$. Raw
+$\langle Q^2\rangle / \text{exact}$ is $\approx 1$ at weak coupling and runs to
+$2.5\times$ (A_bc4), $4.6\times$ (A_bc8), $5.4\times$ (E_bc11.8) and
+$2.65\times$ ($L = 128$) — the model manufactures topological charge precisely
+where the theory has least. The diffusion model supplies fine-scale
+fluctuations; the topology is supplied by transport.
+
+**The honest position, revised.** The exact-$P(Q)$ dependence is not the
+study's largest unresolved liability. It is used as a *diagnostic* (the χ²
+against exact $P(Q)$) far more than as a *crutch*, and where it is used as a
+crutch its measured benefit is tightening $\langle Q^2\rangle$ and clearing
+deliberately-mismatched controls — not making large volumes pass. The residual
+caveat that does survive: at $\beta \gtrsim 55$ the χ² has $\le 3$ populated
+bins and at $\beta = 218.6$, $L = 32$ only one, so in the deep-frozen regime
+these tests have little power and "passes" there means little. That is a
+limit on the *test*, not a dependency on the crutch.
 
 ### 22. Closure: what "finished" means, and what transfers
 
@@ -2022,12 +2245,26 @@ explains *why* that dissociation had to happen.
 1. **Topology transport is the weak point, and it degrades with volume.** The
    raw charge-match rate is 0.21 — the model's fine sector matches its coarse
    conditioner about a fifth of the time — transport-mode worst |z(⟨Q²⟩)| is
-   11.8, and the raw Q² excess grows from 1.7–2.7 at L ≤ 32 to 7.1–28.2 at
+   10.9, and the raw Q² excess grows from 1.7–2.7 at L ≤ 32 to 7.1–28.2 at
    L = 64/128. It is rescued by exact-sector mode, which draws Q from the
    **exact analytic P(Q)** — unavailable in any theory where one would actually
    need this method. §8's "topology rides the ladder for free" is in tension
    with Table S3, and §23.5 explains how Wilson observables can look excellent
    while this is true.
+
+   **Answered, 2026-08-14 (§21.6).** The premise is half right and the
+   conclusion is wrong. Right: the *model's own* topology is bad and degrades
+   with volume — raw sector match falls to 6.2% at L = 128 and raw ⟨Q²⟩ runs
+   2.5–5.4× above exact at strong coupling. Wrong: that this is rescued by the
+   analytic P(Q). Regenerated on the current ensembles, transport fails χ² in
+   3 of 35 cases against exact-sector's 2 of 35 — both at the false-positive
+   rate — and all three transport failures are the deliberately-mismatched
+   track-B controls. At L = 128 transport gives p = 0.87, not the 0.005 this
+   objection was built on. The correctness comes from the ladder identity
+   (coarse P(Q) *is* fine P(Q)), which needs no closed-form P(Q), and where a
+   fix *is* needed a ≤ 150-trajectory instanton tail supplies it with no growth
+   in volume. The surviving caveat is that at β ≳ 55 the χ² has ≤ 3 populated
+   bins, so those passes are weak evidence.
 2. **The baseline already solves the advertised problem.** Table S1 records
    that instanton-HMC ⟨Q²⟩ is correct in *every* row and that the failures are
    UV thermalization. So the headline regime is thermalization-limited, not
@@ -2047,13 +2284,123 @@ explains *why* that dissociation had to happen.
    mean |z| should be ≈ 0.8; the vs-reference value is 1.77 (vs-exact 1.06).
    Combined with the loop-size dispersion growth documented in §20, "matches
    exact results" needs the scoping it now carries.
+   *(Updated 2026-08-14: on the GPU-regenerated pipeline validation this is
+   now mean |z_exact| = 0.588 over 84 observables with 0 past |z| = 3 —
+   slightly BELOW the ideal 0.798, i.e. the error bars are mildly
+   conservative rather than too tight. The vs-exact half of this objection is
+   answered; the dispersion-growth half stands. Figure 28 plots it.)*
+
+**Status of these objections as of 2026-08-14.** Three have moved:
+
+- *1 (topology degrades with volume)* is now **measured, and worse than the
+  prose suggested**: the no-projection match rate is 0.484 / 0.234 / 0.094 at
+  L = 16 / 32 / 64, halving per 4× volume (§13). The objection stands and is
+  now quantitative. The exact-P(Q) dependence it points at remains the single
+  largest obstacle to transferring this method to a theory where P(Q) is not
+  known in closed form, and nothing here addresses that.
+- *4 (ESS at its floor)* is **answered, and the answer is worse than the
+  objection assumed.** Every quoted ESS/N was exactly 1/64. Re-running at
+  n = 512 gives exactly 1/512 — so the effective sample size is **one
+  configuration, independent of N**. The estimator was not merely unresolved,
+  it was optimistic: ESS/N tracking 1/N is complete weight degeneracy, and no
+  achievable N rescues raw transport as an importance sampler. The honest
+  phrasing is "one effective configuration however many you draw", not
+  "ESS/N = 0.016". See the appendix Table S2 note.
+- *6* is half-answered, as above.
+
+- *the tiling/replication warm-start baseline* (implied experiment 3) is
+  **done, and it comes out in the pipeline's favour** — see Table S6b. Three
+  non-learned prolongators, including the exact inverse of the blocking rule
+  and a flux-spreading variant that equalizes all four fine plaquettes per
+  cell, need 67–502 trajectories where the seed needs 0–8, and every one of
+  them is *worse than a fresh cold start*. Prolonging a coarse configuration
+  by any obvious deterministic rule produces a state that satisfies the
+  coarse constraint while being wrong at short distances, which the chain
+  must then undo. The speedup is specific to the learned map, not to having
+  been handed the coarse configuration.
+
+- *the Endres-style prolongator comparison* (implied experiment 2) is **done**
+  and is in the same table. APE smearing applied to the flux prolongator, with
+  the smearing count tuned per β to match the exact plaquette rather than
+  fixed, is the only non-learned arm that beats a fresh cold start, and it
+  thermalizes at β_f = 218.58 (164 trajectories) where both fresh starts and
+  every geometric prolongator fail inside the budget. It is a real method and
+  the naive prolongators are a strawman for it. The learned seed still wins
+  by 4.5× at β_f = 4.44, 40× at 6.11 and 27× at 218.58 — a large, consistent
+  margin over a working competitor, not a walkover. The claim that the
+  diffusion seed is the *only* usable start in the frozen regime is false and
+  should not be made.
+
+Objections 2 and 5 are **untouched**: the Zhu et al. comparison and
+tau_int-aware benchmarking against PTBC and open boundary conditions.
+Transport-only topology at L = 64/128 without the analytic P(Q) crutch was run
+on 2026-08-14 and is answered under objection 1 above and in §21.6.
 
 **Experiments implied:** a direct comparison against Zhu et al. on 2D U(1)
-with matched observables and volumes; a learned-vs-classical prolongator
-comparison against Endres-style APE-smeared interpolation; a naive
-tiling/replication warm-start baseline; transport-mode-only topology at
-L = 64/128 with no analytic P(Q) crutch; and tau_int-aware benchmarking of
-seeded chains against PTBC and open boundary conditions.
+with matched observables and volumes; and tau_int-aware benchmarking of
+seeded chains against PTBC and open boundary conditions. (The prolongator
+comparison against Endres-style APE smearing and the naive tiling warm-start
+baseline are done — Table S6b; transport-only topology is done — §21.6.)
+
+### 25.5 Post-closure corrections (2026-08-14/15)
+
+Work after the 2026-08-02 closure corrected five published items. None required
+retraining and the deployed checkpoints are untouched; the corrections are
+recorded here because several change what the study may claim.
+
+**Corrected claims.** (i) The AIS divergence cause was misattributed to the
+bridge integrator; it is the surrogate's regularization, established by
+intervention — §21 above. (ii) The exact-P(Q) dependence was overstated —
+§21.5/§21.6 and `PHYSICS_WALKTHROUGH.md` F1. (iii) Four appendix tables carried
+numbers from superseded runs.
+
+**Stale tables, found by a full appendix audit and corrected against source:**
+
+| table | what was stale |
+|---|---|
+| S1 | four deep-burn-in rows from an older scan; β = 218.58 at 8000 traj is max \|z\| **3.2, not 7.2** — near the pass threshold, not hopeless |
+| S3 | whole transport/exact-sector comparison; now regenerated by script |
+| S4 | disagreed with its source in nearly every cell; quoted β_f = 43.6 for a case at 45.62; mixed two runs in one row |
+| S6b | the 640-trajectory budget reported three convergent cases as "never" |
+| Fig. 20 caption | listed five transport χ² failures; three remain |
+
+Verified correct and unchanged: Table S2 (all four n = 512 rows match
+`model_ess_n512/` exactly), S5, S6, S7, the S7b table body, and all 28 figures
+(`30_assemble_appendix_figures.py --check`: 0 stale, 0 missing, 0 untracked).
+
+**New measurements not covered above.** Hyperparameters: five of six knobs sit
+inside the baseline seed-noise floor (43.8–59.1); `topo_weight` clears it and
+replicates — all five raised-weight seeds below all three baseline seeds, exact
+one-sided rank test p = 0.018, dose-response saturating (0.1 → 0.3 buys 1.27×,
+0.3 → 0.5 a further 1.07×). Not adopted here, since a 1.27× gain in a quantity
+still 14–39× from usable does not justify invalidating every recorded number;
+recorded as the successor's starting point (`TODO.md` §2). Prolongator baseline
+re-run at 2000 trajectories (Table S6b). Independence-Metropolis on this
+proposal is not viable — acceptance ≤ 0.00195, but that is exactly 1/n, the
+estimator's floor, so it is an upper bound and not a measurement.
+
+**Five methodological lessons, all earned the hard way here:**
+
+1. *Compute the resolution floor before reading the number.* ESS/N, MH
+   acceptance and the sector-tail length all return 1/n, 1/n and
+   `min_traj + check_every` when the underlying quantity is degenerate or zero.
+   Three measurements in one session first read as findings and were floors.
+2. *Perfect separation is not causation.* Minimum HMC acceptance separated the
+   AIS modes with no overlap and was still the symptom. Only an intervention
+   holding everything else byte-identical settled it.
+3. *Cross-validation only sees the manifold it was given.* If the failure lives
+   off the training manifold, out-of-fold scoring cannot detect it at any
+   number of folds.
+4. *Regenerating ensembles silently invalidates transcribed tables.* Five
+   appendix items drifted this way. Tables should be emitted by a script
+   reading the data of record — as S3 and S4 now are.
+5. *Budget conventions become claims.* "never" in Table S6b meant "not within
+   640 trajectories" and was read as failure. Put the budget in the cell.
+
+New scripts: `38_sector_tail_scaling.py`, `39_mh_acceptance.py`,
+`40_fold_noise_audit.py`, `41_ridge_scan_report.py`, `42_sector_mode_table.py`.
+New outputs: `out/u1_2d/ridge_scan/`, `sector_mode_table/`,
+`tiling_baseline_2000/`, `ais_transport_foldfixed/`, `mh_acceptance.json`.
 
 ### 26. Minimum citation set
 

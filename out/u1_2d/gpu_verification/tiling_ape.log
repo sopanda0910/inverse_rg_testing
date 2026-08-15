@@ -1,0 +1,45 @@
+﻿  base: wilson_L16_beta1.5.pt
+
+=== 32:4.44493 (coarse 16:1.5000), 64 configs ===
+  tile   t_therm(slowest Wilson) = 68     blocking |err| = 3.14e+00  acc = 0.964
+  halve  t_therm(slowest Wilson) = 78     blocking |err| = 1.19e-07  acc = 0.966
+  flux   t_therm(slowest Wilson) = 73     blocking |err| = 2.38e-07  acc = 0.966
+  ape    t_therm(slowest Wilson) = 36     blocking |err| = 2.07e+00  acc = 0.966
+  base: wilson_L16_beta2.pt
+
+=== 32:6.10518 (coarse 16:2.0000), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.973
+  halve  t_therm(slowest Wilson) = 165    blocking |err| = 1.19e-07  acc = 0.974
+  flux   t_therm(slowest Wilson) = 165    blocking |err| = 2.38e-07  acc = 0.975
+  ape    t_therm(slowest Wilson) = 161    blocking |err| = 2.06e+00  acc = 0.973
+  base: wilson_L16_beta4.pt
+
+=== 32:14.1464 (coarse 16:4.0000), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.984
+  halve  t_therm(slowest Wilson) = never  blocking |err| = 1.19e-07  acc = 0.984
+  flux   t_therm(slowest Wilson) = 466    blocking |err| = 2.38e-07  acc = 0.984
+  ape    t_therm(slowest Wilson) = 140    blocking |err| = 3.03e+00  acc = 0.985
+  base: wilson_L16_beta14.1464.pt
+
+=== 32:55.0237 (coarse 16:14.1464), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.976
+  halve  t_therm(slowest Wilson) = never  blocking |err| = 1.19e-07  acc = 0.977
+  flux   t_therm(slowest Wilson) = never  blocking |err| = 2.38e-07  acc = 0.977
+  ape    t_therm(slowest Wilson) = 363    blocking |err| = 3.14e+00  acc = 0.978
+  base: wilson_L16_beta55.0237.pt
+
+=== 32:218.58 (coarse 16:55.0236), 64 configs ===
+  tile   t_therm(slowest Wilson) = never  blocking |err| = 3.14e+00  acc = 0.972
+  halve  t_therm(slowest Wilson) = never  blocking |err| = 1.19e-07  acc = 0.965
+  flux   t_therm(slowest Wilson) = never  blocking |err| = 2.38e-07  acc = 0.975
+  ape    t_therm(slowest Wilson) = 164    blocking |err| = 3.14e+00  acc = 0.976
+
+| case | tile | halve | flux | ape | diffusion seed (Fig. 12) |
+|---|---|---|---|---|---|
+| 32:4.44493 | 68 | 78 | 73 | 36 | 8 |
+| 32:6.10518 | never | 165 | 165 | 161 | 4 |
+| 32:14.1464 | never | never | 466 | 140 | 0 |
+| 32:55.0237 | never | never | never | 363 | 0 |
+| 32:218.58 | never | never | never | 164 | 6 |
+
+wrote out\u1_2d\tiling_baseline\tiling_baseline.json

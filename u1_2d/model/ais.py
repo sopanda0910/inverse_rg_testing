@@ -150,9 +150,17 @@ def bridge_features(
 
     basis: "final7" (default, the result of record) or "rich11". The wide
     basis raised in-sample R^2 but exploded the held-out AIS weights at 2 of 4
-    cases (std 1120 and 18650) -- an under-regularized wide basis extrapolates
-    wildly once the bridge dynamics move samples off the fit manifold. It is
-    retained only to reproduce that recorded negative; do not deploy it.
+    cases (std 1120 and 18650), and is retained only to reproduce that
+    recorded negative.
+
+    Do not read that negative as "narrow basis good, wide basis bad". A
+    10-seed repeat of the extrapolation case on THIS basis (Table S7b) blew up
+    twice, and held-out R^2 was no lower on the failures than on the successes
+    -- it was slightly higher. The failure mode is the bridge integrator, not
+    the regression: minimum HMC acceptance separates the two outcomes
+    completely (0.05-0.37 diverged vs 0.87-0.97 healthy). Guard on
+    `ais["hmc_acceptance_min"]` and re-seed; widening or narrowing the basis
+    is not the lever.
     """
     if basis not in BASIS_FEATURE_NAMES:
         raise ValueError(f"unknown basis {basis!r}; expected one of {sorted(BASIS_FEATURE_NAMES)}")
@@ -230,6 +238,8 @@ def fit_surrogate_cv(
     target: torch.Tensor,
     ridges: tuple[float, ...] = (1e-3, 3e-3, 1e-2, 3e-2, 0.1, 0.3, 1.0),
     k_folds: int = 4,
+    fold_seed: int = 0,
+    ridge_floor: float | None = None,
 ) -> dict:
     """Ridge chosen by k-fold cross-validation on the fit set.
 
@@ -239,9 +249,36 @@ def fit_surrogate_cv(
     explode on configs the HMC transitions move OFF the fit manifold --
     observed as AIS increments that never shrink. Any g gives VALID AIS
     weights; g only controls variance, so the right selection target is
-    out-of-fold residual variance, not in-sample R^2."""
+    out-of-fold residual variance, not in-sample R^2.
+
+    `fold_seed` seeds the fold permutation from a LOCAL generator. It used to
+    come from an unseeded `torch.randperm`, which made the selected ridge a
+    function of whatever global RNG state happened to exist at call time:
+    identical inputs selected ridges spanning 0.003-0.03, and changing an
+    unrelated upstream seed moved the folds as well as the physics. Runs were
+    still reproducible for a fixed script and --seed, but the coupling was
+    invisible and contributed seed-to-seed spread to the AIS results on top of
+    the physical variation (Table S7b). Selection is now a pure function of
+    (features, target, ridges, k_folds, fold_seed).
+
+    `ridge_floor` restricts the grid from below. It exists because CV as posed
+    here cannot see the failure mode described above: the held-out folds are
+    drawn from the same ODE samples as the fit folds, so they lie ON the fit
+    manifold, while the coefficients explode only on configs the bridge HMC
+    moves OFF it. In 2 of 10 recorded runs CV therefore selected the smallest
+    ridge on offer and the run diverged, with a surrogate coefficient norm
+    2.2x anything a converged run produced (`scripts/40_fold_noise_audit.py`).
+    Default None keeps the recorded behaviour; the floor is a diagnostic and a
+    recommendation for the successor, not a change to the shipped U(1) result.
+    """
+    if ridge_floor is not None:
+        kept = tuple(r for r in ridges if r >= ridge_floor)
+        if not kept:
+            raise ValueError(
+                f"ridge_floor={ridge_floor} excludes every ridge in {ridges}")
+        ridges = kept
     n = features.shape[0]
-    perm = torch.randperm(n)
+    perm = torch.randperm(n, generator=torch.Generator().manual_seed(fold_seed))
     folds = [perm[i::k_folds] for i in range(k_folds)]
     cv = {}
     for ridge in ridges:

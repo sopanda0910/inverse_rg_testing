@@ -1,0 +1,3 @@
+﻿case L=32 beta=218.58 ...
+  {"n": 512, "ess_per_n": 0.001960320398211479, "log_weight_std": 123.37112426757812, "log_weight_range": 727.5625, "ess_per_n_fiber": 0.001953132450580597, "log_weight_std_fiber": 122.62403869628906, "log_weight_range_fiber": 725.328125, "fine_L": 32, "fine_beta": 218.58, "coarse_L": 16, "coarse_beta": 55.02364659738549, "seconds_hmc_base": 195.7, "seconds_generate": 149.2, "seconds_ode": 187.4}
+wrote out\u1_2d\model_ess_n512_case4\report.md

@@ -1,0 +1,6 @@
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+case L=16 beta=14.1464 ...
+  sigma_freeze=0.30415791273117065  threshold=0.5  ok=False  match_rate_no_projection=0.484
+case L=32 beta=55.0237 ...
+  sigma_freeze=0.3123648762702942  threshold=0.5  ok=False  match_rate_no_projection=0.266
+wrote C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u1_2d\charge_freezing\report.md

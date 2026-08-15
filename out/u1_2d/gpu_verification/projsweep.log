@@ -1,0 +1,100 @@
+======== proj sigma 020 ======== 
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+simulating base rung L=8 beta=1.3472 ...
+  acceptance 0.991
+rung 0: L=16 beta=4.0 plaq=0.8655 (pre-retherm 0.8557) <Q^2>=1.885  [49s]
+rung 1: L=32 beta=14.1464 plaq=0.9640 (pre-retherm 0.9635) <Q^2>=1.885  [53s]
+rung 2: L=64 beta=55.0237 plaq=0.9909 (pre-retherm 0.9907) <Q^2>=1.885  [155s]
+saved artifacts\projsweep\s020\generated\ladder_rung0_wilson_L16_beta4.pt
+saved artifacts\projsweep\s020\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+saved artifacts\projsweep\s020\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s020\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s020\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+saved artifacts\projsweep\s020\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+loaded artifacts\projsweep\s020\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s020\generated\ladder_rung0_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s020\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s020\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s020\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded artifacts\projsweep\s020\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+simulating reference HMC at L=16 beta=4.0 (no Q-hops) ...
+  acceptance 0.983, 13s
+simulating reference HMC at L=32 beta=14.1464 (no Q-hops) ...
+  acceptance 0.988, 43s
+simulating reference HMC at L=64 beta=55.0237 (no Q-hops) ...
+  acceptance 0.955, 87s
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.953
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\u1_2d\proj_sigma_ab\s020\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0019984163715718317, 'plaq_z': 2.0442096073793796, 'z': {'plaquette': 2.0442096073793796, 'wilson_2x2': 1.0057151786809362, 'wilson_4x4': -0.7899910390855812}}
+{'rung': 1, 'L': 32, 'beta': 14.1464, 'plaq_deviation': 4.386809530321223e-05, 'plaq_z': 0.35651469062493796, 'z': {'plaquette': 0.35651469062493796, 'wilson_2x2': 0.7771582362744424, 'wilson_4x4': 0.15992640209081643}}
+{'rung': 2, 'L': 64, 'beta': 55.0237, 'plaq_deviation': 1.277585663894687e-05, 'plaq_z': 0.7928647978378244, 'z': {'plaquette': 0.7928647978378244, 'wilson_2x2': 0.6718697573364742, 'wilson_4x4': 0.3122084235786756}}
+======== proj sigma 031 ======== 
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+simulating base rung L=8 beta=1.3472 ...
+  acceptance 0.991
+rung 0: L=16 beta=4.0 plaq=0.8655 (pre-retherm 0.8559) <Q^2>=1.901  [122s]
+rung 1: L=32 beta=14.1464 plaq=0.9640 (pre-retherm 0.9635) <Q^2>=1.901  [153s]
+rung 2: L=64 beta=55.0237 plaq=0.9909 (pre-retherm 0.9907) <Q^2>=1.901  [219s]
+saved artifacts\projsweep\s031\generated\ladder_rung0_wilson_L16_beta4.pt
+saved artifacts\projsweep\s031\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+saved artifacts\projsweep\s031\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s031\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s031\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+saved artifacts\projsweep\s031\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+loaded artifacts\projsweep\s031\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s031\generated\ladder_rung0_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s031\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s031\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s031\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded artifacts\projsweep\s031\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+simulating reference HMC at L=16 beta=4.0 (no Q-hops) ...
+  acceptance 0.983, 24s
+simulating reference HMC at L=32 beta=14.1464 (no Q-hops) ...
+  acceptance 0.988, 35s
+simulating reference HMC at L=64 beta=55.0237 (no Q-hops) ...
+  acceptance 0.955, 64s
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.953
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\u1_2d\proj_sigma_ab\s031\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0019855042049565785, 'plaq_z': 2.044865726988817, 'z': {'plaquette': 2.044865726988817, 'wilson_2x2': 0.9522060493730483, 'wilson_4x4': -0.7477145448273926}}
+{'rung': 1, 'L': 32, 'beta': 14.1464, 'plaq_deviation': 4.3588388090043395e-05, 'plaq_z': 0.3543246641297241, 'z': {'plaquette': 0.3543246641297241, 'wilson_2x2': 0.7684208791293171, 'wilson_4x4': 0.14517126160702537}}
+{'rung': 2, 'L': 64, 'beta': 55.0237, 'plaq_deviation': 1.2743260348835328e-05, 'plaq_z': 0.7908396128544852, 'z': {'plaquette': 0.7908396128544852, 'wilson_2x2': 0.6679356493223794, 'wilson_4x4': 0.3053151934188255}}
+======== proj sigma 050 ======== 
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+simulating base rung L=8 beta=1.3472 ...
+  acceptance 0.991
+rung 0: L=16 beta=4.0 plaq=0.8655 (pre-retherm 0.8559) <Q^2>=1.911  [93s]
+rung 1: L=32 beta=14.1464 plaq=0.9640 (pre-retherm 0.9635) <Q^2>=1.911  [113s]
+rung 2: L=64 beta=55.0237 plaq=0.9909 (pre-retherm 0.9907) <Q^2>=1.911  [173s]
+saved artifacts\projsweep\s050\generated\ladder_rung0_wilson_L16_beta4.pt
+saved artifacts\projsweep\s050\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+saved artifacts\projsweep\s050\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s050\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+saved artifacts\projsweep\s050\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+saved artifacts\projsweep\s050\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+loaded artifacts\projsweep\s050\generated\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s050\generated\ladder_rung0_wilson_L16_beta4.pt
+loaded artifacts\projsweep\s050\generated\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s050\generated\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded artifacts\projsweep\s050\generated\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded artifacts\projsweep\s050\generated\ladder_rung2_wilson_L64_beta55.0237.pt
+simulating reference HMC at L=16 beta=4.0 (no Q-hops) ...
+  acceptance 0.983, 20s
+simulating reference HMC at L=32 beta=14.1464 (no Q-hops) ...
+  acceptance 0.988, 30s
+simulating reference HMC at L=64 beta=55.0237 (no Q-hops) ...
+  acceptance 0.955, 61s
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.953
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\u1_2d\proj_sigma_ab\s050\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0019551846880990764, 'plaq_z': 1.9984900861185038, 'z': {'plaquette': 1.9984900861185038, 'wilson_2x2': 0.8914336429716698, 'wilson_4x4': -0.7294269291418457}}
+{'rung': 1, 'L': 32, 'beta': 14.1464, 'plaq_deviation': 4.342726928463492e-05, 'plaq_z': 0.3528923871970616, 'z': {'plaquette': 0.3528923871970616, 'wilson_2x2': 0.7661255190769302, 'wilson_4x4': 0.1456862931099727}}
+{'rung': 2, 'L': 64, 'beta': 55.0237, 'plaq_deviation': 1.2929524863758424e-05, 'plaq_z': 0.8032677317236228, 'z': {'plaquette': 0.8032677317236228, 'wilson_2x2': 0.6836214850675526, 'wilson_4x4': 0.3496047091018515}}
+======== projsweep done Fri 08/14/2026 13:31:59.50 ======== 

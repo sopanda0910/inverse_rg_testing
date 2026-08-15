@@ -17,7 +17,10 @@ Two sibling packages, one per theory:
   AIS transport, L=64 head-to-head — is finished and documented. Results in
   `out/u1_2d/paper_appendix/appendix.md`, full story in `docs/NARRATIVE.md`,
   audit in `docs/V2_AUDIT.md`. Do not reopen model-quality work; bug-parity
-  fixes only.
+  fixes only. **Post-closure corrections (2026-08-14/15) are in
+  `docs/NARRATIVE.md` §25.5** — read it before quoting Tables S1, S3, S4, S6b
+  or S7b, all of which carried numbers from superseded runs, and before
+  quoting the exact-P(Q) crutch (§21.6, `PHYSICS_WALKTHROUGH.md` F1).
 - `su2_2d/` — 2D SU(2). **SET ASIDE (2026-08-03) and NOT in the working tree.**
   It was removed from tracking in `f7bca3b` while the focus moved to
   documenting and publishing U(1). Recover it with
@@ -80,9 +83,24 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
   limit that costs what direct simulation costs. The conceptually clean
   claim is the *seeded* mode: exact HMC from a diffusion seed is
   asymptotically exact within its sector, with the sector supplied by
-  transport. AIS bridging saturates its derived floor (2.6× spread reduction
-  at the extrapolation case) but did **not** lift ESS — it is a validated
-  *mechanism*, not a delivered exactness route.
+  transport. AIS bridging reaches its derived floor in 8 of 10 seeds
+  (1.97–2.71× spread reduction at the extrapolation case) but did **not**
+  lift ESS — it is a validated *mechanism*, not a delivered exactness route.
+  The other 2 of 10 diverge by 10²–10³. The cause is the **surrogate's
+  regularization**, established by intervention (Table S7c): holding inputs
+  byte-identical and varying only a floor on the ridge grid moves held-out σ
+  2132 → 43.1 at the extrapolation case, spanning both modes on its own. Both
+  divergent seeds had selected the grid's smallest ridge and no converged seed
+  did (p = 0.022), with coefficient norms 231/247 vs 40–105.
+  Guard on the **surrogate coefficient norm**, not `hmc_acceptance_min` —
+  acceptance is downstream and misses cases (at 32:218.6 σ blows up 18× with
+  acceptance flat at 0.958). Do not reach for basis width, and do not trust
+  `fit_surrogate_cv` to pick the ridge: its held-out folds sit on the fit
+  manifold, while the coefficients only explode off it, so CV is blind to this
+  failure by construction. More ridge is not monotonically better — 16:55.02
+  reverses — so there is no floor to hard-code.
+  (Table S7b/S7c, `parse_ais_seed_rate.py`, `40_fold_noise_audit.py`,
+  `41_ridge_scan_report.py`.)
 - Ladder invariant (use it, it is the design's justification): with
   β_f = 4β_c and L_f = 2L_c, the exact finite-volume ⟨Q²⟩ ≈ V/(4π²β) is a
   **fixed point** of the ladder (Villain: 1.20271 → 1.20334 → 1.20334 →
@@ -105,7 +123,7 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
 
 ### Testing
 
-- `pytest u1_2d/tests -q` (111 tests; `su2_2d/tests` only exists once su2_2d is
+- `pytest u1_2d/tests -q` (142 tests; `su2_2d/tests` only exists once su2_2d is
   restored from git — see above)
 - `python u1_2d/scripts/29_verify_identities.py` — the exact physics identities
   (Q integrality, gauge invariance, blocking telescope, curl-head completeness,

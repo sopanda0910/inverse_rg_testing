@@ -1,0 +1,79 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "coarse_beta": 14.146404977472109,
+    "n_configs": 384,
+    "std_before": 36.00803756713867,
+    "bases": {
+      "final7": [
+        {
+          "n_fit": 24,
+          "r2_insample": 0.6362638845979327,
+          "r2_heldout": 0.49180649073693905,
+          "resid_std_heldout": 29.894933550111247,
+          "implied_floor": 25.66929907254775,
+          "ridge": 0.1
+        },
+        {
+          "n_fit": 48,
+          "r2_insample": 0.7403018499980558,
+          "r2_heldout": 0.5369010713724491,
+          "resid_std_heldout": 28.5377627832088,
+          "implied_floor": 24.50396374073504,
+          "ridge": 0.001
+        },
+        {
+          "n_fit": 96,
+          "r2_insample": 0.6590059913575318,
+          "r2_heldout": 0.6261389883335355,
+          "resid_std_heldout": 25.641186877381017,
+          "implied_floor": 22.016817445915706,
+          "ridge": 0.003
+        },
+        {
+          "n_fit": 192,
+          "r2_insample": 0.6998082670295974,
+          "r2_heldout": 0.631962447789121,
+          "resid_std_heldout": 25.440702667431527,
+          "implied_floor": 21.84467158260778,
+          "ridge": 0.001
+        }
+      ],
+      "rich11": [
+        {
+          "n_fit": 24,
+          "r2_insample": 0.6914918801471387,
+          "r2_heldout": 0.5385014238600426,
+          "resid_std_heldout": 28.488410472549283,
+          "implied_floor": 24.461587355448316,
+          "ridge": 0.03
+        },
+        {
+          "n_fit": 48,
+          "r2_insample": 0.7445274996203892,
+          "r2_heldout": 0.5719478600422605,
+          "resid_std_heldout": 27.436668232991522,
+          "implied_floor": 23.558508375554116,
+          "ridge": 0.001
+        },
+        {
+          "n_fit": 96,
+          "r2_insample": 0.6750804797849106,
+          "r2_heldout": 0.6126699720940401,
+          "resid_std_heldout": 26.098985076362172,
+          "implied_floor": 22.409906089676124,
+          "ridge": 0.003
+        },
+        {
+          "n_fit": 192,
+          "r2_insample": 0.7105993306438871,
+          "r2_heldout": 0.6166939435817256,
+          "resid_std_heldout": 25.963059950963633,
+          "implied_floor": 22.2931939153714,
+          "ridge": 0.001
+        }
+      ]
+    }
+  }
+]

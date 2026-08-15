@@ -337,11 +337,55 @@ below-2τ_int criterion) — below the interval, i.e. cheaper than the
 chain's marginal cost per config; fresh hot chains never thermalize above
 β ≈ 8.8.
 
+> **Revised 2026-08-14: the interval is now plotted, by regime.** Earlier
+> versions of this figure omitted 2τ_int even though this caption described
+> it, because at large β an "equilibrated" chain has frozen topology and its
+> steady-state cost flatters HMC. Omitting it hid the caveat instead of
+> stating it. The figure now shows the interval as a solid bar where the
+> chain is genuinely mixing (β ≤ 6.47, 3.0–8.7 trajectories) and, where
+> `q_freezing.frozen` is set, as a solid bar for the Wilson part plus a
+> hatched extension and arrow past the budget. That is the honest reading:
+> the chain does decorrelate its Wilson loops in ~10 trajectories, but it
+> never changes topological sector inside 640, so the cost of an
+> *independent* configuration is bounded below by the budget, not equal to
+> the interval.
+>
+> The regime boundary is read per rung from `q_freezing.frozen`, not set by
+> hand. It sits between β = 6.47 (mixing) and β = 7.22 (frozen).
+>
+> This cuts against the diffusion arm, not for it: the "23 of 29 below
+> 2τ_int" count above holds the seed to a bar that is too low wherever
+> topology is frozen, so it understates the margin.
+
 ### Figure 13 — `figures/13_beta_scan.png`
 **Thermalization across the β scan.** The same three quantities as a function
 of β_f: the ordering t_therm(seed) < 2τ_int < burn-in(fresh) sets in at
 moderate coupling and widens as standard HMC slides into critical slowing
 down and topological freezing.
+
+> **Six rungs added 2026-08-14 (Part G, β_f = 5.41, 6.47, 7.22, 8.00, 8.39,
+> 9.61).** A speedup over HMC only means something where HMC still works, and
+> the scan was thin exactly there. Splitting the 29 original rungs by regime
+> (`scripts/35_crossover_window.py`) gave: 7 rungs where fresh chains
+> thermalize and topology tunnels, median speedup 1.9×; 19 rungs where
+> topology has frozen; 3 where neither start thermalizes at all. So 22 of 29
+> rungs sat where the comparison is not a speedup but a statement that one
+> method finishes and the other does not — and the band carrying the actual
+> claim held 7 points, with the two large margins (7.0× at β = 4.44, 25× at
+> β = 6.11) at its top edge followed by a gap straight to 8.80.
+>
+> The six new matched pairs fill that gap. The healthy band is now 9 rungs
+> reaching β = 6.47, the freezing coupling is bracketed between 6.47 and
+> 7.22 (previously only known to lie between 6.11 and 8.80), and the coupling
+> where fresh hot starts stop thermalizing is bracketed between 8.80 and
+> 9.61. The rise in margin through the crossover — 7.0×, ≥67×, 25×, 14.3×,
+> then 15.3×, 97×, 21.1× past freezing — is measured rather than
+> interpolated. It is also visibly noisy at fixed β, which is the honest
+> caveat: single-seed t_therm on a 640-trajectory grid is coarse, and rungs
+> where the seed thermalizes at the first measurement are quoted as lower
+> bounds (≥).
+>
+> Provenance: `out/u1_2d/thermalization/crossover_window.json`.
 
 ### Figure 14 — `figures/14_relaxation_mid.png`
 **Relaxation curves, β_f = 55.02 (L = 32).** Ensemble-mean observable traces
@@ -397,6 +441,31 @@ total, still flat in β. The claim this figure supports is therefore *not*
 while the baseline's does, and beyond β ≈ 55 the baseline stops reaching
 correctness at any tested budget.
 
+> **The break-even count, stated (2026-08-14).** Protocol item 8 below asks
+> for a break-even configuration count and this appendix did not give one, so
+> here it is. Setting total costs equal, `8820 + 2.4 N` for the diffusion arm
+> against `entry + 0.01 N` for instanton HMC:
+>
+> | β_f | instanton-HMC entry | break-even N |
+> |---|---|---|
+> | 4.44 | 8 s | **none — no N** |
+> | 14.15 | 16 s | **none — no N** |
+> | 55.02 | 1677 s | **none — no N** |
+> | 218.58 | never converges | **undefined** |
+>
+> There is no break-even at any coupling where the baseline works. The
+> diffusion arm is behind on both terms — a larger fixed charge *and* a
+> ~240× larger marginal cost — so the deficit grows with N rather than
+> closing. At β = 218.58 the question does not arise, because the baseline is
+> 7.2σ off after 8000 trajectories and a cost comparison against an ensemble
+> that is wrong is meaningless.
+>
+> This is the honest form of the cost claim and it should not be softened:
+> **on wall-clock alone this method loses everywhere its competitor is
+> correct.** Its case rests entirely on the regime where the competitor stops
+> being correct at any budget, plus the flatness of its cost in β. A referee
+> will do this arithmetic; better that the paper does it first.
+
 ### Figure 19 — `figures/19_ess_weights.png`
 **Exact-likelihood diagnostic (honest negative).** Importance weights
 w = e^(−S)/q from the probability-flow ODE likelihood (Hutchinson divergence,
@@ -416,11 +485,18 @@ and Table S5.
 **Mismatch controls in exact-sector mode.** The part-B scan of Fig. 5 rerun
 with C-antithetic base symmetrization and sectors resampled from the exact
 finite-volume P(Q) at each *target* coupling. Every χ² failure of the
-transport mode (B_bt6: p = 0.0005 → 0.43; B_bt30: 0.0000 → 0.94;
-B_bt55: 0.005 → 0.77; B_bc2_bt8: 0.03 → 0.32; and C_L128: 0.005 → 0.39)
-passes; Wilson observables are unchanged. Sector content is no longer
-inherited from the (deliberately wrong) base — it is drawn where the target
-theory says it should be.
+transport mode passes; Wilson observables are unchanged. Sector content is no
+longer inherited from the (deliberately wrong) base — it is drawn where the
+target theory says it should be.
+
+*Caption corrected 2026-08-14.* This caption previously listed five transport
+failures (B_bt6: p = 0.0005; B_bt30: 0.0000; B_bt55: 0.005; B_bc2_bt8: 0.03;
+C_L128: 0.005). On the current ensembles of record only **three** fail, all in
+track B — B_bt6 (5.7×10⁻⁵), B_bt30 (1.9×10⁻⁴), B_bt55 (4.3×10⁻⁵). B_bc2_bt8
+and C_L128 now pass in transport mode, C_L128 at p = 0.8663. The figure still
+shows what it claims for the track-B mismatch controls it was built for; it no
+longer supports the stronger reading that transport fails at large volume. See
+the regenerated Table S3.
 
 ### Figure 21 — `figures/21_pq_tail_mismatch.png`
 **Sector re-equilibration by an instanton-HMC tail (B_bt6, L = 32,
@@ -533,73 +609,289 @@ uniformly 3.7–12.5× above the ~0.005 bar at which self-normalized weights
 would become usable. The program is closed at its optimum: rkl2 + σ_min 0.03,
 with the remainder characterized rather than conjectured.
 
+### Figure 28 — `figures/28_dissociation.png`
+**Observable agreement does not bound the density.** The study's central
+result, on one pair of axes, for the deployed checkpoint. (a) Its pipeline
+validation: 84 gauge-invariant observables across the three ladder rungs,
+against exact character-expansion values. Mean |z| = 0.58 against the 0.798
+a correctly-calibrated sampler would give, and 0 of 84 past |z| = 3 — by any
+observable-level test this ensemble passes, and the sub-ideal mean indicates
+error bars that are mildly conservative rather than too tight.
+
+Two caveats on reading panel (a), both of which weaken it as evidence and
+neither of which rescues panel (b). The 84 observables are strongly
+correlated — nested Wilson loops on the same configurations — so this is far
+fewer than 84 independent tests, and for independent normals one would expect
+only ~0.2 outliers past |z| = 3 anyway, making "0 of 84" unsurprising rather
+than impressive. And mean |z| below ideal is itself a mild warning: it says
+the quoted errors slightly exceed the observed scatter, so the test is a
+little less stringent than its face value. Panel (a) is evidence that nothing
+detectable is wrong at the observable level, not evidence that the sampler is
+correct. (b) The same
+checkpoint's own fiber log-weight spread on its ESS probes: 41–117
+nats/config, 14–39× above the ~3-nat scale at which self-normalized weights
+stay usable.
+
+Both panels are the same model, which is the point. An ensemble can match
+every observable anyone thinks to measure and still be drawn from a density
+far from the target, because agreement in a handful of low-dimensional
+projections constrains almost nothing about a distribution over 2L² angles.
+This is the evidence behind the reporting protocol below: report a density
+diagnostic, or state plainly that the sampler is validated on observables
+only.
+
+Units caution: the per-site spread here is 0.030–0.091 nats/site, larger than
+the 0.018–0.062 in Fig. 27b, because this is the **deployed** `score_net.pt`
+and that is the **rkl2** likelihood-work checkpoint. Different models. Do not
+quote the two ranges together.
+
+Provenance: `u1_2d/scripts/36_dissociation_figure.py`, reading
+`validation/report.md` and `model_ess/ess_results.json`.
+
 ---
 
 ## Table S1 — Instanton-HMC burn-in scan (entry cost vs quality, L = 32)
 
 | β_f | burn-in (traj) | max Wilson \|z\| | quality | entry cost (s) | diffusion s/config |
 |---|---|---|---|---|---|
-| 4.44 | 500 | 2.5 | pass | 8 | 2.28 |
-| 14.15 | 500 | 1.7 | pass | 16 | 2.39 |
-| 55.02 | 500 | 7.1 | fail | 31 | 2.37 |
-| 55.02 | 2000 | 3.3 | fail | 328 | — |
-| 55.02 | 8000 | 1.1 | pass | 1677 | — |
-| 118.5 | 500 | 9.4 | fail | 42 | 2.76 |
-| 218.58 | 500 | 16.6 | fail | 58 | 2.55 |
-| 218.58 | 2000 | 7.8 | fail | 605 | — |
-| 218.58 | 8000 | 7.2 | fail | 2534 | — |
+| 4.44 | 500 | 2.5 | pass | 8.4 | 2.28 |
+| 14.15 | 500 | 1.7 | pass | 15.8 | 2.39 |
+| 55.02 | 500 | 7.1 | fail | 30.6 | 2.37 |
+| 55.02 | 2000 | 3.6 | fail | 178.5 | — |
+| 55.02 | 8000 | 0.3 | pass | 606.3 | — |
+| 118.5 | 500 | 9.4 | fail | 42.2 | 2.76 |
+| 218.58 | 500 | 16.6 | fail | 58.3 | 2.55 |
+| 218.58 | 2000 | 8.5 | fail | 301.4 | — |
+| 218.58 | 8000 | 3.2 | fail | 1137.0 | — |
 
 Production window 640 trajectories × 32 chains throughout; quality = all
 Wilson-observable |z| ≤ 2.5 vs exact. Instanton-HMC ⟨Q²⟩ is correct in every
 row (the Q-hop works); the failures are UV thermalization.
 
+**Deep-burn-in rows corrected 2026-08-14.** The four burn-in 2000/8000 rows
+previously read 3.3/1.1/7.8/7.2 for max \|z\| and 328/1677/605/2534 s; those
+came from a superseded scan (the entry costs are ≈ 2× the current ones,
+consistent with the pre-GPU timings). The 500-trajectory rows were and remain
+correct. One correction matters for the reading: at β = 218.58 with an
+8000-trajectory burn-in the worst Wilson \|z\| is **3.2, not 7.2** — still a
+fail against the ≤ 2.5 criterion, but close to it rather than hopeless. The
+honest statement is that instanton-HMC at the extrapolation coupling is
+approaching acceptable quality at ~1140 s of entry cost per chain-set, not
+that it stays far away at any budget. Source of record:
+`out/u1_2d/diffusion_vs_instanton/burnin_scan/report.md` and `summary.json`.
+
+## Table S6b — Non-learned warm starts (the prolongator baseline)
+
+Fresh hot/cold starts are only half a control. They discard the coarse
+configuration, while the diffusion seed is handed it — so part of the measured
+speedup might be bought by *any* coarse-to-fine map, with no learning in it.
+Three non-learned prolongators, given the identical coarse ensemble and scored
+with the same `t_therm` criterion as Fig. 12 (L = 32, 64 configs, **2000
+trajectories**; re-run 2026-08-14 — the original 640-trajectory budget was a
+scan convention, not a principled ceiling, and three entries it recorded as
+failures were merely short of it):
+
+- **tile** — replicate the coarse configuration 2×2. Not blocking-consistent;
+  its plaquettes follow the *coarse* theory at β_c = β_f/4, four times too
+  disordered.
+- **halve** — the exact inverse of the blocking rule: split each coarse link
+  over the two fine links it was built from, zero the links blocking never
+  reads. Blocking-consistent, locally cold.
+- **flux** — as `halve`, but the unread links are set so each coarse plaquette
+  angle is shared equally by the four fine plaquettes of its cell. The best
+  purely geometric prolongator.
+- **ape** — `flux` followed by APE smearing, i.e. Endres-style classical
+  interpolation: prolong, then smooth. The smearing count is **chosen to match
+  the exact plaquette at each β**, not fixed — smearing is monotone in
+  ⟨cos p⟩ and runs past equilibrium if left alone (20 iterations reach 0.999
+  where β_f = 55 equilibrates at 0.991), so a fixed count would hand the
+  classical arm an over-ordered configuration and beat a strawman.
+
+| β_f | tile | halve | flux | **ape** | fresh hot | fresh cold | **diffusion seed** |
+|---|---|---|---|---|---|---|---|
+| 4.44 | 77 | 69 | 71 | **49** | 63 | 56 | **8** |
+| 6.11 | 696 | 156 | 185 | **136** | 148 | 100 | **4** |
+| 14.15 | > 2000 | > 2000 | 425 | **149** | never | 141 | **0** |
+| 55.02 | > 2000 | > 2000 | > 2000 | **321** | never | 393 | **0** |
+| 218.58 | > 2000 | > 2000 | > 2000 | **150** | never | never | **6** |
+
+Every non-converging entry is stated as "> 2000", not "never": these are
+budget-limited observations, and at 640 trajectories three of them (`tile` at
+6.11, `flux` at 14.15, `ape` at 55.02) read as failures when they were not.
+The `fresh hot`/`fresh cold` columns are carried over from Fig. 12's own
+640-trajectory scan and their "never" entries inherit that smaller budget.
+
+Read these to ~20%: independent runs of the geometric arms gave 56/61/67,
+68/78/73 and 77/69/71 at β_f = 4.44, so small differences between columns are
+scatter, not signal. The order-of-magnitude gaps are not.
+
+Verified rather than assumed: `halve` and `flux` invert `block_links` to
+1.2–2.4 × 10⁻⁷, and `flux` equalizes the four fine plaquettes in every cell
+exactly (spread 0.0000), so these are the intended maps and not approximations
+of them.
+
+Two readings, and the second is the substantive one.
+
+*Geometry alone is worth nothing.* The three purely geometric maps are at
+best equal to, and usually worse than, a fresh **cold** start — 71 vs 56 at
+β_f = 4.44, 185 vs 100 at 6.11, 425 vs 141 at 14.15 — and blocking-consistency
+does not rescue them: `halve` and `flux` satisfy the constraint to 10⁻⁷ and
+are still beaten by starting from nothing. Prolonging a coarse configuration
+by an obvious deterministic rule forces the fine lattice into a state that is
+right at long distance and wrong at short distance, and the chain must undo
+that before it can equilibrate. Starting from noise is genuinely better.
+
+*Smoothing is what the classical method was missing, and it works —
+including where nothing else does.* `ape` beats a fresh cold start at
+β_f = 4.44 (49 vs 56) and 55.02 (321 vs 393), and it is the only arm of any
+kind, learned baselines aside, that thermalizes at β_f = 218.58: **150
+trajectories where both fresh starts and all three geometric prolongators do
+not converge within 2000.** Endres-style interpolation is a real method and
+the naive prolongators are a strawman for it. Any claim that the diffusion
+seed is the *only* usable starting point in the frozen regime is false, and an
+earlier draft of this table said so in error.
+
+*The learned map still wins by an order of magnitude.* Against the strongest
+classical arm the seed is 6.1× faster at β_f = 4.44, 34× at 6.11, and 25× at
+218.58 (6 vs 150); at β_f = 14.15 and 55.02 it is already at plateau
+(t_therm = 0) where `ape` needs 149 and 321. The margin is large and
+consistent, but it is a margin over a working competitor, not a walkover.
+
+So the speedup is not "warm start beats cold start" — geometry buys nothing —
+and it is not merely "smoothing beats noise", since APE gets most of that and
+still loses by 4–40×. It is specific to the learned short-distance structure.
+This answers implied experiments 2 and 3 of `docs/NARRATIVE.md` §25, both in
+the pipeline's favour. Provenance: `u1_2d/scripts/37_tiling_baseline.py`,
+`out/u1_2d/tiling_baseline_2000/tiling_baseline.json` (of record);
+`tiling_baseline/` holds the superseded 640-trajectory scan.
+
 ## Table S2 — Probability-flow ODE ESS (raw model transport)
 
 | L | β_f | ESS/N (fiber-corrected) | log-w spread per site (nats) |
 |---|---|---|---|
-| 16 | 14.15 | 0.016 | 0.078 |
-| 16 | 55.02 | 0.016 | 0.078 |
-| 32 | 55.02 | 0.016 | 0.035 |
-| 32 | 218.58 | 0.016 | 0.074 |
+| 16 | 14.15 | degenerate (= 1/N) | 0.078 |
+| 16 | 55.02 | degenerate (= 1/N) | 0.078 |
+| 32 | 55.02 | degenerate (= 1/N) | 0.035 |
+| 32 | 218.58 | degenerate (= 1/N) | 0.074 |
 
-Guidance-off control: 0.019–0.021 at L = 16, 0.016 at L = 32 — statistically
-identical, attributing the gap to the score model rather than the guidance.
+Reported as "degenerate" rather than as 0.016, per protocol item 4 below:
+every entry equalled 1/N to the digits shown, so quoting three digits implied
+a precision that was not there. The n = 512 re-run confirms the weights are
+degenerate rather than merely poorly resolved — see the note below.
+
+Guidance-off control: also at the 1/N floor at L = 32, and 1.2–1.35× the
+floor at L = 16 — statistically indistinguishable, attributing the gap to the
+score model rather than the guidance.
+
+> **Resolved at n = 512 (2026-08-14).** Every entry above is exactly 1/64,
+> which is the estimator's floor rather than a measurement — the point made
+> at length under "Reading ESS at its floor" below, and referee objection 4
+> in `docs/NARRATIVE.md` §25, which asked for a re-run at N ≫ 64. Done, at
+> n = 512:
+>
+> All four cases, fiber-corrected (1/512 = 0.0019531):
+>
+> | case | ESS/N at n = 64 | ESS/N at n = 512 | ESS in configurations | log-w std | log-w range |
+> |---|---|---|---|---|---|
+> | 16:14.15 | 0.01563 (= 1/64) | 0.0019531 | **1.00** | 39.7 | 235 nats |
+> | 16:55.02 | 0.01563 | 0.0024352 | **1.25** | 40.6 | 233 nats |
+> | 32:55.02 | 0.01563 | 0.0019531 | **1.00** | 85.4 | 484 nats |
+> | 32:218.58 | 0.01600 | 0.0019531 | **1.00** | 122.6 | 725 nats |
+>
+> The answer is not that ESS/N is some smaller resolved number. **The
+> effective sample size is one configuration, and it does not grow with N.**
+> Drawing 8× more samples bought no additional effective samples: three of
+> four cases sit at exactly 1/512, the fourth at 1.25 configurations. A single
+> configuration carries essentially all the self-normalized weight and the
+> other 511 contribute nothing. ESS/N tracking 1/N exactly is the signature
+> of complete weight degeneracy, and the log-weight range — 233 to 725 nats
+> across these cases — is why: the largest weight exceeds the rest by
+> factors of e^200 and up.
+>
+> This is worth stating in those units. "ESS/N = 0.016" reads as a small
+> fraction of a usable ensemble; "one effective configuration regardless of
+> how many you draw" is the same fact and is the one a reader can act on. It
+> also settles the direction of the objection: the earlier value was not
+> merely unresolved, it was optimistic, and no achievable N rescues raw
+> transport as an importance sampler.
+>
+> Provenance: `out/u1_2d/model_ess_n512/ess_results.json` (first three cases)
+> and `model_ess_n512_case4/` (32:218.58, re-run separately after the first
+> attempt hit a CUDA OOM while sharing the GPU with a training sweep).
 
 ## Table S3 — Sector-mode comparison (38-case study, same checkpoint and seeds)
 
+**Regenerated 2026-08-14 from the current ensembles of record.** The numbers
+below replace the originally published column pair, which was transcribed from
+a generalization run superseded by the GPU regeneration. Both columns are
+computed on the 38 cases the two modes share (the six Part-G rungs exist only
+in transport mode and are excluded, not counted on one side).
+
 | metric | transport | exact-sector |
 |---|---|---|
-| exact-P(Q) χ² failures (p < 0.05) | 5/35 | 1/35 |
-| … of which mismatch track (B) | 4 | 0 |
-| worst \|z(⟨Q²⟩ vs exact)\| | 11.8 | 2.8 |
-| cases with \|z(⟨Q²⟩)\| > 2 | 13 [b] | 3 [b] |
-| significant ⟨Q⟩ asymmetry (\|z\| > 2) | 0 | 0 |
-| mean \|plaquette z\| (38 cases) | 1.77 | 1.74 |
+| exact-P(Q) χ² failures (p < 0.05) | 3/35 | 2/35 |
+| … of which mismatch track (B) | 3 | 0 |
+| worst \|z(⟨Q²⟩ vs exact)\| | 10.9 (B_bt6) | 2.8 (D_bc20) |
+| cases with \|z(⟨Q²⟩)\| > 2 | 6 | 3 |
+| … non-finite z excluded from both | 2 | 2 |
+| significant ⟨Q⟩ asymmetry (\|z\| > 2) | 1 | 0 |
+| mean \|plaquette z\| | 0.85 | 0.79 |
 
-[b] Counting convention differs between the columns as originally tabulated:
-the transport 13 includes 2 rows with z = +inf, while the exact-sector 3
-excludes its own 2 such rows. Counted consistently the pair is 13 vs 5
-(inf included) or 11 vs 3 (inf excluded); the qualitative gap is unchanged.
+Transport failures: B_bt30 (p = 1.9×10⁻⁴), B_bt55 (4.3×10⁻⁵), B_bt6
+(5.7×10⁻⁵). Exact-sector failures: A_bc0.75 (0.013), D_bc20 (0.035).
 
-The exact-sector residuals are at the multiple-testing false-positive rate
-(≈ 1.75 expected at α = 0.05 over 35 tests). χ² is computable for 35 of 38
-cases; the three deep-frozen cases (exact ⟨Q²⟩ ≲ 10⁻³) have no populated
-bins to test.
+**What changed, and why it matters.** Previously published: 5/35 against 1/35,
+read as exact-sector mode rescuing transport. Measured now: **3/35 against
+2/35** — both at the multiple-testing false-positive rate (≈ 1.75 expected at
+α = 0.05 over 35 tests), so the modes are no longer distinguishable on this
+metric. Every remaining transport failure is in track B, where the base
+coupling is *deliberately* mismatched, and none is a volume case. The two
+formerly-failing cases that now pass are B_bc2_bt8 and C_L128.
+
+C_L128 is the consequential one: its transport χ² p is **0.8663**, not the
+0.005 quoted in the Figure 20 caption and in §21.5 of the narrative, and
+exact-sector mode moves it to 0.3875 — i.e. slightly *worse*. The claim that
+large-volume topology passes only under the exact-P(Q) crutch does not hold on
+these ensembles. The crutch still tightens ⟨Q²⟩ (worst \|z\| 10.9 → 2.8) and
+still removes the track-B failures, which is a real effect; it is not what
+makes L = 128 pass.
+
+χ² is computable for 35 of 38 cases; the three deep-frozen cases (exact ⟨Q²⟩
+≲ 10⁻³) have no populated bins to test.
+
+Provenance: `u1_2d/scripts/42_sector_mode_table.py`,
+`out/u1_2d/sector_mode_table/`.
 
 ## Table S4 — P(Q) before/after a 200-trajectory instanton-HMC tail
 
+**Regenerated 2026-08-14** directly from `out/u1_2d/pq_hmc_tail/summary.json`.
+The previously published version disagreed with that file in almost every
+cell, quoted β_f = 43.6 for a case whose target coupling is 45.62, and mixed
+the fixed-200 run with the adaptive run (`pq_hmc_tail_adaptive/`) in the C_L64
+row. All values below are the fixed-200-trajectory run, one source.
+
 | case | L | β_f | ⟨Q²⟩ before | after | exact | χ² p before | after | tail (s) |
 |---|---|---|---|---|---|---|---|---|
-| B_bt6 | 32 | 6 | 1.92 | 5.20 | 4.78 | 0.0005 | 0.39 | 6 |
-| A_bc1.5 | 32 | 4.44 | 5.10 | 6.88 | 6.79 | 0.87 | 0.24 | 6 |
-| E_bc11.8 | 32 | 43.6 | 0.44 | 0.54 | 0.58 | 0.31 | 0.96 | 16 |
-| D_bc55.02 | 32 | 218.6 | 0.031 | 0.039 | 0.029 | — | — | 41 |
-| C_L64 | 64 | 14.15 | 6.43 | 10.4 | 7.62 | 0.07 | 0.70 | 19 |
+| B_bt6 | 32 | 6 | 1.88 | 4.92 | 4.78 | 0.0001 | 0.38 | 7.1 |
+| A_bc1.5 | 32 | 4.44 | 7.83 | 7.04 | 6.79 | 0.51 | 0.86 | 4.9 |
+| E_bc11.8 | 32 | 45.62 | 0.57 | 0.46 | 0.57 | 0.91 | 0.10 | 13.4 |
+| D_bc55.02 | 32 | 218.58 | 0.016 | 0.031 | 0.029 | — | — | 27.9 |
+| C_L64 | 64 | 14.15 | 6.22 | 7.42 | 7.62 | 0.24 | 1.00 | 7.3 |
 
-Tails run on the transport-mode ensembles (the harder starting point). The
-frozen-regime row (β_f = 218.6) has too few populated Q bins for a χ² test;
-its ⟨Q²⟩ stays consistent with exact. All tails cost seconds — negligible
-against either arm of the head-to-head in Table S1.
+Tails run on the transport-mode ensembles. The frozen-regime row
+(β_f = 218.58) has too few populated Q bins for a χ² test; its ⟨Q²⟩ stays
+consistent with exact. All tails cost seconds — negligible against either arm
+of the head-to-head in Table S1.
+
+**What this table does and does not show.** B_bt6 is the case it was built
+for: a deliberately mismatched base, χ² p = 10⁻⁴ before, 0.38 after, repaired
+in 200 trajectories. The other four rows *already pass before the tail*
+(p = 0.51, 0.91, —, 0.24), so for them the tail is a null operation and
+E_bc11.8 is in fact slightly worse afterwards (0.91 → 0.10, within χ²
+scatter at 5 populated bins). The generalized statement — how long a tail is
+needed as a function of volume, and whether it is needed at all — is measured
+in `docs/NARRATIVE.md` §21.6: at fixed β over a 16× volume range the answer is
+100, 0, 0 trajectories, and across the L = 32 β-ladder it never exceeds 150.
 
 ## Table S5 — ESS-gap program: fiber log-weight std by checkpoint variant
 
@@ -828,11 +1120,112 @@ floor everywhere: the weights degenerate on the topological-sector component,
 which does not regress onto smooth features. A wider 11-feature basis
 (W(2×2), 4th character, plaquette-neighbor correlator, blocked 3rd character)
 raised in-sample R² but exploded the held-out weights at 2 of 4 cases
-(std 1120 and 18,650) — under-regularized wide bases extrapolate wildly once
-the bridge dynamics move samples off the fit manifold. Recorded as the
-program's sixth honest negative; the 7-feature run is the final AIS number.
-Provenance: `out/u1_2d/ais_transport/` (final),
-`ais_transport_rich/` (negative), `exactness2/`.
+(std 1120 and 18,650). Recorded as the program's sixth honest negative; the
+7-feature run is the final AIS number. Provenance:
+`out/u1_2d/ais_transport/` (final), `ais_transport_rich/` (negative),
+`exactness2/`.
+
+**Table S7b — how often the bridge works (2026-08-14).** The row above is one
+seed. Repeating the extrapolation case at the shipped protocol (n = 96,
+48 bridge steps, `final7`) across every run on record gives:
+
+| seed run | std before | std after (held-out) | reduction | held-out R² | min bridge-HMC acc. | KL/site |
+|---|---|---|---|---|---|---|
+| head_20260802 | 117.6 | 50.1 | 2.35× | 0.756 | 0.974 | 1.07 |
+| head_20260805 | 149.4 | 12151 | **diverged** | 0.940 | **0.370** | 33.74 |
+| head_20260806 | 126.3 | 50.6 | 2.50× | 0.909 | 0.958 | 1.24 |
+| rate_20260810 | 114.0 | 57.8 | 1.97× | 0.760 | 0.865 | 1.68 |
+| rate_20260811 | 106.9 | 31821 | **diverged** | 0.869 | **0.052** | 122.20 |
+| rate_20260812 | 105.9 | 39.2 | 2.71× | 0.862 | 0.958 | 1.09 |
+| rate_20260813 | 102.3 | 40.2 | 2.55× | 0.893 | 0.958 | 1.12 |
+| rate_20260814 | 124.9 | 53.9 | 2.32× | 0.812 | 0.953 | 1.02 |
+| rate_20260815 | 121.5 | 52.4 | 2.32× | 0.838 | 0.943 | 1.05 |
+| `ais_transport` (Table S7) | 117.5 | 44.4 | 2.65× | 0.786 | 0.969 | 1.01 |
+
+The outcome is bimodal, never intermediate: **8 of 10 seeds reduce the spread
+by 1.97–2.71× (mean 2.42×); 2 of 10 diverge by two to three orders of
+magnitude.** A 20% failure rate (95% CI 6–51%, binomial score interval — no
+relation to the Wilson action) is not a footnote to a
+mechanism claim — Table S7's single row is a draw from this distribution, and
+the honest reading of the AIS result is "the derived floor is reachable and is
+reached about four times in five," not "the mechanism works as derived."
+
+*Held-out R² does not separate the two modes.* The diverged seeds sit at
+0.869 and 0.940, at or above every healthy seed (0.756–0.909). Basis *width*
+is therefore not the design lever `u1_2d/model/ais.py` had named it.
+
+*But the surrogate is the cause, through its regularization* (corrected
+2026-08-14; this paragraph previously read "the surrogate is not the cause —
+the bridge dynamics are"). Both divergent seeds had also selected the
+smallest ridge on the grid, 0.001, and no converged seed did (p = 0.022 under
+independence), with standardized coefficient norms of 231 and 247 against
+40–105 for all eight successes. Table S7c turns that correlation into an
+intervention: holding the ODE samples, the baseline and the seed byte-identical
+and varying *only* a lower bound on the ridge grid reproduces the entire
+bimodality at the extrapolation case, held-out σ moving 2132 → 43.1. Ridge
+alone spans the gap between the two modes, so the failure is the
+under-regularized surrogate making the bridge too steep to integrate, not an
+independent defect of the integrator.
+
+*Minimum bridge-HMC acceptance is a symptom, and an insufficient guard.* It
+does separate the S7b seeds completely (0.052 and 0.370 on the failures against
+0.865–0.974 on the successes), and seed 20260811 also collapsed its step size
+13× with sustained ~10³ per-step increments. But it is downstream, and it
+misses cases: at 32:218.6 the scan drives held-out σ to 18× the baseline while
+minimum acceptance sits unchanged at 0.958 — a full blow-up with a perfectly
+healthy integrator. An acceptance floor would not have fired. Guard instead on
+the surrogate coefficient norm, which tracks the failure in every case
+measured, and treat acceptance as corroboration.
+
+*Why cross-validation did not prevent it.* `fit_surrogate_cv` selects the ridge
+by out-of-fold residual, but the held-out folds are drawn from the same ODE
+samples as the fit folds and so lie *on* the fit manifold, while the
+coefficients only explode on configurations the bridge HMC moves *off* it. The
+selection target is blind to the failure mode by construction — which is also
+why a wider basis was wrongly acquitted above. The module docstring had
+predicted this mechanism; the CV was assumed to handle it and does not.
+
+**Table S7c — surrogate ridge, controlled intervention (2026-08-14).**
+`--ridge-floor` bounds the ridge grid from below and consumes no global RNG, so
+every arm below sees byte-identical ODE samples and baselines; regularization
+is the only thing that varies. Entries are held-out σ in nats (ESS/N ≈
+exp(−σ²); usable reweighting needs σ ≲ 1.52, so all of these are failures — the
+table explains *which* failure, it does not report progress).
+
+| case | baseline σ | no floor | 0.01 | 0.03 | 0.1 | 0.3 |
+|---|---|---|---|---|---|---|
+| 16:14.15 | 17.3 | 117.1 | 107.2 | 30.5 | 11.4 | **10.8** |
+| 16:55.02 | 30.0 | 228.5 | 228.5 | 228.5 | 408.8 | 552.8 |
+| 32:55.02 | 78.0 | 6439 | 3138 | 1510 | 112.8 | **32.8** |
+| 32:218.6 | 118.6 | 2132 | 97.7 | 45.7 | **43.1** | 46.5 |
+
+Surrogate coefficient norm falls monotonically with the floor in every case
+(e.g. 32:218.6: 128 → 118 → 104 → 80 → 58), confirming the floor acts on the
+intended quantity. Held-out σ improves with it in three of four cases and
+**reverses in 16:55.02** (228 → 553): more regularization is not universally
+better, there is a per-case optimum, and no single floor can be hard-coded.
+Best achievable reductions are 1.61×, none, 2.38× and 2.75× — comparable to
+the 2.42× mean of the healthy S7b seeds, reached deliberately rather than by a
+lucky fold split. 16:55.02 never beats its own baseline at any ridge.
+
+The practical consequence for a successor is that the ridge must be selected
+against something the bridge actually sees — out-of-fold residual *after* a
+short HMC displacement, or a direct penalty on coefficient norm — rather than
+by CV on the initial samples.
+
+Provenance: `out/u1_2d/ridge_scan/`, `u1_2d/scripts/41_ridge_scan_report.py`,
+`40_fold_noise_audit.py`; arms in `artifacts/ridgescan/`.
+
+*An independent check on the headline.* Over the eight healthy seeds the
+free-energy certificate gives 1.01–1.68 nats/site (mean 1.16) at 32:218.6.
+It shares no machinery with the fiber-weight route and lands on the same
+~1 nat/site bulk offset reported below, so that gap is not an artifact of one
+estimator. The diverged seeds give 33.7 and 122.2 — which is how the failure
+would have been caught had the rate been measured at the time.
+
+Provenance: `out/u1_2d/ais_transport/seed_rate.json`,
+`u1_2d/scripts/parse_ais_seed_rate.py` (pools by case/n/n_bridge/basis width,
+not by directory name).
 
 > **Reproduction note (2026-08-03).** The 7-feature basis is now the code
 > default (`--basis final7`, `u1_2d/model/ais.py`), so `scripts/28` reproduces
@@ -913,8 +1306,11 @@ concentrated as 2.3× at the highest-spread case and ≤ 1.3× elsewhere — the
 plateau), capacity/data scaling under DSM (wins the mildest monitor, loses
 overall), per-level SMC
 restructuring (no weight diversity to harvest), and surrogate-bridge AIS
-(saturates its floor, 2.6× spread reduction at the extrapolation case, ESS
-unchanged; wide-basis variant the sixth converged negative) — leaves the
+(reaches its floor in 8 of 10 seeds — 1.97–2.71× spread reduction at the
+extrapolation case, ESS unchanged — and diverges by 10²–10³ in the other 2,
+a failure of the bridge integrator rather than of the surrogate, and one that
+minimum HMC acceptance flags at runtime; wide-basis variant the sixth
+converged negative) — leaves the
 per-site density gap at 0.018–0.062 nats/site (spread) and 1.1–1.7 nats/site
 (mean, measured directly by the free-energy identity) against the ~0.005
 usable-certificate bar (Fig. 27b), with the matching-residual explanation

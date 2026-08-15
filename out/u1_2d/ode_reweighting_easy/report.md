@@ -2,9 +2,9 @@
 
 | L | beta_f | ESS/N (fiber) | i-MH acc | obs | raw | reweighted | i-MH | HMC ref |
 |---|--------|---------------|----------|-----|-----|------------|------|---------|
-| 16 | 4.44493 | 0.008 | 0.07 | plaquette | 0.89253 (0.0017) | 0.89485 (3.1e-06) | 0.89273 (0.009) | -- |
-| | | | | Q | -0.14844 (0.13) | -9.2854e-05 (0.00013) | -0.28125 (0.44) | -- |
-| | | | | Q^2 | 2.0391 (0.21) | 0.00019732 (0.00026) | 0.98438 (0.75) | -- |
+| 16 | 4.44493 | 0.008 | 0.06 | plaquette | 0.88461 (0.0018) | 0.88598 (1.2e-05) | 0.89099 (0.0047) | -- |
+| | | | | Q | 0.29688 (0.14) | 1.998 (0.0027) | 1.3438 (0.49) | -- |
+| | | | | Q^2 | 2.5312 (0.32) | 3.9941 (0.0082) | 2.7812 (1.1) | -- |
 
 Samples drawn from the probability-flow ODE (no charge projection, no
 retherm); log q is the density of the ACTUAL samples, so the SNIS and
@@ -20,3 +20,16 @@ low-acceptance autocorrelation factor sqrt((2-a)/a); reweighted
 linearized SNIS error. Low ESS/N or i-MH acceptance makes the exact
 estimators noisy -- raw columns stay the (biased) high-precision
 numbers.
+
+## Free-energy certificate
+
+log E[w] vs the exact character-expansion Delta F
+(2 L_f^2 log 2pi + log Z_f - log Z_c). An independent end-to-end
+check of the weight chain against the solvable theory; heavy
+tails bias the estimate LOW (rare dominant weights undersampled),
+so agreement within a few sem certifies, disagreement of tens of
+nats quantifies the same density gap the ESS sees.
+
+| L | beta_f | log mean w | exact dF | gap | sem |
+|---|--------|------------|----------|-----|-----|
+| 16 | 4.44493 | 1126.30 | 1629.12 | -502.82 | 1.00 |

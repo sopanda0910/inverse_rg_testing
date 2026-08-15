@@ -67,6 +67,7 @@ SOURCES: dict[str, str | None] = {
     "25_finetune_dynamics.png": None,
     "26_three_way.png": None,
     "27_program_optimum.png": None,
+    "28_dissociation.png": "paper_appendix/dissociation.png",
 }
 
 SCRIPT_FOR = {

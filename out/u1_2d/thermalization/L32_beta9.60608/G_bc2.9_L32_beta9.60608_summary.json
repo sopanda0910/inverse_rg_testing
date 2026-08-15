@@ -1,0 +1,197 @@
+{
+  "label": "G_bc2.9_L32_beta9.60608",
+  "beta": 9.606080862350906,
+  "lattice_size": 32,
+  "n_gen_chains": 128,
+  "n_baseline_chains": 32,
+  "n_traj_gen": 96,
+  "n_traj_baseline": 640,
+  "hmc": {
+    "step_size": 0.1290585769982869,
+    "n_steps": 8,
+    "acceptance": {
+      "generated": 0.9790852864583334,
+      "hot": 0.978955078125,
+      "cold": 0.97861328125
+    },
+    "sec_per_traj_gen_batch": 0.06812626123428345,
+    "sec_per_traj_baseline_batch": 0.06981038339436055
+  },
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 2.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": 407.0,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 195.0,
+      "wilson_2x2": 265.0,
+      "wilson_4x4": 146.0,
+      "wilson_6x6": 21.0,
+      "Q^2": Infinity
+    }
+  },
+  "t_therm_generated_full_batch": {
+    "plaquette": 0.0,
+    "wilson_2x2": 5.0,
+    "wilson_4x4": 2.0,
+    "wilson_6x6": 0.0,
+    "Q^2": 0.0
+  },
+  "t_therm_subsample_size": 32,
+  "final_abs_z": {
+    "diffusion seed": {
+      "plaquette": 1.5834370851516724,
+      "wilson_2x2": 0.9449909925460815,
+      "wilson_4x4": 0.5471143126487732,
+      "wilson_6x6": 0.6143714785575867,
+      "Q^2": 2.342024326324463
+    },
+    "hot start": {
+      "plaquette": 1.356537103652954,
+      "wilson_2x2": 2.8438243865966797,
+      "wilson_4x4": 2.927589178085327,
+      "wilson_6x6": 2.3587071895599365,
+      "Q^2": 3.44604229927063
+    },
+    "cold start": {
+      "plaquette": 0.7985844016075134,
+      "wilson_2x2": 0.7530153393745422,
+      "wilson_4x4": 1.4004976749420166,
+      "wilson_6x6": 0.9549447298049927,
+      "Q^2": 2860085936128.0
+    }
+  },
+  "tau_int": {
+    "plaquette": {
+      "value": 5.701266744173605,
+      "error": 0.7637024914752388
+    },
+    "wilson_2x2": {
+      "value": 6.691581741022021,
+      "error": 1.139442865894296
+    },
+    "wilson_4x4": {
+      "value": 1.881833389811251,
+      "error": 0.2856573403511025
+    },
+    "wilson_6x6": {
+      "value": 0.8489213951067591,
+      "error": 0.04458017511801729
+    }
+  },
+  "tau_int_static": {
+    "plaquette": false,
+    "wilson_2x2": false,
+    "wilson_4x4": false,
+    "wilson_6x6": false
+  },
+  "interval_reliable": true,
+  "relaxation_fits": {
+    "diffusion seed": {
+      "plaquette": {
+        "tau": 6.680309104740584,
+        "tau_error": 4.908585894432823,
+        "status": "ok (amplitude within noise of plateau)"
+      },
+      "wilson_2x2": {
+        "tau": 3.021540492250211,
+        "tau_error": 1.1821161313548927,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": null,
+        "tau_error": null,
+        "status": "no measurable decay (starts at plateau; tau unconstrained)"
+      },
+      "wilson_6x6": {
+        "tau": null,
+        "tau_error": null,
+        "status": "no measurable decay (starts at plateau; tau unconstrained)"
+      },
+      "Q^2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "constant series (no decay; frozen)"
+      }
+    },
+    "hot start": {
+      "plaquette": {
+        "tau": 1.9607019656545854,
+        "tau_error": 0.023892463967392412,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 7.357549612343562,
+        "tau_error": 0.1700308002655833,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 41.96698367152169,
+        "tau_error": 1.042434986902182,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 11.365590322882356,
+        "tau_error": 0.9185277853144466,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": 1.116028989750916,
+        "tau_error": 0.013191305750279141,
+        "status": "ok"
+      }
+    },
+    "cold start": {
+      "plaquette": {
+        "tau": 11.495142115199938,
+        "tau_error": 0.4592212111495905,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 4.301739971905888,
+        "tau_error": 0.18693286114732144,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 1.962849738038816,
+        "tau_error": 0.08360771089714951,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 0.6474348902223613,
+        "tau_error": 0.02511920485425509,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "constant series (no decay; frozen)"
+      }
+    }
+  },
+  "hmc_interval_trajectories": 13.383163482044042,
+  "q_freezing": {
+    "label": "hot-start HMC L=32 beta=9.60608",
+    "frozen": true,
+    "n_tunnelings": 0,
+    "window_length": 321,
+    "n_chains": 32,
+    "tau_int_Q": 321.0
+  },
+  "wall_clock": {
+    "gen_sample_seconds": 33.007535457611084,
+    "n_seed_configs": 128,
+    "sec_per_traj_gen_batch": 0.06812626123428345,
+    "sec_per_traj_baseline_batch": 0.06981038339436055
+  }
+}

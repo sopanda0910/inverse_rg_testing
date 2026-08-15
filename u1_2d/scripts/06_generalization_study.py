@@ -139,6 +139,24 @@ D_COARSE_BETAS = [14.1464, 20.0, 30.0, 40.0, 55.0237]
 # (bc=18/35/45 -> beta_f=70.5/138.5/178.5) sit past the trained beta_f range --
 # see the module docstring for the full breakdown.
 E_COARSE_BETAS = [1.2, 2.7, 3.4, 4.5, 5.8, 9.0, 11.8, 18.0, 35.0, 45.0]
+# Part G: the crossover window, added 2026-08-14 because the headline
+# thermalization claim was thin exactly where it needs to be strongest.
+#
+# The claim is "the diffusion seed costs less than a fresh HMC chain". It is
+# only persuasive at couplings where fresh HMC still WORKS -- above the
+# freezing coupling (beta_f ~ 8.8 here) HMC never thermalizes at all, so the
+# comparison stops being a speedup and becomes a statement that one method
+# finishes and the other does not. Before this part, the matched-pair scan had
+# exactly four rungs in 4.4 <= beta_f <= 10, of which only two showed a large
+# margin with HMC still ergodic (beta_f = 4.44 at 7x, 6.11 at 25x) -- and then
+# a gap straight to 8.80, where hot starts already fail. Two points do not
+# establish a trend.
+#
+# These six coarse couplings map to beta_f = 5.41, 6.47, 7.22, 8.00, 8.39,
+# 9.61, which fills that gap and brackets the freezing coupling from both
+# sides, so the speedup-vs-beta curve is measured through the crossover rather
+# than inferred across it.
+G_COARSE_BETAS = [1.8, 2.1, 2.3, 2.5, 2.6, 2.9]
 # Part F: the one-model demonstration — matched pairs far beyond any training
 # coupling (targets ~7x and ~15x the training maximum) plus a rung that is
 # simultaneously large-beta and large-volume.
@@ -179,6 +197,10 @@ def build_cases(smoke: bool) -> list[Case]:
         bf = approx_matched_fine_beta(bc, ACTION_TYPE)
         cases.append(Case(f"E_bc{bc:g}", "E", 16, bc, bf, n32, nref32,
                           f"out-of-sample matched pair {bc:g} -> {bf:.4f}"))
+    for bc in G_COARSE_BETAS:
+        bf = approx_matched_fine_beta(bc, ACTION_TYPE)
+        cases.append(Case(f"G_bc{bc:g}", "G", 16, bc, bf, n32, nref32,
+                          f"crossover-window matched pair {bc:g} -> {bf:.4f}"))
     for base_size, bc in F_CASES:
         bf = approx_matched_fine_beta(bc, ACTION_TYPE)
         n = 8 if smoke else 64
@@ -530,6 +552,7 @@ def write_summary_tables(records: dict, out: Path) -> None:
     for part, title in [("A", "Part A: matched-pair beta scan (L=16 -> L=32)"),
                         ("D", "Part D: upper-coupling matched pairs (L=16 -> L=32)"),
                         ("E", "Part E: out-of-sample matched pairs (bases and targets mid-gap between training couplings)"),
+                        ("G", "Part G: crossover window (beta_f 5.4-9.6, where fresh HMC still thermalizes)"),
                         ("F", "Part F: extrapolation demo (targets far beyond the training range, incl. large volume)"),
                         ("B", "Part B: target-coupling mismatch (base L=16)"),
                         ("C", "Part C: lattice-size scan (pair 4 -> 14.1464)")]:
