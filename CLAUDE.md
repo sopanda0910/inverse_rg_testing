@@ -21,6 +21,16 @@ Two sibling packages, one per theory:
   `docs/NARRATIVE.md` §25.5** — read it before quoting Tables S1, S3, S4, S6b
   or S7b, all of which carried numbers from superseded runs, and before
   quoting the exact-P(Q) crutch (§21.6, `PHYSICS_WALKTHROUGH.md` F1).
+  **The two owed referee experiments were run 2026-08-15 and are in §25.6**
+  (Tables S8–S10): the classical-remedy benchmark, the Zhu et al. head-to-head,
+  and the MALA-exactness test. **§25.7 closes the `U1_2D_REVIEW.md` backlog**
+  (M3, M4, `norm_type`, validation σ-bias, the citation audit in §26.1, and the
+  `topo_weight` follow-up). Two consequences to know before quoting anything:
+  Table S3 is regenerated on τ_int-aware records with a denominator of **38,
+  not 35** — the three deep-frozen cases were never untestable, the χ² gate was
+  silently dropping them — and the `TODO.md` §2 recommendation to adopt
+  `topo_weight = 0.3` is **withdrawn**, since it does not move the raw sector
+  match rate it would have to act through.
 - `su2_2d/` — 2D SU(2). **SET ASIDE (2026-08-03) and NOT in the working tree.**
   It was removed from tracking in `f7bca3b` while the focus moved to
   documenting and publishing U(1). Recover it with
@@ -101,6 +111,22 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
   reverses — so there is no floor to hard-code.
   (Table S7b/S7c, `parse_ais_seed_rate.py`, `40_fold_noise_audit.py`,
   `41_ridge_scan_report.py`.)
+- The classical baseline of record is **HMC + winding update**, not PTBC and not
+  plain HMC. Measured 2026-08-15 at L = 32 (Table S8): plain periodic HMC is
+  fully frozen (0 sector changes in 3000 trajectories at β = 14.15/55.02/218.58),
+  the winding update reproduces exact ⟨Q²⟩ to 2% with τ_int(Q²) ≈ 1.2–2.9 for a
+  1–18% overhead, and a **properly tuned** PTBC ladder (swap acceptance
+  0.68–0.98, τ_int ≈ 3) still costs 25–121× more. PTBC exists to manufacture a
+  global topological move for theories that lack one; this theory has an exact
+  one, so importing that comparison measures nothing. Do not re-open the PTBC
+  arm — `u1_2d/lgt/ptbc.py` and its 20 tests are kept as the record that it was
+  checked, and `out/u1_2d/ptbc_benchmark_tuned/` is the data of record (the
+  untuned `ptbc_benchmark/` is superseded; its numbers are 45–51× pessimistic
+  and its swap-acceptance column is halved by a since-fixed bug). Cost claims
+  go against `hmc+inst` (0.198 s per independent configuration at β = 218.58).
+  If the PTBC arm is ever re-run: it is latency-bound, so use the stacked
+  action (`StackedDefectWilsonAction`) on GPU — replicas are then nearly free —
+  and time the single-replica arms on CPU, which is faster for them.
 - Ladder invariant (use it, it is the design's justification): with
   β_f = 4β_c and L_f = 2L_c, the exact finite-volume ⟨Q²⟩ ≈ V/(4π²β) is a
   **fixed point** of the ladder (Villain: 1.20271 → 1.20334 → 1.20334 →
@@ -123,7 +149,7 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
 
 ### Testing
 
-- `pytest u1_2d/tests -q` (142 tests; `su2_2d/tests` only exists once su2_2d is
+- `pytest u1_2d/tests -q` (169 tests; `su2_2d/tests` only exists once su2_2d is
   restored from git — see above)
 - `python u1_2d/scripts/29_verify_identities.py` — the exact physics identities
   (Q integrality, gauge invariance, blocking telescope, curl-head completeness,

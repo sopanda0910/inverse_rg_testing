@@ -142,7 +142,7 @@ def _make_norm(norm_type: str, channels: int) -> nn.Module:
 
 class FiLMResBlock(nn.Module):
     def __init__(
-        self, channels: int, emb_dim: int, kernel_size: int = 3, norm_type: str = "group"
+        self, channels: int, emb_dim: int, kernel_size: int = 3, norm_type: str = "channel"
     ) -> None:
         super().__init__()
         pad = kernel_size // 2
@@ -169,7 +169,12 @@ class GaugeCovariantScoreNet(nn.Module):
         emb_dim: int = 128,
         cond_channels: int = 4,
         kernel_size: int = 3,
-        norm_type: str = "group",
+        # "channel" (per-site) not "group": GroupNorm normalizes over the whole
+        # spatial extent, making the learned map lattice-size dependent, and the
+        # no-L-dependence claim this project rests on then survives only because
+        # every shipped config overrides the default. Checkpoints record
+        # norm_type in `model_kwargs`, so flipping this rebuilds nothing.
+        norm_type: str = "channel",
         cond_film: bool = False,
     ) -> None:
         super().__init__()

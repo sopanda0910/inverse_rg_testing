@@ -96,6 +96,30 @@ already trained, with no further training.
 
 `out/u1_2d/hparam_sweep.json`, `scripts/run_hparam_sweep.py`.
 
+### Follow-up run, 2026-08-15: the mechanism is not there — recommendation withdrawn
+
+Measured with `scripts/49_topo_weight_match_rate.py` over the eight
+already-trained checkpoints, 128 configurations per arm, L = 32 at
+β = 14.1464 and 55.0237. Paired design: one coarse ensemble per case shared by
+every arm, since the coarse HMC draw carries more variance than the effect.
+
+| group | arms | mean raw match rate |
+|---|---|---|
+| baseline seeds | base_s0 / s1 / s2 | 0.2227 – **0.2539** |
+| raised topo_weight | topo03 ×3, topo05 ×2 | 0.2031 – 0.2383 |
+
+All five raised-weight arms fall inside the three-seed baseline spread, and the
+best of them is *below* the best baseline. There is no separation, so
+`topo_weight` does not act through the raw sector match rate.
+
+**Therefore the recommendation above — carry `topo_weight = 0.3` forward as a
+topology setting — is withdrawn.** The log-weight-spread separation (p = 0.018)
+is a real measurement and stands as recorded, but its interpretation was the
+load-bearing part, and the mechanism it assumed does not hold. Adopting the
+value elsewhere would be cargo-culting a number whose cause is unknown.
+
+`out/u1_2d/topo_weight_match_rate/`. Written up in `docs/NARRATIVE.md` §25.7.
+
 ---
 
 ## 3. Present thermalization vs interval time differently by beta

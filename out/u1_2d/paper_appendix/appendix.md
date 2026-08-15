@@ -827,40 +827,64 @@ a generalization run superseded by the GPU regeneration. Both columns are
 computed on the 38 cases the two modes share (the six Part-G rungs exist only
 in transport mode and are excluded, not counted on one side).
 
+**Superseded 2026-08-15 by the M3/M4 fixes** (review items: a silently
+vanishing χ² gate, and a study path that was not τ_int-aware). Both changed
+what validation reports, so the table was regenerated from re-validated
+records. The 2026-08-14 column pair is kept below the current one for
+comparison.
+
 | metric | transport | exact-sector |
 |---|---|---|
-| exact-P(Q) χ² failures (p < 0.05) | 3/35 | 2/35 |
+| exact-P(Q) χ² failures (p < 0.05) | **3/38** | **1/38** |
 | … of which mismatch track (B) | 3 | 0 |
 | worst \|z(⟨Q²⟩ vs exact)\| | 10.9 (B_bt6) | 2.8 (D_bc20) |
-| cases with \|z(⟨Q²⟩)\| > 2 | 6 | 3 |
+| cases with \|z(⟨Q²⟩)\| > 2 | 5 | 2 |
 | … non-finite z excluded from both | 2 | 2 |
 | significant ⟨Q⟩ asymmetry (\|z\| > 2) | 1 | 0 |
-| mean \|plaquette z\| | 0.85 | 0.79 |
+| mean \|plaquette z\| | 0.75 | 0.70 |
 
-Transport failures: B_bt30 (p = 1.9×10⁻⁴), B_bt55 (4.3×10⁻⁵), B_bt6
-(5.7×10⁻⁵). Exact-sector failures: A_bc0.75 (0.013), D_bc20 (0.035).
+Transport failures: B_bt30 (p = 2.3×10⁻⁸), B_bt55.0237 (3.2×10⁻⁵⁴), B_bt6
+(4.4×10⁻⁴). Exact-sector failures: A_bc0.75 (0.02).
 
-**What changed, and why it matters.** Previously published: 5/35 against 1/35,
-read as exact-sector mode rescuing transport. Measured now: **3/35 against
-2/35** — both at the multiple-testing false-positive rate (≈ 1.75 expected at
-α = 0.05 over 35 tests), so the modes are no longer distinguishable on this
-metric. Every remaining transport failure is in track B, where the base
-coupling is *deliberately* mismatched, and none is a volume case. The two
-formerly-failing cases that now pass are B_bc2_bt8 and C_L128.
+**Denominator is now 38, not 35.** The three deep-frozen cases the previous
+version reported as having "no populated bins to test" — D_bc55.0237
+(β = 218.58), F_L32_bc100 (β = 398.5), F_L32_bc218.58 (β = 872.8) — were not
+untestable. The χ² gate was *silently dropping* them: it emitted a row only
+when ≥ 2 bins had expected > 2 with observed counts in them, and otherwise
+produced nothing, rendered as "-" and read as "not applicable". With tail
+pooling they are testable and all three **pass** — transport p = 0.388 / 0.971
+/ 1.000, exact-sector p = 0.814 / 0.971 / 1.000. The missing test was at the
+three highest couplings in the study, i.e. exactly the extrapolation cases the
+method is for.
 
-C_L128 is the consequential one: its transport χ² p is **0.8663**, not the
-0.005 quoted in the Figure 20 caption and in §21.5 of the narrative, and
-exact-sector mode moves it to 0.3875 — i.e. slightly *worse*. The claim that
-large-volume topology passes only under the exact-P(Q) crutch does not hold on
-these ensembles. The crutch still tightens ⟨Q²⟩ (worst \|z\| 10.9 → 2.8) and
-still removes the track-B failures, which is a real effect; it is not what
-makes L = 128 pass.
+**The track-B failures are far more significant than reported.** B_bt55.0237
+moves from p = 4.3×10⁻⁵ to 3.2×10⁻⁵⁴ once charge falling outside the tabulated
+support is counted instead of discarded. The deliberately-mismatched controls
+were being scored as marginal when they are catastrophic — which strengthens
+rather than weakens the reading below, since these are the cases that are
+*supposed* to fail.
 
-χ² is computable for 35 of 38 cases; the three deep-frozen cases (exact ⟨Q²⟩
-≲ 10⁻³) have no populated bins to test.
+**What this says about the exact-P(Q) crutch (unchanged conclusion).** 3/38
+against 1/38, both at the multiple-testing false-positive rate (≈ 1.9 expected
+at α = 0.05 over 38 tests), so the two modes remain indistinguishable on this
+metric. Every transport failure is in track B, where the base coupling is
+deliberately mismatched; none is a volume case. C_L128 transport χ² p is
+**0.9241** (exact-sector 0.5385) and C_L64 is **0.3341** (exact-sector 0.8633)
+— so the claim that large-volume topology passes only under the crutch does not
+hold, and on the current records the crutch makes C_L128 slightly *worse*. The
+crutch still tightens ⟨Q²⟩ (worst \|z\| 10.9 → 2.8) and still removes the
+track-B failures; it is not what makes the volume cases pass.
 
-Provenance: `u1_2d/scripts/42_sector_mode_table.py`,
-`out/u1_2d/sector_mode_table/`.
+*Previous (2026-08-14) values, for comparison:* 3/35 vs 2/35 failures; \|z\| > 2
+in 6 vs 3 cases; mean \|plaquette z\| 0.85 vs 0.79; C_L128 transport p = 0.8663.
+The shifts in the z-derived rows come from M4 — error bars are now the
+per-chain τ_int estimate rather than a fixed 20-bin one.
+
+Provenance: `u1_2d/scripts/42_sector_mode_table.py` over
+`out/u1_2d/generalization_tau_aware/` and
+`out/u1_2d/generalization_exact_sectors_tau_aware/` (produced by
+`u1_2d/scripts/48_revalidate_tau_aware.py`); table in
+`out/u1_2d/sector_mode_table_tau_aware/`.
 
 ## Table S4 — P(Q) before/after a 200-trajectory instanton-HMC tail
 
@@ -1321,6 +1345,145 @@ instanton-HMC tails, exact-sector resampling — wrapped around the generative
 proposal: the architecture the head-to-head, seeding, and three-way results
 (Figs. 17, 18, 21, 22, 26) validate directly, and the design carried forward
 to the non-abelian successor (`su2_2d/`).
+
+## Classical remedies, the competing method, and the MALA claim (2026-08-15)
+
+**Table S8 — cost of one independent configuration under four topological
+remedies.** L = 32, 3000 trajectories, 4 chains per arm, Wilson action. Cost is
+`2 * tau_int(Q^2) * (s/traj) * replicas_charged`; PTBC simulates every replica
+and measures only the c = 1 one, so it is charged for all of them. Errors on
+tau_int are Madras–Sokal. Each arm is timed on the hardware that suits it — the
+single-replica arms are latency-bound on one small batch and run faster on CPU,
+the stacked PTBC ladder is timed on GPU — since handicapping one arm would
+corrupt the comparison.
+
+| beta | arm | tau_int(Q²) | ⟨Q²⟩ | exact ⟨Q²⟩ | dev | s / indep. cfg |
+|---|---|---|---|---|---|---|
+| 14.1464 | HMC (periodic) | frozen, 0 changes | 0.0000 | 1.9040 | — | ∞ |
+| 14.1464 | HMC + winding | 2.85(44) | 1.8705 | 1.9040 | −1.8% | **0.124** |
+| 14.1464 | PTBC, 13 replicas | 2.30 | 1.8742 | 1.9040 | −1.6% | 3.14 |
+| 14.1464 | open boundaries | 1.04(10) | 4.4183 | n/a | — | 0.040 |
+| 55.0237 | HMC (periodic) | frozen, 0 changes | 0.0000 | 0.4743 | — | ∞ |
+| 55.0237 | HMC + winding | 1.20(13) | 0.4791 | 0.4743 | +1.0% | **0.090** |
+| 55.0237 | PTBC, 18 replicas | 2.99 | 0.5247 | 0.4743 | +10.6% | 10.87 |
+| 55.0237 | open boundaries | 0.55(4) | 3.0497 | n/a | — | 0.038 |
+| 218.58 | HMC (periodic) | frozen, 0 changes | 0.0000 | 0.0290 | — | ∞ |
+| 218.58 | HMC + winding | 1.39(15) | 0.0296 | 0.0290 | +2.0% | **0.198** |
+| 218.58 | PTBC, 20 replicas | 3.13 | 0.0375 | 0.0290 | +29% | 21.34 |
+| 218.58 | open boundaries | 0.52(4) | 2.7701 | n/a | — | 0.076 |
+
+Plain periodic HMC is completely frozen at all three couplings — zero sector
+changes in 3000 trajectories — so its tau_int is undefined, not large. The
+winding update (Albandea et al.) unfreezes it, reproduces the analytic ⟨Q²⟩ to
+2%, holds tau_int near 1 even at beta = 218.58, and costs 1–18% over plain HMC.
+**That is the classical baseline of record for this theory**, and pipeline cost
+claims should be stated against it.
+
+The PTBC rows use a tuned ladder — partial defect `l_d = 2` per PRD 96 054504
+§IV C, and the ladder bottom stepped in `beta*c` rather than `c`, since the
+defect only switches off once `beta*c` falls below O(1). It is a functional
+sampler: swap acceptance is 0.68–0.98 on **every** pair, tau_int(Q²) is 2.3–3.1,
+and the ⟨Q²⟩ deviations above are within about 2 sigma of exact at all three
+couplings. It is nonetheless **25–121x more expensive** than the winding update,
+for a structural rather than implementational reason: PTBC manufactures a global
+topological move for theories that lack one, and 2D U(1) already has an exact
+one. One caveat still understates PTBC — Hasenbusch's hierarchical local-update
+scheme (sub-rectangle sweeps between swaps) is not implemented.
+
+*Tuning history, for reproducibility.* The first run of this benchmark used a
+full-line defect (`l_d = L`, the worst case) with a ladder calibrated only in
+`c`, and evolved replicas sequentially on CPU. It gave 159.2 / 484.1 / 773.6
+s per independent configuration with tau_int 22.8 / 44.0 / 39.4 and top-pair
+swap acceptance near zero. Tuning the ladder and folding the replica index into
+the HMC batch dimension improved those by **45–51x**. Two reporting notes: swap
+acceptance in the first run was averaged over trajectories where a pair was not
+proposed (pairs alternate parity), halving every value — it is now recorded per
+*proposal*, the quantity Hasenbusch's >30% criterion refers to; and the GPU arm
+is latency-bound, so going from 12 to 20 replicas cost nothing per trajectory
+(0.177 → 0.170 s), which is why an earlier arithmetic bound on the tuned cost
+was 6x too pessimistic.
+
+Open boundaries give the shortest tau_int in the table but Q is no longer an
+integer and ⟨Q²⟩ is 2.77–4.42 against a periodic exact value of 0.029–1.904.
+They are cheap and they measure a different quantity — the Lüscher–Schaefer
+trade, stated rather than hidden.
+
+Source: `u1_2d/scripts/43_ptbc_benchmark.py`, `u1_2d/lgt/ptbc.py`;
+`out/u1_2d/ptbc_benchmark_tuned/` (of record) and `out/u1_2d/ptbc_benchmark/`
+(first run). NARRATIVE §25.6a.
+
+**Table S9 — head-to-head with Zhu et al. (arXiv:2410.19602) on their case.**
+L = 16, beta = 7, n = 1024 per arm. Exact ⟨Q²⟩ = 1.00641. Their two arms are
+recovered from the vector paths of their published figure (no image XObjects in
+the PDF; every recovered height is an integer multiple of 1/1024 to within
+0.001 of a configuration, totalling 1023). **This is digitization of a
+published figure, not their released data.**
+
+| arm | ⟨Q²⟩ | /exact | z | chi² p | testable bins | source |
+|---|---|---|---|---|---|---|
+| exact | 1.0064 | 1.00 | — | — | — | analytic |
+| HMC (Zhu et al.) | 0.0567 | 0.06 | — | 1.1e−271 | 9 | digitized |
+| diffusion (Zhu et al.) | 2.3715 | 2.36 | — | 9.3e−128 | 9 | digitized |
+| HMC, no topological moves (this work) | 0.6729 | 0.67 | −10.8 | 7.3e−27 | 7 | measured |
+| inverse-RG, 8→16 (this work) | 1.0859 | 1.08 | +1.6 | **0.41** | 7 | measured |
+
+That paper presents the wider Q distribution as the desirable outcome relative
+to a frozen HMC arm, and explicitly leaves open whether it is right: *"We are
+currently comparing the numerically computed distribution with the analytical
+prediction, which is possible in this simple theory."* Scored against that
+prediction, both arms reject it — their HMC undershoots ⟨Q²⟩ by 18x, their
+diffusion model overshoots by 2.4x. A distribution wider than a frozen chain is
+not evidence of correctness when the correct answer lies between them.
+
+The over-production is the same failure mode this work's *raw* model shows
+(raw ⟨Q²⟩ 2.5–5.4x above exact at strong coupling, §21.6); the difference is
+that sector transport corrects it here.
+
+**Caveat on the last row:** the checkpoint is trained for 16→32 and used at
+8→16, one rung below its trained range — a convolutional architecture makes
+this run, but it is an out-of-range use. The load-bearing comparison is between
+the `exact` row and the two digitized rows, which carry no such caveat.
+
+Source: `u1_2d/scripts/46_zhu_comparison.py`, `47_zhu_figure_extract.py`;
+`out/u1_2d/zhu_comparison/`. NARRATIVE §25.6b.
+
+**Table S10 — MALA acceptance on model output vs equilibrium control.**
+MALA on the exact Boltzmann target, 50 steps, 64 configurations. The control is
+the identical measurement started from equilibrium HMC configurations at the
+same coupling — what "already exact" looks like.
+
+| beta | eps | acc (model) | acc (equilibrium) | ratio | Δ plaquette | Δ⟨Q²⟩ |
+|---|---|---|---|---|---|---|
+| 14.1464 | 0.003 | 0.9997 | 0.9991 | 1.001 | +3.4e−05 | **0** |
+| 14.1464 | 0.01 | 0.9978 | 0.9988 | 0.999 | −7.0e−05 | **0** |
+| 14.1464 | 0.03 | 0.9428 | 0.9534 | 0.989 | −1.1e−04 | **0** |
+| 14.1464 | 0.1 | 0.0169 | 0.0294 | 0.574 | −4.6e−05 | **0** |
+| 55.0237 | 0.003 | 0.9997 | 0.9994 | 1.000 | −4.4e−05 | **0** |
+| 55.0237 | 0.01 | 0.9838 | 0.9881 | 0.996 | −2.9e−04 | **0** |
+| 55.0237 | 0.03 | 0.6038 | 0.6388 | 0.945 | −3.8e−04 | **0** |
+| 55.0237 | 0.1 | 0.000 | 0.000 | n/a | 0 | **0** |
+
+Zhu et al. state that exactness "is ensured by incorporating
+Metropolis-adjusted Langevin dynamics into the generation process." The ratio
+column looks like it agrees — model configurations accept as readily as
+equilibrium ones at every resolved step size. The last column is why that
+reading is wrong: **⟨Q²⟩ is bit-identical before and after in all eight
+settings.** Across 50 steps x 64 configurations x 8 settings, MALA changed the
+topological sector zero times; the move is not in its proposal at any step size
+that accepts.
+
+MALA acceptance is therefore a *local* diagnostic — it certifies that each
+configuration sits where the action is typical and says nothing about whether
+the ensemble is distributed correctly. It fails in exactly the way the
+observables do: healthy while the density is 10–100 nats off. The cost of
+exactness-by-MALA is its mixing time on the modes it cannot move, which no
+acceptance rate bounds. The eps → 0 rows are uninformative by construction (a
+vanishing step accepts everything, right or wrong); the informative entries are
+the largest eps, where the two arms separate by ~5%.
+
+Source: `u1_2d/scripts/45_mala_exactness.py`;
+`out/u1_2d/mala_exactness/mala_exactness.json`. NARRATIVE §25.6c,
+PHYSICS_WALKTHROUGH F3.
 
 ## A reporting protocol for learned coarse-to-fine samplers
 

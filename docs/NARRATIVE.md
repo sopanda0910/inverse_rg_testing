@@ -2201,6 +2201,70 @@ reach. The §20 design directive ("exactness must come from Markov-chain
 machinery wrapped around the generative proposal") is, in substance, their
 published method. Any submission must engage this paper directly.
 
+**24.1a Measured against their own case (2026-08-15).** The workshop version
+(arXiv:2410.19602) was read in full. Three things change the picture above, and
+the third is the substantive one.
+
+*What their method actually is.* Not inverse RG. A U-Net score model at **fixed
+L = 16**, trained at β = 1 on 30,720 HMC configurations (×5 by gauge
+augmentation), extrapolated in coupling by rescaling the learned score,
+s → (β/β₀)s, which they call physics conditioning. No coarse conditioning, no
+ladder, no scale doubling. The overlap with this project is the *goal*, not the
+mechanism — so "the ladder, in flow form" applies to Bauer et al., not to them.
+
+*The MALA claim is not in that version.* The workshop paper contains no
+accept/reject step and makes no exactness claim; its stated contribution is
+that freezing is "alleviated". The MALA sentence quoted above is from the JHEP
+version only. The assertion that they "achieved the exactness §20 measured as
+out of reach" is therefore unverified against anything read here, and should
+not be repeated until the JHEP text is checked.
+
+*Their headline result does not survive the comparison they flagged as
+pending.* Their §3.2 says: "We are currently comparing the numerically computed
+distribution with the analytical prediction, which is possible in this simple
+theory." This project has that prediction. Their figures are vector graphics,
+so the histogram counts are recoverable exactly — every recovered bar is an
+integer count out of their stated 1,024, to within 0.001 of a configuration
+(`47_zhu_figure_extract.py`). At L = 16, β = 7:
+
+| Q | −4 | −3 | −2 | −1 | 0 | +1 | +2 | +3 | +4 |
+|---|---|---|---|---|---|---|---|---|---|
+| exact | 0.1 | 4.7 | 55.8 | 247.8 | **407.3** | 247.8 | 55.8 | 4.7 | 0.1 |
+| their DM | 13 | 29 | 113 | 218 | **247** | 231 | 118 | 40 | 14 |
+| their HMC | — | — | — | 23 | **965** | 35 | — | — | — |
+
+| arm | ⟨Q²⟩ | ratio to exact (1.0064) | χ² p |
+|---|---|---|---|
+| their HMC | 0.0567 | 0.06× | 1×10⁻²⁷¹ |
+| their diffusion model | 2.3715 | **2.36×** | 9×10⁻¹²⁸ |
+| this project's pipeline | 1.0859 | **1.08×** | **0.41** |
+
+Their reading of the HMC arm is right — it is frozen. But the diffusion arm
+**overshoots**: 39% too few configurations at Q = 0, ≈2× too many at |Q| = 2,
+≈7× at |Q| = 3, and ≈100× at |Q| = 4 (13 and 14 configurations where the theory
+predicts 0.1). "Explores a wider range of topological sectors, yielding a
+larger topological susceptibility" is literally true and is the wrong amount of
+wider; the true χ_Q lies between their two curves and neither reaches it.
+
+Three caveats, all load-bearing. This is the **workshop** version and they
+flagged the comparison as in progress, so the JHEP version may have closed it —
+this is not a claim about their current work. Our arm runs our checkpoint one
+rung *below* its trained range (8 → 16, against 16 → 32 in training). And these
+are digitized figure counts, not released data.
+
+*Why this matters beyond their paper.* It is the same failure mode as our own
+**raw** model output: over-production of topological charge at large β — 2.5×
+at A_bc4, 4.6× at A_bc8, 5.4× at E_bc11.8 (§21.6), and 2.36× here. A
+β-extrapolated diffusion sampler appears to manufacture topology in the frozen
+regime, the effect is invisible without an exact reference, and in this project
+it is removed not by the network but by the transport identity of §8. That is a
+sharper and more defensible framing of the contribution than any of the four
+advantages listed above: the field's diffusion samplers are being validated on
+observables and Q-histogram *width*, and width is not correctness.
+
+Provenance: `u1_2d/scripts/47_zhu_figure_extract.py`,
+`46_zhu_comparison.py`, `out/u1_2d/zhu_comparison/`.
+
 Similarly, the coarse→fine learned stochastic map is Bauer, Kapust, Pawlowski
 and Temmen, arXiv:2412.12842 **[V]**: *"a renormalisation group inspired
 normalising flow... we use samples from a coarse lattice field theory and learn
@@ -2235,7 +2299,12 @@ a diffusion-based inverse-RG sampler"* is exposed on priority to Zhu et al. and
 Bachtis et al. A paper framed as *"inverse-RG generative samplers have never
 been tested for distributional correctness; here is what happens when you do,
 and here is the mechanism"* is novel, useful, and squarely within what this
-project actually established. The falsification chain, the guarded-checkpoint
+project actually established. §24.1a strengthens this considerably: the
+published diffusion result for this exact theory reports a *wider* Q
+distribution as the success criterion, and against the exact P(Q) that width
+is a 2.36× overshoot. The framing "width is not correctness, and here is the
+reference that decides it" is now supported by an independent paper's own
+numbers, not only by our internal negatives. The falsification chain, the guarded-checkpoint
 protocol, the Villain control, and the observable-vs-density dissociation of
 §20 are the assets — and §23.5 supplies the published physics result that
 explains *why* that dissociation had to happen.
@@ -2331,16 +2400,24 @@ explains *why* that dissociation had to happen.
   diffusion seed is the *only* usable start in the frozen regime is false and
   should not be made.
 
-Objections 2 and 5 are **untouched**: the Zhu et al. comparison and
-tau_int-aware benchmarking against PTBC and open boundary conditions.
-Transport-only topology at L = 64/128 without the analytic P(Q) crutch was run
-on 2026-08-14 and is answered under objection 1 above and in §21.6.
+The Zhu et al. comparison and the tau_int-aware classical-remedy benchmark were
+both run on 2026-08-15 and are in **§25.6**. Transport-only topology at
+L = 64/128 without the analytic P(Q) crutch was run on 2026-08-14 and is
+answered under objection 1 above and in §21.6.
 
-**Experiments implied:** a direct comparison against Zhu et al. on 2D U(1)
-with matched observables and volumes; and tau_int-aware benchmarking of
-seeded chains against PTBC and open boundary conditions. (The prolongator
-comparison against Endres-style APE smearing and the naive tiling warm-start
-baseline are done — Table S6b; transport-only topology is done — §21.6.)
+**Experiments implied — status.** The direct Zhu et al. comparison is **done**
+(§25.6b: their diffusion arm sits at 2.36x the exact ⟨Q²⟩, their HMC arm at
+0.06x, ours at 1.08x with chi² p = 0.41). The tau_int-aware benchmark against
+PTBC and open boundaries is **done and retired by measurement** (§25.6a): a
+properly tuned PTBC ladder mixes well (swap acceptance 0.68–0.98, tau_int ≈ 3)
+and is still 25–121x more expensive than the exact winding update, which this
+theory already possesses and which is the global move PTBC exists to
+manufacture — so PTBC is the wrong baseline here. The comparison that replaces it is against `hmc+inst`, now
+measured at 0.198 s per independent configuration at beta = 218.58, and a
+break-even configuration count against *that* is the one cost item still owed.
+(The prolongator comparison against Endres-style APE smearing and the naive
+tiling warm-start baseline are done — Table S6b; transport-only topology is
+done — §21.6; the MALA-exactness claim is tested in §25.6c.)
 
 ### 25.5 Post-closure corrections (2026-08-14/15)
 
@@ -2402,17 +2479,357 @@ New scripts: `38_sector_tail_scaling.py`, `39_mh_acceptance.py`,
 New outputs: `out/u1_2d/ridge_scan/`, `sector_mode_table/`,
 `tiling_baseline_2000/`, `ais_transport_foldfixed/`, `mh_acceptance.json`.
 
+### 25.6 The three owed experiments, measured (2026-08-15)
+
+The two experiments §25 listed as still owed — a direct Zhu et al. comparison,
+and tau_int-aware benchmarking against PTBC and open boundary conditions — were
+run, together with a third that tests the competing "MALA makes it exact" claim
+on its own terms. All three are negative or reframing results, and one of them
+says the benchmark itself was aimed at the wrong target.
+
+#### (a) PTBC is the wrong classical baseline for 2D U(1)
+
+Four arms at L = 32, 3000 trajectories, scored on the cost of one *independent*
+configuration, `2 * tau_int(Q^2) * (s/traj) * replicas_charged` — PTBC pays for
+every replica and measures only the c = 1 one, so it is charged for all 12.
+
+| beta | arm | tau_int(Q²) | ⟨Q²⟩ | exact ⟨Q²⟩ | s / independent cfg |
+|---|---|---|---|---|---|
+| 14.1464 | hmc | frozen (0 changes) | 0.0000 | 1.9040 | ∞ |
+| 14.1464 | hmc+inst | 2.85(44) | 1.8705 | 1.9040 | **0.124** |
+| 14.1464 | ptbc (tuned, 13 rep) | 2.30 | 1.8742 | 1.9040 | 3.14 |
+| 14.1464 | open | 1.04(10) | 4.4183 | — | 0.040 |
+| 55.0237 | hmc | frozen | 0.0000 | 0.4743 | ∞ |
+| 55.0237 | hmc+inst | 1.20(13) | 0.4791 | 0.4743 | **0.090** |
+| 55.0237 | ptbc (tuned, 18 rep) | 2.99 | 0.5247 | 0.4743 | 10.87 |
+| 55.0237 | open | 0.55(4) | 3.0497 | — | 0.038 |
+| 218.58 | hmc | frozen | 0.0000 | 0.0290 | ∞ |
+| 218.58 | hmc+inst | 1.39(15) | 0.0296 | 0.0290 | **0.198** |
+| 218.58 | ptbc (tuned, 20 rep) | 3.13 | 0.0375 | 0.0290 | 21.34 |
+| 218.58 | open | 0.52(4) | 2.7701 | — | 0.076 |
+
+Three things follow, and the first is the one that matters.
+
+**The winding update is exact and nearly free here.** It reproduces the analytic
+⟨Q²⟩ to −1.8% / +1.0% / +2.0%, holds tau_int near 1 at every coupling including
+the deeply frozen one, and costs 1–18% over plain HMC — which is itself
+completely frozen, 0 sector changes in 3000 trajectories at all three couplings.
+This is the baseline the pipeline has to beat, and it is a hard one.
+
+**Tuned PTBC works, and is still 25–121x more expensive.** The tuned ladder is
+a genuinely functional sampler: swap acceptance 0.68–0.98 on every pair,
+tau_int(Q²) of 2.3–3.1, and ⟨Q²⟩ consistent with the exact value to about 2
+sigma at all three couplings. It is not a strawman. It is simply redundant —
+PTBC exists because in 4D SU(3) there is no global topological move with usable
+acceptance, so it manufactures one out of a replica ladder, and 2D U(1) already
+*has* that move exactly (Albandea et al.). Buying a substitute for something you
+already own costs 1.5–2 orders of magnitude here. The literature's "two orders
+of magnitude" for PTBC is measured against a frozen chain, not against a
+winding update.
+
+**Open boundaries are cheap but change the observable.** They give the shortest
+tau_int in the table, but Q stops being an integer and ⟨Q²⟩ = 2.77–4.42 against
+a periodic exact value of 0.029–1.904. Fast, and measuring a different quantity.
+That is the Lüscher–Schaefer trade stated plainly, not a defect of the method.
+
+**What the tuning was worth, and a correction to an earlier claim in this
+section.** The first run used a full-line defect (l_d = L), which PRD 96 054504
+§IV C names explicitly as the worst choice, with a ladder calibrated only in c.
+Fixing both — l_d = 2, and the ladder bottom stepped in beta*c rather than c,
+since the defect only switches off once beta*c drops below O(1) — together with
+folding the replica index into the HMC batch dimension and moving the arm to
+the GPU, improved the PTBC cost by **45–51x**:
+
+| beta | as first run | tuned + batched | tau_int | swap acceptance |
+|---|---|---|---|---|
+| 14.1464 | 159.2 | 3.14 | 22.8 → 2.30 | 0.25–0.61 → 0.71–0.94 |
+| 55.0237 | 484.1 | 10.87 | 44.0 → 2.99 | 0.00–0.69 → 0.70–0.98 |
+| 218.58 | 773.6 | 21.34 | 39.4 → 3.13 | 0.00–0.81 → 0.68–0.95 |
+
+This section previously argued the tuned run *need not be performed* because
+arithmetic bounded it near 135 s at beta = 218.58. That bound was wrong by a
+factor of 6 — the true figure is 21.34 s — because it priced the extra replicas
+as a linear cost increase when the arm is latency-bound, so on GPU the ladder
+went from 12 to 20 replicas at **no** per-trajectory cost (0.177 → 0.170 s).
+The sign of the conclusion survived; the magnitude did not, and the magnitude
+was quoted. The numbers above are measured, not bounded.
+
+**One caveat still understates PTBC:** Hasenbusch's hierarchical local-update
+scheme (sub-rectangle sweeps between swaps) is not implemented, so this remains
+unoptimized PTBC.
+
+**A reporting bug found while tuning.** Swap acceptance was averaged over all
+trajectories including those where a pair was not proposed — pairs alternate
+parity, so **every acceptance in the first run was halved**. `swap_replicas`
+now returns NaN for unproposed pairs and callers aggregate with a NaN-skipping
+mean, so the column is acceptance per *proposal*, which is what Hasenbusch's
+>30% criterion refers to. This affected no cost number (tau_int and s/traj come
+from the chain itself), only the diagnostic column, but it is why the first run
+looked even more broken than it was.
+
+**Device convention.** Each arm is timed on the hardware that suits it, since
+handicapping one would corrupt the comparison. The single-replica arms
+(`hmc`, `hmc+inst`, `open`) are latency-bound on one small batch and run faster
+on CPU; the stacked PTBC ladder saturates the GPU better and is timed there.
+This favours PTBC, which is the direction that makes the conclusion robust.
+
+The honest summary is that §25's "benchmark against PTBC and open boundaries"
+was the wrong experiment to have asked for. The right one — benchmark against
+the exact winding update — was in the same script and takes 20 seconds. It is
+now the `hmc+inst` row, and it is the number the pipeline's cost claims should
+be compared against.
+
+Code: `u1_2d/lgt/ptbc.py` (+ 20 tests in `u1_2d/tests/test_ptbc.py`),
+`u1_2d/scripts/43_ptbc_benchmark.py`; data
+`out/u1_2d/ptbc_benchmark/` (first run, untuned) and
+`out/u1_2d/ptbc_benchmark_tuned/` (of record).
+
+#### (b) Zhu et al.: the same failure mode, now scored against the exact answer
+
+arXiv:2410.19602 reports its 2D U(1) topology only as histograms, with no table
+and no released data, and flags the one comparison that would settle whether
+they are right: *"We are currently comparing the numerically computed
+distribution with the analytical prediction, which is possible in this simple
+theory."* That prediction is `u1_2d.lgt.exact`.
+
+Their numbers are recoverable. The figures are vector graphics — the PDF
+contains no image XObjects — so every bar is a path with explicit corner
+coordinates. Calibrating against the axis ticks returns heights that are
+integer multiples of 1/1024, their stated ensemble size, to within 0.001 of a
+configuration, summing to 1023 of 1024. This is digitization of a published
+figure, not their data, and is labelled as such wherever it is used.
+
+At their case, L = 16, beta = 7 (exact ⟨Q²⟩ = 1.0064):
+
+| arm | ⟨Q²⟩ | /exact | chi² p | source |
+|---|---|---|---|---|
+| exact | 1.0064 | 1.00 | — | analytic |
+| HMC (Zhu et al.) | 0.0567 | 0.06 | 1.1e−271 | digitized |
+| diffusion (Zhu et al.) | 2.3715 | **2.36** | 9.3e−128 | digitized |
+| hmc, no topological moves (ours) | 0.6729 | 0.67 | 7.3e−27 | measured |
+| inverse-rg, 8→16 (ours) | 1.0859 | 1.08 | **0.41** | measured |
+
+Their paper presents the wider Q distribution as the desirable outcome, against
+a frozen HMC arm. Both halves are wrong in the same direction and by different
+amounts: their HMC undershoots by 18x and their model overshoots by 2.4x, and
+both reject the exact distribution at overwhelming significance. A wider
+distribution than a frozen chain is not evidence of correctness when the
+correct answer is available and sits between them.
+
+This is the same over-production failure our own raw model shows (§21.6: raw
+⟨Q²⟩ runs 2.5–5.4x above exact at strong coupling), which is worth stating
+plainly — it is a property of score-based samplers on this theory, not a
+mistake specific to their pipeline. The difference is that sector transport
+corrects it here and their rescaled-score extrapolation has no analogous step.
+
+**Caveat on our arm:** the checkpoint is trained for 16→32 and used at 8→16,
+one rung below its trained range. The architecture is convolutional so it runs,
+but that row is an out-of-range use and is labelled so. The comparison that
+carries the weight — is a wider Q distribution automatically better? — rests on
+the `exact` and digitized rows, which carry no such caveat.
+
+Code: `u1_2d/scripts/46_zhu_comparison.py`, `47_zhu_figure_extract.py`; data
+`out/u1_2d/zhu_comparison/`.
+
+#### (c) MALA acceptance is a local diagnostic and does not test exactness
+
+Zhu et al. state that "exactness ... is ensured by incorporating
+Metropolis-adjusted Langevin dynamics into the generation process." §20 measured
+that route as out of reach and F3 states the deployed ladder applies no
+accept/reject to the proposal at all. Those cannot both be right, and the
+mechanism is testable without their code: run MALA on the exact Boltzmann target
+starting from model output, and compare its acceptance against the same
+measurement started from equilibrium HMC configurations at the same coupling.
+
+| beta | eps | acc (model) | acc (equilibrium) | ratio | Δ⟨Q²⟩ |
+|---|---|---|---|---|---|
+| 14.1464 | 0.003 | 0.9997 | 0.9991 | 1.001 | 0 |
+| 14.1464 | 0.01 | 0.9978 | 0.9988 | 0.999 | 0 |
+| 14.1464 | 0.03 | 0.9428 | 0.9534 | 0.989 | 0 |
+| 14.1464 | 0.1 | 0.0169 | 0.0294 | 0.574 | 0 |
+| 55.0237 | 0.003 | 0.9997 | 0.9994 | 1.000 | 0 |
+| 55.0237 | 0.01 | 0.9838 | 0.9881 | 0.996 | 0 |
+| 55.0237 | 0.03 | 0.6038 | 0.6388 | 0.945 | 0 |
+| 55.0237 | 0.1 | 0.000 | 0.000 | n/a | 0 |
+
+The naive reading — ratio ≈ 1, so the model is already at the target and
+MALA-wrapped exactness is nearly free — is wrong, and the last column is why.
+**⟨Q²⟩ is bit-identical before and after in every one of the eight settings**:
+across 50 steps x 64 configurations x 8 settings, MALA changed the topological
+sector exactly zero times. It cannot; the required move is not in its proposal
+at any step size that accepts.
+
+So high acceptance says each configuration sits in a region of typical action —
+a *local* statement — while saying nothing about whether the ensemble is
+distributed correctly. This is the same dissociation as D1/D2 and §20: healthy
+local diagnostics while the density is 10–100 nats off. The cost of
+exactness-by-MALA is its mixing time on exactly the modes it cannot move, which
+acceptance does not bound and this script does not measure. **F3 stands**, and
+the "exactness is ensured by MALA" claim is unsupported by an acceptance rate
+however high.
+
+(The eps → 0 rows are uninformative by construction: a vanishing step accepts
+everything for any configuration, right or wrong. The informative entries are
+the largest eps, where the arms separate — and even there the separation is 5%.)
+
+Code: `u1_2d/scripts/45_mala_exactness.py`; data
+`out/u1_2d/mala_exactness/mala_exactness.json`.
+
+#### What this changes in the objection list
+
+Both experiments §25 listed as owed are now done, and the residual owed item is
+different from the one recorded there: a break-even configuration count for the
+pipeline against **`hmc+inst`** (0.198 s per independent configuration at
+beta = 218.58), which is a far more demanding comparison than PTBC. The
+"tau_int-aware benchmarking against PTBC and open boundaries" line should be
+read as retired-by-measurement rather than answered in the pipeline's favour.
+
+Two lessons, in the same register as §25.5.
+
+*A classical baseline imported from another theory can be the wrong baseline.*
+PTBC's reputation is earned in 4D SU(3), where the alternative is nothing.
+Transplanting the comparison without asking what it substitutes for produced a
+number whose sign was deducible in advance from the structure of the theory.
+
+*A bound is not a measurement, and must not be quoted as one.* The argument for
+skipping the tuned run was sound in structure — the conclusion could not flip —
+but it was used to justify a stated magnitude, and that magnitude was wrong by
+6x because the bound assumed a linear cost in replicas for a latency-bound
+kernel. The measurement then moved the headline margin from "10³–10⁴x" to
+"25–121x". When the cost of measuring is 30 minutes, the bound should be used
+to decide *priority*, never to fill in the number.
+
+New scripts: `43_ptbc_benchmark.py`, `44_frozen_regime_power.py`,
+`45_mala_exactness.py`, `46_zhu_comparison.py`, `47_zhu_figure_extract.py`.
+New module: `u1_2d/lgt/ptbc.py`. New outputs: `out/u1_2d/ptbc_benchmark/`,
+`mala_exactness/`, `zhu_comparison/`.
+
+### 25.7 Closing the review backlog (2026-08-15)
+
+`docs/U1_2D_REVIEW.md` §Remaining carried four code items, a citation audit, and
+one deferred measurement. All are now closed. Two of them changed published
+numbers, and one retracts a recommendation, so they are recorded here rather
+than only in the review.
+
+**M3 — the χ² gate was hiding the test where it mattered most.** The P(Q)
+chi-squared row was emitted only when at least two bins had expected > 2 *and*
+observed counts landed in them; otherwise nothing was written, and the table
+rendered "-", indistinguishable from "not applicable". `validate/report.py` now
+pools low-expectation bins and out-of-support charge into overflow cells and
+always emits a verdict (`u1_2d/tests/test_pq_chi2_gate.py` pins it).
+
+The review justified this on `su2_2d` reuse. The real cost was here: the gate
+had been silently dropping the sector test at the **three highest couplings in
+the 38-case study** — β = 218.58, 398.5, 872.8 — which Table S3 reported as
+having "no populated bins to test". They are testable with pooling and all
+three pass (transport p = 0.388 / 0.971 / 1.000). That is the extrapolation
+regime the whole method exists for, and it had no P(Q) test at all.
+
+A second effect runs the other way and is equally welcome: charge falling
+*outside* the tabulated support was being discarded by the histogram rather
+than counted against the model. Counting it moves the deliberately-mismatched
+track-B controls from marginal to decisive — B_bt55.0237 from p = 4.3×10⁻⁵ to
+3.2×10⁻⁵⁴. The controls that are *supposed* to fail now fail unambiguously.
+
+**M4 — the 38-case study was not τ_int-aware.** It called `validate_ensemble`
+without `n_chains`/`ref_n_chains`, so every error bar was a fixed 20-bin
+estimate rather than the per-chain τ_int estimate the honesty conventions
+describe, and the case tables inherited z-scores built on the wrong errors.
+Fixed at the call site. Because the study caches its ensembles, re-validation
+needed no regeneration at all: `48_revalidate_tau_aware.py` reloads the cached
+generated/reference pairs and re-scores them into a parallel directory, leaving
+the original record intact for diffing.
+
+| arm | cases | mean \|z_exact\| | \|z\| > 3 flags |
+|---|---|---|---|
+| transport | 44 | 0.957 → **0.888** | 38 → **33** |
+| exact-sector | 38 | 0.847 → **0.778** | 1 → 1 |
+
+For a correct sampler with correct errors the expectation is ≈ 0.798, so both
+arms move *toward* it — the old error bars were mildly too tight, and objection
+6 of §25 is answered a second way. Table S3 is regenerated on these records
+(appendix); its conclusion — transport and exact-sector are indistinguishable,
+every transport failure is a deliberate mismatch — is unchanged.
+
+**`norm_type` and the validation σ-bias — two latent traps, no recorded
+numbers moved.** `norm_type` defaulted to `"group"`, which normalizes over the
+whole spatial extent and so makes the learned map lattice-size dependent; the
+project's no-L-dependence claim survived only because every shipped config
+overrode it. Default flipped to `"channel"`. Checkpoints record `norm_type` in
+`model_kwargs`, so nothing rebuilds. Separately, validation drew t ~ U[0,1]
+while training raised t to k(β) under `high_beta_sigma_bias`, so best-epoch
+selection was scoring a noise distribution the model was not being trained on —
+underweighting exactly the small-σ/high-β regime the bias exists to fix.
+`sample_sigma` gained a `t` override so validation reuses the training warp
+with its own seeded stream. Affects future training only.
+
+**Citations — checked, and the study was conflating two papers.** §26.1 is the
+new bibliography: 14 entries verified against arXiv/INSPIRE/publisher records,
+15 listed explicitly as unverified rather than presented as confirmed. The
+substantive finding is that "Zhu et al." is **two** papers — arXiv:2502.05504 =
+JHEP 03 (2026) 111, the journal paper whose MALA claim §25.6c tests, and
+arXiv:2410.19602, a shorter NeurIPS 2024 workshop paper, which is the one whose
+figures §25.6b digitizes. Scripts 46/47 named the right one; §26 named only the
+other, so the digitization provenance pointed at the wrong document. Also, the
+Rançon citation had lost an author (there are two authors named Rançon). One
+apparent error is a genuine coincidence: Zhu JHEP 03 (2026) 111 and Bonanno,
+Bonati & D'Elia JHEP 03 (2021) 111 really do share an issue and article number
+in different years, and neither should be "corrected".
+
+**`topo_weight` — the follow-up measurement, and it is a null that retracts a
+recommendation.** `TODO.md` §2 found `topo_weight` the one hyperparameter of
+six that separated from seed noise on the deployed fiber log-weight spread
+(pooled one-sided rank p = 0.018), and recorded it as the recommended starting
+point for a successor. It also named the test that would settle whether the
+effect is real: does `topo_weight` raise the **raw sector match rate**, the
+mechanism it would have to act through?
+
+Measured (`49_topo_weight_match_rate.py`, 8 already-trained checkpoints, 128
+configurations per arm, at L = 32 and β = 14.15 / 55.02). The comparison is
+*paired* — one coarse ensemble per case, shared by every arm — because the
+coarse HMC draw is a larger variance source than the effect:
+
+| group | arms | mean raw match rate |
+|---|---|---|
+| baseline seeds | base_s0/s1/s2 | 0.2227 – **0.2539** |
+| raised topo_weight | topo03 ×3, topo05 ×2 | 0.2031 – 0.2383 |
+
+**No separation.** All five raised-weight arms sit inside the three-seed
+baseline spread, and the best of them (0.2383) is below the best baseline
+(0.2539). `topo_weight` does not act through the raw sector match rate. Whatever
+produced the log-weight-spread separation in `TODO.md` §2, it is not the
+topological mechanism the penalty was designed around, and **the recommendation
+to carry `topo_weight = 0.3` forward as a topology setting is withdrawn** on
+this evidence. The spread result itself stands as recorded; only its
+interpretation was load-bearing, and it does not survive.
+
+This is the §25.5 lesson recurring: a separation that replicates can still be
+acting through something other than its stated mechanism, and the cheap test is
+to measure the mechanism directly rather than collect more of the same
+endpoint.
+
+New scripts: `48_revalidate_tau_aware.py`, `49_topo_weight_match_rate.py`.
+New tests: `u1_2d/tests/test_pq_chi2_gate.py`. New outputs:
+`out/u1_2d/generalization_tau_aware/`,
+`generalization_exact_sectors_tau_aware/`, `sector_mode_table_tau_aware/`,
+`topo_weight_match_rate/`.
+
 ### 26. Minimum citation set
 
 *Inverse RG / super-resolution* — Ron, Swendsen, Brandt PRL **89**, 275701
 (2002); Efthymiou, Beach, Melko PRB **99**, 075113 (2019); Bachtis, Aarts, Di
 Renzo, Lucini PRL **128**, 081603 (2022); Bachtis PRB **110**, L140202 (2024);
-Bachtis arXiv:2405.16288; Rançon, Ivek, Balog PRE **113**, 055302 (2026).
+Bachtis arXiv:2405.16288; Rançon, Rançon, Ivek, Balog PRE **113**, 055302
+(2026).
 
-*Diffusion for LFT* — Wang, Aarts, Zhou JHEP **05** (2024) 060; **Zhu, Aarts,
-Wang, Zhou, Wang JHEP 03 (2026) 111 / arXiv:2502.05504 (mandatory: direct
-competitor)**; Cotler, Rezchikov arXiv:2308.12355; Masuki, Ashida
-arXiv:2501.09064.
+*Diffusion for LFT* — Wang, Aarts, Zhou JHEP **05** (2024) 060 /
+arXiv:2309.17082; **Zhu, Aarts, Wang, Zhou, Wang, "Physics-Conditioned
+Diffusion Models for Lattice Gauge Theory", JHEP 03 (2026) 111 /
+arXiv:2502.05504 (mandatory: direct competitor)**; **Zhu, Aarts, Wang, Zhou,
+Wang, "Diffusion models for lattice gauge field simulations", arXiv:2410.19602,
+NeurIPS 2024 ML4PS workshop** — a *separate, shorter* paper by the same authors
+and the one whose figures §25.6b digitizes; the two must not be conflated;
+Cotler, Rezchikov arXiv:2308.12355; Masuki, Ashida arXiv:2501.09064.
 
 *Flows* — Albergo, Kanwar, Shanahan PRD **100**, 034515 (2019); Kanwar et al.
 PRL **125**, 121601 (2020); Del Debbio, Marsh Rossney, Wilson PRD **104**,
@@ -2436,3 +2853,64 @@ Pochinsky PRD 92, 114516 (2015) (mandatory)**; Detmold, Endres PRD **97**,
 score matching; Song, Ermon (2019); Ho, Jain, Abbeel (2020); Song et al. ICLR
 (2021) for the SDE/probability-flow formulation; Grathwohl et al. (FFJORD) for
 the continuous-flow likelihood; Neal (2001) for AIS (already cited in §21).
+
+### 26.1 Bibliography, with verification status (2026-08-15)
+
+Review item 2 of `docs/U1_2D_REVIEW.md` §Remaining asked for every Part V
+citation to be checked against the actual paper, and for a bibliography. This
+is that check. **Verified** means the title, author list, journal, volume,
+article number and year were confirmed against arXiv, INSPIRE, or the
+publisher's record on 2026-08-15. Entries marked *unverified* were not checked
+and must be before submission — they are listed as such rather than silently
+presented as confirmed.
+
+**Verified.**
+
+| citation | identifier |
+|---|---|
+| Lüscher, Schaefer, "Lattice QCD without topology barriers", JHEP **07** (2011) 036 | arXiv:1105.4749 |
+| Schaefer, Sommer, Virotta, "Critical slowing down and error analysis in lattice QCD simulations", Nucl. Phys. B **845**, 93 (2011) | arXiv:1009.5228 |
+| Hasenbusch, "Fighting topological freezing in the two-dimensional CP^{N−1} model", PRD **96**, 054504 (2017) | arXiv:1706.04443 |
+| Bonanno, Bonati, D'Elia, "Large-N SU(N) Yang–Mills theories with milder topological freezing", JHEP **03** (2021) 111 | 10.1007/JHEP03(2021)111 |
+| Bonanno, Nada, Vadacchino, "Mitigating topological freezing using out-of-equilibrium simulations", JHEP **04** (2024) 126 | arXiv:2402.06561 |
+| Laio, Martinelli, Sanfilippo, "Metadynamics surfing on topology barriers: the CP^{N−1} case", JHEP **07** (2016) 089 | 10.1007/JHEP07(2016)089 |
+| Albandea, Hernández, Ramos, Romero-López, "Topological sampling through windings", EPJC **81**, 873 (2021) | arXiv:2106.14234 |
+| Endres, Brower, Detmold, Orginos, Pochinsky, "Multiscale Monte Carlo equilibration: Pure Yang–Mills theory", PRD **92**, 114516 (2015) | arXiv:1510.04675 |
+| Bachtis, Aarts, Di Renzo, Lucini, "Inverse Renormalization Group in Quantum Field Theory", PRL **128**, 081603 (2022) | 10.1103/PhysRevLett.128.081603 |
+| Rançon, Rançon, Ivek, Balog, "Dreaming up scale invariance via inverse renormalization group", PRE **113**, 055302 (2026) | arXiv:2506.04016 |
+| Wang, Aarts, Zhou, "Diffusion models as stochastic quantization in lattice field theory", JHEP **05** (2024) 060 | arXiv:2309.17082 |
+| Zhu, Aarts, Wang, Zhou, Wang, "Physics-Conditioned Diffusion Models for Lattice Gauge Theory", JHEP **03** (2026) 111 | arXiv:2502.05504 |
+| Zhu, Aarts, Wang, Zhou, Wang, "Diffusion models for lattice gauge field simulations", NeurIPS 2024 ML4PS workshop | arXiv:2410.19602 |
+| Singha, Chakrabarti, Arora, "Sampling gauge theory using a retrainable conditional flow-based model", PRD **108**, 074518 (2023) | 10.1103/PhysRevD.108.074518 |
+
+**Three corrections this check produced.**
+
+1. *Zhu et al. is two papers, and the study used both without distinguishing
+   them.* arXiv:2502.05504 = JHEP 03 (2026) 111 is the journal paper whose
+   MALA-exactness claim §25.6c tests. arXiv:2410.19602 is a separate, shorter
+   NeurIPS 2024 workshop paper, and it is the one whose figures §25.6b
+   digitizes. Scripts `46`/`47` correctly name 2410.19602; §26 previously named
+   only the journal paper, so the digitization provenance pointed at the wrong
+   document. Both are now listed.
+2. *The Rançon citation dropped an author.* It is Adam Rançon, **Ulysse
+   Rançon**, Tomislav Ivek, Ivan Balog — two authors named Rançon, and the
+   second was lost.
+3. *A coincidence that looks like an error and is not.* Zhu et al. JHEP **03**
+   (2026) **111** and Bonanno, Bonati & D'Elia JHEP **03** (2021) **111** share
+   an issue and article number in different years. Both were confirmed
+   independently against INSPIRE. Do not "fix" either one.
+
+**Unverified — must be checked before submission.** Ron, Swendsen & Brandt PRL
+89, 275701 (2002); Efthymiou, Beach & Melko PRB 99, 075113 (2019); Bachtis PRB
+110, L140202 (2024); Bachtis arXiv:2405.16288; Cotler & Rezchikov
+arXiv:2308.12355; Masuki & Ashida arXiv:2501.09064; Albergo, Kanwar & Shanahan
+PRD 100, 034515 (2019); Kanwar et al. PRL 125, 121601 (2020); Del Debbio, Marsh
+Rossney & Wilson PRD 104, 094507 (2021); Abbott et al. arXiv:2211.07541; Nicoli
+et al. PRD 108 (2023) *(no article number recorded — incomplete as written)*;
+Bauer, Kapust, Pawlowski & Temmen arXiv:2412.12842; Singha et al.
+arXiv:2604.10209; Del Debbio, Manca & Vicari PLB 594, 315 (2004); Detmold &
+Endres PRD 97, 074507 (2018).
+
+Note also that an **erratum** exists for Albandea et al. (EPJC **83**, 508
+(2023)) and should be cited alongside the original, since that paper is now the
+classical baseline of record for this study (§25.6a, Table S8).

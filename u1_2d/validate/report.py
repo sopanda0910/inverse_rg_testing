@@ -56,6 +56,94 @@ def _q_histogram(charges: np.ndarray, q_values: np.ndarray) -> np.ndarray:
     return counts
 
 
+def _pq_chi2_row(charges: np.ndarray, q_values: np.ndarray, counts: np.ndarray,
+                 expected: np.ndarray, tau_q: float,
+                 min_expected: float = 2.0) -> dict:
+    """chi^2 of the Q histogram against exact P(Q), pooling the tails.
+
+    The gate this replaces emitted **no row at all** unless at least two bins
+    had expected > 2 *and* observed counts landed in them. An ensemble whose
+    charge sits outside the well-populated support -- the case where P(Q) is
+    most wrong -- therefore produced a blank cell rendered as "-", which is
+    indistinguishable from "not applicable". The test disappeared precisely
+    when it should have fired.
+
+    Two changes. Low-expectation bins are pooled into overflow cells below and
+    above the retained range rather than dropped, together with observed charge
+    outside `q_values` entirely (which `_q_histogram` does not count at all).
+    And the row is always emitted: if even the pooled table has fewer than two
+    cells, it reports chi2_p = 0 with an explicit note instead of vanishing.
+
+    Pooling is what makes the statistic honest here: a sector holding 0.5
+    expected counts contributes nothing testable on its own, but twenty such
+    sectors holding 40 observed between them is a decisive failure, and the old
+    gate scored it as no evidence.
+    """
+    from scipy.stats import chi2 as chi2_dist
+
+    q_values = np.asarray(q_values)
+    counts = np.asarray(counts, dtype=float)
+    expected = np.asarray(expected, dtype=float)
+    rounded = np.round(np.asarray(charges, dtype=float))
+
+    base = {"observable": "Q histogram vs exact P(Q)",
+            "value": float("nan"), "error": float("nan"),
+            "exact": float("nan"), "z_exact": float("nan")}
+
+    core = np.flatnonzero(expected > min_expected)
+    if core.size == 0:
+        return {**base, "chi2_p": 0.0,
+                "chi2_note": "FAIL (no bin has expected > "
+                             f"{min_expected:g}; P(Q) untestable at this n)"}
+
+    lo, hi = int(core[0]), int(core[-1])
+    # Charge that fell outside the tabulated support is real evidence against
+    # P(Q) and must not be silently discarded.
+    below = float(counts[:lo].sum() + np.sum(rounded < q_values[0]))
+    above = float(counts[hi + 1:].sum() + np.sum(rounded > q_values[-1]))
+    exp_below = float(expected[:lo].sum())
+    exp_above = float(expected[hi + 1:].sum())
+
+    obs_cells = list(counts[lo:hi + 1])
+    exp_cells = list(expected[lo:hi + 1])
+    labels = [f"Q={int(q)}" for q in q_values[lo:hi + 1]]
+    # An overflow cell with neither expectation nor observation carries no
+    # information; keeping it would only inflate the degrees of freedom.
+    if below > 0 or exp_below > 0:
+        obs_cells.insert(0, below)
+        exp_cells.insert(0, exp_below)
+        labels.insert(0, f"Q<{int(q_values[lo])}")
+    if above > 0 or exp_above > 0:
+        obs_cells.append(above)
+        exp_cells.append(exp_above)
+        labels.append(f"Q>{int(q_values[hi])}")
+
+    obs = np.asarray(obs_cells, dtype=float)
+    exp = np.asarray(exp_cells, dtype=float)
+    if obs.size < 2 or obs.sum() <= 0 or exp.sum() <= 0:
+        return {**base, "chi2_p": 0.0,
+                "chi2_note": "FAIL (no overlap with exact support)"}
+    # Observed weight where the exact distribution assigns none is decisive on
+    # its own, and would otherwise divide by zero in the statistic.
+    if np.any((exp <= 0) & (obs > 0)):
+        return {**base, "chi2_p": 0.0,
+                "chi2_note": "FAIL (charge observed in sectors of zero exact "
+                             "probability)"}
+
+    # Renormalize the expectation to the observed total so the test is of the
+    # SHAPE of P(Q); the normalization is not in question.
+    exp = exp * (obs.sum() / exp.sum())
+    stat = float(chisquare(obs, exp).statistic)
+    dof = float(obs.size - 1)
+    # Autocorrelated draws deflate the effective count; scale the statistic by
+    # 1 / (2 tau_int(Q)) before the p-value (i.i.d. tau = 0.5 -> no-op).
+    stat_eff = stat / (2.0 * tau_q)
+    return {**base, "value": stat, "exact": dof,
+            "chi2_p": float(chi2_dist.sf(stat_eff, dof)),
+            "chi2_bins": labels,
+            **({"tau_int": tau_q} if tau_q > 1.0 else {})}
+
+
 def _q_display_window(
     q_values: np.ndarray, q_probs: np.ndarray, charges: np.ndarray,
     ref_charges: np.ndarray | None, mass: float = 0.995, pad: float = 1.5,
@@ -261,28 +349,8 @@ def validate_ensemble(
     q_values, q_probs = exact.topological_charge_distribution(beta, lattice_size, action_type)
     counts = _q_histogram(charges, q_values)
     expected = q_probs * len(charges)
-    keep = expected > 2.0
-    if keep.sum() > 1 and counts[keep].sum() > 0:
-        scale = counts[keep].sum() / expected[keep].sum()
-        chi2 = chisquare(counts[keep], expected[keep] * scale)
-        # Autocorrelated draws deflate the effective count; scale the statistic
-        # by 1 / (2 tau_int(Q)) before the p-value (i.i.d. tau = 0.5 -> no-op).
-        tau_q = chain_tau_int(np.asarray(charges, dtype=float), n_chains) if n_chains else 0.5
-        from scipy.stats import chi2 as chi2_dist
-
-        dof = float(keep.sum() - 1)
-        stat_eff = float(chi2.statistic) / (2.0 * tau_q)
-        rows.append(
-            {
-                "observable": "Q histogram vs exact P(Q)",
-                "value": float(chi2.statistic),
-                "error": float("nan"),
-                "exact": dof,
-                "z_exact": float("nan"),
-                "chi2_p": float(chi2_dist.sf(stat_eff, dof)),
-                **({"tau_int": tau_q} if tau_q > 1.0 else {}),
-            }
-        )
+    tau_q = chain_tau_int(np.asarray(charges, dtype=float), n_chains) if n_chains else 0.5
+    rows.append(_pq_chi2_row(charges, q_values, counts, expected, tau_q))
 
     if output_dir is not None and make_plots:
         output_dir = Path(output_dir)

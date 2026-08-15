@@ -44,7 +44,8 @@ class GeometricNoiseSchedule:
             low = low.to(t.device)
         return low * (self.sigma_max / low) ** t
 
-    def sample_sigma(self, batch: int, device, beta=None, high_beta_bias: float = 0.0) -> torch.Tensor:
+    def sample_sigma(self, batch: int, device, beta=None, high_beta_bias: float = 0.0,
+                     t: torch.Tensor | None = None) -> torch.Tensor:
         """Draw training noise levels sigma(t), t ~ U[0, 1].
 
         high_beta_bias > 0 oversamples small sigma where beta is large: t is
@@ -53,8 +54,12 @@ class GeometricNoiseSchedule:
         was traced to small-sigma score accuracy at high beta, where the target
         distribution is narrow (width ~ 1/sqrt(beta)) but uniform-t training
         rarely visits the sigmas that resolve it.
+
+        `t` overrides the uniform draw, so a caller that needs a reproducible
+        stream (validation, which seeds its own CPU generator) can get the same
+        warp as training instead of reimplementing it and drifting out of sync.
         """
-        t = torch.rand(batch, device=device)
+        t = torch.rand(batch, device=device) if t is None else t.to(device)
         if isinstance(beta, torch.Tensor):
             beta = beta.to(device)
         if high_beta_bias > 0.0 and beta is not None:

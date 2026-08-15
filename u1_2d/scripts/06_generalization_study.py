@@ -126,6 +126,15 @@ from u1_2d.validate.report import validate_ensemble, GEN_COLOR, REF_COLOR, INK, 
 from u1_2d.utils import set_seed, save_ensemble, load_ensemble, save_json
 
 CHECKPOINT = "out/u1_2d/checkpoints/score_net.pt"
+# Chain counts of every HMC ensemble this study builds. Named rather than
+# inlined because validate_ensemble needs them too: without them the study
+# reports fixed 20-bin errors instead of the per-chain tau_int errors the
+# honesty conventions describe, which is review item M4. The generated
+# ensemble inherits the base's chain-major layout (charge enforcement,
+# exact-sector resampling and retherm sweeps are all per-configuration and
+# order-preserving), so the same count applies to it.
+HMC_N_CHAINS = 16
+SMOKE_N_CHAINS = 8
 OUT_DIR = Path("out/u1_2d/demo/generalization")
 ACTION_TYPE = "wilson"
 
@@ -245,7 +254,7 @@ def hmc_ensemble_cached(path: Path, lattice_size: int, beta: float, n_configs: i
         lattice_size,
         make_action(ACTION_TYPE, beta),
         n_configs=n_configs,
-        n_chains=8 if smoke else 16,
+        n_chains=SMOKE_N_CHAINS if smoke else HMC_N_CHAINS,
         burn_in=burn_in,
         thin=2 if smoke else 5,
         n_steps=n_steps,
@@ -372,11 +381,14 @@ def run_case(case: Case, model, schedule, out: Path, device: str, smoke: bool,
         fine_size, case.target_beta, case.n_reference, device, smoke,
     )
 
+    n_chains = SMOKE_N_CHAINS if smoke else HMC_N_CHAINS
     rows = validate_ensemble(
         fine, case.target_beta, ACTION_TYPE,
         reference_configs=reference,
         label=case.run_id,
         output_dir=out / "figures",
+        n_chains=n_chains,
+        ref_n_chains=n_chains,
     )
     record["rows"] = rows
     return record

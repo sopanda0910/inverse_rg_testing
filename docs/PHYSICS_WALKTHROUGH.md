@@ -708,6 +708,30 @@ same knob. What *is* asymptotically exact is the **seeded** mode: exact HMC from
 a diffusion configuration, correct within its sector, with the sector supplied
 by the transport identity of B3.
 
+**The competing claim, tested — [MEASURED], 2026-08-15.** Zhu et al.
+(arXiv:2410.19602) state that exactness "is ensured by incorporating
+Metropolis-adjusted Langevin dynamics into the generation process." If a
+Metropolis-adjusted local corrector delivered exactness cheaply, this section
+would be wrong. It does not, and the measurement says why in one column.
+
+Run MALA on the exact Boltzmann target starting from model output, and run the
+identical measurement from equilibrium HMC configurations at the same coupling
+as a control. Acceptance comes out **the same for both** — ratio 0.99–1.00 at
+every resolved step size, at beta = 14.15 and 55.02. Taken alone that reads as
+"the model's output is already at the target." It is not, and the reason is
+that across 50 steps x 64 configurations x 8 settings, ⟨Q²⟩ is **bit-identical
+before and after in every case**. MALA changed the topological sector exactly
+zero times. It cannot — the move is not in its proposal at any step size that
+accepts.
+
+So MALA acceptance is a *local* diagnostic. It reports that each configuration
+sits where the action is typical, and is silent on whether the ensemble is
+distributed correctly — failing in precisely the way D1/D2 documents, healthy
+while the density is 10–100 nats off. The cost of exactness-by-MALA is its
+mixing time on the modes it cannot move, which acceptance does not bound. An
+acceptance rate, however high, is not evidence of exactness. NARRATIVE §25.6c;
+script `u1_2d/scripts/45_mala_exactness.py`.
+
 ### F4. The first thing SU(2) broke
 
 Worth knowing, because it is the cleanest evidence that this testbed was chosen

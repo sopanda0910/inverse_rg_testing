@@ -678,15 +678,49 @@ claims ("nobody has done X") are weaker than its positive ones.
 
 ## Remaining
 
-1. M3 (χ² overflow bins), M4 (τ_int-aware study path), `norm_type` default,
-   validation σ-bias match. **Highest priority of these is M3**, because
-   `su2_2d` reuses the same validation machinery and has *no exact P(Q)* to
-   rescue a silently-dropped sector test.
-2. Verify every Part V citation against the actual paper before any
-   submission; add a bibliography.
-3. Publish-only (deferred by decision, 2026-08-03): the Endres-style
-   learned-vs-classical prolongator comparison, and an ESS rerun at N >> 64 so
-   the estimate is resolved rather than pinned at 1/N.
+**All items below were closed on 2026-08-15.** The list is kept with its
+resolutions rather than deleted, because two of them changed published numbers.
+
+1. **M3 (χ² overflow bins) — FIXED.** `validate/report.py` now pools
+   low-expectation bins and out-of-support charge into overflow cells and
+   always emits a verdict; `u1_2d/tests/test_pq_chi2_gate.py` pins the
+   behaviour. This mattered more than the review estimated: the gate had been
+   silently dropping the test at the **three highest couplings in the 38-case
+   study** (β = 218.58 / 398.5 / 872.8), which Table S3 reported as "no
+   populated bins to test". All three are testable with pooling and all three
+   pass. Separately, the deliberately-mismatched track-B controls move from
+   marginal to catastrophic (B_bt55.0237: p = 4.3×10⁻⁵ → 3.2×10⁻⁵⁴) once
+   out-of-support charge is counted instead of discarded.
+2. **M4 (τ_int-aware study path) — FIXED.** `06_generalization_study.py` passes
+   `n_chains`/`ref_n_chains`. Re-validating the cached ensembles
+   (`48_revalidate_tau_aware.py`, no regeneration needed) moves mean |z_exact|
+   0.957 → 0.888 on the transport arm and 0.847 → 0.778 on the exact-sector
+   arm, and drops |z| > 3 flags from 38 to 33. Table S3 regenerated.
+3. **`norm_type` default — FIXED.** Flipped `"group"` → `"channel"` in
+   `score_net.py` (×2) and `train.py`. No recorded result moves: every shipped
+   config already overrode it and checkpoints carry `norm_type` in
+   `model_kwargs`.
+4. **Validation σ-bias match — FIXED.** Validation drew t ~ U[0,1] while
+   training raised t to k(β), so best-epoch selection scored a noise
+   distribution the model was not trained on. `sample_sigma` gained a `t`
+   override so validation reuses the training warp with its own seeded stream.
+   Affects future training only.
+5. **Part V citations — CHECKED, bibliography added** (NARRATIVE §26.1). 14
+   entries verified against arXiv/INSPIRE/publisher; 15 explicitly listed as
+   unverified rather than presented as confirmed. Two real errors found: the
+   study conflated *two different* Zhu et al. papers (arXiv:2502.05504 = JHEP
+   03 (2026) 111, the journal paper, vs arXiv:2410.19602, the NeurIPS workshop
+   paper actually digitized in §25.6b), and the Rançon citation dropped an
+   author. One apparent error is genuine coincidence and must not be "fixed":
+   Zhu JHEP 03 (2026) 111 and Bonanno JHEP 03 (2021) 111.
+6. **Publish-only items — both DONE.** The Endres-style prolongator comparison
+   is Table S6b; the ESS rerun at N ≫ 64 is in NARRATIVE §25.5 (n = 512 gives
+   exactly 1/512 — the estimator tracks 1/N, so it was never merely
+   unresolved).
+
+The review's stated justification for prioritizing M3 was `su2_2d` reuse. That
+package is set aside, but M3 was worth fixing on its own terms: it was hiding a
+sector test in the U(1) study's own headline regime.
 
 **Done in this session** beyond the fixes above: M6 retracted (already
 committed); `u1_2d/README.md` and the five script docstrings corrected; the

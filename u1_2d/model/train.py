@@ -54,7 +54,7 @@ class TrainConfig:
     grad_clip_norm: float | None = 1.0
     high_beta_sigma_bias: float = 0.0
     sym_augment: float = 0.0
-    norm_type: str = "group"
+    norm_type: str = "channel"
     cond_film: bool = False
 
 
@@ -258,11 +258,16 @@ def train_score_model(
             torch.manual_seed(12345)
             for data in val_data:
                 n = data["fine"].shape[0]
-                # beta passed so the validation noise distribution matches the
-                # beta-aware training floor -- otherwise best-checkpoint selection
-                # runs on a different sigma distribution than training.
-                sigma = schedule.sigma(
-                    torch.rand(n, generator=gen).to(device), beta=data["beta"]
+                # beta AND the sigma-bias warp are passed so the validation noise
+                # distribution matches training's. Passing beta alone still left
+                # validation drawing t ~ U[0,1] while training raised t to
+                # k(beta), so best-epoch selection systematically underweighted
+                # the small-sigma/high-beta regime the bias exists to fix -- it
+                # was scoring a curve the model was not being trained on.
+                sigma = schedule.sample_sigma(
+                    n, device, beta=data["beta"],
+                    high_beta_bias=config.high_beta_sigma_bias,
+                    t=torch.rand(n, generator=gen),
                 )
                 vloss = float(
                     denoising_loss(
