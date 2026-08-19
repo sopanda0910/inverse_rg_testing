@@ -45,6 +45,26 @@ and `score_net_rkl2.pt` (likelihood/ESS work only). Everything else in
 `out/u1_2d/` is reports/figures/summaries — regenerable `.pt` ensembles were
 pruned 2026-08-02 (recoverable from git history if ever needed).
 
+**Second prune, 2026-08-18 (1104 MB → 111 MB).** Two classes went:
+(i) superseded or zero-reference run directories — `ptbc_benchmark/` (untuned),
+`sector_mode_table/` (superseded by `_tau_aware`), `ais_transport_preFoldFix/`,
+`ais_transport_rich/`, `generalization_exact_sectors_{b,seed2}/`,
+`generalization_fresh_s4/`, `pq_hmc_tail_adaptive/`,
+`ode_reweighting_{easy,probes8}/`, `tiling_smoke/`, the seven stray `*.log`, and
+the `campaign_state/` + `*/state/` sentinels; (ii) regenerable `.pt` ensembles
+inside directories that *are* of record (`generalization*`, `thermalization`,
+`validation`, `data`, plus `.png`/`.npz`/`.log` under `gpu_verification/` and
+`proj_sigma_ab/`, both of which are process-verification runs whose results live
+in their `.json`/`.md`). Every `report.md`, appendix figure, and summary `.json`
+survives; all 169 tests, `29_verify_identities.py`, and
+`30_assemble_appendix_figures.py --check` pass after the prune.
+**The narrative record of all of it stays in `docs/NARRATIVE.md`** — that is the
+point of the prune, so a dead `out/` path quoted there is expected, not a bug.
+Everything is recoverable from git history (all of `out/` was tracked).
+Three directories were *spared* despite looking prunable, because they are live
+figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
+24, 26) and `thermalization/*_series.npz` (figures 12, 16, via scripts 08/11).
+
 ## Key Conventions
 
 ### Physics (U(1), and carried to SU(2) where stated)
@@ -121,8 +141,9 @@ pruned 2026-08-02 (recoverable from git history if ever needed).
   one, so importing that comparison measures nothing. Do not re-open the PTBC
   arm — `u1_2d/lgt/ptbc.py` and its 20 tests are kept as the record that it was
   checked, and `out/u1_2d/ptbc_benchmark_tuned/` is the data of record (the
-  untuned `ptbc_benchmark/` is superseded; its numbers are 45–51× pessimistic
-  and its swap-acceptance column is halved by a since-fixed bug). Cost claims
+  untuned `ptbc_benchmark/` was superseded — its numbers are 45–51× pessimistic
+  and its swap-acceptance column is halved by a since-fixed bug — and was
+  deleted in the 2026-08-18 prune). Cost claims
   go against `hmc+inst` (0.198 s per independent configuration at β = 218.58).
   If the PTBC arm is ever re-run: it is latency-bound, so use the stacked
   action (`StackedDefectWilsonAction`) on GPU — replicas are then nearly free —

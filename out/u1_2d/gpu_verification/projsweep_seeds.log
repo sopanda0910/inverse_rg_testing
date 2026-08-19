@@ -1,6 +1,0 @@
-======== seed 11 ======== 
-device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
-simulating base rung L=8 beta=1.3472 ...
-  acceptance 0.992
-rung 0: L=16 beta=4.0 plaq=0.8635 (pre-retherm 0.8529) <Q^2>=1.698  [40s]
-rung 1: L=32 beta=14.1464 plaq=0.9640 (pre-retherm 0.9635) <Q^2>=1.698  [51s]

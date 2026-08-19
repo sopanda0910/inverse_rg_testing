@@ -1,3 +1,0 @@
-case L=32 beta=218.58 ...
-  {"before_std": 102.3, "after_std_heldout": 40.16, "ess_heldout": 0.021, "r2": 0.855, "acc": 0.99, "sec": [4679.9, 265.8]}
-wrote artifacts\gpu_verify\ais_rate_20260813\report.md
