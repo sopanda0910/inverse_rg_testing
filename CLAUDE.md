@@ -89,6 +89,74 @@ closed and `su2_2d/` is set aside.
   matches heatbath to 1-2% in every sector at beta = 2, 5, 8. Tree-level ladder
   relation `beta_c = beta_f / 4` in all four u(2) directions.
 
+  **TWO FREEZING MECHANISMS, NOT ONE — measured 2026-08-19, and the single most
+  useful U(2) fact.** The two winding moves have different controlling parameters
+  and only one is protected by the ladder:
+  * EVEN dQ (central instanton) costs `2 pi^2 beta / V`, so it is governed by
+    `beta / V` — which the matched ladder holds nearly CONSTANT (0.219 -> 0.202 ->
+    0.198 -> 0.197 across L = 8..64). Even-charge mobility is a ladder invariant
+    and never degrades.
+  * ODD dQ must cross the Z_2 monodromy at cost `O(beta L)`, governed by `beta L`,
+    which grows as L^3 along the ladder (112 -> 828 -> 6501 -> 51766).
+  Consequence: the ordinary freezing diagnostic ("does the chain change sector?")
+  reports HEALTHY in a regime where P(Q) is 20% wrong, because even moves keep
+  firing while the odd/even balance is stuck. Do NOT conclude a coupling is ergodic
+  from sector-change counts. `scripts/07_pq_sampling.py` is the correct test; its
+  `PARITY-STUCK` verdict is the case that matters, and it needs the COHERENT
+  odd-sector weight (each odd sector is individually within 1 sigma; jointly they
+  are not). Measured boundary: **beta L ~ 450 SAMPLED, ~830 PARITY-STUCK**, sharp,
+  with 13000-22000 sector changes and zero frozen chains on the frozen side.
+  Separately, a thermalization boundary at `beta / V ~ 0.25`: at beta = 20, L = 8 a
+  hot start cannot relax DOWN (17% of chains stranded, <Q^2> 63% high) and a cold
+  start cannot climb UP. beta = 14 at L = 8 is inside the window in both directions.
+
+  **The ladder base is now SAMPLED, not seeded (2026-08-19).** `seed_exact_sectors`
+  is off at L = 8 and at the L = 16 base, because those couplings genuinely
+  equilibrate topology; the colder rungs stay seeded, which is safe because they
+  are training data and validation references and topology is TRANSPORTED, not
+  learned (`apply_coarse_charge` imposes Q). This converts the study's weakest claim
+  ("P(Q) is exact by construction so it is not evidence") into its strongest.
+  beta = 51.75 and 56 at L = 16 are NOT usable as a base — both PARITY-STUCK. Do
+  not raise the base coupling without re-running `07_pq_sampling.py`.
+
+  **The ladder schedule is TOPOLOGY-matched, not plaquette-matched.** Because
+  transport is an identity, the base's P(Q) is what every rung inherits, and under
+  plaquette matching the exact <Q^2> still drifts -6.9% from L=8 to L=64 — a
+  systematic the ladder structurally cannot correct.
+  `lgt.blocking.topology_matched_fine_beta` picks beta_f preserving exact <Q^2>
+  instead. Note the trap: better statistics make that drift MORE visible, not less
+  (moving the base to L=16/beta=28 tightens the error 3.7x and cuts the drift only
+  2.5x, so the z-score gets worse). Removing the bias is the only fix that survives.
+
+  **COST, measured 2026-08-19 — the ladder is NOT a speed-up.** At L = 64,
+  beta = 416.524: HMC + winding delivers an independent configuration (for LOCAL
+  observables) in 0.212 s, the ladder in 0.820 s including base generation, 0.481 s
+  for the top rung alone — so the ladder is **3.87x SLOWER**. Do not lead with
+  speed; the cost is dominated by the 200-step diffusion sampler, which is tunable
+  and untuned. What the method actually buys is REACHABILITY: the classical arm
+  covers 0.507 of the exact P(Q) with ZERO odd sectors and cannot improve at any
+  cost, because odd charge has probability zero in its stationary distribution
+  rather than merely long autocorrelation. A seconds-ratio against an arm sampling
+  the wrong distribution is meaningless, so state the two claims separately.
+  `scripts/13_cost_comparison.py`.
+
+  **The seed benchmark (`scripts/08_hmc_seed_benchmark.py`) is the headline.** At
+  L = 64, beta = 416.524, 300 trajectories, four arms: the diffusion seed starts at
+  relative plaquette error 7.8e-07 (cold start 4.8e-03, i.e. 6200x worse) and does
+  not move; the cold arms plateau at 5e-05 after 300 trajectories, still 25x
+  further from exact than the seed was at t = 0; a hot start never thermalizes at
+  all (flat at 6e-02). Sector coverage: seed 0.991 of exact P(Q) with 2 odd
+  sectors, cold 0.399 with 0, cold+winding 0.507 with 0. Read coverage WITH <Q^2>
+  — the hot arm "covers" 1.000 while carrying <Q^2> = 109 against exact 1.001.
+
+  **Training needs COUPLING coverage, not lattice-size coverage.** The score net is
+  fully convolutional and conditioned on `det_lift.model_beta` (the minimum-KL U(1)
+  projection), not on L. A ladder rung needing model beta 104 against a training
+  maximum of 50.8 produced a coherent negative bias in ALL ~24 observables at that
+  rung (plaquette z = -1.86) while the interpolated rung was clean. Supply the
+  coupling at a SMALLER L — the map is local, so it teaches the same thing for a
+  quarter of the cost.
+
 - `su2_2d/` — 2D SU(2). **SET ASIDE (2026-08-03) and NOT in the working tree.**
   It was removed from tracking in `f7bca3b` while the focus moved to
   documenting and publishing U(1). Recover it with
@@ -239,6 +307,10 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
 
 - `pytest u1_2d/tests -q` (169 tests) and `pytest u2_2d/tests -q` (84 tests);
   `su2_2d/tests` only exists once su2_2d is restored from git — see above
+- `python u2_2d/scripts/07_pq_sampling.py` — where P(Q) can be SAMPLED rather than
+  seeded; the `PARITY-STUCK` verdict is the U(2)-specific one. Minutes.
+- `python u2_2d/scripts/08_hmc_seed_benchmark.py` — the headline claim: a generated
+  configuration as an HMC starting point, against cold, hot, and winding baselines.
 - `python u2_2d/scripts/09_verify_identities.py` — the exact U(2) identities
   (group representation, gauge invariance, the determinant telescope, analytic
   force vs autograd, microcanonical overrelaxation, winding parity, the character

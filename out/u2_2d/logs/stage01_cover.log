@@ -1,0 +1,7 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+skip  L=32 beta=56 (exists)
+skip  L=32 beta=203.15 (exists)
+  L=32 beta=105.651: 60 thermalization sweeps -> plaq 0.98112 (exact 0.98102), <Q^2> 0.562
+wrote L=32 beta=105.651  plaq=0.98102 (exact 0.98102)  <Q^2>=0.938 (exact 1.001)  acc=0.686  [158s]
+  L=32 beta=416.524: 60 thermalization sweeps -> plaq 0.99517 (exact 0.99520), <Q^2> 0.188
+wrote L=32 beta=416.524  plaq=0.99520 (exact 0.99520)  <Q^2>=0.195 (exact 0.215)  acc=0.687  [304s]

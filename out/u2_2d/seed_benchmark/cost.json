@@ -1,0 +1,52 @@
+{
+  "lattice_size": 64,
+  "beta": 416.524,
+  "n_chains": 64,
+  "arms": [
+    {
+      "arm": "A_diffusion_seed",
+      "tau_int_plaquette_trajectories": 3.5835654668532495,
+      "seconds_per_trajectory": 0.85236079454422,
+      "seconds_per_independent_config_local": 0.09545283464463326,
+      "exact_probability_covered": 0.9908210126632351,
+      "odd_sectors_visited": 2
+    },
+    {
+      "arm": "B_cold_start",
+      "tau_int_plaquette_trajectories": 16.887593423521118,
+      "seconds_per_trajectory": 0.8950865562756857,
+      "seconds_per_independent_config_local": 0.4723705575388573,
+      "exact_probability_covered": 0.3987053665786871,
+      "odd_sectors_visited": 0
+    },
+    {
+      "arm": "C_hot_start",
+      "tau_int_plaquette_trajectories": NaN,
+      "seconds_per_trajectory": 0.928967780272166,
+      "seconds_per_independent_config_local": NaN,
+      "exact_probability_covered": 0.9999999999906041,
+      "odd_sectors_visited": 25
+    },
+    {
+      "arm": "D_cold_plus_winding",
+      "tau_int_plaquette_trajectories": 7.979570846228265,
+      "seconds_per_trajectory": 0.8508557645479838,
+      "seconds_per_independent_config_local": 0.21217074541038602,
+      "exact_probability_covered": 0.5068797609393627,
+      "odd_sectors_visited": 0
+    }
+  ],
+  "ladder": {
+    "base_seconds": 115.0,
+    "rung_seconds": [
+      59.0,
+      246.0
+    ],
+    "total_seconds": 420.0,
+    "configs_delivered": 512,
+    "seconds_per_config_including_base": 0.8203125,
+    "seconds_per_config_amortized_base": 0.595703125,
+    "seconds_per_config_top_rung_only": 0.48046875
+  },
+  "speedup_local_vs_hmc_winding": 0.25864624202408965
+}

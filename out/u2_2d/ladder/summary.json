@@ -1,10 +1,10 @@
 [
   {
-    "plaquette": 0.9810283780097961,
-    "det_plaquette": 0.9809439182281494,
+    "plaquette": 0.9810287952423096,
+    "det_plaquette": 0.9809494614601135,
     "q_mean": -0.0390625,
     "q_squared": 1.02734375,
-    "plaquette_pre_retherm": 0.9791398048400879,
+    "plaquette_pre_retherm": 0.9811225533485413,
     "q_squared_pre_retherm": 1.02734375,
     "beta": 105.651,
     "lattice_size": 32,
@@ -12,11 +12,11 @@
     "q_squared_exact": 1.001189460037426
   },
   {
-    "plaquette": 0.9951910376548767,
-    "det_plaquette": 0.9951788783073425,
+    "plaquette": 0.9951905012130737,
+    "det_plaquette": 0.9951795339584351,
     "q_mean": -0.0390625,
     "q_squared": 1.02734375,
-    "plaquette_pre_retherm": 0.9911571741104126,
+    "plaquette_pre_retherm": 0.9952632784843445,
     "q_squared_pre_retherm": 1.02734375,
     "beta": 416.524,
     "lattice_size": 64,

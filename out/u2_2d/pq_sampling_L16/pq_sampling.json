@@ -233,7 +233,7 @@
     "mean_abs_z": 0.9859001260617819,
     "hmc_acceptance": 0.82090234375,
     "winding_acceptance": 0.2579765625,
-    "verdict": "PARITY-FROZEN"
+    "verdict": "PARITY-STUCK"
   },
   {
     "beta": 56.0,
@@ -337,6 +337,6 @@
     "mean_abs_z": 0.9792215953367751,
     "hmc_acceptance": 0.82175390625,
     "winding_acceptance": 0.2446484375,
-    "verdict": "PARITY-FROZEN"
+    "verdict": "PARITY-STUCK"
   }
 ]

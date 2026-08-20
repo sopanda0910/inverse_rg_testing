@@ -103,7 +103,7 @@ validate/             observables split into full-U(2) and determinant-sector fa
 
 ```bash
 .venv/Scripts/python.exe u2_2d/scripts/09_verify_identities.py           # seconds, must pass
-.venv/Scripts/python.exe -m pytest u2_2d/tests -q                        # 84 tests
+.venv/Scripts/python.exe -m pytest u2_2d/tests -q                        # 85 tests
 
 .venv/Scripts/python.exe u2_2d/scripts/01_generate_data.py --config u2_2d/configs/smoke.yaml --device cpu
 .venv/Scripts/python.exe u2_2d/scripts/02_train.py        --config u2_2d/configs/smoke.yaml
@@ -111,10 +111,39 @@ validate/             observables split into full-U(2) and determinant-sector fa
 .venv/Scripts/python.exe u2_2d/scripts/04_validate.py     --config u2_2d/configs/smoke.yaml --device cpu
 ```
 
-Outputs go to `out/u2_2d/`. Device choice follows the U(1) study's measured rule:
-CPU for batched HMC at these volumes (stages 01 and 04), GPU for training and
-model sampling (stages 02 and 03). `U2_2D_DEVICE` overrides, falling back to
-`U1_2D_DEVICE`.
+The result stages, which is where the study's claims come from:
+
+```bash
+# where P(Q) can be SAMPLED rather than seeded -- the PARITY-STUCK verdict is the
+# U(2)-specific one, and it is what decides where the ladder base may sit
+.venv/Scripts/python.exe u2_2d/scripts/07_pq_sampling.py --lattice-size 16 --betas 28,51.75
+
+# the headline: a generated configuration as an HMC starting point, against
+# cold, hot, and winding-update baselines
+.venv/Scripts/python.exe u2_2d/scripts/08_hmc_seed_benchmark.py --device cuda
+
+# per-configuration Wilson spread (means agree to 1e-6; only the width informs)
+.venv/Scripts/python.exe u2_2d/scripts/11_wilson_distributions.py
+.venv/Scripts/python.exe u2_2d/scripts/10_paper_figures.py
+```
+
+Outputs go to `out/u2_2d/`.
+
+**Device rule — U(2) is NOT U(1) here.** The measured GPU/CPU crossover is
+`L = 16`, not `L = 64`, because a quaternion link carries ~6x the arithmetic of an
+angle, so each kernel launch pays for itself two factors of two earlier. GPU
+throughput is flat at ~5 trajectories/s from `L = 16` to `L = 64` (purely
+launch-bound), so the large lattices are nearly free on the GPU. Run the `L = 8`
+rungs on CPU and everything else on GPU, concurrently — `scripts/run_stage01.ps1`
+does exactly that. `U2_2D_DEVICE` overrides, falling back to `U1_2D_DEVICE`.
+
+## Documentation
+
+| document | contents |
+|---|---|
+| `docs/u2_2d/NARRATIVE.md` | the full story: derivations, the $\mathbb{Z}_2$ obstruction, the two freezing mechanisms, every measurement, the tooling, and presentation guidance |
+| `docs/u2_2d/DESIGN.md` | the derivations in condensed form |
+| `docs/u1_2d/NARRATIVE.md` | the closed U(1) predecessor, whose machinery this reuses |
 
 ## Relationship to NTHMC
 

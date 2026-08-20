@@ -68,6 +68,17 @@ data:
     - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250}
     - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250}
     - {beta: 203.15, lattice_size: 32, n_configs: 512, burn_in: 300}
+    # COUPLING COVERAGE FOR THE LADDER. The score net is fully convolutional and
+    # conditioned on the coupling, not on L, so what it has to have SEEN is the
+    # model beta (`det_lift.model_beta` = the minimum-KL U(1) projection), and the
+    # ladder's two rungs need 26.4 and 104.1. Without these the top rung sits 2.05x
+    # beyond the training maximum of 50.8, and it shows: every one of ~24
+    # observables came out low there (plaquette z = -1.86) while the interpolated
+    # rung was clean. Supplying the coupling at L = 32 rather than L = 64 is
+    # deliberate -- the map is local, so the smaller lattice teaches the same
+    # thing for a quarter of the cost.
+    - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300}
+    - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300}
 
 train:
   checkpoint_path: out/u2_2d/checkpoints/det_score_net.pt

@@ -123,9 +123,16 @@ def analyse(q_history: np.ndarray, beta: float, size: int, seed: int = 0) -> dic
     # PARITY IS THE DIAGNOSTIC THAT MATTERS HERE, and a sector-by-sector
     # chi-squared cannot see it. U(2) = (U(1) x SU(2)) / Z_2, so an even change of
     # Q is the free central instanton while an odd one must drag SU(2) across a -1
-    # monodromy at cost O(beta L). The two therefore freeze at different rates,
-    # and the signature is a COHERENT deficit spread over every odd sector -- each
-    # individually within 1 sigma, jointly far outside it.
+    # monodromy at cost O(beta L). The signature is a COHERENT imbalance spread
+    # over every odd sector -- each individually within 1 sigma, jointly far
+    # outside it.
+    #
+    # NOTE THE SIGN IS NOT FIXED. The barrier blocks the odd<->even channel in BOTH
+    # directions, so the parity balance keeps whatever the initial condition gave
+    # it: a hot start strands EXCESS odd weight (measured 1.69 at L=8/beta=20 and
+    # 1.15 at L=16/beta=51.75), a cold start reaches NO odd sectors at all, and a
+    # deficit (0.78 at L=32/beta=203) is only the case where relaxation stalled on
+    # the other side. So the test is on |odd_z|, not on a deficit.
     odd = [s for s in sectors if int(s["q"]) % 2]
     odd_measured = float(sum(s["measured"] for s in odd))
     odd_exact = float(sum(s["exact"] for s in odd))
@@ -166,7 +173,9 @@ def verdict(record: dict) -> str:
     if not parity_ok:
         # Sector changes are happening, so this is not freezing in the ordinary
         # sense: the even-charge move is alive and the odd/even balance is not.
-        return "PARITY-FROZEN"
+        # "STUCK" rather than "FROZEN" because the balance is pinned to its
+        # initial condition in whichever direction that condition pointed.
+        return "PARITY-STUCK"
     if not agrees:
         return "DISAGREES"
     return "SAMPLED"
