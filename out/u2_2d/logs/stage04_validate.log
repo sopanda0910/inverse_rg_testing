@@ -1,5 +1,0 @@
-cpu | torch 2.11.0+cu128 | 8 threads
-L=  16 beta=   51.750  plaq 0.961063 vs exact 0.961150 (z -1.17)  <Q^2> 0.545 vs 0.521  max Wilson z 0.80
-L=  32 beta=  203.150  plaq 0.990149 vs exact 0.990143 (z +0.68)  <Q^2> 0.545 vs 0.515  max Wilson z 1.64
-L=  64 beta=  808.840  plaq 0.997525 vs exact 0.997527 (z -1.41)  <Q^2> 0.545 vs 0.514
-reports in out\u2_2d\validation

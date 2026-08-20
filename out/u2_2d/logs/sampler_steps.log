@@ -1,8 +1,0 @@
-cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
-steps=  25    118.1s total  top rung 0.1535 s/config  rel_err(pre) +2.44e-05  rel_err(post) -6.56e-07
-steps=  50    144.5s total  top rung 0.1670 s/config  rel_err(pre) +5.31e-05  rel_err(post) -5.74e-08
-steps= 100    183.4s total  top rung 0.2681 s/config  rel_err(pre) +4.68e-05  rel_err(post) +1.98e-06
-steps= 200    301.0s total  top rung 0.4703 s/config  rel_err(pre) +6.83e-05  rel_err(post) -5.21e-06
-steps= 400    547.1s total  top rung 0.8768 s/config  rel_err(pre) +7.53e-05  rel_err(post) -6.56e-07
-
-wrote out\u2_2d\sampler_steps\report.md

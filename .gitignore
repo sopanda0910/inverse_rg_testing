@@ -18,3 +18,9 @@ out/su2_2d/checkpoints/
 out/**/*.pt
 !out/*/checkpoints/*.pt
 out/**/*.pt.resume
+
+# Live run logs -- process output, appended to while stages run. Tracking them
+# means a dirty tree at unpredictable moments and open file handles during any
+# history operation. u1_2d logs stay tracked; that study is closed.
+out/u2_2d/logs/
+out/u2_2d/keep_awake.log
