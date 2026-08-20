@@ -1,0 +1,4 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+L= 32 beta=203.15  <Q^2> 0.4323 +- 0.0505 (exact 0.5150, z -1.64)  changes   796  frozen 5%  chi2/dof 0.35  -> SAMPLED
+
+wrote out\u2_2d\pq_sampling_L32\report.md

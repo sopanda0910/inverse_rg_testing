@@ -151,3 +151,16 @@ band is now 9 rungs reaching β = 6.47, freezing is bracketed between 6.47 and
 crossover is measured through rather than inferred across.
 
 `out/u1_2d/thermalization/crossover_window.json`.
+
+Zhu et Al. is a different paper because they focus on langevin dynamics, not HMC
+
+- Initial draft
+- Topological sensitivity
+- 2D U(2) results
+
+In the paper, potentially include 2D U(2) if finished, or at least mention it
+- Only make instanton updates its own section if you talk about the in-depth why does the freezing happen and things like that
+
+People to cite, they have done lots of diffusion modelling stuff:
+- Gert Aarts
+- Lingxiao Wang

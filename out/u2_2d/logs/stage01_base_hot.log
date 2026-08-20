@@ -1,0 +1,5 @@
+cpu | torch 2.11.0+cu128 | 8 threads
+skip  L=8 beta=3.5 (exists)
+skip  L=8 beta=7 (exists)
+  L=8 beta=14: 60 thermalization sweeps -> plaq 0.85390 (exact 0.85343), <Q^2> 1.008
+wrote L=8 beta=14  plaq=0.85318 (exact 0.85343)  <Q^2>=0.580 (exact 0.551)  acc=0.888  [179s]

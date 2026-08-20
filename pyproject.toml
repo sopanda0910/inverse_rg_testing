@@ -20,4 +20,4 @@ dependencies = [
 dev = ["pytest>=8.0"]
 
 [tool.setuptools.packages.find]
-include = ["u1_2d*", "su2_2d*"]
+include = ["u1_2d*", "u2_2d*", "su2_2d*"]

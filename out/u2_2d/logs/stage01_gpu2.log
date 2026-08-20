@@ -1,0 +1,4 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+shard 2/4: L16b56
+  L=16 beta=56: 60 thermalization sweeps -> plaq 0.96410 (exact 0.96411), <Q^2> 0.281
+wrote L=16 beta=56  plaq=0.96415 (exact 0.96411)  <Q^2>=0.367 (exact 0.479)  acc=0.813  [215s]

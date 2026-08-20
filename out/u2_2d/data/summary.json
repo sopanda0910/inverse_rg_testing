@@ -1,0 +1,16 @@
+[
+  {
+    "beta": 28.0,
+    "lattice_size": 16,
+    "n_configs": 1024,
+    "acceptance_rate": 0.8130859375,
+    "winding_acceptance_rate": 0.36953125,
+    "plaquette": 0.9278624057769775,
+    "plaquette_exact": 0.9278238877793602,
+    "q_squared": 1.0546875,
+    "q_squared_exact": 1.0011896092760386,
+    "seconds": 115.35530972480774,
+    "sector_seeded": false,
+    "thermalize_sweeps": 60
+  }
+]

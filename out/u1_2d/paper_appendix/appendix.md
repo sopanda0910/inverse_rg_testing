@@ -1,63 +1,147 @@
 # Supplementary Material — v2 Model
 
+> **Reframed 2026-08-19 — the prolongator framing.** This appendix previously
+> presented the model as a *standalone sampler* and asked whether its ensemble is
+> the Boltzmann distribution; the answer was no, and that negative was the
+> headline. The claim the study actually establishes is narrower and stronger:
+> **the model is a learned prolongator — it produces starting configurations for
+> an exact HMC chain, and correctness comes from the chain, not the model.**
+> Under that framing the density gap stops being a failure and becomes a
+> *specification*: it says how much work the rethermalization tail is doing. The
+> data, tables and figures below are unchanged; what changed is which of them
+> lead. The previous framing is recoverable from git history.
+
 This appendix documents the v2 checkpoint of the diffusion-based inverse-RG
-sampler for 2D compact U(1) lattice gauge theory. It addresses five questions:
-(1) does the generated ensemble match exact results, inside and far outside the
-training range; (2) how does the sampler compare, in wall-clock cost and
-correctness, against the strongest classical baseline we could construct
-(instanton-update HMC, whose global Q-hop is the volume-independent uniform
-Q-shift move); (3) what does a diffusion-generated configuration buy as an HMC
-starting point; (4) what an exact-likelihood diagnostic honestly says about
-the model as an importance-sampling proposal; and (5) how far sampling-time
-tuning and likelihood-aware fine-tuning can close that importance-sampling
-gap — including which standard remedies fail, and why.
+prolongator for 2D compact U(1) lattice gauge theory. It addresses five
+questions, in order of how much weight they carry:
+
+1. **What does a diffusion-generated configuration cost an exact HMC chain**,
+   against every non-learned alternative — fresh starts and classical
+   prolongators alike (Fig. 29, Table S6b)?
+2. **How far from equilibrium is that starting configuration**, measured
+   directly rather than inferred from observables?
+3. Does the generated ensemble match exact results, inside and far outside the
+   training range — i.e. *how close* is the seed, on the quantities one would
+   conventionally check?
+4. How does the pipeline compare in wall-clock cost against the classical
+   baseline of record (instanton-update HMC, whose global Q-hop is the
+   volume-independent uniform Q-shift move)?
+5. What closes, and what does not, when one tries to improve the seed's density
+   — including which standard remedies fail, and why.
 
 ## What this appendix establishes
 
-The sampler is the *instrument*, not the claim. Learned coarse-to-fine maps
-for lattice field theory are an established line — inverse-RG upscaling of
-configurations, RG-inspired coarse→fine flows, diffusion models for gauge
-theory, and the classical multiscale-thermalization algorithms they descend
-from. What that line has not done is ask whether the generated ensemble is
-the Boltzmann distribution. It is validated on observables: critical
-exponents, Wilson loops, topological susceptibility. Incorporating numerical
-exactness into inverse-RG methods is named as open work in that literature.
+**The model is an initializer; the HMC chain is the sampler.** That division is
+what makes the correctness claim clean: HMC is exact by detailed balance
+regardless of where it starts, so nothing rests on the model's density. What the
+model has to be is a *good place to start*, and that is a measurable quantity.
 
-This appendix answers it, for a sampler that passes conventional validation
-by a wide margin. Four results:
+The incumbent method for exactly this job is classical multiscale
+thermalization — RG-matched coarse action, equilibrate cheaply, prolongate to
+fine, rethermalize. Its prolongator is a geometric map plus smearing. The
+learned coarse-to-fine literature (inverse-RG upscaling, RG-inspired flows,
+diffusion for gauge theory) has never been scored against it on trajectories to
+equilibrium. Four results:
 
-1. **A way to measure distributional correctness when ESS is uninformative**
-   (§ *Measuring the gap*). Self-normalized ESS is the usual check and it
-   degenerates here — ESS/N sits at exactly 1/N, which is the estimator's
-   floor, not a measurement, and cannot distinguish a 10-nat gap from a
-   100-nat one. The free-energy identity converts the same weights into a
-   *direct* KL readout in nats/site, which stays finite and informative after
-   ESS has bottomed out.
-2. **The measurement.** ≈ 1.10 nats/site at L = 16, β = 55 and 1.70 at
-   L = 32, β = 218.6 — i.e. 565 and 3473 nats per configuration, from the
-   free-energy identity on the deployed checkpoint
-   (`out/u1_2d/ode_reweighting/`).
-3. **The dissociation, and where it becomes visible**
-   (§ *Validation sharpness*). The same ensembles reproduce the plaquette to
-   two parts in 10⁴. The two facts are consistent because low-order
-   gauge-invariant observables are a very low-dimensional projection of a
-   2L²-dimensional measure — and the residual *is* detectable once one looks
-   at extended observables, where the z-dispersion grows monotonically with
-   loop area. Short-distance agreement does not certify the measure.
-4. **A falsification chain rather than a shrug.** Six interventions —
-   sampling-time knobs, maximum-likelihood fine-tuning at two capacities,
-   single- and multi-case reverse-KL, capacity/data scaling, per-level SMC,
-   and surrogate-bridge AIS — converged, with a mechanism identified for each
-   (§ *Exactness endgame*, Tables S5–S7). The one control that could have
-   explained the gap away, an exactly-matched action arm, eliminates it
-   (Table S6): the gap is fine-side model error.
+1. **Seed quality, measured** (Fig. 29, Table S6b). A diffusion seed thermalizes
+   in **0–25 trajectories across 35 couplings spanning β = 1.49 → 872.8**
+   (median 4), and the cost is **flat in β**. Over the same range a fresh hot
+   start stops converging above β ≈ 9.6, a fresh cold start runs 11 → 575 and
+   then fails, and the best classical prolongator — Endres-style APE smearing
+   with the smearing count tuned per β, the only non-learned arm that beats a
+   cold start — needs 49–321. Three purely geometric prolongators, including the
+   exact inverse of the blocking rule, are all *worse than a fresh cold start*:
+   the speedup is specific to learning, not to having been handed the coarse
+   configuration.
+2. **How far the seed is from equilibrium** (§ *Measuring the gap*). ESS is the
+   usual check and it degenerates here — ESS/N sits at exactly 1/N, the
+   estimator's floor, and cannot distinguish a 10-nat gap from a 100-nat one.
+   The free-energy identity E_q[log w] − ΔF = −KL(q‖p) converts the same weights
+   into a direct readout in nats/site, which stays finite after ESS bottoms out.
+   Result: **≈ 1 nat/site** — hundreds to thousands of nats per configuration.
+   That is the size of the job the tail is doing.
+3. **The dissociation, and where it becomes visible** (§ *Validation
+   sharpness*). The same ensembles reproduce the plaquette to two parts in 10⁴.
+   Both facts are true because low-order gauge-invariant observables are a very
+   low-dimensional projection of a 2L²-dimensional measure — and the residual
+   *is* detectable once one looks at extended observables, where z-dispersion
+   grows with loop area. **This is why `t_therm` is the right metric and an
+   observable table is not:** a seed can be four-significant-figures correct on
+   everything you would think to check and still be ~1 nat/site out.
+4. **The gap will not be trained away, and does not need to be.** Six
+   interventions — sampling-time knobs, maximum-likelihood fine-tuning at two
+   capacities, single- and multi-case reverse-KL, capacity/data scaling,
+   per-level SMC, surrogate-bridge AIS — converged with a mechanism identified
+   for each (§ *Exactness endgame*, Tables S5–S7). The recurring one is that
+   maximum likelihood optimizes the wrong direction of KL, demonstrated at 197k
+   parameters and again at 354, so the asymmetry is intrinsic to the objective
+   rather than a capacity effect. The practical consequence under this framing
+   is **budget the tail; do not expect to train the gap away.**
 
-The practical consequence is stated in *Scope of the claim* below and
-validated by Figs 17, 18, 21, 22 and 26: correctness for this class of
-sampler has to come from Markov-chain machinery wrapped around the proposal
-— seeded chains, Metropolis tails, structural sector imposition — not from
-the proposal's own density. A recommended protocol for reporting all of this
-is given at the end.
+**The volume scan — run 2026-08-19, and the answer is two-sided (Fig. 30).**
+At fixed β_f = 14.1464 over V = 2048 → 32768, the seed's `t_therm` grows
+1 → 3 → 30 while a cold start grows 168 → 400 → 528 and a hot start never
+converges. But the seed's *absolute* plaquette bias is flat — 9.7, 8.5,
+9.7 × 10⁻⁴ — and what grows is the z-score, because the acceptance threshold
+(the across-chain SEM) falls with volume as the spatial mean self-averages. So
+**the seed does not degrade with volume; the criterion tightens.** What may be
+claimed is that the seed beats every converging alternative at every volume, by
+17.6–168×. What may *not* be claimed is a cost flat in volume: the advantage
+narrows monotonically. The flat-cost result holds in the **β** direction
+(Fig. 29), not the **V** direction.
+
+A recommended protocol for reporting all of this is given at the end.
+
+## Figure roster — what each figure is for now
+
+Thirty figures, three roles. Nothing here is deleted; the reframing changes
+which figures carry an argument and which are retained as record.
+
+| role | meaning |
+|---|---|
+| **LEAD** | the paper's central claim |
+| **main** | main-text candidate under the prolongator framing |
+| **appx** | supplementary support; stays here |
+| **arch** | retained as the record of the density program, not main-text material |
+
+| fig | role | what it does under this framing |
+|---|---|---|
+| 29 `seed_quality` | **LEAD** | `t_therm` vs β, five arms. The central claim. |
+| 30 `volume_scan` | **LEAD** | does the advantage survive volume: raw growth, and the flat-bias/tightening-threshold decomposition |
+| 12 `timescales` | main | thermalization timescales, seed vs alternatives |
+| 15 `relaxation_high` | main | relaxation from a diffusion seed at high β |
+| 21 `pq_tail_mismatch` | main | the sector tail repairing deliberately mismatched P(Q) |
+| 17 `headtohead_cost` | main | cost against `hmc+inst` |
+| 18 `entry_cost` | main | entry cost charged to the generative arm |
+| 28 `dissociation` | main | observables sharp, density off — why `t_therm` is the metric |
+| 13 `beta_scan` | main | how close the seed is, across β |
+| 04 `matched_scan` | main | how close the seed is, matched cases |
+| 10 `case_extrapolation` | main | the extrapolation case in detail |
+| 07 `raw_topology` | main | raw pre-enforcement topology (protocol item 9) |
+| 26 `three_way` | main | three-way comparison |
+| 01–03 ladder drift / topology / rung L64 | appx | ladder stability |
+| 05 `mismatch_scan`, 06 `size_scan` | appx | deliberate-mismatch and volume scans |
+| 08, 09, 11 case panels | appx | per-case observable detail |
+| 14 `relaxation_mid` | appx | relaxation at mid β |
+| 16 `autocorrelation_modes` | appx | autocorrelation by mode |
+| 20 `mismatch_exact_sectors` | appx | exact-sector production mode |
+| 22 `pq_tail_L64` | appx | sector tail at L = 64 |
+| 19 `ess_weights` | **arch** | log-weight distributions — ESS diagnoses importance sampling, which this paper does not do |
+| 23 `ess_progress` | **arch** | ESS across the program |
+| 24 `proposal_sweep` | **arch** | sampling-knob sweep |
+| 25 `finetune_dynamics` | **arch** | fine-tuning dynamics |
+| 27 `program_optimum` | **arch** | program optimum over checkpoint variants |
+
+The five **arch** figures are the visual record of the attempt to *close* the
+density gap. Under the prolongator framing that attempt is a budgeting question
+rather than a correctness one, so its figures are retained and cited, not
+featured. The one sentence they still support is in result 4 above: the gap will
+not be trained away, so budget the tail.
+
+`PAPER_OUTLINE.md` additionally calls for several `[NEW]` panels that do not
+exist yet (pipeline schematic, frozen-HMC Q traces, the ⟨Q²⟩ ladder fixed point,
+raw Q-match rate vs volume, std(z) vs loop area, KL per site, s per independent
+configuration). Those would displace some **main** rows above.
 
 ## Methodology
 
@@ -650,6 +734,104 @@ Provenance: `u1_2d/scripts/36_dissociation_figure.py`, reading
 
 ---
 
+### Figure 29 — `figures/29_seed_quality.png`
+
+**The headline figure under the prolongator framing.** Trajectories of exact
+instanton-HMC needed to reach equilibrium at L = 32, as a function of the fine
+coupling, by what the chain was started from. Five arms; log coupling axis,
+symlog trajectory axis so that `t_therm = 0` (already thermalized) is
+representable.
+
+Read three things off it. **The diffusion seed is flat in β at 0–25
+trajectories** (median 4) across a 586× range in coupling, β = 1.49 → 872.8,
+including the deeply frozen regime — while every other arm rises or fails.
+**The classical competitor is real, not a strawman:** the APE-smeared
+prolongator is Endres-style prolong-then-smooth with the smearing count tuned
+per β to match the exact plaquette (a fixed count runs past equilibrium and
+would hand the classical arm an over-ordered configuration), and it is the only
+non-learned arm that beats a fresh cold start. **The speedup is specific to
+learning:** the three purely geometric prolongators — including `halve`, the
+exact inverse of the blocking rule — are worse than starting cold, because
+prolonging by any obvious deterministic rule satisfies the coarse constraint
+while being wrong at short distances, which the chain must then undo.
+
+Non-converging entries are drawn as open markers with an up-arrow just above
+*their own* budget ceiling, never dropped and never labelled "never": the two
+scans have different budgets (640 trajectories for seed/hot/cold, 2000 for the
+prolongators) and reading a budget-limited observation as a failure is an error
+this appendix already had to correct once in Table S6b.
+
+Two caveats on the figure itself. β = 218.58 appears twice in the seed scan
+(6 and 22 trajectories) from two separate runs — that spread is real and is
+left visible rather than averaged. And the geometric-prolongator trace plots
+the *best* of `tile`/`halve`/`flux` at each coupling, since the claim is about
+the class rather than about which member wins; per-arm values are in Table S6b.
+
+Source: `u1_2d/scripts/50_seed_quality_figure.py`, from
+`thermalization/crossover_window.json` and
+`tiling_baseline_2000/tiling_baseline.json`.
+
+### Figure 30 — `figures/30_volume_scan.png`
+
+**The volume scan, run 2026-08-19.** Fixed β_f = 14.1464, three volumes
+(L = 32 / 64 / 128, V = 2L² = 2048 / 8192 / 32768) — the same 16× range as the
+sector-tail scaling, so the two answers are directly comparable. This is the
+experiment the prolongator framing needed and the study did not have; the
+coarse bases were regenerated at β_c = 4.0 (pruned 2026-08-18, and cheap to
+remake since nothing freezes there).
+
+| L | V | chains | seed | cold start | hot start | speedup vs best converging |
+|---|---|---|---|---|---|---|
+| 32 | 2048 | 32 | **1** | 168 | never | 168× |
+| 64 | 8192 | 16 | **3** | 400 | never | 133× |
+| 128 | 32768 | 8 | **30** | 528 | never | 17.6× |
+
+**Panel (a): `t_therm` for the seed does grow, 1 → 3 → 30.** Reporting that
+alone would be wrong, and panel (b) is why.
+
+**Panel (b): the seed's quality is flat in volume; the acceptance threshold
+tightens.** `t_therm` is the first trajectory at which |z| ≤ 2 for five
+consecutive steps, with z the ensemble mean's deviation from exact in units of
+its *across-chain* standard error. The per-chain spatial mean self-averages, so
+that standard error falls with volume. Measured:
+
+| L | plaquette bias at t = 0 | SEM | z at t = 0 |
+|---|---|---|---|
+| 32 | +9.67 × 10⁻⁴ | 3.10 × 10⁻⁴ | 3.11 |
+| 64 | +8.46 × 10⁻⁴ | 2.61 × 10⁻⁴ | 3.24 |
+| 128 | +9.70 × 10⁻⁴ | 1.60 × 10⁻⁴ | 6.06 |
+
+The bias is **constant to within 15% across a 16× volume range** — a
+volume-independent *per-site* offset, exactly what the ≈ 1 nat/site density
+measurement predicts and an independent corroboration of the frontier scan's
+finding that log-weight spread grows like √V with per-site error flat. What
+changes is the yardstick.
+
+**Why the seed is more sensitive to this than the baseline.** A cold start
+anneals an O(1) bias, so its `t_therm` is set by the relaxation *rate* and the
+threshold enters only logarithmically. The seed starts a hair above threshold,
+so its `t_therm` is set almost entirely by *where the threshold sits*. Both
+grow; the seed's grows faster for a reason that is about the measurement rather
+than the model.
+
+**What may and may not be claimed from this.** May: the seed's intrinsic
+quality does not degrade with volume, and it beats every converging alternative
+at every volume tested, by 17.6–168×. May not: that the *cost* is flat in
+volume. It is not — the advantage narrows monotonically, and at V = 32768 a
+30-trajectory tail is a real charge. The flat-cost claim is established in the
+**β** direction (Fig. 29) and not in the **V** direction.
+
+**Caveat, stated because it is load-bearing.** The chain count used for
+`t_therm` falls 32 / 16 / 8 across the three volumes, so part of the SEM
+decrease is fewer chains rather than self-averaging alone. A cleaner rerun
+would hold the chain count fixed; it would sharpen the decomposition but cannot
+change the direction of either effect, since the bias column is chain-count
+independent.
+
+Source: `u1_2d/scripts/51_volume_scan_figure.py`, from
+`out/u1_2d/thermalization_volume/` (generated by `05_hmc_thermalization.py
+--generalization --parts A,C --betas 14.1464`).
+
 ## Table S1 — Instanton-HMC burn-in scan (entry cost vs quality, L = 32)
 
 | β_f | burn-in (traj) | max Wilson \|z\| | quality | entry cost (s) | diffusion s/config |
@@ -1047,6 +1229,18 @@ generalizes — any theory with an exactly-blockable companion action admits
 the same control.
 
 ## Exactness endgame (2026-08-02 evening): decomposition, AIS transport, L = 64
+
+> **Archival under the prolongator framing (2026-08-19).** This section pursued
+> exactness through *importance weights* — AIS bridging, per-level SMC, sector
+> decomposition. The HMC tail supplies exactness directly, so the mechanism is
+> orphaned: it is retained in full as the record of what was tried and what the
+> measurements said, but it is not main-text material. Two findings still
+> transfer and are worth citing: the bridge saturates its derived variance floor
+> in 8 of 10 seeds, and the two divergences trace to the surrogate's ridge
+> regularization — established by intervention, not by correlation — which is a
+> reusable methodological lesson about trusting cross-validation off the fit
+> manifold.
+
 
 **Table S6 — Matching residual vs model error.** Both arms blend-free at the
 *trained* σ floor (coef 0.3; below it, unblended sampling measures the
@@ -1581,3 +1775,17 @@ pipeline with no accept/reject on the proposal is a heuristic validated on
 observables. A seeded chain run with an exact kernel is asymptotically exact.
 These deserve different language, and conflating them is the single easiest
 way for an honest study to overclaim.
+
+**11. Report trajectories to equilibrium, against a tuned classical
+prolongator.** If the deliverable is a starting configuration, `t_therm` is the
+metric and an observable table is not — a seed can agree to four significant
+figures on every low-order observable and still be ~1 nat/site from
+equilibrium. Three requirements make the number mean something. Compare against
+the *best* classical prolongator, tuned (here: APE smearing with the count
+chosen per β to match the exact plaquette; a fixed count beats a strawman), not
+only against fresh hot/cold starts. Include a geometric prolongator as a
+control, so the reader can see how much of the speedup is learning and how much
+is merely having been handed the coarse configuration — here, all of it is
+learning. And **state the budget in the cell**: write "> 2000", never "never".
+Three entries in Table S6b read as failures at a 640-trajectory budget and
+converged when it was raised.

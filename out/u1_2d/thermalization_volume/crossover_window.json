@@ -1,0 +1,40 @@
+{
+  "rows": [
+    {
+      "L": 32,
+      "beta": 14.146446570889967,
+      "regime": "Q frozen",
+      "seed": 1.0,
+      "hot": Infinity,
+      "cold": 168.0,
+      "interval": 8.734834215643861,
+      "speedup": 168.0,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 64,
+      "beta": 14.1464,
+      "regime": "Q frozen",
+      "seed": 3.0,
+      "hot": Infinity,
+      "cold": 400.0,
+      "interval": 34.98544103621411,
+      "speedup": 133.33333333333334,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 128,
+      "beta": 14.1464,
+      "regime": "Q frozen",
+      "seed": 30.0,
+      "hot": Infinity,
+      "cold": 528.0,
+      "interval": 64.13853035374933,
+      "speedup": 17.6,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    }
+  ]
+}

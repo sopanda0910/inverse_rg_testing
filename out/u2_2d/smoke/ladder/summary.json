@@ -1,0 +1,14 @@
+[
+  {
+    "plaquette": 0.9641869068145752,
+    "det_plaquette": 0.9637066721916199,
+    "q_mean": -0.0625,
+    "q_squared": 0.5833333134651184,
+    "plaquette_pre_retherm": 0.7796117663383484,
+    "q_squared_pre_retherm": 0.328125,
+    "beta": 56.0,
+    "lattice_size": 16,
+    "plaquette_exact": 0.9641140758276379,
+    "q_squared_exact": 0.47932966641771396
+  }
+]

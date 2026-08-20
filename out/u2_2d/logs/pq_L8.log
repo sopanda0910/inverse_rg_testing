@@ -1,0 +1,9 @@
+cpu | torch 2.11.0+cu128 | 8 threads
+L=  8 beta=  6.00  <Q^2> 1.8799 +- 0.0178 (exact 1.8674, z +0.70)  changes 15153  frozen 0%  chi2/dof 0.00  -> SAMPLED
+L=  8 beta=  8.00  <Q^2> 1.1973 +- 0.0120 (exact 1.2007, z -0.28)  changes 13956  frozen 0%  chi2/dof 0.00  -> SAMPLED
+L=  8 beta= 10.00  <Q^2> 0.8533 +- 0.0087 (exact 0.8603, z -0.80)  changes 10620  frozen 0%  chi2/dof 0.00  -> SAMPLED
+L=  8 beta= 12.00  <Q^2> 0.6655 +- 0.0105 (exact 0.6707, z -0.50)  changes  7065  frozen 0%  chi2/dof 0.00  -> SAMPLED
+L=  8 beta= 14.00  <Q^2> 0.5547 +- 0.0209 (exact 0.5514, z +0.16)  changes  5263  frozen 0%  chi2/dof 0.01  -> SAMPLED
+L=  8 beta= 20.00  <Q^2> 0.5775 +- 0.0426 (exact 0.3551, z +5.22)  changes  5502  frozen 17%  chi2/dof 5.84  -> DISAGREES
+
+wrote out\u2_2d\pq_sampling\report.md

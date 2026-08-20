@@ -10,15 +10,16 @@ configurations so that gauge-invariant observable distributions match direct
 HMC; iterating up a matched beta ladder reaches lattice sizes/couplings where
 direct HMC suffers from critical slowing down and topological freezing.
 
-Two sibling packages, one per theory:
+Three sibling packages, one per theory. `u2_2d/` is the ACTIVE one; `u1_2d/` is
+closed and `su2_2d/` is set aside.
 
 - `u1_2d/` — 2D compact U(1). **CLOSED / frozen** (2026-08-02): the complete
   study — campaign, ESS/exactness program, matching-residual decomposition,
   AIS transport, L=64 head-to-head — is finished and documented. Results in
-  `out/u1_2d/paper_appendix/appendix.md`, full story in `docs/NARRATIVE.md`,
-  audit in `docs/V2_AUDIT.md`. Do not reopen model-quality work; bug-parity
+  `out/u1_2d/paper_appendix/appendix.md`, full story in `docs/u1_2d/NARRATIVE.md`,
+  audit in `docs/u1_2d/V2_AUDIT.md`. Do not reopen model-quality work; bug-parity
   fixes only. **Post-closure corrections (2026-08-14/15) are in
-  `docs/NARRATIVE.md` §25.5** — read it before quoting Tables S1, S3, S4, S6b
+  `docs/u1_2d/NARRATIVE.md` §25.5** — read it before quoting Tables S1, S3, S4, S6b
   or S7b, all of which carried numbers from superseded runs, and before
   quoting the exact-P(Q) crutch (§21.6, `PHYSICS_WALKTHROUGH.md` F1).
   **The two owed referee experiments were run 2026-08-15 and are in §25.6**
@@ -31,6 +32,63 @@ Two sibling packages, one per theory:
   silently dropping them — and the `TODO.md` §2 recommendation to adopt
   `topo_weight = 0.3` is **withdrawn**, since it does not move the raw sector
   match rate it would have to act through.
+- `u2_2d/` — 2D U(2). **ACTIVE (opened 2026-08-19).** The successor study, and
+  the reason it was chosen: 2D U(2) is exactly solvable, and its topology is
+  carried entirely by the determinant, which is an honest compact U(1) field —
+  so the closed U(1) machinery is reused rather than rewritten, while the group
+  is genuinely non-abelian. Links are stored in the NTHMC-compatible split
+  representation `U = e^{i phi} q` as `[..., 5]` = `(phi, q0, q1, q2, q3)`.
+  Read `u2_2d/README.md` first, then `docs/u2_2d/DESIGN.md` for the
+  derivations and the measured results. The design, and the three facts that
+  carry it:
+
+  * `psi = wrap(2 phi) = arg det U` is a compact U(1) gauge field, and
+    `lgt.lattice.det_links` hands it back in exactly the `[B, 2, L, L]` layout
+    every `u1_2d.lgt` routine consumes. **Q is a functional of psi alone.**
+    Because det is a homomorphism, the plaquette determinant phase is the plain
+    SUM of link phases, so the abelian telescope of `u1_2d` survives verbatim:
+    the coarse determinant plaquette is the wrapped sum of the four fine ones,
+    exactly, non-abelian group notwithstanding. Sector transport across an
+    inverse-RG step is therefore an identity, as in U(1).
+  * One inverse-RG step factorizes as `p(psi, q) = p(psi) p(q | psi)`. The model
+    generates `psi` only. The SU(2) sector needs no model: at frozen `phi` the
+    U(2) local weight is exactly `exp(beta k . q)`, so
+    `lgt.local_updates.conditional_su2_sweeps` is an EXACT sampler for
+    `p(q | psi)` and leaves `psi` and `Q` bit-for-bit unchanged. Naive inverse
+    blocking of the coarse SU(2) part is only the seed; it cannot bias anything.
+  * **The joint does NOT factorize** — `(1/2)ReTr P = cos(omega_p) cos(phi_p)` is
+    a product, not a sum. Generating the two sectors independently and combining
+    them is wrong at O(phi^2 omega^2). Two consequences, both already handled:
+    the SU(2) sector must be generated CONDITIONALLY (it is), and `psi`'s own
+    marginal is NOT U(1) Wilson at `beta/4`. Integrating SU(2) out of a plaquette
+    gives the exact marginal weight `w_det(alpha) = 2 I_1(z)/z`,
+    `z = beta cos(alpha/2)` (`lgt.actions.DetSectorAction`), which is Wilson at
+    `beta/4` plus a `(3/2) log cos(alpha/2)` measure term. Anything that needs an
+    analytic U(1) coupling must call `lgt.exact.matched_u1_beta` (the minimum-KL
+    projection), NOT `beta/4`: they differ by 23% at beta = 4 and 0.003% at
+    beta = 220.
+
+  **The U(2)-specific result, measured — do not re-derive it.** `U(2) =
+  (U(1) x SU(2)) / Z_2`, so `Q` even <=> the ordered product of SU(2) plaquettes
+  is +1 and `Q` odd <=> it is -1. An EVEN change of Q is free (the U(1) instanton
+  added to `phi`, purely central, `dS = O(beta/V)` — that is
+  `central_winding_field`, and `winding_update` defaults to `charge_step=2`). An
+  ODD change cannot leave SU(2) alone and no fixed shift field does it cheaply:
+  halving the U(1) instanton leaves one plaquette with a spurious -1 at cost
+  `2 beta` (dS = 37 at beta = 20, L = 8), and the `U(1)_T` subgroup construction
+  costs O(beta L) instead (dS = 110); gauge fixing does not help. The GENERATIVE
+  route is unaffected and this is the point: setting `psi` sets `Q`, and the exact
+  conditional SU(2) sampler relaxes the monodromy for free (dS = 26-149 after
+  `set_topological_charge`, back to ~5 after 25 conditional sweeps). The
+  diffusion ladder reaches odd sectors where the classical global move cannot.
+
+  Exactly solvable, and implemented: `lgt.exact` has the U(2) character expansion
+  on the torus, `Z = sum_{j,k} (c_{j,k}/d_j)^V` over irreps `(j, k)` with
+  `k = 2j (mod 2)` — verified against Weyl integration to 1e-10 — the exact area
+  law `<(1/2)ReTr W(A)> = r_fund^A`, and the determinant-sector `P(Q)`, which
+  matches heatbath to 1-2% in every sector at beta = 2, 5, 8. Tree-level ladder
+  relation `beta_c = beta_f / 4` in all four u(2) directions.
+
 - `su2_2d/` — 2D SU(2). **SET ASIDE (2026-08-03) and NOT in the working tree.**
   It was removed from tracking in `f7bca3b` while the focus moved to
   documenting and publishing U(1). Recover it with
@@ -58,7 +116,7 @@ inside directories that *are* of record (`generalization*`, `thermalization`,
 in their `.json`/`.md`). Every `report.md`, appendix figure, and summary `.json`
 survives; all 169 tests, `29_verify_identities.py`, and
 `30_assemble_appendix_figures.py --check` pass after the prune.
-**The narrative record of all of it stays in `docs/NARRATIVE.md`** — that is the
+**The narrative record of all of it stays in `docs/u1_2d/NARRATIVE.md`** — that is the
 point of the prune, so a dead `out/` path quoted there is expected, not a bug.
 Everything is recoverable from git history (all of `out/` was tracked).
 Three directories were *spared* despite looking prunable, because they are live
@@ -77,6 +135,15 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
 - Plaquette: `p(x, y) = ux(x,y) + uy(x+1,y) - ux(x,y+1) - uy(x,y)`, wrapped
 - Tree-level coupling relation across one 2x2 blocking step: `beta_c = beta_f / 4`
 - 2D U(1) has no phase transition; RG flows go toward strong coupling (beta -> 0)
+- U(2) links are `[..., 5]` = `(phi, q0, q1, q2, q3)` with
+  `U = e^{i phi} (q0 I + i q_a sigma_a)`; index convention `links[batch, mu, x, y, :]`,
+  so dim -3 is x and dim -2 is y (the `u1_2d` convention shifted by the group axis).
+  Plaquette `P = U_0(x) U_1(x+0) U_0(x+1)^dag U_1(x)^dag`, same orientation as U(1).
+  Action `S = -beta sum_p (1/2) ReTr P = -beta sum_p q0_p cos(phi_p)`.
+  Topological charge `Q = sum_p wrap(arg det P) / 2 pi`, rounded.
+  Tree-level ladder relation `beta_c = beta_f / 4`, same as U(1).
+  `U(2) ~ 4 x U(1)` in the determinant sector — but only asymptotically; use
+  `u2_2d.lgt.exact.matched_u1_beta`, never `beta/4`, whenever a number matters.
 - SU(2) links are unit quaternions `[..., 4]` (w, v); plaquette word
   `P = U_x(x,y) U_y(x+1,y) U_x(x,y+1)^-1 U_y(x,y)^-1`; action
   `S = -(beta/2) * sum tr P`; 2D SU(2) has trivial pi_1 — no topological
@@ -101,7 +168,7 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
   retrain a Villain-specific checkpoint to "fix" that arm: the effect is a
   few percent of variance while same-architecture checkpoint variants move
   spreads 2–6× (Table S5), so any cross-model comparison is an order of
-  magnitude noisier than its own signal. Closed; see `docs/NARRATIVE.md`
+  magnitude noisier than its own signal. Closed; see `docs/u1_2d/NARRATIVE.md`
   §18.5 for the full write-up and the general lesson (prefer within-model
   decompositions to cross-arm subtractions for small effects).
   Exactness **must** come from Markov-chain machinery wrapped around the
@@ -170,8 +237,12 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
 
 ### Testing
 
-- `pytest u1_2d/tests -q` (169 tests; `su2_2d/tests` only exists once su2_2d is
-  restored from git — see above)
+- `pytest u1_2d/tests -q` (169 tests) and `pytest u2_2d/tests -q` (84 tests);
+  `su2_2d/tests` only exists once su2_2d is restored from git — see above
+- `python u2_2d/scripts/09_verify_identities.py` — the exact U(2) identities
+  (group representation, gauge invariance, the determinant telescope, analytic
+  force vs autograd, microcanonical overrelaxation, winding parity, the character
+  expansion vs Weyl integration). Seconds; must pass.
 - `python u1_2d/scripts/29_verify_identities.py` — the exact physics identities
   (Q integrality, gauge invariance, blocking telescope, curl-head completeness,
   <Q^2> ladder fixed point, area law, instanton cost). Seconds; must pass.
@@ -181,13 +252,26 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
 ## File Layout
 
 ```
+u2_2d/            -- ACTIVE 2D U(2) study (configs, lgt, model, pipeline, scripts, tests, validate)
 u1_2d/            -- CLOSED 2D U(1) study (configs, lgt, model, pipeline, scripts, tests, validate)
 su2_2d/           -- SET ASIDE, not in the tree (git checkout 87fd6fa -- su2_2d)
-docs/             -- NARRATIVE.md (full mathematical story), V2_AUDIT.md (final U(1) audit)
+docs/u1_2d/       -- NARRATIVE.md (full mathematical story), V2_AUDIT.md (final U(1) audit),
+                     PHYSICS_WALKTHROUGH.md, U1_2D_REVIEW.md, PAPER_OUTLINE.md, READING_GUIDE.md
+docs/u2_2d/       -- DESIGN.md (U(2) derivations and measured results)
+docs/             -- Field_transform.html (NTHMC note on the U(1) vs U(2) field transformation)
+out/u2_2d/        -- U(2) outputs: data, checkpoints, ladder, validation
 out/u1_2d/        -- U(1) results of record: reports, figures, summaries, final checkpoints
 out/su2_2d/       -- SU(2) outputs (untracked; only if su2_2d is restored)
 artifacts/        -- gitignored scratch (safe to delete)
 ```
+
+The sibling `NTHMC` repository (outside this tree, at `../NTHMC`) holds the
+JAX-based 2D U(1) and 2D U(2) HMC and neural field-transformation code. `u2_2d`
+deliberately matches its split representation, plaquette orientation and
+determinant-phase topological charge, so configurations are interchangeable. Two
+deliberate differences: `u2_2d` drops NTHMC's additive `beta V` constant from the
+action to match the `u1_2d` sign convention, and rounds the topological charge
+rather than using NTHMC's `floor(0.1 + .)` offset.
 
 ## Virtual Environment
 
@@ -229,6 +313,42 @@ L=16 0.79×, L=32 1.13×, L=64 3.08×. So the crossover is ~L=64 at 16 chains an
 | 04 validate | **cpu** | reference HMC at L=16/32 |
 | 05 therm | cuda | 64-chain baselines at L≥32 |
 | 06 study | cuda | ladder sampling dominates |
+
+**U(2) HAS A DIFFERENT DEVICE RULE FROM U(1) -- measured 2026-08-19, do not
+carry the U(1) table over.** GPU/CPU trajectory rate for `u2_2d` batched HMC
+(Ryzen 7 260 at one torch thread vs RTX 5060):
+
+| L | chains | cpu traj/s | gpu traj/s | gpu/cpu |
+|---|---|---|---|---|
+| 8 | 32 | 10.05 | 5.18 | 0.52 |
+| 16 | 32 | 3.93 | 5.26 | 1.34 |
+| 16 | 64 | 2.13 | 5.30 | 2.48 |
+| 32 | 32 | 1.15 | 5.36 | 4.67 |
+| 32 | 64 | 0.58 | 4.81 | 8.30 |
+| 64 | 64 | 0.12 | 4.88 | 39.96 |
+
+The crossover is **L = 16**, not L = 64 as it is for U(1), because a quaternion
+link carries ~6x the arithmetic of an angle so each launch pays for itself two
+factors of two earlier. GPU throughput is FLAT at ~5 traj/s from L = 16 to
+L = 64 -- purely launch-bound -- so on the GPU the large lattices are nearly
+free, and the right move is to run the L = 8 rungs on CPU and everything else on
+GPU *concurrently*. `u2_2d/scripts/run_stage01.ps1` does exactly that (3 CPU
+shards + 4 GPU shards). Heatbath crosses over at the same point (L=32/64ch:
+1.73 cpu vs 10.83 gpu sweeps/s).
+
+Two other measured U(2) speedups, already applied: `lattice.staples(links, mu=)`
+computes one link direction instead of both (the checkerboard sweeps update one
+at a time, so computing both wasted exactly half of every heatbath and
+overrelaxation sweep); and stage 01 thermalizes with heatbath + overrelaxation
+before HMC (`thermalize_sweeps`), which replaced 2000 burn-in trajectories with
+60 sweeps + 300 trajectories at L = 32, ~7x cheaper. Both are exact updates of
+the same action, and the plaquette-vs-closed-form check is printed every run.
+
+**Long runs: hold the machine awake with
+`powershell -ExecutionPolicy Bypass -File u2_2d/scripts/keep_awake.ps1`.** It
+calls SetThreadExecutionState(ES_CONTINUOUS), needs no administrator rights, and
+releases automatically when the process exits -- there is no global setting left
+behind to undo. Do not use a key-pressing loop.
 
 **Parallelism: fan out over units, not threads.** Both heavy stages are
 latency-bound — 01 holds one core, 06 holds the GPU at ~32% — and the batch

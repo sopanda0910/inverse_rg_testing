@@ -1,0 +1,6 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+base: L=16 beta=28  512 configs
+rung 0: L=32 beta=105.651 plaq=0.9810 (pre-retherm 0.9791) <Q^2>=1.027  [58s]
+rung 1: L=64 beta=416.524 plaq=0.9952 (pre-retherm 0.9912) <Q^2>=1.027  [240s]
+L=  32 beta=  105.651  plaq=0.98103 (exact 0.98102, rel +5.30e-06)  <Q^2>=1.027 (exact 1.001)
+L=  64 beta=  416.524  plaq=0.99519 (exact 0.99520, rel -4.43e-06)  <Q^2>=1.027 (exact 1.001)

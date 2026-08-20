@@ -1,6 +1,6 @@
 """Assemble out/u1_2d/paper_appendix/figures/ from its canonical sources.
 
-Why this exists. Eight of the 27 appendix figures are written directly by
+Why this exists. Ten of the 30 appendix figures are written directly by
 scripts 17/23/26; the other nineteen were produced by the campaign scripts under
 their own output directories and copied into place **by hand**. That made the
 figure directory of record unreproducible and let it drift silently: figures
@@ -14,7 +14,7 @@ This script is the single source of truth for the mapping. It
   * rebuilds figure 01 from `validation/report.md` (the generated ensembles
     were pruned on 2026-08-02, so the numbers -- not the tensors -- are the
     durable artifact);
-  * verifies all 27 are present and that each is referenced by appendix.md;
+  * verifies all 30 are present and that each is referenced by appendix.md;
   * writes `figures/MANIFEST.md` recording source path, sha256 and mtime.
 
     python u1_2d/scripts/30_assemble_appendix_figures.py [--check]
@@ -68,6 +68,8 @@ SOURCES: dict[str, str | None] = {
     "26_three_way.png": None,
     "27_program_optimum.png": None,
     "28_dissociation.png": "paper_appendix/dissociation.png",
+    "29_seed_quality.png": None,
+    "30_volume_scan.png": None,
 }
 
 SCRIPT_FOR = {
@@ -79,6 +81,8 @@ SCRIPT_FOR = {
     "25": "u1_2d/scripts/23_ess_progress_figures.py",
     "26": "u1_2d/scripts/26_final_results_figures.py",
     "27": "u1_2d/scripts/26_final_results_figures.py",
+    "29": "u1_2d/scripts/50_seed_quality_figure.py",
+    "30": "u1_2d/scripts/51_volume_scan_figure.py",
 }
 
 RUNG_HEADING = re.compile(r"^## rung(\d+)_L(\d+)_beta([0-9.]+)\s*$")

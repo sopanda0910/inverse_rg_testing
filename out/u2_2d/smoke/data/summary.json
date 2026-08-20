@@ -1,0 +1,28 @@
+[
+  {
+    "beta": 15.05,
+    "lattice_size": 8,
+    "n_configs": 192,
+    "acceptance_rate": 0.9192708333333334,
+    "winding_acceptance_rate": 0.11979166666666667,
+    "plaquette": 0.8642056584358215,
+    "plaquette_exact": 0.8640121107898308,
+    "q_squared": 0.328125,
+    "q_squared_exact": 0.5044532927739104,
+    "seconds": 23.948107957839966,
+    "sector_seeded": true
+  },
+  {
+    "beta": 56.0,
+    "lattice_size": 16,
+    "n_configs": 192,
+    "acceptance_rate": 0.8046875,
+    "winding_acceptance_rate": 0.23958333333333334,
+    "plaquette": 0.9640560150146484,
+    "plaquette_exact": 0.9641140758276379,
+    "q_squared": 0.5416666865348816,
+    "q_squared_exact": 0.47932966641771396,
+    "seconds": 131.95507526397705,
+    "sector_seeded": true
+  }
+]

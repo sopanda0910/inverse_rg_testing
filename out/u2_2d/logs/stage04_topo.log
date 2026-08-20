@@ -1,0 +1,7 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+L=  16 beta=   51.750  plaq 0.961096 vs exact 0.961150 (z -0.72)  <Q^2> 0.615 vs 0.521  max Wilson z 2.75
+L=  32 beta=  105.651  plaq 0.981028 vs exact 0.981023 (z +0.28)  <Q^2> 1.027 vs 1.001  max Wilson z 1.52
+L=  32 beta=  203.150  plaq 0.990141 vs exact 0.990143 (z -0.22)  <Q^2> 0.615 vs 0.515  max Wilson z 1.88
+L=  64 beta=  416.524  plaq 0.995191 vs exact 0.995195 (z -1.86)  <Q^2> 1.027 vs 1.001
+L=  64 beta=  808.840  plaq 0.997527 vs exact 0.997527 (z +0.34)  <Q^2> 0.615 vs 0.514
+reports in out\u2_2d\validation

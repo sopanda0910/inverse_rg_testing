@@ -1,0 +1,65 @@
+# Fast end-to-end smoke run. Writes under out/u2_2d/smoke/ so its small,
+# undertrained artifacts can never be picked up by a production run: stage 01
+# skips rungs whose ensemble file already exists, which would otherwise
+# silently substitute a 192-config smoke ensemble for a 1024-config one.
+# Fast end-to-end smoke run: 01 -> 02 -> 03 -> 04 in a few minutes.
+# Coupling note: beta here is the U(2) coupling. The determinant sector it
+# induces sits near U(1) beta / 4 (exactly: lgt.exact.matched_u1_beta), so
+# beta = 14 is a U(1)-equivalent of ~3.56 and beta = 56 of ~14.8.
+seed: 0
+device: auto
+
+data:
+  out_dir: out/u2_2d/smoke/data
+  # n_chains matters more than n_configs above the freezing threshold: local
+  # dynamics never moves a chain between sectors there, so the number of
+  # INDEPENDENT topological charges in the ensemble is exactly n_chains, no
+  # matter how many configurations are drawn from them.
+  n_chains: 16
+  thin: 4
+  topological_updates: true
+  winding_charge_step: 2
+  # Above the freezing threshold the winding move only reaches even charge, so
+  # frozen rungs are started from sectors drawn out of the exact P(Q). Ensembles
+  # built this way have exact sector weights BY CONSTRUCTION and must not also be
+  # cited as evidence that P(Q) is reproduced. See lgt/sector_seed.py.
+  seed_exact_sectors: true
+  rungs:
+    - {beta: 3.5,  lattice_size: 8,  n_configs: 192, burn_in: 200, hot_start: true}
+    - {beta: 14.0,  lattice_size: 8,  n_configs: 192, burn_in: 300}
+    - {beta: 15.05, lattice_size: 8,  n_configs: 192, burn_in: 300}   # ladder base
+    - {beta: 14.0, lattice_size: 16, n_configs: 192, burn_in: 300}
+    - {beta: 56.0, lattice_size: 16, n_configs: 192, burn_in: 400}
+
+train:
+  checkpoint_path: out/u2_2d/smoke/checkpoints/det_score_net.pt
+  epochs: 15
+  batch_size: 32
+  learning_rate: 3.0e-4
+  hidden: 48
+  depth: 3
+  cond_channels: 5
+  cond_film: true
+  norm_type: channel
+  val_fraction: 0.1
+
+ladder:
+  out_dir: out/u2_2d/smoke/ladder
+  # RG-MATCHED, not tree level: the base ensemble has to be distributed as the
+  # blocked fine ensemble, so beta_base = approx_matched_coarse_beta(beta_fine).
+  # At beta_fine = 56 that is 15.05, not 14.00; the two agree only as beta -> inf.
+  base: {beta: 15.05, lattice_size: 8}
+  beta_schedule: [56.0]
+  n_configs: 192
+  n_sampler_steps: 120
+  n_corrector_steps: 1
+  n_su2_sweeps: 20
+  n_retherm_sweeps: 8
+  batch_size: 64
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+
+validate:
+  out_dir: out/u2_2d/smoke/validation
+  n_reference_configs: 192
+  generate_reference: true
