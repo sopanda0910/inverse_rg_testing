@@ -69,10 +69,11 @@ def validation_table(summary) -> list:
     return out
 
 
-def spread_table(dists) -> list:
+def spread_table(dists, heading="### Per-configuration Wilson spread",
+                 note=None) -> list:
     if not dists:
         return []
-    out = ["### Per-configuration Wilson spread", "",
+    out = [heading, "",
            f"At $L = {dists['lattice_size']}$, $\\beta = {dists['beta']:g}$. Means "
            "agree to $10^{-6}$; the width is the informative quantity.", "",
            "| loop | generated $\\sigma$ | HMC $\\sigma$ | ratio |",
@@ -83,6 +84,8 @@ def spread_table(dists) -> list:
         out.append(f"| {name.replace('wilson_', 'W ')} | {e['generated']:.3e} | "
                    + (f"{ref:.3e} | {e['ratio']:.3f} |" if ref else "— | — |"))
     out.append("")
+    if note:
+        out += [note, ""]
     return out
 
 
@@ -153,8 +156,16 @@ def cost_table(cost) -> list:
         out += [f"**For local observables the ladder is {1/s:.2f}x SLOWER than "
                 "HMC + winding.** That is the honest headline and it should not be "
                 "buried: this method is not a speed-up for the plaquette or small "
-                "Wilson loops, and the cost is dominated by the 200-step diffusion "
-                "sampler, which is tunable but has not been tuned.", "",
+                "Wilson loops. The cost is dominated by the 200-step diffusion "
+                "sampler, and the obvious hedge -- that the sampler is tunable and "
+                "was never tuned -- **is real and worth about a factor of three**, "
+                "measured in the scan below. At 25 steps the top rung turns from "
+                "2.22x slower into 1.38x *faster* than HMC + winding, at roughly 2.7x "
+                "the extended-loop error and no measurable change in local "
+                "observables after rethermalization. So the number quoted here is the "
+                "cost of the ACCURACY-OF-RECORD setting, not a floor. What does not "
+                "move is the remaining overhead: the exact conditional SU(2) sampler, "
+                "which no amount of sampler tuning touches.", "",
                 "**The topological claim is reachability, not speed.** The classical "
                 f"arm covers {cost['arms'][-1]['exact_probability_covered']:.3f} of "
                 "the exact $P(Q)$ with zero odd sectors and cannot improve on that "
@@ -162,6 +173,247 @@ def cost_table(cost) -> list:
                 "stationary distribution rather than merely long autocorrelation. A "
                 "ratio of seconds against an arm that never arrives is meaningless, "
                 "so the two claims must be stated separately.", ""]
+    return out
+
+
+def reference_control_table(summary) -> list:
+    """The top rung against a DIRECT HMC ensemble at the same (L, beta).
+
+    Without this the large-loop deviation at L = 64 was uncontrolled: the
+    generated ensemble drifted from the closed form as the loop grew, and there
+    was no way to tell model error from the finite-statistics drift any ensemble
+    of that size shows. Measuring the reference's own deviation settles it.
+    """
+    if not summary:
+        return []
+    top = max(summary, key=lambda r: r["lattice_size"])
+    rows = [r for r in top.get("rows", [])
+            if r["observable"].startswith("wilson_") and r.get("reference") is not None]
+    if not rows:
+        return []
+
+    def area(name):
+        a, b = name.split("_")[1].split("x")
+        return int(a) * int(b)
+
+    rows.sort(key=lambda r: area(r["observable"]))
+    out = ["### The top rung against a direct HMC reference", "",
+           rf"$L = {top['lattice_size']}$, $\beta = {top['beta']:g}$ -- the "
+           "extrapolation the ladder exists for, now with a direct HMC ensemble at "
+           "the same coupling. It is a **control, not a competing sampler**: its "
+           "topology is seeded from the closed form "
+           rf"($\beta L = {top['beta'] * top['lattice_size']:.0f}$, two orders past "
+           "the parity boundary), so it says nothing about sectors and everything "
+           "about local and extended observables.", "",
+           r"| loop | area | $z$ generated | $z$ reference | $|{\rm dev}|$ generated"
+           r" | $|{\rm dev}|$ reference |",
+           "|---|---|---|---|---|---|"]
+    big_g, big_r = [], []
+    for r in rows:
+        a = area(r["observable"])
+        dg = abs(r["generated"] - r["exact"])
+        dr = abs(r["reference"] - r["exact"])
+        zr = (r["reference"] - r["exact"]) / r["reference_err"] if r["reference_err"] else 0.0
+        if a >= 48:
+            big_g.append(dg)
+            big_r.append(dr)
+        out.append(f"| {r['observable'].replace('wilson_', 'W ')} | {a} | "
+                   f"${r['z_vs_exact']:+.2f}$ | ${zr:+.2f}$ | ${dg:.2e}$ | ${dr:.2e}$ |")
+    if big_g:
+        mg = sum(big_g) / len(big_g)
+        mr = sum(big_r) / len(big_r)
+        out += ["", f"Over loops of area $\\ge 48$ the mean absolute deviation from "
+                    f"exact is ${mg:.2e}$ for the generated ensemble and ${mr:.2e}$ "
+                    f"for the reference -- the same size, and at the largest loop "
+                    f"the *reference* is the further of the two. **The large-loop "
+                    f"drift is not model error.** It is what an ensemble of this "
+                    f"size does at this coupling, and the ladder reproduces it.", ""]
+    out += ["Two cautions on reading the $z$ columns. The deviations of large loops "
+            "*within one ensemble* are strongly correlated -- they are all "
+            "functionals of the same bulk field -- so nineteen same-signed rows are "
+            "one fluctuation, not nineteen. And the reference's error bar is a "
+            "plain $\\sigma/\\sqrt{N}$ over a Markov chain with acceptance 0.37, so "
+            "it is optimistic; its plaquette $z$ of $-4.25$ measures that "
+            "optimism, not a defect in the closed form.", ""]
+    return out
+
+
+def sampler_steps_table(records) -> list:
+    """Reverse-diffusion step count vs cost and accuracy."""
+    if not records:
+        return []
+    out = ["### How many reverse-diffusion steps the lift needs", "",
+           "The 200-step sampler was chosen once and never revisited, and stage 13 "
+           "charged the whole ladder for it. The narrative used to hedge the cost "
+           "verdict on the grounds that the sampler was *tunable but untuned*, which "
+           "is not a defensible thing to leave in a paper: either the hedge is real "
+           "and the cost number is inflated, or it is not and the verdict is final. "
+           "It is tuned now, and the answer is that the hedge is real and worth about "
+           "a factor of three -- purchased, not free.", "",
+           "Scan run at 512 configurations per rung, so the comparable quantity "
+           "across rows is seconds *per configuration*; the ladder of record at 200 "
+           "steps and 1024 configurations reproduces this table's 200-step row to "
+           "0.5%.", "",
+           "**Read rung 0, not the top rung.** Rung 0 lifts the fixed HMC base, byte "
+           "identical in every run, so its error is one diffusion lift and nothing "
+           "else. The top rung lifts rung 0's *output*, so its plaquette error is a "
+           "compound of two lifts that partially cancel -- it runs the wrong way "
+           "across this scan and means nothing on its own. Extended loops at the top "
+           "rung are the second honest column, because that is where residual model "
+           "error concentrates.", "",
+           r"| steps | total s | top-rung s/config | vs hmc+winding | **rung 0 pre**"
+           r" | rung 0 post | top $W(4\times4)$ | top $W(8\times8)$ |",
+           "|---|---|---|---|---|---|---|---|"]
+    for r in records:
+        first, top = r["rungs"][0], r["rungs"][-1]
+        ratio = r.get("ratio_vs_hmc_winding_top_rung")
+        if ratio:
+            rs = f"{ratio:.2f}x slower" if ratio > 1 else f"**{1 / ratio:.2f}x faster**"
+        else:
+            rs = "-"
+        w4 = first["wilson"].get("wilson_4x4", {}).get("rel_err", float("nan"))
+        w4 = top["wilson"].get("wilson_4x4", {}).get("rel_err", w4)
+        w8 = top["wilson"].get("wilson_8x8", {}).get("rel_err", float("nan"))
+        out.append(f"| {r['n_sampler_steps']} | {r['total_seconds']:.0f} | "
+                   f"{r['seconds_per_config_top_rung']:.4f} | {rs} | "
+                   f"**${first['rel_err_pre_retherm']:+.2e}$** | "
+                   f"${first['rel_err']:+.2e}$ | ${w4:+.2e}$ | ${w8:+.2e}$ |")
+    out += ["", r"**Tune on $W(8\times8)$, not on the plaquette -- the plaquette has "
+                r"an accidental zero.** Rung 0's plaquette error changes SIGN between "
+                "12 and 18 steps, so at 18 steps it reads "
+                r"$+1.5\times10^{-4}$, as good as 100 steps and better than 25, while "
+                r"$W(8\times8)$ at the top rung is eight times worse there than at "
+                "200. A quantity passing through zero is a terrible selector, and "
+                "picking the step count off the plaquette alone would have chosen a "
+                "setting that is quietly bad at every extended observable. The "
+                r"extended loops are monotone and unambiguous: $W(8\times8)$ improves "
+                r"$1.5\times10^{-2} \to 3.4\times10^{-3} \to 1.1\times10^{-3} \to "
+                r"4.2\times10^{-4} \to 1.6\times10^{-4}$ at 8, 18, 25, 200, 400 steps."
+                "", "",
+            "**So accuracy does not saturate at 200, and the hedge partly survives -- "
+            "but it is a dial, not a free lunch.** Below 18 steps the lift collapses "
+            r"(rung 0 off by $-1.2\times10^{-2}$ at 8 steps, and the rethermalization "
+            r"sweeps still return $+4.3\times10^{-5}$, hiding all of it). Above that "
+            "the whole range is usable and the trade is explicit: dropping 200 to 25 "
+            "makes the top rung **1.38x faster** than HMC + winding instead of 2.22x "
+            "slower -- a factor of three in cost -- for about 2.7x the extended-loop "
+            "error and no measurable change in local observables after "
+            r"rethermalization ($-1.8\times10^{-6}$ at 25 steps against "
+            r"$+5.7\times10^{-6}$ at 200). Going the other way, 400 steps buys a "
+            "further 2.7x on extended loops for 1.8x the cost.", "",
+            "**The ladder of record stays at 200 steps**, because its job is to be "
+            "the accuracy measurement rather than the cheapest configuration source, "
+            "and because 25 steps would put the study's extended-observable claims "
+            "where its own $L = 64$ reference sits rather than comfortably inside it. "
+            "A production run that wants configurations should use 25.", "",
+            "**Per-configuration Wilson spread is flat across the whole scan** "
+            r"($\sigma[W(2\times2)] = 2.9$-$3.2\times10^{-4}$ against the "
+            r"reference's $3.2\times10^{-4}$), so a coarse sampler biases the mean "
+            "without narrowing the distribution. Cheap configurations do not come "
+            "out over-smoothed, which is the failure mode one would expect and it "
+            "does not happen.", "",
+            r"$\langle Q^2\rangle$ is deliberately absent from this table. It is flat "
+            "by construction -- `apply_coarse_charge` imposes the coarse charge on "
+            "the final sample -- so topology is transported correctly at any step "
+            "count, and printing it invites reading a tautology as a result.", "",
+            "**Cost is not linear in the step count.** The two cheapest points fit "
+            "about 1.05 s per step on a fixed overhead near 90 s: the exact "
+            "conditional SU(2) sampler (30 sweeps) and the rethermalization (10 "
+            "sweeps), which no amount of sampler tuning touches. At 200 steps that "
+            "overhead is 30% of the run, at 25 steps it is three quarters. Anyone "
+            "moving down the dial hits it quickly, so `n_su2_sweeps` is the next "
+            "knob to measure, not this one.", ""]
+    return out
+
+
+def base_parity_table(records) -> list:
+    """Does the odd/even balance ever move, and if not, what sets it?"""
+    if not records:
+        return []
+    if isinstance(records, dict):
+        records = [records]
+    out = ["### Parity mobility: the odd fraction is a label, not an observable", "",
+           "Hot start, **no burn-in**, unseeded, so a slow relaxation and a frozen "
+           "label are distinguishable -- they prescribe opposite fixes. The decisive "
+           "column is **parity flips**.", "",
+           r"| $L$ | $\beta$ | start | $\beta L$ | $Q$ changes | **parity flips** |"
+           r" chains flipped | odd frac | exact | binomial $z$ |"
+           r" $\tau_{\rm int}(Q^2)$ |",
+           "|---|---|---|---|---|---|---|---|---|---|---|"]
+    for r in sorted(records, key=lambda r: (r["lattice_size"], r["beta"],
+                                            r.get("start", "hot"))):
+        out.append(
+            f"| {r['lattice_size']} | {r['beta']:g} | {r.get('start', 'hot')} | "
+            f"{r['beta_L']:.0f} | "
+            f"{r['q_sector_changes']} | **{r['parity_flips']}** | "
+            f"{r['chains_that_flipped']}/{r['n_chains']} | "
+            f"{r['odd_fraction']:.4f} | {r['odd_exact']:.4f} | "
+            f"${r['binomial_z']:+.2f}$ | {r['tau_int_q_squared_draws']:.2f} |")
+    out += ["", "**Where the flip count is zero, the odd fraction is not a relaxing "
+                "observable at all.** It is a label assigned to each chain once, "
+                "during the hot-start ordering, and carried unchanged forever. The "
+                "number of independent parity draws is then exactly $n_{\\rm chains}$ "
+                "however long anything runs; the error model is a binomial over "
+                "chains; and the only lever that improves it is more chains. Longer "
+                "burn-in does nothing, and more draws per chain do nothing.", "",
+            "That resolves a contradiction the study had been carrying. The stored "
+            r"base ensemble measured an odd excess of 13% at $z_{\rm odd} = +2.42$, "
+            r"$\chi^2/{\rm dof} = 2.41$ -- the PARITY-STUCK signature -- while a scan "
+            "at the *identical* coupling measured 1.030 and $+0.69$, a clean SAMPLED "
+            "verdict. Neither was wrong and neither was a bias: they are two draws of "
+            "a 256-chain binomial that landed two sigma apart. A verdict computed "
+            "from one such draw can pass or fail on luck, which is why a flip count "
+            "is the better instrument.", "",
+            r"**And this is the trap the theory sets.** $\tau_{\rm int}(Q^2)$ is "
+            "around half a draw at every coupling in the table, including the ones "
+            "where parity has not moved once. $Q^2$ fluctuates on the EVEN channel, "
+            r"which the central instanton keeps wide open at cost $2\pi^2\beta/V$ -- "
+            "a ladder invariant that never degrades. It is nearly blind to the "
+            "odd/even channel, which is shut. A fast autocorrelation time on a "
+            "quantity blind to the frozen mode certifies an equilibrium that does "
+            r"not exist. Autocorrelate $Q \bmod 2$, or better, count flips.", ""]
+    hot = [r for r in records if r.get("start", "hot") == "hot"]
+    mobile = [r for r in hot if not r["parity_frozen"]]
+    frozen = [r for r in hot if r["parity_frozen"]]
+    if mobile and frozen:
+        out += [r"**The controlling parameter is $\beta$, not $\beta L$, and the "
+                r"study had this wrong.** Read the flip column against $\beta L$ and "
+                r"it does not collapse: $L = 16$ at $\beta L = 224$ flips 2453 times "
+                r"while $L = 8$ at $\beta L = 160$ flips four. Read it against "
+                r"$\beta$ and it does: mobility dies between $\beta = 14$ and "
+                r"$\beta \approx 20$ at **both** volumes, with the per-site rate "
+                r"falling roughly a hundredfold across that interval. The earlier "
+                r"$\beta L \approx 450$-$830$ boundary in `CLAUDE.md` came from "
+                r"stage 07's *verdicts* rather than from flip counts, and it was "
+                r"fitted to the $L = 16$ points while the $L = 8$ points "
+                r"($\beta L = 112$ sampled, $160$ stuck) contradict it outright. "
+                r"A verdict is a hypothesis test on one binomial draw; a flip count "
+                r"is the mechanism itself.", "",
+                r"The consequence is uncomfortable and has to be stated: **the ladder "
+                r"base at $L = 16$, $\beta = 28$ is on the frozen side.** Zero flips "
+                r"in 256 chains over 2000 trajectories. Stage 07 calls it SAMPLED "
+                r"because its odd weight agrees with the closed form -- which is "
+                r"true, and is not the same claim.", ""]
+    elif frozen and not mobile:
+        out += [r"Parity is frozen at every coupling scanned here.", ""]
+
+    cold = [r for r in records if r.get("start") == "cold"]
+    if cold:
+        out += ["### What actually sets the split, where parity is frozen", "",
+                "If the odd fraction were being sampled, the initial condition could "
+                "not matter. Running the identical procedure from a cold start is "
+                "therefore the direct test, and it is decisive.", "",
+                r"| $L$ | $\beta$ | exact odd | hot start | cold start |",
+                "|---|---|---|---|---|"]
+        for c in sorted(cold, key=lambda r: (r["lattice_size"], r["beta"])):
+            h = next((r for r in hot if r["lattice_size"] == c["lattice_size"]
+                      and r["beta"] == c["beta"]), None)
+            if not h:
+                continue
+            out.append(f"| {c['lattice_size']} | {c['beta']:g} | "
+                       f"{c['odd_exact']:.4f} | {h['odd_fraction']:.4f} | "
+                       f"{c['odd_fraction']:.4f} |")
+        out.append("")
     return out
 
 
@@ -202,9 +454,35 @@ def main() -> int:
              " wrote; do not edit by hand.*", ""]
     lines += ladder_table(_load("out/u2_2d/ladder/summary.json"))
     lines += validation_table(_load("out/u2_2d/validation/summary.json"))
+    lines += reference_control_table(_load("out/u2_2d/validation/summary.json"))
     lines += benchmark_table(_load("out/u2_2d/seed_benchmark/seed_benchmark.json"))
     lines += spread_table(_load("out/u2_2d/validation/wilson_distributions.json"))
+    lines += spread_table(
+        _load("out/u2_2d/validation/wilson_distributions_L64.json"),
+        heading="### Per-configuration Wilson spread at the top rung",
+        note="The width tracks the reference to within 3-8% at every loop size and "
+             "shows **no growth with loop area**. That is the comparison the U(1) "
+             "study could not pass -- there the dispersion ratio climbed 1.09 to "
+             "1.44 from $W(4\\times4)$ to $W(12\\times12)$, and residual model error "
+             "was diagnosed by exactly that growth. Here it is flat, at the rung "
+             "furthest from anything the model was trained on.")
     lines += cost_table(_load("out/u2_2d/seed_benchmark/cost.json"))
+    lines += sampler_steps_table(_load("out/u2_2d/sampler_steps/sampler_steps.json"))
+    parity = []
+    for name in ("base_parity_L8", "base_parity",
+                 "base_parity_start_L8", "base_parity_start"):
+        rows = _load(f"out/u2_2d/{name}/base_parity.json")
+        if rows:
+            parity.extend(rows if isinstance(rows, list) else [rows])
+    # The hot/cold runs re-measure couplings the beta scan already covered. Keep one
+    # record per (L, beta, start), the longest, so a short confirmation run never
+    # displaces the long one it was confirming.
+    best = {}
+    for r in parity:
+        key = (r["lattice_size"], r["beta"], r.get("start", "hot"))
+        if key not in best or r["n_trajectories"] > best[key]["n_trajectories"]:
+            best[key] = r
+    lines += base_parity_table(list(best.values()))
     lines += sampling_table(scans)
     lines += [END]
     body = "\n".join(lines)

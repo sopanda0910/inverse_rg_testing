@@ -16,6 +16,15 @@ The previous outline is recoverable with
 existing files in `out/u1_2d/paper_appendix/figures/`; `[NEW]` marks a panel that
 must be assembled (all from data already in `out/u1_2d/`, except where flagged).
 
+> **Status, 2026-08-20: every `[NEW]` panel below now exists** as figures 31-45,
+> each produced by a tracked script and covered by
+> `30_assemble_appendix_figures.py --check`. Each has a caption section in the
+> figure roster of `out/u1_2d/paper_appendix/appendix.md`. Three things moved in
+> the process and are flagged inline where they appear: **§5.2's std(z) growth**
+> and **§6.1's cost row** were both superseded, and **§4.3's tail-vs-volume
+> panel is the one figure still not drawn**, because its run directory was
+> pruned.
+
 **Suggested title framing:** the deliverable is a starting configuration, not an
 ensemble. Something like *"Learned prolongation for lattice gauge theory:
 diffusion-generated starting configurations that thermalize in O(1)
@@ -76,9 +85,10 @@ trajectories."*
   an initializer with no accept/reject and no exactness claim of its own.
 
 **Figures:**
-- `[NEW] Fig 0` — pipeline schematic: coarse HMC → diffusion prolongation →
-  sector transport → HMC tail → measurement. Draw the β ladder as the outer
-  loop and mark clearly which arrows are exact.
+- `[EXISTS] Fig 44` — `44_pipeline.png`, the pipeline schematic: coarse HMC →
+  diffusion prolongation → sector transport → HMC tail → measurement, with the β
+  ladder as the outer loop and the exact arrows drawn solid against the single
+  dashed learned one.
 
 ---
 
@@ -100,11 +110,12 @@ thermalization**, not topology. Table S1 records instanton-HMC ⟨Q²⟩ as corr
 in *every* row; what fails is reaching equilibrium.
 
 **Figures:**
-- `[NEW] Fig 1` — Q(t) traces for plain HMC at β = 14.1 / 55.0 / 218.6, L = 32:
-  0 sector changes in 3000 trajectories at all three. Data:
-  `out/u1_2d/ptbc_benchmark_tuned/`.
-- `[NEW] Fig 2` — thermalization traces from cold/hot starts at the same three
-  couplings, showing the burn-in wall. Data: Table S1 scan.
+- `[EXISTS] Fig 31` — `31_frozen_traces.png`, Q(t) for plain HMC at
+  β = 14.1 / 55.0 / 218.6, L = 32: 0 sector changes in 3000 trajectories at all
+  three, against the winding arm's 8447 / 5092 / 358. Data:
+  `out/u1_2d/classical_arms/` (2026-08-20 re-run — see the §6.1 note).
+- `[EXISTS] Fig 32` — `32_burnin_wall.png`, plaquette relaxation from cold, hot
+  and seeded starts at the same three couplings, showing the burn-in wall.
 
 ---
 
@@ -117,8 +128,8 @@ ladder invariant explicitly: exact ⟨Q²⟩ is a **fixed point** (1.20271 → 1
 → 1.20334 → 1.20334 over four rungs, Villain). This is why the seed lands in
 the right sector, and it deserves its own subsection.
 
-- `[NEW] Fig 3` — the ⟨Q²⟩ ladder fixed point across four rungs. Cheap figure,
-  strong argument.
+- `[EXISTS] Fig 33` — `33_ladder_fixed_point.png`, the ⟨Q²⟩ ladder fixed point
+  across five rungs, Villain beside the campaign's own Wilson ladder.
 
 ### 3.2 Diffusion on the torus of angles
 Exact heat kernel on the circle; denoising score matching. Note the forward
@@ -131,7 +142,8 @@ Curl-head parameterization, complete rather than merely contained; conditioning
 on coarse invariants; β and σ through FiLM, which is what lets one checkpoint
 serve the whole ladder and extrapolate 15× in coupling.
 
-- `[NEW] Fig 4` — architecture diagram, curl head highlighted.
+- `[EXISTS] Fig 45` — `45_architecture.png`, the architecture diagram, curl
+  head highlighted, drawn from the deployed checkpoint's own `model_kwargs`.
 
 ### 3.4 Topology transport
 The three mechanisms — coarse-charge enforcement via the instanton shift,
@@ -143,11 +155,13 @@ cannot control a global integer, and the degradation is quantitative. Under the
 seed framing this is *not* a deficiency — the sector is supplied by the ladder
 identity and the model is not asked for it.
 
-- `[NEW] Fig 5` — raw (projection-off) Q-match rate vs volume: 0.484 (L=16),
-  0.234 (L=32), 0.094 (L=64), 0.062 (L=128), halving per 4× volume. Data:
-  `out/u1_2d/charge_freezing_L64/`.
-- `[NEW] Fig 6` — sector-change fraction vs σ during reverse sampling,
-  σ_freeze ≈ 0.304 / 0.312 / 0.307 flat across a 16× range in volume.
+- `[EXISTS] Fig 34` — `34_match_rate_volume.png`, raw (projection-off) Q-match
+  rate vs volume: 0.484 (L=16), 0.234 (L=32), 0.094 (L=64), halving per 4×
+  volume. The L=128 value of 0.062 quoted in §21.6 has no surviving run
+  directory and is **not** on the figure; quote it from the narrative or drop it.
+- `[EXISTS] Fig 35` — `35_sector_freeze_sigma.png`, sector-change fraction vs σ
+  during reverse sampling, σ_freeze ≈ 0.304 / 0.312 / 0.307 flat across a 16×
+  range in volume.
 
 ---
 
@@ -189,8 +203,9 @@ Three things to make explicit, in this order:
    any obvious deterministic rule satisfies the coarse constraint while being
    wrong at short distances, which the chain must then undo.
 
-- `[NEW] Fig 7` — `t_therm` vs β, seven arms, log scale. **Candidate lead
-  figure.** One panel carries the paper's main claim.
+- `[EXISTS] Fig 29` — `29_seed_quality.png`, `t_therm` vs β, five arms (the
+  three geometric prolongators are drawn as one best-of trace), log scale.
+  **Lead figure.** One panel carries the paper's main claim.
 - `14_relaxation_mid.png`, `15_relaxation_high.png` — relaxation from a
   diffusion seed.
 - `12_timescales.png`, `16_autocorrelation_modes.png` — autocorrelation.
@@ -206,7 +221,15 @@ Deliberately mismatched topology recovers too: P(Q) χ² p-value 0.0005 → 0.43
 6 seconds of MCMC.
 
 - `21_pq_tail_mismatch.png`, `22_pq_tail_L64.png` — the seeding recovery.
-- `[NEW] Fig 8` — tail length vs volume with populated-bin count overlaid.
+- `[EXISTS] Fig 36` — `36_sector_tail.png`, the tail repairing ⟨Q²⟩ and the
+  P(Q) χ² across five couplings at two volumes, with wall-clock annotated.
+- **Still not drawn, and it needs new data rather than a new script.** The
+  tail-length **vs volume** panel (100 / 0 / 0 trajectories at
+  V = 2048 / 8192 / 32768, with 7 / 11 / 15 testable bins) cannot be rebuilt:
+  `sector_tail_scaling/` was pruned 2026-08-18 and only the `raw`-variant
+  ensembles survive in `generalization/generated/`, so reproducing it means
+  regenerating the `transport` ensembles first. Fig 36 covers the same claim
+  across β at two volumes from live data.
 
 ### 4.4 Does the advantage survive volume? (measured 2026-08-19)
 
@@ -263,15 +286,23 @@ a standalone correctness claim and should not be written as one.
 
 - `04_matched_scan.png`, `06_size_scan.png`, `13_beta_scan.png`.
 - `10_case_extrapolation.png`, `11_case_L64.png` — pick two for main text.
-- `[NEW]` z-histogram across all cases/observables with the unit normal.
+- `[EXISTS] Fig 37` — `37_z_distribution.png`, the z-histogram across all
+  cases/observables with the unit normal, matched arm against the
+  deliberate-mismatch control. Matched mean |z| = 0.806 against an ideal 0.798,
+  4 of 1091 beyond |z| = 3; the mismatch control carries 29 of 210.
 
 ### 5.2 Where the agreement frays, and why that is the interesting part
-std(z) grows with loop extent (1.09 at W(4×4) → 1.44 at W(12×12), max |z|
-3.1 → 5.9). The residual lives in **long-wavelength modes** — exactly the modes
+std(z) grows with loop extent. **Corrected 2026-08-20: the growth is 0.91 at
+W(1×1) → 1.19 at W(12×12)** on the τ_int-aware records over the 37 matched
+cases (Fig 38). The 1.09 → 1.44 / max |z| 3.1 → 5.9 previously quoted here
+predates the §25.7 re-scoring, which widened the error bars and so shrank every
+z. The direction of the claim is unchanged and is what the figure shows; the
+numbers are not. The residual lives in **long-wavelength modes** — exactly the modes
 local rethermalization relaxes slowest. That is a measured statement about
 *what the tail has left to do*, and it is the bridge to §5.3.
 
-- `[NEW] Fig 9` — std(z) and max|z| vs Wilson loop area.
+- `[EXISTS] Fig 38` — `38_z_vs_loop_area.png`, std(z) and max|z| vs Wilson
+  loop area.
 
 ### 5.3 The density gap, measured
 The free-energy identity E_q[log w] − ΔF = −KL(q‖p) turns a saturated
@@ -290,7 +321,11 @@ instrument on an exactly solvable target (ESS/N > 0.5, free-energy certificate
 closing to < 0.02 nats), because that is what licenses the number.
 
 - `28_dissociation.png` — the money figure. Observables sharp, density off.
-- `[NEW] Fig 10` — KL per site vs case.
+- `[EXISTS] Fig 39` — `39_kl_per_site.png`, KL per site vs case on the deployed
+  checkpoint (0.94 / 1.10 / 1.10 / 1.70), with the instrument's own validation
+  on an exactly solvable target as the reference line. **Use these four numbers
+  as the one set** — that settles `READING_GUIDE.md` §Live inconsistencies
+  item 1, which is the "pick one number set before drafting" note above.
 
 ### 5.4 Why the dissociation had to happen
 Low-order gauge-invariant observables are a very low-dimensional projection of
@@ -326,7 +361,18 @@ fully frozen at all three couplings; the winding update reproduces exact ⟨Q²�
 (swap acceptance 0.68–0.98, τ_int ≈ 3) still costs 25–121× more. Cost of one
 independent configuration: **0.124 / 0.090 / 0.198 s** for `hmc+inst`.
 
-- `[NEW] Fig 11` — s per independent configuration vs β, four arms, log scale.
+> **Number caution, 2026-08-20.** Those three seconds-figures come from a run
+> directory removed in the 2026-08-18 prune. The arms were re-run
+> (`out/u1_2d/classical_arms/`) and the **physics reproduces exactly** —
+> τ_int(Q²) 2.85 / 1.20 / 1.39, zero sector changes for plain HMC at all three
+> couplings, open boundaries 1.04 / 0.55 / 0.52 — but the wall-clock is ~35%
+> faster (**0.077 / 0.055 / 0.128 s**) because the re-run is single-threaded.
+> Figures 40 and 41 carry the re-run, which is the conservative direction: it
+> makes the classical baseline harder to beat. Quote one set or the other,
+> never a mixture.
+
+- `[EXISTS] Fig 40` — `40_cost_per_config.png`, s per independent configuration
+  vs β, the four classical arms plus the prolongator, log scale.
 
 ### 6.2 The winding update itself
 Definition, gauge-covariant construction, the Metropolis test that makes it
@@ -342,12 +388,15 @@ distinction is what keeps the correctness claim honest.
 - The defensible claim is about **scaling** — flat in β against a baseline whose
   entry cost diverges and then stops converging — not about being cheaper
   outright at a single coupling.
-- **State the break-even configuration count against `hmc+inst` at β = 218.58
-  explicitly.** Still owed.
+- **The break-even configuration count against `hmc+inst` at β = 218.58 is now
+  measured, and the answer is that there is no crossing** — 0.128 s against
+  2.55 s marginal, so the winding update stays cheaper at every configuration
+  count. Against tuned PTBC the crossing is at 250 configurations. Fig 41 draws
+  both, and this closes the item.
 
 - `17_headtohead_cost.png`, `18_entry_cost.png`, `26_three_way.png`.
-- `[NEW] Fig 12` — cumulative cost vs number of configurations, three lines,
-  crossing point annotated.
+- `[EXISTS] Fig 41` — `41_breakeven.png`, cumulative cost vs number of
+  configurations, three lines, crossings annotated.
 
 ---
 
@@ -371,8 +420,9 @@ changes across 50 steps × 64 configurations × 8 settings. An acceptance rate,
 however high, is a local statement and does not bound mixing on the modes the
 proposal cannot move.
 
-- `[NEW] Fig 13` — MALA acceptance vs ε (model-start and equilibrium-start,
-  nearly identical) beside ⟨Q²⟩ before/after (identical, and wrong).
+- `[EXISTS] Fig 42` — `42_mala_locality.png`, MALA acceptance vs ε
+  (model-start and equilibrium-start, nearly identical) beside ⟨Q²⟩
+  before/after (bit-identical in all eight settings, and wrong).
 
 ### 7.3 A reporting protocol
 Compressed to a boxed checklist. Strongest items under this framing: report
@@ -411,7 +461,9 @@ available and sits between them.** Note the over-production is a failure our own
 a property of score-based samplers on this theory. Label the digitization as
 digitization and our row as an out-of-range checkpoint use.
 
-- `[NEW] Fig 14` — the four P(Q) histograms with exact overlaid.
+- `[EXISTS] Fig 43` — `43_zhu_pq.png`, the four P(Q) histograms with exact
+  overlaid, the digitization and the out-of-range checkpoint use both labelled
+  on the panel itself.
 
 ### 8.4 Positioning
 Novel: the learned prolongator, the `t_therm` comparison against a tuned
@@ -476,20 +528,24 @@ question rather than a post-mortem.
 
 ## Figure economy
 
-A main text of 10–12 figures:
+A main text of 10–13 figures, all of which now exist:
 
-1. Pipeline schematic `[NEW]`
-2. `t_therm` vs β, seven arms `[NEW]` — **candidate lead figure**
-3. Frozen-HMC Q traces `[NEW]`
-4. Ladder ⟨Q²⟩ fixed point `[NEW]`
-5. Raw Q-match rate vs volume `[NEW]`
-6. Relaxation from a diffusion seed (`15_relaxation_high.png`)
-7. Sector-tail recovery (`21_pq_tail_mismatch.png`)
-8. Observable scan (`13_beta_scan.png`)
-9. std(z) vs loop area `[NEW]`
-10. Dissociation (`28_dissociation.png`)
-11. KL per site `[NEW]`
-12. s per independent configuration, four arms `[NEW]`
-
-13. Volume scan (`30_volume_scan.png`) — the two-sided answer on whether
+1. Pipeline schematic — `44_pipeline.png`
+2. `t_therm` vs β, five arms — `29_seed_quality.png` — **lead figure**
+3. Frozen-HMC Q traces — `31_frozen_traces.png`
+4. Ladder ⟨Q²⟩ fixed point — `33_ladder_fixed_point.png`
+5. Raw Q-match rate vs volume — `34_match_rate_volume.png`
+6. Relaxation from a diffusion seed — `15_relaxation_high.png`
+7. Sector-tail recovery — `21_pq_tail_mismatch.png` or `36_sector_tail.png`
+8. Observable scan — `13_beta_scan.png`
+9. std(z) vs loop area — `38_z_vs_loop_area.png`
+10. Dissociation — `28_dissociation.png`
+11. KL per site — `39_kl_per_site.png`
+12. s per independent configuration — `40_cost_per_config.png`
+13. Volume scan — `30_volume_scan.png` — the two-sided answer on whether
     the advantage survives volume.
+
+Held for the appendix, in decreasing order of how likely a referee is to ask
+for one of them in the main text: `45_architecture.png`, `37_z_distribution.png`,
+`41_breakeven.png`, `42_mala_locality.png`, `43_zhu_pq.png`,
+`35_sector_freeze_sigma.png`.

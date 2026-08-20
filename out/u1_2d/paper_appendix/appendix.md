@@ -94,8 +94,11 @@ A recommended protocol for reporting all of this is given at the end.
 
 ## Figure roster — what each figure is for now
 
-Thirty figures, three roles. Nothing here is deleted; the reframing changes
-which figures carry an argument and which are retained as record.
+Forty-five figures, four roles. Nothing here is deleted; the reframing changes
+which figures carry an argument and which are retained as record. Figures 31-45
+were added on 2026-08-20 to close the `[NEW]` list in `PAPER_OUTLINE.md`; every
+one is produced by a tracked script from data already in `out/u1_2d/`, and
+`30_assemble_appendix_figures.py --check` covers all of them.
 
 | role | meaning |
 |---|---|
@@ -108,6 +111,21 @@ which figures carry an argument and which are retained as record.
 |---|---|---|
 | 29 `seed_quality` | **LEAD** | `t_therm` vs β, five arms. The central claim. |
 | 30 `volume_scan` | **LEAD** | does the advantage survive volume: raw growth, and the flat-bias/tightening-threshold decomposition |
+| 44 `pipeline` | main | what the method is, with the exact steps and the learned step drawn differently (outline Fig 0) |
+| 31 `frozen_traces` | main | Q(t) for periodic HMC: 0 sector changes in 3000 trajectories at all three couplings (outline Fig 1) |
+| 32 `burnin_wall` | main | plaquette relaxation from cold / hot / seed at the same three couplings (outline Fig 2) |
+| 33 `ladder_fixed_point` | main | exact ⟨Q²⟩ across five rungs, Villain and the campaign's Wilson ladder (outline Fig 3) |
+| 45 `architecture` | main | the score network: invariant in, curl out, (σ, β) FiLM (outline Fig 4) |
+| 34 `match_rate_volume` | main | raw Q-match rate vs volume, 0.484 / 0.234 / 0.094 (outline Fig 5) |
+| 35 `sector_freeze_sigma` | appx | sector-change fraction vs σ; σ_freeze ≈ 0.31 flat over a 16× volume range (outline Fig 6) |
+| 36 `sector_tail` | main | the instanton-HMC tail repairing P(Q) without knowing P(Q) (outline Fig 8) |
+| 37 `z_distribution` | main | every (case, observable) z against exact, matched vs deliberate mismatch, unit normal overlaid |
+| 38 `z_vs_loop_area` | main | std(z) and max\|z\| vs Wilson-loop area — where the agreement frays (outline Fig 9) |
+| 39 `kl_per_site` | main | the density gap in nats/site on the deployed checkpoint (outline Fig 10) |
+| 40 `cost_per_config` | main | seconds per independent configuration, five arms (outline Fig 11) |
+| 41 `breakeven` | main | cumulative cost with the entry charge included, crossings annotated (outline Fig 12) |
+| 42 `mala_locality` | appx | MALA acceptance beside bit-identical ⟨Q²⟩ — a local corrector is not a tail (outline Fig 13) |
+| 43 `zhu_pq` | appx | four P(Q) histograms with exact overlaid; width is not correctness (outline Fig 14) |
 | 12 `timescales` | main | thermalization timescales, seed vs alternatives |
 | 15 `relaxation_high` | main | relaxation from a diffusion seed at high β |
 | 21 `pq_tail_mismatch` | main | the sector tail repairing deliberately mismatched P(Q) |
@@ -138,10 +156,32 @@ rather than a correctness one, so its figures are retained and cited, not
 featured. The one sentence they still support is in result 4 above: the gap will
 not be trained away, so budget the tail.
 
-`PAPER_OUTLINE.md` additionally calls for several `[NEW]` panels that do not
-exist yet (pipeline schematic, frozen-HMC Q traces, the ⟨Q²⟩ ladder fixed point,
-raw Q-match rate vs volume, std(z) vs loop area, KL per site, s per independent
-configuration). Those would displace some **main** rows above.
+Every `[NEW]` panel `PAPER_OUTLINE.md` called for now exists (figures 31-45,
+added 2026-08-20). Two data notes that a drafter must carry:
+
+* Figures 40-41 and 31 use `out/u1_2d/classical_arms/`, a 2026-08-20 re-run of
+  `43_ptbc_benchmark.py` for the `hmc` / `hmc+inst` / `open` arms, whose original
+  run directory was removed in the 2026-08-18 prune. The physics reproduces
+  Table S8 exactly — τ_int(Q²) 2.85 / 1.20 / 1.39, **zero** sector changes for
+  periodic HMC at all three couplings, open boundaries 1.04 / 0.55 / 0.52 — but
+  the wall-clock is ~35% faster (0.077 / 0.055 / 0.128 s per independent
+  configuration against Table S8's 0.124 / 0.090 / 0.198), because the re-run is
+  single-threaded. **Quote one set or the other, not a mixture.** The figures
+  carry the re-run, which is the conservative direction: it makes the classical
+  baseline harder to beat.
+* Figure 38's std(z) growth is **0.91 → 1.19** from W(1×1) to W(12×12) on the
+  τ_int-aware records over the 37 matched cases. The 1.09 → 1.44 quoted in
+  `PAPER_OUTLINE.md` §5.2 and `NARRATIVE.md` predates the re-scoring of §25.7,
+  which widened the error bars. The *direction* of the claim is unchanged and is
+  what the figure shows; the numbers are not.
+
+Still not drawn, and it needs new data rather than a new script: the tail-length
+**vs volume** panel of outline §4.3 (the 100 / 0 / 0 trajectories at
+V = 2048 / 8192 / 32768, with 7 / 11 / 15 testable bins). `sector_tail_scaling/`
+was pruned and only the `raw`-variant ensembles survive in
+`generalization/generated/`, so reproducing it means regenerating the
+`transport` ensembles first. Figure 36 covers the same claim across β at two
+volumes from live data.
 
 ## Methodology
 
@@ -831,6 +871,294 @@ independent.
 Source: `u1_2d/scripts/51_volume_scan_figure.py`, from
 `out/u1_2d/thermalization_volume/` (generated by `05_hmc_thermalization.py
 --generalization --parts A,C --betas 14.1464`).
+
+### Figure 31 — `figures/31_frozen_traces.png`
+
+**The failure mode, drawn.** Q(t) for periodic HMC at L = 32 and
+β_f = 14.1464 / 55.0237 / 218.58, against HMC + the winding update on identical
+chain settings. Periodic HMC records **zero** sector changes in 3000
+trajectories at all three couplings; the winding arm records 8447 / 5092 / 358.
+The first 600 trajectories are drawn because at this density the full run
+overplots into a solid block.
+
+The panel also carries a methodological point the reporting protocol turns into
+a rule: a frozen chain does **not** report a large τ_int. A constant series has
+no autocorrelation to integrate, so freezing reports a *small* τ_int and would
+be credited as fast mixing by an unguarded diagnostic. The sector-change count
+is the honest test, and it is what the flat line shows.
+
+Source: `u1_2d/scripts/52_problem_figures.py`, from
+`classical_arms/q_series_*.npz` (`43_ptbc_benchmark.py --save-series`).
+
+### Figure 32 — `figures/32_burnin_wall.png`
+
+**The other wall, and the binding one in the headline regime.** Mean plaquette
+against trajectory from a fresh cold start, a fresh hot start and a diffusion
+seed, at the same three couplings, with the exact character-expansion value
+overlaid and across-chain SEM bands. The seed sits inside the band at t = 0 at
+every coupling; the cold start needs 138 / 393 / > 640 trajectories and the hot
+start 334 / > 640 / > 640.
+
+Note what the figure is *not* saying. Topology is fine in all three baseline
+arms once the winding update is on (Table S1: instanton-HMC ⟨Q²⟩ is correct in
+every row). What fails at large β is **UV thermalization**, which is why
+`t_therm` on the plaquette — not a sector-change count — is the metric the paper
+reports.
+
+Non-converging entries are stated against their own budget, never as "never".
+
+Source: `u1_2d/scripts/52_problem_figures.py`, from
+`thermalization/L32_beta*/*_series.npz`.
+
+### Figure 33 — `figures/33_ladder_fixed_point.png`
+
+**Why sector transport is an identity rather than an approximation.** Exact
+finite-volume ⟨Q²⟩ evaluated at five successive rungs of the ladder, both
+actions, from a common base of β = 1.3472 at L = 8. Villain, where
+β_c = β_f/4 is exact, gives 1.20272 → 1.20335 → 1.20335 → 1.20335 → 1.20335 —
+invariant to five decimals. The campaign's own Wilson ladder
+(1.3472 → 4 → 14.1464 → 55.0237 → 218.58 at L = 8 → 128) inherits it to 4%:
+1.98580 → 1.93388 → 1.90400 → 1.90309 → 1.90304, with the entire drift in the
+first, strongest-coupling step where tree-level matching is worst.
+
+The consequence is the one the whole design rests on: the coarse ensemble's
+P(Q) *is* the fine theory's P(Q), so the seed inherits its sector distribution
+from a coupling where HMC still mixes, and the tail never has to tunnel.
+
+Source: `u1_2d/scripts/53_transport_figures.py`, from `u1_2d.lgt.exact`
+directly — no ensemble is involved, which is the point.
+
+### Figure 34 — `figures/34_match_rate_volume.png`
+
+**What the model supplies on its own, reported because the protocol requires
+it.** Fraction of generated configurations landing in the coarse partner's
+topological sector *before* charge projection: 0.484 at L = 16, 0.234 at
+L = 32, 0.094 at L = 64 — halving per 4× volume, i.e. ∝ V^(-1/2) over the range
+measured.
+
+This is a degradation, and it is drawn as one. The structural reason is that a
+local score with a finite receptive field cannot control a global integer. Under
+the prolongator framing it is not a deficiency: the sector is supplied by the
+ladder identity of Figure 33 and imposed by projection, and the model is never
+asked for it. Reporting the raw pre-enforcement number anyway is protocol
+item 9.
+
+Source: `u1_2d/scripts/53_transport_figures.py`, from
+`charge_freezing_L64/charge_freezing.json`.
+
+### Figure 35 — `figures/35_sector_freeze_sigma.png`
+
+**The mechanism behind Figure 34.** Fraction of configurations changing
+topological sector as a function of noise level during reverse sampling. Sector
+motion dies at σ_freeze = 0.304 / 0.312 / 0.307 at L = 16 / 32 / 64 — flat
+across a 16× range in volume, and far above the deployed charge-projection
+threshold.
+
+Below σ_freeze the sector is already decided, so no amount of remaining
+sampling can repair a wrong one. That is why the transport machinery acts where
+it does, and why the raw match rate cannot be improved by sampling harder.
+
+Source: `u1_2d/scripts/53_transport_figures.py`, from
+`charge_freezing_L64/charge_freezing.json`.
+
+### Figure 36 — `figures/36_sector_tail.png`
+
+**Topology repair that needs no analytic P(Q).** Five cases spanning
+β_f = 4.44 → 218.58 at L = 32 and β_f = 14.15 at L = 64. Panel (a): ⟨Q²⟩ over
+exact, transported batch against the same batch after a 200-trajectory
+instanton-HMC tail, with the tail's wall-clock annotated (5–28 s). Panel (b):
+the χ² p-value against exact P(Q), before and after, with the 0.05 line.
+
+The route matters more than the numbers. The tail's Metropolis test uses only
+the *computable* action difference of the winding proposal — nothing in it
+needs P(Q) in closed form — so this transfers to any theory with a computable
+topological charge. β_f = 218.58 populates a single bin, so its χ² is not
+defined; it is drawn as untestable rather than as a pass, which is the
+distinction §21.6 insists on.
+
+Source: `u1_2d/scripts/53_transport_figures.py`, from
+`pq_hmc_tail/summary.json`.
+
+### Figure 37 — `figures/37_z_distribution.png`
+
+**The observable-level claim as a distribution, not a pass count.** Every
+(case, observable) z-score against the exact character-expansion value, over
+β_f = 1.49 → 872.8 and L up to 128, on the τ_int-aware re-scoring. Matched
+rungs (37 cases, 1091 observables) are filled; the deliberately-mismatched
+control arm (7 cases, 210) is stepped; the unit normal is overlaid.
+
+Matched: mean |z| = 0.806 against an ideal of 0.798, with 4 of 1091 beyond
+|z| = 3. Mismatch: mean |z| = 1.328 with 29 of 210 beyond 3 — the control fails
+as it is supposed to, on 5× fewer observables. Reading this as a distribution
+rather than as "38/38 passed" is protocol item 4, and it is what makes the
+small residual visible at all.
+
+Source: `u1_2d/scripts/54_seed_accuracy_figures.py`, from
+`generalization_tau_aware/summary.json`.
+
+### Figure 38 — `figures/38_z_vs_loop_area.png`
+
+**Where the agreement frays.** std(z) and max|z| across the matched cases,
+against Wilson-loop area. std(z) grows 0.91 at W(1×1) to 1.19 at W(12×12);
+max|z| grows with it. The residual is not uniform across observables — it
+concentrates in *extended* loops, i.e. in long-wavelength modes.
+
+That is the bridge to Figure 39 and to the design of the tail: local
+rethermalization relaxes exactly those modes slowest, so this panel is a
+measurement of what the HMC tail still has to do rather than a defect report.
+
+**Number caution.** `PAPER_OUTLINE.md` §5.2 and `NARRATIVE.md` quote
+1.09 → 1.44 for this growth. Those predate the τ_int-aware re-scoring of §25.7,
+which widened the error bars and so shrank every z. The direction of the claim
+is unchanged; quote the figure's numbers, not the older ones.
+
+Source: `u1_2d/scripts/54_seed_accuracy_figures.py`, from
+`generalization_tau_aware/summary.json`.
+
+### Figure 39 — `figures/39_kl_per_site.png`
+
+**The density gap, in nats per site.** From the free-energy identity
+E_q[log w] − ΔF = −KL(q‖p) with the exact character-expansion free energy, on
+the deployed checkpoint: 0.94 at 16:14.15, 1.10 at 16:55.02, 1.10 at 32:55.02,
+1.70 at 32:218.58 — i.e. 483 to 3473 nats per configuration, while the same
+ensembles reproduce the plaquette to ~2 parts in 10⁴.
+
+The dashed line is the instrument's own validation on an exactly solvable
+target (L = 8, β = 2), which is what licenses reading the number at all: a
+saturated ESS says only "too small to measure", whereas the free-energy
+identity stays finite and quantitative after ESS bottoms out.
+
+Under the prolongator framing this is a **specification of the tail**, not a
+negative result: it says precisely how much work the rethermalization is being
+asked to do, and it is why `t_therm` rather than an observable table is the
+metric.
+
+Source: `u1_2d/scripts/54_seed_accuracy_figures.py`, from
+`ode_reweighting/reweighting_results.json` and
+`exactness2/cert_easy/reweighting_results.json`.
+
+### Figure 40 — `figures/40_cost_per_config.png`
+
+**The marginal-cost claim, conceded.** Seconds per independent configuration,
+2 τ_int(Q²) × s/traj, at L = 32 over 3000 trajectories: periodic HMC (frozen,
+no finite cost), HMC + winding update, tuned PTBC charged for every replica it
+must evolve, open boundaries, and the diffusion prolongator's marginal cost.
+
+The winding update wins on marginal cost at every coupling and the figure says
+so. It costs 0.077 / 0.055 / 0.128 s against the prolongator's flat ≈ 2.4 s.
+PTBC is 3.14 / 10.87 / 21.34 s — functional, not a strawman, and simply
+redundant in a theory that already owns an exact global topological move. Open
+boundaries are the cheapest and measure a different observable (Q is not an
+integer there, ⟨Q²⟩ = 2.8–4.4 against a periodic exact 0.03–1.90), so they are
+drawn for reference only.
+
+What the figure does establish is the shape of the prolongator's cost: **flat in
+β** across the range, against arms that rise or stop converging.
+
+Source: `u1_2d/scripts/55_cost_figures.py`, from `classical_arms/`,
+`ptbc_benchmark_tuned/` and `diffusion_vs_instanton/summary.json`.
+
+### Figure 41 — `figures/41_breakeven.png`
+
+**Total cost with the entry charge included**, at L = 32, β_f = 218.58.
+Cumulative seconds against configurations produced, three arms, with the
+generative arm charged its full one-time cost (78 min: 3.2 min data generation
+plus 100 epochs of training). Against tuned PTBC the crossing is at **250
+configurations**. Against HMC + winding update **there is no crossing** — 0.13 s
+against 2.55 s marginal — and the figure says that rather than hiding it.
+
+This is the accounting a referee is entitled to, and it is why the paper's cost
+claim is about *scaling* and *reachability* rather than about being cheaper
+outright: the classical arm's entry cost diverges with β and then stops
+converging altogether (Table S1), which is a statement about a different axis
+than this panel's.
+
+Source: `u1_2d/scripts/55_cost_figures.py`.
+
+### Figure 42 — `figures/42_mala_locality.png`
+
+**A local corrector is not a substitute for a real tail.** The competing "wrap
+the proposal in MALA and it becomes exact" claim, tested on its own terms across
+eight settings (two couplings × four step sizes, 50 steps × 64 configurations
+each). Panel (a): acceptance against step size, from a model start and from an
+equilibrium start — the ratio is 1.00 to within 1% at every ε, so acceptance
+reports the proposal as fine. Panel (b): ⟨Q²⟩ before and after, which is
+**bit-identical in all eight settings** — zero sector changes anywhere.
+
+The lesson generalizes past this one experiment: an acceptance rate is a
+statement about local moves and does not bound mixing on the modes the proposal
+cannot move. It belongs beside Figure 39, which measures the same gap from the
+density side.
+
+Source: `u1_2d/scripts/56_positioning_figures.py`, from
+`mala_exactness/mala_exactness.json`.
+
+### Figure 43 — `figures/43_zhu_pq.png`
+
+**Width is not correctness.** Four P(Q) histograms at L = 16, β = 7 (exact
+⟨Q²⟩ = 1.0064) with the exact finite-volume distribution overlaid: Zhu et al.'s
+HMC arm at 0.06× exact, their diffusion arm at 2.36×, our
+HMC-without-topological-moves arm at 0.67×, and our inverse-RG seed at 1.08×
+with χ² p = 0.41. Both of their arms reject the exact distribution
+overwhelmingly, in opposite directions.
+
+The point is structural, not competitive: a wider Q distribution than a frozen
+chain is not evidence of correctness when the correct answer is computable and
+sits between them. The over-production is a failure our own **raw** model shows
+too (2.5–5.4× above exact at strong coupling), so it reads as a property of
+score-based samplers on this theory rather than a defect of one implementation.
+
+**Two labels that must survive editing.** Their bars are *digitized from the
+published figure* (arXiv:2410.19602 — vector paths calibrated against the axis
+ticks, recovering integer multiples of 1/1024 to within 0.001 of a
+configuration), not their released data, which does not exist. And our row is an
+out-of-training-range checkpoint use.
+
+Source: `u1_2d/scripts/56_positioning_figures.py`, from
+`zhu_comparison/zhu_comparison.json` and `zhu_comparison/zhu_figure_counts.json`.
+
+### Figure 44 — `figures/44_pipeline.png`
+
+**What the method is, and which arrows carry exactness.** Coarse ensemble
+(HMC + winding update) → learned prolongation → sector transport → HMC tail →
+measurement, with the ladder as the outer loop: the fine ensemble is the next
+rung's coarse ensemble under (L, β) → (2L, 4β).
+
+Solid arrows are exact — by detailed balance, or by the ladder identity of
+Figure 33. The single dashed arrow is the learned prolongation, which carries
+**no accept/reject and no exactness claim of its own**. Drawing the distinction
+is the schematic's whole job: the paper's correctness claim attaches to the HMC
+chain started from the seed, not to the model's output, and a reader should be
+able to see that before reading a word of §3.
+
+Source: `u1_2d/scripts/57_schematics.py`.
+
+### Figure 45 — `figures/45_architecture.png`
+
+**The gauge-covariant score network** (324,954 parameters, depth 4, width 56).
+Noisy links and the coarse field enter as gauge-*invariant* features — cos/sin
+of the plaquette and of the two rectangles, plus five coarse conditioning
+channels — pass through four FiLM residual blocks of 3×3 circular convolutions,
+and leave through a scalar head that is assembled into a plaquette **curl**, so
+the output is gauge-*covariant* by construction rather than by training. The
+head also carries a gated analytic Wilson force, which is the exact scaled score
+as σ → 0.
+
+Two properties earn the panel. The curl head is **complete**, not merely
+contained in the covariant class: every gauge-covariant field with vanishing
+holonomy is a plaquette curl, so the parameterization costs no expressiveness —
+and this is the property 2D SU(2) broke first. And **no layer sees L**: the
+convolutions are circular and the normalization is per-site, which is why one
+checkpoint serves every rung of the ladder and extrapolates 15× in coupling.
+
+The (σ, β) FiLM path, which carries the coarse winding density 2πQ_c/V
+alongside log σ and log β, is what makes the single-checkpoint claim possible.
+
+The figure is drawn from the deployed checkpoint's own `model_kwargs` at run
+time, so a retrained model cannot leave a stale diagram behind.
+
+Source: `u1_2d/scripts/57_schematics.py`, from
+`out/u1_2d/checkpoints/score_net.pt`.
 
 ## Table S1 — Instanton-HMC burn-in scan (entry cost vs quality, L = 32)
 

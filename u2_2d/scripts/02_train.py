@@ -62,6 +62,14 @@ def main() -> int:
     train_rungs, val_rungs = [], []
     for rung in config["data"]["rungs"]:
         beta, size = float(rung["beta"]), int(rung["lattice_size"])
+        # A rung marked `train: false` is a REFERENCE, not training data. The
+        # L = 64 top-rung ensemble is the control the ladder's own output is
+        # scored against; training on it would make every `z vs reference`
+        # column at that rung circular. Nothing else in the pipeline reads this
+        # flag, so it has to be honoured here or not at all.
+        if not bool(rung.get("train", True)):
+            print(f"rung L{size}_b{beta:g}: reference only, excluded from training")
+            continue
         path = ensemble_path(data_dir, size, beta)
         if not path.exists():
             print(f"missing {path} -- run stage 01 first")

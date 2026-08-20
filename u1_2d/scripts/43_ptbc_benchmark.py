@@ -224,6 +224,10 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=20260815)
     ap.add_argument("--device", default=None)
     ap.add_argument("--out", default="out/u1_2d/ptbc_benchmark")
+    ap.add_argument("--save-series", action="store_true",
+                    help="dump the per-arm Q(t) traces alongside the summary. "
+                         "The summary rows record that a chain never changed "
+                         "sector; only the trace shows what that looks like.")
     args = ap.parse_args()
 
     device = resolve_device({"device": args.device or "auto"})
@@ -288,6 +292,11 @@ def main() -> None:
                              if name == "ptbc" else None),
             }
             rows.append(row)
+            if args.save_series:
+                np.savez_compressed(
+                    out_dir / f"q_series_{name.replace('+', '_')}_L{args.L}"
+                              f"_beta{beta:g}.npz",
+                    q=q, beta=beta, L=args.L, arm=name)
             flag = "  [FROZEN - tau meaningless]" if frozen else ""
             print(f"  {name:9s} tau(Q^2)={tau:8.2f}  changes={row['n_sector_changes']:6d}"
                   f"  s/traj={spt:.4f}  s/indep={cost:8.2f}{flag}", flush=True)

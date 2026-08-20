@@ -53,7 +53,20 @@ data:
     # 0.0209 (scripts/07_pq_sampling.py). This rung carries the whole sampled-P(Q)
     # claim, so it gets the longer burn-in too.
     - {beta: 14.0,  lattice_size: 8,  n_configs: 1024, burn_in: 400, seed_exact_sectors: false, n_chains: 128, hot_start: true}
-    - {beta: 14.0,  lattice_size: 16, n_configs: 1024, burn_in: 200}
+    # THE PARITY POSITIVE CONTROL. Stage 15 counts 2453 parity flips here, so
+    # unlike the beta = 28 base this coupling genuinely SAMPLES the odd/even
+    # weight -- which is what makes it the control for the frozen-in argument of
+    # section 12.2 (`scripts/19_parity_transport.py`).
+    #
+    # It needs the base recipe, not the default one. On burn_in 200 with 1024
+    # configurations it returned P(odd) = 0.6025 against an exact 0.5000
+    # (z = +6.6, chi2 p = 0.000) and <Q^2> = 2.407 against 2.207: a control that
+    # is itself wrong cannot certify anything. Hot start, unseeded, 4096
+    # configurations over 1024 chains and the long burn-in, exactly as the
+    # beta = 28 base has -- the flips are there, they just need the trajectories
+    # to happen in.
+    - {beta: 14.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
     # The ladder BASE (see the `ladder:` block). Unseeded and hot-started for the
     # same reasons as the L = 8 rungs, and measured clean at this coupling:
     # <Q^2> = 1.0088 +- 0.0110 against an exact 1.0012 (z = +0.69), chi2/dof 0.27,
@@ -62,8 +75,27 @@ data:
     # odd sectors outside tolerance at chi2/dof 2.89 despite 14455 sector changes),
     # because the odd-charge barrier goes as beta L and 828 is already past it
     # while 448 is not. Do not raise this coupling without re-running that scan.
-    - {beta: 28.0,  lattice_size: 16, n_configs: 1024, burn_in: 400,
-       seed_exact_sectors: false, n_chains: 256, hot_start: true}
+    # 1024 CHAINS, ONE DRAW EACH -- and the reason is measured, not stylistic.
+    # scripts/15_base_parity.py: at this coupling NO CHAIN EVER CHANGES PARITY.
+    # Zero flips in 256 chains over 2000 trajectories, against 22283 Q changes, all
+    # of them even. So the odd/even split is not an observable with a relaxation
+    # time; it is a label fixed during hot-start ordering and carried forever, the
+    # independent parity draws are exactly n_chains however long anything runs, and
+    # the only lever is more chains. An earlier reading of the same symptom -- the
+    # stored ensemble measured z_odd = +2.42 while a scan at the identical coupling
+    # measured +0.69 -- blamed too few draws per chain and prescribed a longer run.
+    # That was wrong: they are two draws of a 256-chain binomial, two sigma apart.
+    # n_configs = n_chains puts every configuration in its own chain.
+    # n_configs = 4 x n_chains, and the two knobs do DIFFERENT jobs -- this is the
+    # part that was originally got backwards. Parity is frozen (zero flips), so only
+    # more CHAINS buy independent odd/even draws. The shape WITHIN a parity class is
+    # not frozen at all: 106823 Q changes per 1024 chains per 1200 trajectories, with
+    # tau_int(Q^2) = 0.55 draws, so there more DRAWS buy independent samples. Taking
+    # a single time slice measured <Q^2> = 0.891 against an exact 1.001, a -2.5 sigma
+    # fluctuation of one slice; four slices average it down by two. Both levers are
+    # needed, for different quantities.
+    - {beta: 28.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
     - {beta: 56.0,  lattice_size: 16, n_configs: 1024, burn_in: 250}
     - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250}
     - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250}
@@ -79,6 +111,25 @@ data:
     # thing for a quarter of the cost.
     - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300}
     - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300}
+    # THE TOP RUNG'S REFERENCE. L = 64 at this coupling is exactly the
+    # extrapolation the ladder exists for, so direct HMC here is not a competing
+    # sampler -- it is a CONTROL. Two things needed one: the top rung had no
+    # `z vs reference` column at all (only closed-form comparisons), and the
+    # area-law deviation at L = 64 was left as "suggestive and uncontrolled"
+    # because there was nothing to measure it against.
+    #
+    # ITS TOPOLOGY IS INSTALLED, NOT SAMPLED. beta L = 26657 here, two orders past
+    # the parity boundary, so `seed_exact_sectors` is on (the default) and P(Q) is
+    # exact by construction. That makes this reference valid for LOCAL and Wilson
+    # observables and worth NOTHING as a topological comparison -- do not quote a
+    # sector agreement against it.
+    #
+    # `train: false` keeps it OUT of the score net's training set. Stage 02 loads
+    # every data rung by default, so without the flag the checkpoint would be
+    # fitted to the very ensemble the top rung is scored against and every
+    # `z vs reference` column there would be circular.
+    - {beta: 416.524, lattice_size: 64, n_configs: 512, burn_in: 300, n_chains: 64,
+       train: false}
 
 train:
   checkpoint_path: out/u2_2d/checkpoints/det_score_net.pt
@@ -111,7 +162,10 @@ ladder:
   # top rung and diverge only where the small-lattice P(Q) is pre-asymptotic.
   base: {beta: 28.0, lattice_size: 16}
   beta_schedule: [105.651, 416.524]
-  n_configs: 512
+  # 1024 to carry all 1024 of the base's independent parity draws. At 512 the
+  # stride subsample would keep only half of them, and the parity weight is the
+  # one quantity the ladder cannot regenerate -- it is transported, not sampled.
+  n_configs: 1024
   n_sampler_steps: 200
   n_corrector_steps: 1
   n_su2_sweeps: 30

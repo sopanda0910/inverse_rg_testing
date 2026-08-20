@@ -1,0 +1,376 @@
+[
+  {
+    "start": "hot",
+    "lattice_size": 16,
+    "beta": 28.0,
+    "n_chains": 256,
+    "n_draws": 100,
+    "thin": 5,
+    "beta_L": 448.0,
+    "n_trajectories": 500,
+    "odd_exact": 0.4928445716674321,
+    "odd_fraction": 0.47265625,
+    "odd_fraction_first_draw": 0.47265625,
+    "parity_flips": 0,
+    "chains_that_flipped": 0,
+    "parity_frozen": true,
+    "binomial_err_over_chains": 0.031246799826478325,
+    "binomial_z": -0.6460924568129589,
+    "q_sector_changes": 10943,
+    "tau_int_parity_draws": Infinity,
+    "tau_int_parity_trajectories": Infinity,
+    "tau_int_q_squared_draws": 0.5525099238602877,
+    "blocks": [
+      {
+        "first_trajectory": 0,
+        "last_trajectory": 25,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 25,
+        "last_trajectory": 50,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 50,
+        "last_trajectory": 75,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 75,
+        "last_trajectory": 100,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 100,
+        "last_trajectory": 125,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 125,
+        "last_trajectory": 150,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 150,
+        "last_trajectory": 175,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 175,
+        "last_trajectory": 200,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 200,
+        "last_trajectory": 225,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 225,
+        "last_trajectory": 250,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 250,
+        "last_trajectory": 275,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 275,
+        "last_trajectory": 300,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 300,
+        "last_trajectory": 325,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 325,
+        "last_trajectory": 350,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 350,
+        "last_trajectory": 375,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 375,
+        "last_trajectory": 400,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 400,
+        "last_trajectory": 425,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 425,
+        "last_trajectory": 450,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 450,
+        "last_trajectory": 475,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      },
+      {
+        "first_trajectory": 475,
+        "last_trajectory": 500,
+        "odd_fraction": 0.47265625,
+        "err": 0.031203234967003113,
+        "ratio_to_exact": 0.9590371430913212,
+        "z": -0.6469945083828944
+      }
+    ],
+    "relaxed_after_trajectories": 0,
+    "hmc_acceptance": 0.810828125,
+    "winding_acceptance": 0.3424609375
+  },
+  {
+    "start": "cold",
+    "lattice_size": 16,
+    "beta": 28.0,
+    "n_chains": 256,
+    "n_draws": 100,
+    "thin": 5,
+    "beta_L": 448.0,
+    "n_trajectories": 500,
+    "odd_exact": 0.4928445716674321,
+    "odd_fraction": 0.0,
+    "odd_fraction_first_draw": 0.0,
+    "parity_flips": 0,
+    "chains_that_flipped": 0,
+    "parity_frozen": true,
+    "binomial_err_over_chains": 0.031246799826478325,
+    "binomial_z": -15.772641499428014,
+    "q_sector_changes": 9026,
+    "tau_int_parity_draws": Infinity,
+    "tau_int_parity_trajectories": Infinity,
+    "tau_int_q_squared_draws": 0.5594228751018129,
+    "blocks": [
+      {
+        "first_trajectory": 0,
+        "last_trajectory": 25,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 25,
+        "last_trajectory": 50,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 50,
+        "last_trajectory": 75,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 75,
+        "last_trajectory": 100,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 100,
+        "last_trajectory": 125,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 125,
+        "last_trajectory": 150,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 150,
+        "last_trajectory": 175,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 175,
+        "last_trajectory": 200,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 200,
+        "last_trajectory": 225,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 225,
+        "last_trajectory": 250,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 250,
+        "last_trajectory": 275,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 275,
+        "last_trajectory": 300,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 300,
+        "last_trajectory": 325,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 325,
+        "last_trajectory": 350,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 350,
+        "last_trajectory": 375,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 375,
+        "last_trajectory": 400,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 400,
+        "last_trajectory": 425,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 425,
+        "last_trajectory": 450,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 450,
+        "last_trajectory": 475,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      },
+      {
+        "first_trajectory": 475,
+        "last_trajectory": 500,
+        "odd_fraction": 0.0,
+        "err": 0.0,
+        "ratio_to_exact": 0.0,
+        "z": 0.0
+      }
+    ],
+    "relaxed_after_trajectories": 0,
+    "hmc_acceptance": 0.809109375,
+    "winding_acceptance": 0.2149296875
+  }
+]

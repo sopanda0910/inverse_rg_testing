@@ -6,7 +6,7 @@ Written to be read without prior lattice background but without softening the
 mathematics. Companion to `DESIGN.md` (derivations in condensed form) and to
 `docs/u1_2d/NARRATIVE.md` (the closed U(1) predecessor).*
 
-Last updated: 2026-08-19.
+Last updated: 2026-08-20.
 
 ---
 
@@ -23,12 +23,14 @@ which a heat bath samples exactly. The inverse-RG ladder then transports
 topological charge as an *identity*, climbing to couplings where local algorithms
 cannot change sector at all. What is new relative to U(1) is a $\mathbb{Z}_2$
 obstruction: $U(2) = (U(1)\times SU(2))/\mathbb{Z}_2$ makes even charge changes free
-and odd ones cost $O(\beta L)$, which splits the classical freezing problem into
-two mechanisms with different scaling — and only one of them is protected by the
-ladder. The measured advantage is **reachability, not speed**: for local
-observables the ladder is currently several times more expensive than HMC with a
-winding update, while for topology the classical arm covers only half the exact
-$P(Q)$ and cannot improve on that at any cost.
+and forces odd ones across a monodromy, which splits the classical freezing problem
+into two mechanisms with different controlling parameters — the even channel is a
+ladder invariant and never closes, the odd one closes at $\beta \approx 15$–$20$
+and stays closed. The measured advantage is **reachability, not speed**: for local
+observables the ladder is $3.7\times$ more expensive than HMC with a winding update
+at the accuracy-of-record setting, of which a tunable factor of three is
+recoverable, while for topology the classical arm covers only half the exact
+$P(Q)$, reaches *no* odd sector at all, and cannot improve on that at any cost.
 
 ---
 
@@ -273,11 +275,24 @@ The two moves have different controlling parameters:
 | move | cost | controlling parameter | behaviour along the ladder |
 |---|---|---|---|
 | even $\Delta Q$ (central instanton) | $2\pi^2\beta/V$ | $\beta/V$ | **invariant** |
-| odd $\Delta Q$ (crosses $\mathbb{Z}_2$) | $O(\beta L)$ | $\beta L$ | grows as $L^3$ |
+| odd $\Delta Q$ (crosses $\mathbb{Z}_2$), as a *global* shift | $O(\beta L)$ | $\beta L$ | grows as $L^3$ |
+| odd $\Delta Q$, as HMC actually does it (*local nucleation*) | $O(\beta)$ per site | $\beta$ | grows as $\beta$ |
+
+**The last two rows are not in conflict, and separating them fixes an error this
+document carried.** $O(\beta L)$ is the cost of the explicit global constructions
+in §10 — halving the central instanton, or the $U(1)_T$ subgroup shift — and it is
+why no *fixed shift field* gives a cheap odd-charge move. But HMC does not use a
+fixed shift field. It nucleates the $\mathbb{Z}_2$ crossing locally, so the
+measured rate is a per-site rate times the volume, controlled by $\beta$ alone:
+at $\beta = 14$ the flip rate per chain-trajectory is $2.7\times10^{-3}$ at
+$L = 8$ and $9.6\times10^{-3}$ at $L = 16$, a ratio of $3.5$ against a volume
+ratio of $4$. Quoting the global cost as the controlling parameter for the
+*dynamics* — which earlier drafts did — predicts that a larger $L$ at fixed
+$\beta$ freezes, and the opposite is measured. §12.1 has the flip counts.
 
 Along a matched ladder $\beta_f = 4\beta_c$, $L_f = 2L_c$, so $\beta/V$ is
-constant — the even-charge move never gets harder — while $\beta L$ grows by $8$
-per rung. Measured on this ladder:
+constant — the even-charge move never gets harder — while $\beta$ itself grows by
+$4$ per rung, which is what shuts the odd channel. Measured on this ladder:
 
 | $L$ | $\beta$ | $\beta/V$ | $\beta L$ |
 |---|---|---|---|
@@ -315,33 +330,108 @@ actually tunnel, *and* the histogram must agree.
 
 **The sign of the parity imbalance is not fixed, and that is the clue to the
 mechanism.** Two of the three stuck cases show an *excess* of odd weight (1.69,
-1.15) and one a *deficit* (0.78). The $O(\beta L)$ barrier blocks the
-odd$\leftrightarrow$even channel in **both** directions, so the parity balance
-simply keeps whatever the initial condition gave it: these runs start hot, which
-strands excess odd weight, while a *cold* start reaches **no odd sectors at all**
-(measured — see the seed benchmark, arm D). "Depletion" is the special case, not
-the rule; the test is on $|z_{\rm odd}|$, and the verdict is named
+1.15) and one a *deficit* (0.78). The barrier blocks the odd$\leftrightarrow$even
+channel in **both** directions, so the parity balance simply keeps whatever the
+initial condition gave it: these runs start hot, which strands excess odd weight,
+while a *cold* start reaches **no odd sectors at all**. "Depletion" is the special
+case, not the rule; the test is on $|z_{\rm odd}|$, and the verdict is named
 PARITY-**STUCK** rather than PARITY-FROZEN for exactly that reason.
 
-Two boundaries are visible and they are different:
+#### 12.1 Correction: the controlling parameter is $\beta$, not $\beta L$ — and the verdict is the wrong instrument
 
-* **Parity boundary at $\beta L \approx 450$–$830$**, bracketed by $16/28$ (clean)
-  and $16/51.75$ (stuck). Sharp, and invisible to the usual diagnostic: every stuck
-  case still shows 13000–22000 sector changes and *zero* frozen chains.
-* **Thermalization boundary at $\beta/V \approx 0.25$.** The $L = 8$, $\beta = 20$
-  case sits at $\beta L = 160$, far *below* the parity boundary, and is stuck
-  anyway — it fails on the other axis. A hot start there cannot relax *down* (17%
-  of chains stranded, $\langle Q^2\rangle$ 63% high); a cold start cannot climb up.
+An earlier version of this section read a **parity boundary at
+$\beta L \approx 450$–$830$** off the table above, bracketed by $16/28$ (clean)
+and $16/51.75$ (stuck), and then needed a *second* axis — a thermalization
+boundary at $\beta/V \approx 0.25$ — to explain why $L = 8$, $\beta = 20$ is stuck
+at $\beta L = 160$, far below that boundary. Two axes, one of them fitted to three
+points. **Both conclusions were artifacts of using the verdict as the
+measurement**, and replacing it with a direct count of parity flips
+(`scripts/15_base_parity.py`) removes the second axis entirely.
 
-These are genuinely two axes, which is why the regime figure is drawn in the
-$(\beta L,\ \beta/V)$ plane rather than against $\beta$. **Any statement of the
-form "frozen at $\beta = X$" is incomplete in U(2)** — it needs both.
+| $L$ | $\beta$ | $\beta L$ | $Q$ changes | **parity flips** |
+|---|---|---|---|---|
+| 8 | 6 | 48 | 20304 | 12810 |
+| 8 | 10 | 80 | 14296 | 7100 |
+| 8 | 14 | 112 | 6864 | 347 |
+| 8 | 20 | 160 | 5862 | **4** |
+| 16 | 14 | 224 | 32169 | 2453 |
+| 16 | 21 | 336 | 26110 | **2** |
+| 16 | 28 | 448 | 22283 | **0** |
 
-The practical upshot: **the ladder base can be placed where $P(Q)$ is genuinely
-sampled**, and transport then carries an honestly-sampled distribution into the
-parity-stuck regime where no local algorithm could produce it. That converts the
-study's weakest claim ("$P(Q)$ is exact by construction, so it is not evidence")
-into its strongest.
+Against $\beta L$ this does not collapse: $L = 16$ at $\beta L = 224$ flips 2453
+times while $L = 8$ at $\beta L = 160$ flips four — a *larger* $\beta L$ with three
+orders of magnitude more mobility. Against $\beta$ it collapses cleanly at both
+volumes: **odd mobility dies between $\beta = 14$ and $\beta \approx 20$**, with
+the per-site rate falling about a hundredfold across that interval. One axis, not
+two, and the $L = 8$, $\beta = 20$ case needs no special pleading — it is simply
+past the edge, like everything else past $\beta \approx 20$.
+
+**Why the verdict misled.** The PARITY-STUCK test is a hypothesis test on the odd
+weight computed from a *single* binomial draw over chains. It can pass with zero
+mobility, and at the one coupling that matters most it does: **$L = 16$,
+$\beta = 28$ — the ladder base — has zero parity flips and is called SAMPLED.** A
+verdict answers "is this distribution right?", which is a fine question and not the
+same question as "does the algorithm move?". Establish mobility by counting flips;
+use the verdict to test the resulting distribution. The two conflicting
+measurements this study carried at the base — $z_{\rm odd} = +2.42$ from the stored
+ensemble against $+0.69$ from a scan at the identical coupling — were never a
+contradiction and never a bias: they are two draws of a 256-chain binomial that
+landed two sigma apart.
+
+#### 12.2 What the base actually samples, and the bound that makes it safe
+
+The claim about the base has to be stated in two halves, because the two halves
+have different status.
+
+**Sampled: the sector shape within a parity class.** 106823 $Q$ changes per 1024
+chains per 1200 trajectories, $\tau_{\rm int}(Q^2) = 0.55$ draws, and a sector
+histogram matching the closed form at $\chi^2/{\rm dof} = 1.53$. This is genuine
+equilibrium sampling of everything except one bit.
+
+**Not sampled: that one bit.** The odd/even weight is frozen in during the
+hot-start ordering and never revisited — one independent draw per chain, forever.
+The proof is a cold start, which under an equilibrating algorithm could not matter:
+
+| $L$ | $\beta$ | exact odd | hot start | cold start |
+|---|---|---|---|---|
+| 8 | 10 (mobile) | 0.4854 | 0.4860 | 0.4802 |
+| 8 | 20 (frozen) | 0.3335 | 0.5156 | 0.0003 |
+| 16 | 28 (frozen, **the base**) | 0.4928 | 0.4727 | 0.0000 |
+
+Where parity moves, the initial condition is irrelevant and both starts land on the
+exact value. Where it does not, the two starts differ by everything available. The
+$L = 8$, $\beta = 20$ row is the important one: the exact odd weight there is
+$0.3335$, well away from $1/2$, and the hot quench returns $0.5156$ — wrong by
+$+55\%$. **The quench does not sample parity. It lands near $1/2$.**
+
+So why is the base defensible? Because of a bound that can be quoted rather than
+assumed. Exact $P({\rm odd})$ approaches $1/2$ from below as $P(Q)$ broadens, and
+at $L = 16$ it runs $0.5000$ at $\beta = 14$, $0.4989$ at $21$, $0.4928$ at $28$,
+$0.4861$ at $32$, $0.4239$ at $51.75$. The base sits at $\beta = 28$ with
+$\langle Q^2\rangle = 1.0012$, so freezing in $1/2$ costs $+0.0072$ absolute —
+$1.5\%$ relative, and $0.45\sigma$ against the binomial error of 1024 chains. It is
+below the resolution the ensemble can offer.
+
+**That is a real constraint on where a base may be placed, and it should be stated
+as a design rule rather than discovered again:** the base needs
+$\langle Q^2\rangle \gtrsim 1$, which is exactly the regime where $P({\rm odd})$ is
+within a percent of $1/2$. A colder, narrower base fails badly — at $L = 8$,
+$\beta = 20$, $\langle Q^2\rangle = 0.355$, the same procedure is off by $55\%$.
+The topology-matched ladder targets $\langle Q^2\rangle \approx 1$ anyway, so the
+requirement costs nothing here; it is a coincidence of design that should not be
+relied on silently.
+
+If a base with *fully mobile* parity is ever wanted, $L = 16$ at $\beta = 14$ has
+2453 flips and $z_{\rm odd} = +0.50$. The cost is a top rung near $\beta = 224$
+rather than $416.5$, which is why it has not been adopted: the present base buys a
+colder headline coupling in exchange for a quantified $0.45\sigma$ systematic on
+one bit.
+
+The practical upshot survives, in a narrower form than before: **the ladder base
+can be placed where the sector distribution is genuinely sampled and the parity
+weight is provably right to better than the statistical resolution**, and transport
+then carries that distribution into the deeply frozen regime where no local
+algorithm could produce it.
 
 ---
 
@@ -448,26 +538,74 @@ volume the plaquettes inside a 2D Wilson loop are independent, so
 $$\langle W(A)\rangle = \langle W(1)\rangle^{A}$$
 identically, and the ratio $\langle W(A)\rangle / \langle W(1)\rangle^{A}$ is a
 test an ensemble applies to *itself* — no reference, no error model, no closed
-form beyond the one already verified. At $L = 64$ the generated ensemble departs
-from 1 monotonically, reaching $1.00545$ at $A = 144$, with $z$ against the exact
-result rising smoothly from $-2.13$ at $A = 1$ to $+1.70$ at $A = 144$
-(correlation between $\log A$ and $z$: $+0.972$).
+form beyond the one already verified. Applied to the exact values at $L = 64$ it
+returns $1.00000$ at every area up to $A = 144$, so the identity is clean at this
+geometry and any departure is a property of the ensemble.
 
-It is tempting to call that model error. **It is not established, and the control
-says so.** At $L = 32$, where an HMC reference exists, the *reference* departs
-from 1 by more than the generated ensemble does — $0.9785$ against $0.9998$ at
-$A = 120$ — because a $12\times12$ loop covers 14% of a $32^2$ torus while the
-exact form used here is the infinite-volume one, and because large loops carry
-the largest variance. At $L = 64$ the geometry is much safer ($A/V = 0.035$) but
-there is no same-size reference, and the largest-loop deviation is about
-$2\sigma$.
+At $L = 64$ the generated ensemble departs from 1 monotonically as the loop grows.
+Earlier drafts of this document called that *suggestive but uncontrolled* and said
+settling it required a direct HMC ensemble at $L = 64$, $\beta = 416.524$. That
+ensemble now exists, and a second piece of evidence arrived unplanned: the base
+was regenerated with more chains for an unrelated reason (§12.2), which re-drew the
+whole ladder from a fresh coarse ensemble.
 
-So the honest statement is: *the generated ensemble shows a smooth, monotonic
-area-law excess at $L = 64$ of order half a percent at the largest loop, which is
-consistent with weak positive plaquette correlation the target theory does not
-have, and which is currently uncontrolled.* Settling it needs an HMC reference at
-$L = 64$, $\beta = 416.524$ — expensive, but the only thing that converts this
-from a suggestive trend into a measurement.
+**The trend flipped sign.** At $A = 144$ the generated ensemble moved from
+$z = +1.70$ to $z = -2.43$ against the exact value, with the pipeline, the
+checkpoint, the coupling and the step count all unchanged — only the base
+realization differed. A systematic model bias cannot do that. A correlated
+statistical fluctuation is the only thing that can.
+
+The reference, which was not regenerated, is the second control:
+
+| $A$ | generated ratio | HMC reference ratio | exact ratio |
+|---|---|---|---|
+| 16 | 0.99997 | 1.00017 | 1.00000 |
+| 36 | 0.99977 | 1.00032 | 1.00000 |
+| 64 | 0.99907 | 1.00035 | 1.00000 |
+| 100 | 0.99759 | 0.99923 | 1.00000 |
+| 144 | **0.99482** | **0.99623** | 1.00000 |
+
+Applied to the exact values the ratio returns $1.00000$ at every area, so the
+identity is clean at this geometry and any departure belongs to the ensemble. Both
+ensembles depart; over loops of area $\ge 48$ the mean absolute deviation from
+exact is $1.13\times10^{-3}$ for the generated ensemble against
+$9.9\times10^{-4}$ for the reference, and at the largest loop the *reference* is
+the further of the two. Against the reference directly, the generated ensemble
+agrees to $+0.09\sigma$, $+0.05\sigma$ and $-0.21\sigma$ at $A = 144$, $120$ and
+$100$.
+
+**So the area-law excess is finite statistics, not model error.** The size is what
+it should be: the per-configuration spread of $W(12\times12)$ over this many
+configurations gives a standard error near $1.8\times10^{-3}$ relative before any
+correction for chain autocorrelation, so both ensembles sit one to one-and-a-half
+sigma out.
+
+One number in the same table has to be read with care in the other direction. The
+plaquette disagrees with the reference at $z = +3.98$ — but the split is
+$+0.80\sigma$ for the generated ensemble against exact and $-4.25\sigma$ for the
+*reference* against exact. The reference is the one that is off, because its error
+bar is a plain $\sigma/\sqrt{N}$ over a Markov chain with acceptance $0.37$ and is
+therefore optimistic. A large $z$ against a reference is a statement about two
+error models, not about one ensemble; the exact column is the one to quote.
+
+The one genuinely instructive thing here is *why it looked so convincing*. The
+trend is smooth, monotonic in $A$, and correlated with $\log A$ at $+0.972$ —
+every visual cue of a systematic. But large Wilson loops within a single ensemble
+are strongly correlated with each other, being functionals of the same bulk
+field, so eighteen same-signed points are **one** fluctuation drawn eighteen
+times, not eighteen independent confirmations. The correlation coefficient
+measures the smoothness of the rendering, not the significance of the effect.
+This is the same lesson as the $\langle Q^2\rangle$ drift in §13, arriving from
+the opposite direction: there, better statistics made a real bias *more* visible;
+here, correlated observables made a non-existent one look real. Both are reasons
+to insist on a same-size control rather than reasoning from a trend.
+
+The general rule this study now applies: **a monotonic trend across observables
+that are functionals of the same field is not evidence of a systematic.** Two
+tests distinguish the cases, and neither is the smoothness of the curve — a
+same-size control that deviates comparably, and independence under
+re-randomization of the inputs. The $\langle Q^2\rangle$ drift survived both and
+was real; the area-law excess failed both and was not.
 
 ## Part IV — Measurements
 
@@ -479,8 +617,8 @@ from a suggestive trend into a measurement.
 
 | $L$ | $\beta$ | $\langle P\rangle$ | exact | rel. err | pre-retherm | $\langle Q^2\rangle$ | exact |
 |---|---|---|---|---|---|---|---|
-| 32 | 105.651 | 0.981029 | 0.981023 | $+5.72e-06$ | 0.981123 | 1.0273 | 1.0012 |
-| 64 | 416.524 | 0.995191 | 0.995195 | $-4.97e-06$ | 0.995263 | 1.0273 | 1.0012 |
+| 32 | 105.651 | 0.981029 | 0.981023 | $+6.21e-06$ | 0.981123 | 1.0156 | 1.0012 |
+| 64 | 416.524 | 0.995197 | 0.995195 | $+1.32e-06$ | 0.995260 | 1.0156 | 1.0012 |
 
 The pre-rethermalization column is the one that separates model quality from local-update repair: where it already matches, the diffusion lift earned the agreement unaided.
 
@@ -488,10 +626,40 @@ The pre-rethermalization column is the one that separates model quality from loc
 
 | $L$ | $\beta$ | plaquette $z$ vs exact | max Wilson $z$ vs ref | mean | reference |
 |---|---|---|---|---|---|
-| 32 | 105.651 | $+0.31$ | 1.46 | 0.94 | stage-01 ensemble |
-| 64 | 416.524 | $-2.13$ | - | - | exact only (no HMC reference) |
+| 32 | 105.651 | $+0.47$ | 1.34 | 0.84 | stage-01 ensemble |
+| 64 | 416.524 | $+0.80$ | 3.98 | 0.60 | stage-01 ensemble |
 
 Read the *exact* column. A $z$ against the HMC reference carries that reference's own uncorrelated-sample assumption, which is not true of a Markov chain; this study measured a spurious $-3.26\sigma$ that way while the generated ensemble was in fact closer to exact than the reference was.
+
+### The top rung against a direct HMC reference
+
+$L = 64$, $\beta = 416.524$ -- the extrapolation the ladder exists for, now with a direct HMC ensemble at the same coupling. It is a **control, not a competing sampler**: its topology is seeded from the closed form ($\beta L = 26658$, two orders past the parity boundary), so it says nothing about sectors and everything about local and extended observables.
+
+| loop | area | $z$ generated | $z$ reference | $|{\rm dev}|$ generated | $|{\rm dev}|$ reference |
+|---|---|---|---|---|---|
+| W 1x1 | 1 | $+0.80$ | $-4.25$ | $1.32e-06$ | $1.06e-05$ |
+| W 1x2 | 2 | $+1.39$ | $-1.86$ | $5.54e-06$ | $1.19e-05$ |
+| W 2x2 | 4 | $+0.96$ | $-0.31$ | $9.49e-06$ | $4.37e-06$ |
+| W 2x3 | 6 | $+0.56$ | $-0.95$ | $9.73e-06$ | $2.32e-05$ |
+| W 3x3 | 9 | $+0.40$ | $+0.01$ | $1.22e-05$ | $3.97e-07$ |
+| W 3x4 | 12 | $+0.56$ | $-0.26$ | $2.52e-05$ | $1.59e-05$ |
+| W 4x4 | 16 | $-0.07$ | $+0.03$ | $4.83e-06$ | $3.17e-06$ |
+| W 4x5 | 20 | $-0.36$ | $-0.32$ | $3.32e-05$ | $4.05e-05$ |
+| W 5x5 | 25 | $-0.49$ | $-0.51$ | $6.12e-05$ | $9.03e-05$ |
+| W 5x6 | 30 | $-0.52$ | $-0.34$ | $8.34e-05$ | $7.70e-05$ |
+| W 6x6 | 36 | $-0.76$ | $-0.19$ | $1.54e-04$ | $5.44e-05$ |
+| W 6x7 | 42 | $-0.83$ | $-0.35$ | $2.08e-04$ | $1.26e-04$ |
+| W 7x7 | 49 | $-1.12$ | $-0.20$ | $3.42e-04$ | $8.72e-05$ |
+| W 7x8 | 56 | $-1.11$ | $-0.46$ | $3.98e-04$ | $2.43e-04$ |
+| W 8x8 | 64 | $-1.47$ | $-0.39$ | $6.23e-04$ | $2.43e-04$ |
+| W 8x10 | 80 | $-1.52$ | $-0.83$ | $8.47e-04$ | $6.75e-04$ |
+| W 10x10 | 100 | $-1.96$ | $-1.10$ | $1.41e-03$ | $1.14e-03$ |
+| W 10x12 | 120 | $-2.11$ | $-1.51$ | $1.83e-03$ | $1.90e-03$ |
+| W 12x12 | 144 | $-2.43$ | $-1.79$ | $2.50e-03$ | $2.65e-03$ |
+
+Over loops of area $\ge 48$ the mean absolute deviation from exact is $1.13e-03$ for the generated ensemble and $9.91e-04$ for the reference -- the same size, and at the largest loop the *reference* is the further of the two. **The large-loop drift is not model error.** It is what an ensemble of this size does at this coupling, and the ladder reproduces it.
+
+Two cautions on reading the $z$ columns. The deviations of large loops *within one ensemble* are strongly correlated -- they are all functionals of the same bulk field -- so nineteen same-signed rows are one fluctuation, not nineteen. And the reference's error bar is a plain $\sigma/\sqrt{N}$ over a Markov chain with acceptance 0.37, so it is optimistic; its plaquette $z$ of $-4.25$ measures that optimism, not a defect in the closed form.
 
 ### Seed quality and topological reach
 
@@ -499,12 +667,12 @@ $L = 64$, $\beta = 416.524$, 64 chains, 300 trajectories per arm.
 
 | arm | $|\Delta P/P|$ at $t=0$ | at $t=T$ | $\langle Q^2\rangle$ | sectors | $P(Q)$ covered | odd sectors |
 |---|---|---|---|---|---|---|
-| **A** diffusion seed | $7.81e-07$ | $1.85e-06$ | 0.922 | 5 | 0.991 | 2 |
+| **A** diffusion seed | $8.21e-06$ | $4.49e-06$ | 1.141 | 6 | 0.995 | 3 |
 | B cold start | $4.83e-03$ | $4.30e-05$ | 0.000 | 1 | 0.399 | 0 |
 | C hot start | $1.00e+00$ | $6.24e-02$ | 109.370 | 51 | 1.000 | 25 |
 | D cold + winding | $4.83e-03$ | $5.18e-05$ | 0.856 | 3 | 0.507 | 0 |
 
-Exact $\langle Q^2\rangle = 1.0012$. The independent-configuration interval for a plain chain is $2\tau_{\rm int} = 1.6$ trajectories.
+Exact $\langle Q^2\rangle = 1.0012$. The independent-configuration interval for a plain chain is $2\tau_{\rm int} = 3.2$ trajectories.
 
 **Read coverage together with the second moment, never alone.** The
 hot-start arm covers 1.000 of the exact $P(Q)$ by visiting 51 sectors
@@ -523,10 +691,23 @@ At $L = 32$, $\beta = 105.651$. Means agree to $10^{-6}$; the width is the infor
 
 | loop | generated $\sigma$ | HMC $\sigma$ | ratio |
 |---|---|---|---|
-| W 1x1 | 4.130e-04 | 4.219e-04 | 0.979 |
-| W 2x2 | 2.432e-03 | 2.455e-03 | 0.991 |
-| W 4x4 | 1.341e-02 | 1.415e-02 | 0.947 |
-| W 8x8 | 4.881e-02 | 5.002e-02 | 0.976 |
+| W 1x1 | 4.105e-04 | 4.219e-04 | 0.973 |
+| W 2x2 | 2.398e-03 | 2.455e-03 | 0.977 |
+| W 4x4 | 1.390e-02 | 1.415e-02 | 0.982 |
+| W 8x8 | 4.849e-02 | 5.002e-02 | 0.969 |
+
+### Per-configuration Wilson spread at the top rung
+
+At $L = 64$, $\beta = 416.524$. Means agree to $10^{-6}$; the width is the informative quantity.
+
+| loop | generated $\sigma$ | HMC $\sigma$ | ratio |
+|---|---|---|---|
+| W 1x1 | 5.311e-05 | 5.659e-05 | 0.939 |
+| W 2x2 | 3.147e-04 | 3.208e-04 | 0.981 |
+| W 4x4 | 2.164e-03 | 2.105e-03 | 1.028 |
+| W 8x8 | 1.357e-02 | 1.397e-02 | 0.972 |
+
+The width tracks the reference to within 3-8% at every loop size and shows **no growth with loop area**. That is the comparison the U(1) study could not pass -- there the dispersion ratio climbed 1.09 to 1.44 from $W(4\times4)$ to $W(12\times12)$, and residual model error was diagnosed by exactly that growth. Here it is flat, at the rung furthest from anything the model was trained on.
 
 ### Cost per independent configuration
 
@@ -534,16 +715,84 @@ $L = 64$, $\beta = 416.524$, 64 chains. For a Markov chain the cost is $2\tau_{\
 
 | arm | $\tau_{\rm int}(P)$ | s / trajectory | **s / independent config** |
 |---|---|---|---|
-| A diffusion seed | 3.6 | 0.852 | **0.0955** |
+| A diffusion seed | 5.9 | 1.568 | **0.2911** |
 | B cold start | 16.9 | 0.895 | **0.4724** |
 | C hot start | nan | 0.929 | - |
 | D cold plus winding | 8.0 | 0.851 | **0.2122** |
 
-Ladder: **0.8203 s** per configuration including base generation, **0.4805 s** for the top rung alone.
+Ladder: **0.7803 s** per configuration including base generation, **0.4678 s** for the top rung alone.
 
-**For local observables the ladder is 3.87x SLOWER than HMC + winding.** That is the honest headline and it should not be buried: this method is not a speed-up for the plaquette or small Wilson loops, and the cost is dominated by the 200-step diffusion sampler, which is tunable but has not been tuned.
+**For local observables the ladder is 3.68x SLOWER than HMC + winding.** That is the honest headline and it should not be buried: this method is not a speed-up for the plaquette or small Wilson loops. The cost is dominated by the 200-step diffusion sampler, and the obvious hedge -- that the sampler is tunable and was never tuned -- **is real and worth about a factor of three**, measured in the scan below. At 25 steps the top rung turns from 2.22x slower into 1.38x *faster* than HMC + winding, at roughly 2.7x the extended-loop error and no measurable change in local observables after rethermalization. So the number quoted here is the cost of the ACCURACY-OF-RECORD setting, not a floor. What does not move is the remaining overhead: the exact conditional SU(2) sampler, which no amount of sampler tuning touches.
 
 **The topological claim is reachability, not speed.** The classical arm covers 0.507 of the exact $P(Q)$ with zero odd sectors and cannot improve on that at any cost, because odd charge has probability *zero* in its stationary distribution rather than merely long autocorrelation. A ratio of seconds against an arm that never arrives is meaningless, so the two claims must be stated separately.
+
+### How many reverse-diffusion steps the lift needs
+
+The 200-step sampler was chosen once and never revisited, and stage 13 charged the whole ladder for it. The narrative used to hedge the cost verdict on the grounds that the sampler was *tunable but untuned*, which is not a defensible thing to leave in a paper: either the hedge is real and the cost number is inflated, or it is not and the verdict is final. It is tuned now, and the answer is that the hedge is real and worth about a factor of three -- purchased, not free.
+
+Scan run at 512 configurations per rung, so the comparable quantity across rows is seconds *per configuration*; the ladder of record at 200 steps and 1024 configurations reproduces this table's 200-step row to 0.5%.
+
+**Read rung 0, not the top rung.** Rung 0 lifts the fixed HMC base, byte identical in every run, so its error is one diffusion lift and nothing else. The top rung lifts rung 0's *output*, so its plaquette error is a compound of two lifts that partially cancel -- it runs the wrong way across this scan and means nothing on its own. Extended loops at the top rung are the second honest column, because that is where residual model error concentrates.
+
+| steps | total s | top-rung s/config | vs hmc+winding | **rung 0 pre** | rung 0 post | top $W(4\times4)$ | top $W(8\times8)$ |
+|---|---|---|---|---|---|---|---|
+| 8 | 54 | 0.0833 | **2.55x faster** | **$-1.23e-02$** | $+4.31e-05$ | $-1.20e-03$ | $-1.49e-02$ |
+| 12 | 56 | 0.0900 | **2.36x faster** | **$-2.21e-03$** | $-2.92e-07$ | $-5.30e-04$ | $-7.37e-03$ |
+| 18 | 64 | 0.1032 | **2.06x faster** | **$+1.52e-04$** | $+1.28e-05$ | $-1.86e-04$ | $-3.45e-03$ |
+| 25 | 118 | 0.1535 | **1.38x faster** | **$+3.21e-04$** | $-1.75e-06$ | $-5.33e-05$ | $-1.14e-03$ |
+| 50 | 145 | 0.1670 | **1.27x faster** | **$+2.34e-04$** | $+6.76e-06$ | $-2.07e-04$ | $-2.37e-03$ |
+| 100 | 183 | 0.2681 | 1.26x slower | **$+1.61e-04$** | $-2.66e-05$ | $-1.13e-04$ | $-1.88e-03$ |
+| 200 | 301 | 0.4703 | 2.22x slower | **$+1.01e-04$** | $+5.72e-06$ | $-2.49e-05$ | $-4.24e-04$ |
+| 400 | 547 | 0.8768 | 4.13x slower | **$+1.03e-04$** | $-2.25e-05$ | $+2.21e-05$ | $-1.56e-04$ |
+
+**Tune on $W(8\times8)$, not on the plaquette -- the plaquette has an accidental zero.** Rung 0's plaquette error changes SIGN between 12 and 18 steps, so at 18 steps it reads $+1.5\times10^{-4}$, as good as 100 steps and better than 25, while $W(8\times8)$ at the top rung is eight times worse there than at 200. A quantity passing through zero is a terrible selector, and picking the step count off the plaquette alone would have chosen a setting that is quietly bad at every extended observable. The extended loops are monotone and unambiguous: $W(8\times8)$ improves $1.5\times10^{-2} \to 3.4\times10^{-3} \to 1.1\times10^{-3} \to 4.2\times10^{-4} \to 1.6\times10^{-4}$ at 8, 18, 25, 200, 400 steps.
+
+**So accuracy does not saturate at 200, and the hedge partly survives -- but it is a dial, not a free lunch.** Below 18 steps the lift collapses (rung 0 off by $-1.2\times10^{-2}$ at 8 steps, and the rethermalization sweeps still return $+4.3\times10^{-5}$, hiding all of it). Above that the whole range is usable and the trade is explicit: dropping 200 to 25 makes the top rung **1.38x faster** than HMC + winding instead of 2.22x slower -- a factor of three in cost -- for about 2.7x the extended-loop error and no measurable change in local observables after rethermalization ($-1.8\times10^{-6}$ at 25 steps against $+5.7\times10^{-6}$ at 200). Going the other way, 400 steps buys a further 2.7x on extended loops for 1.8x the cost.
+
+**The ladder of record stays at 200 steps**, because its job is to be the accuracy measurement rather than the cheapest configuration source, and because 25 steps would put the study's extended-observable claims where its own $L = 64$ reference sits rather than comfortably inside it. A production run that wants configurations should use 25.
+
+**Per-configuration Wilson spread is flat across the whole scan** ($\sigma[W(2\times2)] = 2.9$-$3.2\times10^{-4}$ against the reference's $3.2\times10^{-4}$), so a coarse sampler biases the mean without narrowing the distribution. Cheap configurations do not come out over-smoothed, which is the failure mode one would expect and it does not happen.
+
+$\langle Q^2\rangle$ is deliberately absent from this table. It is flat by construction -- `apply_coarse_charge` imposes the coarse charge on the final sample -- so topology is transported correctly at any step count, and printing it invites reading a tautology as a result.
+
+**Cost is not linear in the step count.** The two cheapest points fit about 1.05 s per step on a fixed overhead near 90 s: the exact conditional SU(2) sampler (30 sweeps) and the rethermalization (10 sweeps), which no amount of sampler tuning touches. At 200 steps that overhead is 30% of the run, at 25 steps it is three quarters. Anyone moving down the dial hits it quickly, so `n_su2_sweeps` is the next knob to measure, not this one.
+
+### Parity mobility: the odd fraction is a label, not an observable
+
+Hot start, **no burn-in**, unseeded, so a slow relaxation and a frozen label are distinguishable -- they prescribe opposite fixes. The decisive column is **parity flips**.
+
+| $L$ | $\beta$ | start | $\beta L$ | $Q$ changes | **parity flips** | chains flipped | odd frac | exact | binomial $z$ | $\tau_{\rm int}(Q^2)$ |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 8 | 6 | hot | 48 | 20304 | **12810** | 128/128 | 0.4983 | 0.4999 | $-1.77$ | 0.53 |
+| 8 | 10 | cold | 80 | 7095 | **3560** | 128/128 | 0.4802 | 0.4854 | $-0.73$ | 0.57 |
+| 8 | 10 | hot | 80 | 14296 | **7100** | 128/128 | 0.4895 | 0.4854 | $+0.51$ | 0.56 |
+| 8 | 14 | hot | 112 | 6864 | **347** | 117/128 | 0.4041 | 0.4341 | $+0.26$ | 3.63 |
+| 8 | 20 | cold | 160 | 204 | **1** | 1/128 | 0.0003 | 0.3335 | $-8.00$ | 0.55 |
+| 8 | 20 | hot | 160 | 5862 | **4** | 3/128 | 0.4437 | 0.3335 | $+2.87$ | 1.46 |
+| 16 | 14 | hot | 224 | 32169 | **2453** | 256/256 | 0.5006 | 0.5000 | $+0.50$ | 0.54 |
+| 16 | 21 | hot | 336 | 26110 | **2** | 2/256 | 0.4842 | 0.4989 | $-0.34$ | 0.55 |
+| 16 | 28 | cold | 448 | 9026 | **0** | 0/256 | 0.0000 | 0.4928 | $-15.77$ | 0.56 |
+| 16 | 28 | hot | 448 | 22283 | **0** | 0/256 | 0.5195 | 0.4928 | $+0.85$ | 0.53 |
+
+**Where the flip count is zero, the odd fraction is not a relaxing observable at all.** It is a label assigned to each chain once, during the hot-start ordering, and carried unchanged forever. The number of independent parity draws is then exactly $n_{\rm chains}$ however long anything runs; the error model is a binomial over chains; and the only lever that improves it is more chains. Longer burn-in does nothing, and more draws per chain do nothing.
+
+That resolves a contradiction the study had been carrying. The stored base ensemble measured an odd excess of 13% at $z_{\rm odd} = +2.42$, $\chi^2/{\rm dof} = 2.41$ -- the PARITY-STUCK signature -- while a scan at the *identical* coupling measured 1.030 and $+0.69$, a clean SAMPLED verdict. Neither was wrong and neither was a bias: they are two draws of a 256-chain binomial that landed two sigma apart. A verdict computed from one such draw can pass or fail on luck, which is why a flip count is the better instrument.
+
+**And this is the trap the theory sets.** $\tau_{\rm int}(Q^2)$ is around half a draw at every coupling in the table, including the ones where parity has not moved once. $Q^2$ fluctuates on the EVEN channel, which the central instanton keeps wide open at cost $2\pi^2\beta/V$ -- a ladder invariant that never degrades. It is nearly blind to the odd/even channel, which is shut. A fast autocorrelation time on a quantity blind to the frozen mode certifies an equilibrium that does not exist. Autocorrelate $Q \bmod 2$, or better, count flips.
+
+**The controlling parameter is $\beta$, not $\beta L$, and the study had this wrong.** Read the flip column against $\beta L$ and it does not collapse: $L = 16$ at $\beta L = 224$ flips 2453 times while $L = 8$ at $\beta L = 160$ flips four. Read it against $\beta$ and it does: mobility dies between $\beta = 14$ and $\beta \approx 20$ at **both** volumes, with the per-site rate falling roughly a hundredfold across that interval. The earlier $\beta L \approx 450$-$830$ boundary in `CLAUDE.md` came from stage 07's *verdicts* rather than from flip counts, and it was fitted to the $L = 16$ points while the $L = 8$ points ($\beta L = 112$ sampled, $160$ stuck) contradict it outright. A verdict is a hypothesis test on one binomial draw; a flip count is the mechanism itself.
+
+The consequence is uncomfortable and has to be stated: **the ladder base at $L = 16$, $\beta = 28$ is on the frozen side.** Zero flips in 256 chains over 2000 trajectories. Stage 07 calls it SAMPLED because its odd weight agrees with the closed form -- which is true, and is not the same claim.
+
+### What actually sets the split, where parity is frozen
+
+If the odd fraction were being sampled, the initial condition could not matter. Running the identical procedure from a cold start is therefore the direct test, and it is decisive.
+
+| $L$ | $\beta$ | exact odd | hot start | cold start |
+|---|---|---|---|---|
+| 8 | 10 | 0.4854 | 0.4895 | 0.4802 |
+| 8 | 20 | 0.3335 | 0.4437 | 0.0003 |
+| 16 | 28 | 0.4928 | 0.5195 | 0.0000 |
 
 ### Where $P(Q)$ can be sampled rather than seeded
 
@@ -581,6 +830,11 @@ Ladder: **0.8203 s** per configuration including base generation, **0.4805 s** f
 | `09_verify_identities.py` | the exact identities; seconds, must pass |
 | `10_paper_figures.py` | the result figures |
 | `11_wilson_distributions.py` | per-configuration Wilson spread, generated vs HMC |
+| `12_results_section.py` | regenerates Part IV from the JSON each stage wrote |
+| `13_cost_comparison.py` | seconds per independent configuration, both arms |
+| `14_sampler_steps.py` | the sampler step count as a cost/accuracy dial |
+| `15_base_parity.py` | **parity FLIPS** — does the odd/even channel move at all |
+| `16_cost_figures.py` | draws 13 and 14: cost beside reachability, and the sampler dial |
 
 ### 18. Statistical methods
 
@@ -590,6 +844,26 @@ standard error over configurations understates the uncertainty by
 $\sqrt{n_{\rm draws}}$ and manufactures fake discrepancies. Every topological error
 bar here resamples whole chains with replacement, which degrades gracefully to
 exactly that limit.
+
+**Count the rare event; do not infer it from a test on the aggregate.** The single
+most expensive methodological mistake in this study was using stage 07's
+PARITY-STUCK *verdict* as the measure of odd-charge mobility. A verdict is a
+hypothesis test on the odd weight computed from one binomial draw over chains, and
+it passes whenever that draw lands near the truth — including when the mobility is
+exactly zero, which is what happens at the ladder base. It produced a fitted
+$\beta L$ boundary that the $L = 8$ data contradicts, and then a second, spurious
+$\beta/V$ axis invented to explain the contradiction away. Counting parity *flips*
+(§12.1) collapsed both onto a single $\beta$ axis and cost twenty minutes of
+compute. When the question is whether a channel is open, count events in that
+channel; a summary statistic downstream of it will be dominated by whatever else
+is open.
+
+**Autocorrelate the slow mode, not a proxy for it.** $\tau_{\rm int}(Q^2)$ reads
+$\approx 0.55$ draws at every coupling measured, *including* those with zero parity
+flips, because $Q^2$ lives on the even channel that stays open. A short
+autocorrelation time on a quantity blind to the frozen mode is not weak evidence of
+equilibrium — it is systematically misleading, and in this theory it points the
+wrong way exactly where it matters most.
 
 **A trap worth recording.** An earlier version of the sector test floored the
 per-sector error at the binomial value for $n_{\rm chains}$, intending to stop a
@@ -646,7 +920,14 @@ main presentational risk.
    marked — the controls are what give the plot dynamic range, so never drop them.
    Note carefully that this is a claim about the *starting point*, not throughput:
    generating that configuration costs more than continuing a chain would, so the
-   claim is "no burn-in to pay", not "cheaper".
+   claim is "no burn-in to pay", not "cheaper". And do **not** quote the seed's
+   $t = 0$ error as a ratio against the cold start. With 64 configurations the
+   sampling floor on that number is $\sim 7\times10^{-6}$ and the seed sits at
+   $8.2\times10^{-6}$, i.e. on the floor; an earlier run happened to measure
+   $7.8\times10^{-7}$ and a "6200x better" figure was quoted off it, which was
+   measuring noise. The defensible statement is that the seed is at equilibrium to
+   within the resolution the ensemble can offer, and the cold start is three orders
+   of magnitude away.
 2. **The ladder reaches topological sectors no local algorithm can.** This is the
    U(2)-specific contribution. Show it as *sector coverage weighted by exact
    $P(Q)$*, never as a count of sectors visited: a hot start visits many sectors
@@ -661,11 +942,20 @@ main presentational risk.
 |---|---|---|
 | seed quality | plaquette relative error vs trajectory, 4 arms, log $y$ | a log axis is mandatory — the arms differ by 3 orders of magnitude at $t = 0$, and a linear axis hides the entire result |
 | topological reach | sectors occupied and $\langle Q^2\rangle$ vs trajectory | two panels because "how many" and "weighted how much" are different claims |
-| sampling regimes | verdicts in the $(\beta L, \beta/V)$ plane | this is the only figure that makes the *two* freezing mechanisms visible at once; a single-axis $\beta$ plot cannot |
+| parity mobility | parity **flips** per chain-trajectory vs $\beta$, beside $Q$-changes over the same range | the left panel falls five orders of magnitude where the right one falls four*fold* — that side-by-side is the whole two-mechanism story, and it is why a sector-change count cannot serve as an ergodicity test. Replaces an earlier version plotting stage-07 verdicts in the $(\beta L, \beta/V)$ plane, which encoded two mistakes at once |
 | winding economics | forced $\Delta S$ for even vs odd, and after SU(2) sweeps | the three-bar grouping is the argument: free, blocked, recovered |
 | Wilson spread | per-configuration histograms with $\sigma$ in the legend | means agree to $10^{-6}$; only the width is informative |
 | ladder accuracy | pre- and post-rethermalization side by side | keeps "what the model earned" separable from "what the sweeps repaired" |
 | area-law ratio | $W(A)/W(1)^A$ for generated **and** reference | the reference curve is not decoration — without it a reader concludes model error from what is finite volume; at $L=32$ the reference is the worse of the two |
+| cost and reach | seconds per independent configuration beside the fraction of exact $P(Q)$ covered, same five bars | the two must sit side by side and must never be collapsed into one number. Alone, panel (a) says the ladder loses; alone, panel (b) says it wins. The honest claim is only visible as a pair, and the odd-sector count printed inside each bar is what stops a reader crediting the hot arm's $1.000$ coverage |
+| sampler dial | top-rung cost ratio and **pre-rethermalization** error vs reverse-diffusion steps | answers "then tune it" with a measurement rather than a promise: about a factor of three, purchased not free. The post-rethermalization plaquette is drawn dashed and demoted deliberately — it stays flat past the point where the model stopped working, so it is the wrong accuracy axis, and $\langle Q^2\rangle$ is not an accuracy axis at all because `apply_coarse_charge` imposes it |
+
+The first seven are `u2_2d/scripts/10_paper_figures.py` (`fig06`–`fig12`); the
+last two are `u2_2d/scripts/16_cost_figures.py` (`fig13_cost.png`,
+`fig14_sampler_steps.png`, added 2026-08-20). Before that the cost answer and the
+sampler-tuning answer existed only as tables in §23 and Part IV, which is exactly
+the presentation failure §22 warns about — the two claims a referee reaches for
+first were the two with no figure.
 
 ### 22. Specific presentational improvements over the U(1) write-up
 
@@ -688,28 +978,100 @@ The U(1) appendix is thorough but has three habits worth not repeating:
 Two things this study does that the U(1) one did not, and which should survive
 into the paper:
 
-* **Report both freezing parameters.** Any statement of the form "frozen at
-  $\beta = X$" is incomplete in U(2); it needs $\beta/V$ *and* $\beta L$.
+* **Report the mechanism, not a verdict.** "Frozen at $\beta = X$" is incomplete
+  in U(2): the even and odd channels close in different places, and the even one
+  never closes along a matched ladder at all. Give the parity flip rate and the
+  sector-change rate side by side. A single ergodicity verdict — including this
+  study's own PARITY-STUCK — hides which channel is open, and can pass with zero
+  odd-charge mobility.
 * **Show the pre-rethermalization observable.** It is the only thing separating a
   good model from a good local-update repair, and it costs one extra column.
 
 ### 23. What a referee will attack first
 
-* *"Your $P(Q)$ agreement is circular."* — Answer: at the base it is sampled, not
-  seeded, with the scan in §12 as evidence, and the seeded rungs are training data
-  and references that topology never flows through.
+* ***"There is nothing non-abelian being learned here."*** — **The most important
+  editorial decision in the U(2) study, and it has to be met head-on in the
+  abstract rather than defended in a late section.** The objection is factually
+  correct as stated: the score network sees only $\psi$, an honest compact U(1)
+  field, and the SU(2) sector has zero learned parameters (§6). A reader who
+  arrives expecting "a diffusion model for a non-abelian gauge theory" will look
+  for a learned non-abelian degree of freedom and not find one.
+
+  Do not answer it by pointing at the group. Answer it with the factorization,
+  in this order.
+
+  1. **The split is exact, not an approximation.** $p(\psi, q) = p(\psi)\,p(q\mid\psi)$
+     is an identity, and at frozen $\phi$ the conditional is the standard SU(2)
+     heat-bath form $\exp(\beta k\cdot q)$ — so `conditional_su2_sweeps` samples
+     it *exactly*, leaving $\psi$ and $Q$ bit-for-bit unchanged. Nothing is
+     approximated away, and the naive-inverse-blocking seed cannot bias anything.
+  2. **Therefore learning SU(2) would be strictly wasted capacity.** There is no
+     accuracy to be bought: an exact sampler cannot be improved on. A paper that
+     learned it anyway would be spending parameters to approximate something it
+     already has in closed form, and would have to explain why.
+  3. **The non-abelian content is in what the split does NOT remove**, and that
+     is where the study's actual contributions live. The joint does not
+     factorize as a product of marginals (§6): $\tfrac12\mathrm{ReTr}P =
+     \cos\omega_P\cos\phi_P$, so the SU(2) sector must be generated
+     *conditionally* and $\psi$'s own marginal is **not** U(1) Wilson at
+     $\beta/4$ but $w_{\rm det}(\alpha) = 2I_1(z)/z$ (§7) — a 23% coupling
+     difference at $\beta = 4$. And the $\mathbb{Z}_2$ obstruction (Part II) is
+     purely non-abelian: $U(2) = (U(1)\times SU(2))/\mathbb{Z}_2$ is what makes
+     odd-charge winding cost $O(\beta L)$ while even-charge winding is free, and
+     that two-mechanism freezing structure has no U(1) analogue at all.
+  4. **The density-gap statement is stronger here than in U(1) *because* of the
+     split, and it is worth saying so.** Since the conditional is the same
+     distribution on both sides of the KL, it cancels identically:
+     $\mathrm{KL}(m(\psi)p(q|\psi)\,\|\,p(\psi)p(q|\psi)) = \mathrm{KL}(m(\psi)\,\|\,p(\psi))$.
+     The determinant sector's density gap **is** the whole pipeline's density
+     gap, with no inequality and no residual term — a claim `u1_2d` could not
+     make about any of its sectors (§16.5, `scripts/18_density_gap.py`).
+
+  What to concede, in one sentence and without hedging: *this construction is
+  specific to groups whose topology lives in an abelian factor, and it does not
+  by itself tell you how to lift SU(3), where no such split exists.* That is the
+  honest scope, and it is the right lead-in to the outlook section. Claiming
+  otherwise is the one thing that would make the objection fatal instead of
+  answerable.
+
+* *"Your $P(Q)$ agreement is circular."* — Answer, and it has to be given in two
+  halves (§12.2). The sector shape *within* a parity class is genuinely sampled at
+  the base: 106823 $Q$ changes, $\chi^2/{\rm dof} = 1.53$, nothing seeded. The
+  odd/even weight is *not* sampled — it is frozen in at ordering, one draw per
+  chain — and it is right to $0.45\sigma$ because $P({\rm odd})$ is within $1.5\%$
+  of $1/2$ whenever $\langle Q^2\rangle \gtrsim 1$, which the base satisfies. Say
+  that rather than claiming the base samples topology outright; the referee who
+  checks will find the zero flip count, and it is better to have got there first.
+  The seeded rungs are training data and references that topology never flows
+  through.
 * *"You only reach sectors because you put them there."* — Answer: correct, and
-  that is the mechanism. The claim is that the base is a coupling where sampling
-  works and the top is one where it provably does not, with $\beta L$ separating
-  them by a factor of 100.
+  that is the mechanism. The claim is that the base is a coupling where the charge
+  distribution is available and the top is one where it provably is not:
+  $\beta = 28$ against $\beta = 416.5$, with odd-charge mobility dying at
+  $\beta \approx 15$–$20$, so the top rung is more than twenty times past the edge.
 * *"Observable agreement does not mean the density is right."* — Correct, and
   conceded in the U(1) study. Hence the spread comparison, and hence the honest
-  framing of claim 3 as the weakest.
+  framing of claim 3 as the weakest. The strongest available answer is the $L = 64$
+  spread against a direct HMC reference: within $3$–$8\%$ at every loop size, with
+  no growth in loop area — which is exactly the test U(1) failed.
+* *"Your large-loop deviation looks like model error."* — It was, until it was
+  controlled. The same-size HMC reference deviates comparably (mean
+  $9.9\times10^{-4}$ against $1.13\times10^{-3}$ over areas $\ge 48$), and
+  re-drawing the base **flipped the sign** of the trend from $+1.70\sigma$ to
+  $-2.43\sigma$ with everything else held fixed. Smooth and monotonic in $A$ is
+  what one fluctuation looks like when the observables are all functionals of the
+  same field.
 * *"What does it cost?"* — **Measured, and the answer is unflattering: for local
-  observables the ladder is 3.87x SLOWER than HMC + winding** (0.820 s versus
+  observables the ladder is 3.68x SLOWER than HMC + winding** (0.780 s versus
   0.212 s per independent configuration at $L = 64$). Do not lead with speed. The
-  cost is dominated by the 200-step diffusion sampler, a tunable that has not been
-  tuned, so the number can move — but as it stands the method earns its place on
-  *reachability*, not throughput, and the write-up must say so in those words.
-  Quoting a speed-up against an arm that never reaches the odd sectors would be
-  comparing against a chain that samples the wrong distribution.
+  cost is dominated by the 200-step diffusion sampler, and the natural follow-up,
+  *"then tune it"*, was run: it is worth about a factor of three, purchased rather
+  than free. At 25 steps the top rung becomes 1.38x *faster* than HMC + winding, at
+  $\sim2.7\times$ the extended-loop error and no measurable change in local
+  observables after rethermalization; below 18 steps the lift collapses. So quote
+  3.68x as the cost of the accuracy-of-record setting and say the dial exists.
+  Beyond that the remaining cost is the exact conditional SU(2) sampler, which no
+  sampler tuning touches. The method earns its place on *reachability*, not
+  throughput, and the write-up must say so in those words: quoting a speed-up
+  against an arm that never reaches the odd sectors would be comparing against a
+  chain that samples the wrong distribution.

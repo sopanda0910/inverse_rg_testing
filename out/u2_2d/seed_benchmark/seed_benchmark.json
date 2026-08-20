@@ -4,23 +4,23 @@
   "n_chains": 64,
   "n_trajectories": 300,
   "plaquette_exact": 0.9951954459438838,
-  "tau_int_plaquette_seeded": 0.8244422528691494,
-  "independent_interval_trajectories": 1.6488845057382988,
+  "tau_int_plaquette_seeded": 1.606336866312123,
+  "independent_interval_trajectories": 3.212673732624246,
   "arms": [
     {
       "arm": "A_diffusion_seed",
-      "seconds": 255.708238363266,
-      "seconds_per_trajectory": 0.85236079454422,
-      "plaquette_initial": 0.9951962232589722,
-      "plaquette_final": 0.995193600654602,
+      "seconds": 470.5112099647522,
+      "seconds_per_trajectory": 1.5683706998825073,
+      "plaquette_initial": 0.9952036142349243,
+      "plaquette_final": 0.9951999187469482,
       "plaquette_exact": 0.9951954459438838,
-      "plaquette_initial_rel": 7.810677706832081e-07,
-      "plaquette_final_rel": -1.8541978756836386e-06,
+      "plaquette_initial_rel": 8.207725501474528e-06,
+      "plaquette_final_rel": 4.4943966359678456e-06,
       "loops_final": {
-        "wilson_1x1": 0.995193600654602,
-        "wilson_2x2": 0.9809594750404358,
-        "wilson_4x4": 0.9262011647224426,
-        "wilson_8x8": 0.7368574142456055
+        "wilson_1x1": 0.9951999187469482,
+        "wilson_2x2": 0.9809273481369019,
+        "wilson_4x4": 0.9258270859718323,
+        "wilson_8x8": 0.7348966598510742
       },
       "loops_exact": {
         "wilson_1x1": 0.9951954459601974,
@@ -29,35 +29,39 @@
         "wilson_8x8": 0.7347444606633602
       },
       "topology": {
-        "q_squared": 0.921875,
+        "q_squared": 1.140625,
         "q_squared_exact": 1.0011887008808318,
         "sectors_visited": [
+          -3,
           -2,
           -1,
           0,
           1,
           2
         ],
-        "n_sectors_visited": 5,
-        "exact_probability_covered": 0.9908210126632351,
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
         "odd_sectors_visited": [
+          -3,
           -1,
           1
         ]
       },
       "topology_initial": {
-        "q_squared": 0.921875,
+        "q_squared": 1.140625,
         "q_squared_exact": 1.0011887008808318,
         "sectors_visited": [
+          -3,
           -2,
           -1,
           0,
           1,
           2
         ],
-        "n_sectors_visited": 5,
-        "exact_probability_covered": 0.9908210126632351,
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
         "odd_sectors_visited": [
+          -3,
           -1,
           1
         ]
@@ -65,369 +69,369 @@
       "history": [
         {
           "trajectory": 0,
-          "plaquette": 0.9951962232589722,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952036142349243,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 5,
-          "plaquette": 0.995193600654602,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951903820037842,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 10,
-          "plaquette": 0.9951930046081543,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951918125152588,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 15,
-          "plaquette": 0.9951900243759155,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951958656311035,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 20,
-          "plaquette": 0.99519282579422,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951876997947693,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 25,
-          "plaquette": 0.9951943159103394,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951892495155334,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 30,
-          "plaquette": 0.9951978921890259,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951894879341125,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 35,
-          "plaquette": 0.9952026605606079,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.995186448097229,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 40,
-          "plaquette": 0.9952096939086914,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951820373535156,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 45,
-          "plaquette": 0.9951934218406677,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951812028884888,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 50,
-          "plaquette": 0.9951975345611572,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951831102371216,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 55,
-          "plaquette": 0.9951971173286438,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952007532119751,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 60,
-          "plaquette": 0.9952006340026855,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952030181884766,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 65,
-          "plaquette": 0.9951974153518677,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951955080032349,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 70,
-          "plaquette": 0.9952037930488586,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951974749565125,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 75,
-          "plaquette": 0.9951995611190796,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951950311660767,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 80,
-          "plaquette": 0.9951965808868408,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.995191216468811,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 85,
-          "plaquette": 0.9951888918876648,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951990246772766,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 90,
-          "plaquette": 0.9951884746551514,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951980710029602,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 95,
-          "plaquette": 0.9951953887939453,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951958656311035,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 100,
-          "plaquette": 0.995195746421814,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951900243759155,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 105,
-          "plaquette": 0.9951940774917603,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951968789100647,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 110,
-          "plaquette": 0.9951903223991394,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.995204508304596,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 115,
-          "plaquette": 0.9951903223991394,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951971769332886,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 120,
-          "plaquette": 0.995194137096405,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952008724212646,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 125,
-          "plaquette": 0.9952009320259094,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952046275138855,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 130,
-          "plaquette": 0.9951902627944946,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952000379562378,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 135,
-          "plaquette": 0.9951999187469482,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952026605606079,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 140,
-          "plaquette": 0.9951938390731812,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952033758163452,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 145,
-          "plaquette": 0.9951959252357483,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951972961425781,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 150,
-          "plaquette": 0.9951857924461365,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951937794685364,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 155,
-          "plaquette": 0.9951992034912109,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951953887939453,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 160,
-          "plaquette": 0.9951983690261841,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951938390731812,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 165,
-          "plaquette": 0.9951920509338379,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951914548873901,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 170,
-          "plaquette": 0.9951950311660767,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952116012573242,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 175,
-          "plaquette": 0.995194137096405,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952090978622437,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 180,
-          "plaquette": 0.9951953887939453,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952069520950317,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 185,
-          "plaquette": 0.9952088594436646,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951987862586975,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 190,
-          "plaquette": 0.9952002763748169,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951990246772766,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 195,
-          "plaquette": 0.995197057723999,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951892495155334,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 200,
-          "plaquette": 0.9952062368392944,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.995189905166626,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 205,
-          "plaquette": 0.9951961040496826,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951905608177185,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 210,
-          "plaquette": 0.9951990842819214,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952012896537781,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 215,
-          "plaquette": 0.9951874017715454,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951862096786499,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 220,
-          "plaquette": 0.9951901435852051,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951968193054199,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 225,
-          "plaquette": 0.9951972365379333,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951909184455872,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 230,
-          "plaquette": 0.9951989054679871,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951895475387573,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 235,
-          "plaquette": 0.9951874017715454,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951903223991394,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 240,
-          "plaquette": 0.9951943755149841,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951983690261841,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 245,
-          "plaquette": 0.9951884150505066,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951860904693604,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 250,
-          "plaquette": 0.995197057723999,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951920509338379,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 255,
-          "plaquette": 0.9951997995376587,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951891899108887,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 260,
-          "plaquette": 0.995193600654602,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951949119567871,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 265,
-          "plaquette": 0.9952067136764526,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952000379562378,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 270,
-          "plaquette": 0.9952051639556885,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951964616775513,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 275,
-          "plaquette": 0.9952017068862915,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952019453048706,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 280,
-          "plaquette": 0.9951925277709961,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952032566070557,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 285,
-          "plaquette": 0.9951984882354736,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952004551887512,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 290,
-          "plaquette": 0.9952032566070557,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952015280723572,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 295,
-          "plaquette": 0.9951974153518677,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9952009916305542,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         },
         {
           "trajectory": 300,
-          "plaquette": 0.995193600654602,
-          "q_squared": 0.921875,
-          "n_sectors": 5
+          "plaquette": 0.9951999187469482,
+          "q_squared": 1.140625,
+          "n_sectors": 6
         }
       ]
     },

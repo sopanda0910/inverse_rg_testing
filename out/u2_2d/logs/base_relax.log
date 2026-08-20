@@ -1,0 +1,13 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+
+L = 16, 1024 chains, hot start, no burn-in, 1200 trajectories each
+
+    beta  start  beta L   Q chg  parity flips  odd frac   exact  binom z  tau(Q^2)
+   28.00    hot     448  106823             0    0.5059  0.4928    +0.83      0.54
+
+beta = 28: PARITY FROZEN at beta L = 448. Every one of 106823 Q changes is even.
+  The odd fraction is fixed during hot-start ordering and never moves again, so the
+  independent parity draws are n_chains = 1024 however long anything runs.
+  binomial error 0.0156 -> z = +0.83; to halve it takes 4096 chains, and nothing else will.
+
+wrote out\u2_2d\base_relax\report.md

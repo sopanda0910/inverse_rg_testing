@@ -42,11 +42,36 @@ def main() -> int:
     parser.add_argument("--out-dir", default=None)
     parser.add_argument("--no-resume", action="store_true",
                         help="regenerate every rung even if one is already on disk")
+    # Base overrides, so a control ladder from a different base does not need a
+    # duplicated config file that then drifts from the one of record.
+    parser.add_argument("--base-beta", type=float, default=None)
+    parser.add_argument("--base-size", type=int, default=None)
+    parser.add_argument("--beta-schedule", nargs="+", type=float, default=None,
+                        help="override the fine couplings; with --base-beta and "
+                             "no schedule, the topology-matched one is derived")
+    parser.add_argument("--n-configs", type=int, default=None)
     args = parser.parse_args()
 
     config = load_config(args.config)
     if args.device:
         config["device"] = args.device
+    if args.base_beta is not None or args.base_size is not None:
+        base_cfg = config["ladder"]["base"]
+        if args.base_beta is not None:
+            base_cfg["beta"] = args.base_beta
+        if args.base_size is not None:
+            base_cfg["lattice_size"] = args.base_size
+        if args.beta_schedule is None:
+            from u2_2d.lgt.blocking import topology_matched_schedule
+
+            config["ladder"]["beta_schedule"] = topology_matched_schedule(
+                float(base_cfg["beta"]), int(base_cfg["lattice_size"]),
+                len(config["ladder"]["beta_schedule"]),
+            )
+    if args.beta_schedule is not None:
+        config["ladder"]["beta_schedule"] = list(args.beta_schedule)
+    if args.n_configs is not None:
+        config["ladder"]["n_configs"] = args.n_configs
     device = resolve_device(config)
     print(configure_device(device))
     set_seed(int(config.get("seed", 0)))
@@ -66,7 +91,40 @@ def main() -> int:
         return 1
     coarse, base_meta = load_ensemble(base_path)
     n_configs = int(ladder_cfg.get("n_configs", coarse.shape[0]))
-    coarse = coarse[:n_configs]
+    # STRIDE, do not truncate. `run_hmc_ensemble` stacks draw-major -- the
+    # ensemble views as [n_draws, n_chains, ...] -- so the first N configurations
+    # are the first few draws of EVERY chain, i.e. the least equilibrated and most
+    # mutually correlated slice available. That was harmless while the base held
+    # 4 draws per chain and n_configs took all of them; it stops being harmless
+    # the moment the base is run longer to relax its parity balance, because
+    # truncation would then throw away exactly the part that relaxed. A uniform
+    # stride keeps the whole sampling window represented.
+    base_chains = int(base_meta.get("n_chains", 0))
+    if coarse.shape[0] > n_configs:
+        if base_chains and coarse.shape[0] % base_chains == 0:
+            # CHAIN-AWARE. A plain stride is actively wrong here: the ensemble views
+            # as [n_draws, n_chains] and flattens draw-major, so index i has chain
+            # i % n_chains. When the stride divides n_chains -- which it does
+            # whenever both are powers of two, i.e. always in this study -- every
+            # selected index lands on the same residue class and the subsample keeps
+            # n_chains / stride DISTINCT CHAINS while looking like it kept
+            # n_configs. Since parity is frozen at the base, distinct chains are
+            # exactly the independent topological draws, so that would quietly
+            # discard three quarters of the quantity the ladder cannot regenerate.
+            # Take the latest draw of each chain instead, walking backwards.
+            n_draws = coarse.shape[0] // base_chains
+            index = torch.arange(coarse.shape[0]).view(n_draws, base_chains)
+            picked, draw = [], n_draws - 1
+            while sum(t.numel() for t in picked) < n_configs and draw >= 0:
+                need = n_configs - sum(t.numel() for t in picked)
+                picked.append(index[draw][:need])
+                draw -= 1
+            coarse = coarse[torch.cat(picked)]
+        else:
+            stride = coarse.shape[0] // n_configs
+            coarse = coarse[::stride][:n_configs]
+        print(f"base subsample: {coarse.shape[0]} configs from "
+              f"{min(base_chains, n_configs) if base_chains else '?'} distinct chains")
     print(f"base: L={base['lattice_size']} beta={base['beta']:g}  {coarse.shape[0]} configs")
 
     model, schedule = load_det_model(checkpoint, device=device)

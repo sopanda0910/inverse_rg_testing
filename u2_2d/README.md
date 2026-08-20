@@ -114,17 +114,38 @@ validate/             observables split into full-U(2) and determinant-sector fa
 The result stages, which is where the study's claims come from:
 
 ```bash
-# where P(Q) can be SAMPLED rather than seeded -- the PARITY-STUCK verdict is the
-# U(2)-specific one, and it is what decides where the ladder base may sit
+# DOES THE ODD/EVEN CHANNEL MOVE AT ALL? Counts parity FLIPS, which is the actual
+# mechanism; `--cold` adds the start-dependence test that proves the split is
+# inherited rather than sampled wherever the flip count is zero. Use this, not
+# stage 07's verdict, to decide where the ladder base may sit -- the verdict is a
+# test on one binomial draw and passes on luck.
+.venv/Scripts/python.exe u2_2d/scripts/15_base_parity.py --lattice-size 16 --betas 14,21,28 --cold
+
+# the resulting DISTRIBUTION against the closed form (a different question from
+# mobility, and stage 15 does not answer it)
 .venv/Scripts/python.exe u2_2d/scripts/07_pq_sampling.py --lattice-size 16 --betas 28,51.75
 
 # the headline: a generated configuration as an HMC starting point, against
 # cold, hot, and winding-update baselines
 .venv/Scripts/python.exe u2_2d/scripts/08_hmc_seed_benchmark.py --device cuda
 
-# per-configuration Wilson spread (means agree to 1e-6; only the width informs)
-.venv/Scripts/python.exe u2_2d/scripts/11_wilson_distributions.py
+# per-configuration Wilson spread (means agree to 1e-6; only the width informs);
+# --rung 1 is the top rung, which now has a direct HMC reference to compare against
+.venv/Scripts/python.exe u2_2d/scripts/11_wilson_distributions.py --rung 0
+.venv/Scripts/python.exe u2_2d/scripts/11_wilson_distributions.py --rung 1     --out out/u2_2d/validation/wilson_distributions_L64.json
+
+# the sampler step count as a cost/accuracy dial. Read RUNG 0's pre-retherm column
+# and the top rung's extended loops -- the top rung's plaquette compounds two lifts
+# and crosses zero near 18 steps, so tuning on it picks a setting that is quietly
+# bad everywhere else.
+.venv/Scripts/python.exe u2_2d/scripts/14_sampler_steps.py --steps 25,50,100,200,400
+
+# seconds per independent configuration, ladder vs HMC + winding
+.venv/Scripts/python.exe u2_2d/scripts/13_cost_comparison.py     --base-seconds 212 --rung-seconds 108,479 --rung-configs 1024
+
 .venv/Scripts/python.exe u2_2d/scripts/10_paper_figures.py
+# regenerate Part IV of the narrative from the JSON each stage wrote
+.venv/Scripts/python.exe u2_2d/scripts/12_results_section.py --in-place
 ```
 
 Outputs go to `out/u2_2d/`.

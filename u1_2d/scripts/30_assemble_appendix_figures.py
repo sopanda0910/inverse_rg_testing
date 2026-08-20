@@ -70,6 +70,21 @@ SOURCES: dict[str, str | None] = {
     "28_dissociation.png": "paper_appendix/dissociation.png",
     "29_seed_quality.png": None,
     "30_volume_scan.png": None,
+    "31_frozen_traces.png": None,
+    "32_burnin_wall.png": None,
+    "33_ladder_fixed_point.png": None,
+    "34_match_rate_volume.png": None,
+    "35_sector_freeze_sigma.png": None,
+    "36_sector_tail.png": None,
+    "37_z_distribution.png": None,
+    "38_z_vs_loop_area.png": None,
+    "39_kl_per_site.png": None,
+    "40_cost_per_config.png": None,
+    "41_breakeven.png": None,
+    "42_mala_locality.png": None,
+    "43_zhu_pq.png": None,
+    "44_pipeline.png": None,
+    "45_architecture.png": None,
 }
 
 SCRIPT_FOR = {
@@ -83,6 +98,21 @@ SCRIPT_FOR = {
     "27": "u1_2d/scripts/26_final_results_figures.py",
     "29": "u1_2d/scripts/50_seed_quality_figure.py",
     "30": "u1_2d/scripts/51_volume_scan_figure.py",
+    "31": "u1_2d/scripts/52_problem_figures.py",
+    "32": "u1_2d/scripts/52_problem_figures.py",
+    "33": "u1_2d/scripts/53_transport_figures.py",
+    "34": "u1_2d/scripts/53_transport_figures.py",
+    "35": "u1_2d/scripts/53_transport_figures.py",
+    "36": "u1_2d/scripts/53_transport_figures.py",
+    "37": "u1_2d/scripts/54_seed_accuracy_figures.py",
+    "38": "u1_2d/scripts/54_seed_accuracy_figures.py",
+    "39": "u1_2d/scripts/54_seed_accuracy_figures.py",
+    "40": "u1_2d/scripts/55_cost_figures.py",
+    "41": "u1_2d/scripts/55_cost_figures.py",
+    "42": "u1_2d/scripts/56_positioning_figures.py",
+    "43": "u1_2d/scripts/56_positioning_figures.py",
+    "44": "u1_2d/scripts/57_schematics.py",
+    "45": "u1_2d/scripts/57_schematics.py",
 }
 
 RUNG_HEADING = re.compile(r"^## rung(\d+)_L(\d+)_beta([0-9.]+)\s*$")

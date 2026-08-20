@@ -5,11 +5,11 @@
   "arms": [
     {
       "arm": "A_diffusion_seed",
-      "tau_int_plaquette_trajectories": 3.5835654668532495,
-      "seconds_per_trajectory": 0.85236079454422,
-      "seconds_per_independent_config_local": 0.09545283464463326,
-      "exact_probability_covered": 0.9908210126632351,
-      "odd_sectors_visited": 2
+      "tau_int_plaquette_trajectories": 5.938521114293569,
+      "seconds_per_trajectory": 1.5683706998825073,
+      "seconds_per_independent_config_local": 0.2910563286341141,
+      "exact_probability_covered": 0.9952739640757369,
+      "odd_sectors_visited": 3
     },
     {
       "arm": "B_cold_start",
@@ -37,16 +37,16 @@
     }
   ],
   "ladder": {
-    "base_seconds": 115.0,
+    "base_seconds": 212.0,
     "rung_seconds": [
-      59.0,
-      246.0
+      108.0,
+      479.0
     ],
-    "total_seconds": 420.0,
-    "configs_delivered": 512,
-    "seconds_per_config_including_base": 0.8203125,
-    "seconds_per_config_amortized_base": 0.595703125,
-    "seconds_per_config_top_rung_only": 0.48046875
+    "total_seconds": 799.0,
+    "configs_delivered": 1024,
+    "seconds_per_config_including_base": 0.7802734375,
+    "seconds_per_config_amortized_base": 0.5732421875,
+    "seconds_per_config_top_rung_only": 0.4677734375
   },
-  "speedup_local_vs_hmc_winding": 0.25864624202408965
+  "speedup_local_vs_hmc_winding": 0.2719184521905323
 }

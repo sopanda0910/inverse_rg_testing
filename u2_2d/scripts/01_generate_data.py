@@ -85,6 +85,12 @@ def main() -> int:
                         help="comma-separated lattice sizes to keep, e.g. 16,32")
     parser.add_argument("--merge-shards", action="store_true",
                         help="fold summary.shard*.json into summary.json and delete them")
+    parser.add_argument("--only-betas", default=None,
+                        help="comma-separated couplings to generate; combines with "
+                             "--only-sizes. Lets one rung be regenerated on its own "
+                             "recipe without touching the ensembles of record.")
+    parser.add_argument("--overwrite", action="store_true",
+                        help="regenerate rungs whose ensemble is already on disk")
     args = parser.parse_args()
 
     threads = os.environ.get("U2_2D_TORCH_THREADS") or os.environ.get("U1_2D_TORCH_THREADS")
@@ -110,6 +116,12 @@ def main() -> int:
     if args.only_sizes:
         keep = {int(v) for v in args.only_sizes.split(",")}
         rungs = [r for r in rungs if int(r["lattice_size"]) in keep]
+    if args.only_betas:
+        keep_b = {float(v) for v in args.only_betas.split(",")}
+        rungs = [r for r in rungs
+                 if any(abs(float(r["beta"]) - b) < 1e-9 for b in keep_b)]
+    if args.overwrite:
+        data_cfg["overwrite"] = True
     if args.shard:
         shard_index, n_shards = (int(v) for v in args.shard.split("/"))
         rungs = [r for i, r in enumerate(rungs) if i % n_shards == shard_index]
@@ -175,6 +187,11 @@ def main() -> int:
             "beta": beta,
             "lattice_size": size,
             "n_configs": int(configs.shape[0]),
+            # The chain axis is not recoverable from the tensor -- `sample` stacks
+            # draw-major and flattens -- but downstream stages need it: the number of
+            # INDEPENDENT topological charges is n_chains, and subsampling that is
+            # blind to the chain layout can silently keep a quarter of them.
+            "n_chains": n_chains,
             "acceptance_rate": stats.acceptance_rate,
             "winding_acceptance_rate": stats.winding_acceptance_rate,
             "plaquette": measured,
@@ -196,6 +213,28 @@ def main() -> int:
         tag = "" if not args.only_sizes else "L" + args.only_sizes.replace(",", "-")
         name = ("summary.json" if shard_index is None
                 else f"summary.shard{tag}_{shard_index}.json")
+        if shard_index is None:
+            # MERGE, do not replace. A filtered run (`--only-sizes`) still lands on
+            # the canonical name, so writing it straight through silently discards
+            # every rung the filter excluded -- which is most of them, and which is
+            # how the L = 16 base's generation record was lost once already. Rows
+            # are keyed by (L, beta) so a rerun of a rung supersedes its own entry
+            # and nothing else. Carried-over rows are printed, because the cost of
+            # this policy is that a row from a superseded config survives until
+            # something overwrites it.
+            existing = {}
+            path = out_dir / name
+            if path.exists():
+                import json as _json
+                for row in _json.loads(path.read_text(encoding="utf-8")):
+                    existing[(int(row["lattice_size"]), float(row["beta"]))] = row
+            fresh = {(int(r["lattice_size"]), float(r["beta"])) for r in summary}
+            carried = [k for k in existing if k not in fresh]
+            if carried:
+                print("carried over " + ", ".join(f"L{L}b{b:g}" for L, b in sorted(carried)))
+            for r in summary:
+                existing[(int(r["lattice_size"]), float(r["beta"]))] = r
+            summary = [existing[k] for k in sorted(existing)]
         save_json(out_dir / name, summary)
     return 0
 

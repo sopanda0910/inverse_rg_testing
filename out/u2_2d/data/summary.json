@@ -1,5 +1,35 @@
 [
   {
+    "beta": 14.0,
+    "lattice_size": 16,
+    "n_configs": 4096,
+    "n_chains": 1024,
+    "acceptance_rate": 0.7708984375,
+    "winding_acceptance_rate": 0.506396484375,
+    "plaquette": 0.853439450263977,
+    "plaquette_exact": 0.8534258369095684,
+    "q_squared": 2.180908203125,
+    "q_squared_exact": 2.207397088674199,
+    "seconds": 243.26011395454407,
+    "sector_seeded": false,
+    "thermalize_sweeps": 60
+  },
+  {
+    "beta": 28.0,
+    "lattice_size": 16,
+    "n_configs": 4096,
+    "n_chains": 1024,
+    "acceptance_rate": 0.804296875,
+    "winding_acceptance_rate": 0.351513671875,
+    "plaquette": 0.9278549551963806,
+    "plaquette_exact": 0.9278238877793602,
+    "q_squared": 0.966796875,
+    "q_squared_exact": 1.0011896092760386,
+    "seconds": 212.1410903930664,
+    "sector_seeded": false,
+    "thermalize_sweeps": 60
+  },
+  {
     "beta": 105.651,
     "lattice_size": 32,
     "n_configs": 512,
@@ -24,6 +54,20 @@
     "q_squared": 0.1953125,
     "q_squared_exact": 0.21542882374271488,
     "seconds": 303.84549283981323,
+    "sector_seeded": true,
+    "thermalize_sweeps": 60
+  },
+  {
+    "beta": 416.524,
+    "lattice_size": 64,
+    "n_configs": 512,
+    "acceptance_rate": 0.36796875,
+    "winding_acceptance_rate": 0.3515625,
+    "plaquette": 0.9951847791671753,
+    "plaquette_exact": 0.9951954459438838,
+    "q_squared": 0.9765625,
+    "q_squared_exact": 1.0011887008808318,
+    "seconds": 427.36710143089294,
     "sector_seeded": true,
     "thermalize_sweeps": 60
   }

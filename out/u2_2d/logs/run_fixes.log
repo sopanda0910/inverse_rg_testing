@@ -1,0 +1,25 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260820102645
+Username: OM\ompan
+RunAs User: OM\ompan
+Configuration Name: 
+Machine: OM (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -NoProfile -ExecutionPolicy Bypass -File C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\scripts\run_fixes.ps1
+Process ID: 8548
+PSVersion: 5.1.26100.9168
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.9168
+BuildVersion: 10.0.26100.9168
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+repo   C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing
+python C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe
+pid    8548
+prolongator_L64 finished; starting the queue
+[skip] fix0_prolongator_L64  (found C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\out\u2_2d\prolongator_L64\report.md)
+
+=== fix1a_base14  10:26:45 ===

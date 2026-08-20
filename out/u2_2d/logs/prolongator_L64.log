@@ -1,0 +1,13 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+rung 1: L=64 beta=416.524, 64 chains, 400 trajectories per arm
+  coarse from ladder_L32_beta105.651.pt  (32^2)
+  smear: 5 tuned sweeps (1s)
+  diffusion  t_therm(plaq)=      0  slowest=      0  |dP/P| t=0 8.21e-06  build 0s
+  tile       t_therm(plaq)=      0  slowest=      2  |dP/P| t=0 7.24e-06  build 8s
+  halve      t_therm(plaq)=      0  slowest=      2  |dP/P| t=0 1.12e-05  build 4s
+  flux       t_therm(plaq)=      0  slowest=      0  |dP/P| t=0 8.32e-06  build 4s
+  smear      t_therm(plaq)=      0  slowest=      0  |dP/P| t=0 1.14e-06  build 5s
+  cold       t_therm(plaq)=  > 400  slowest=  > 400  |dP/P| t=0 4.83e-03  build 0s
+  hot        t_therm(plaq)=  > 400  slowest=  > 400  |dP/P| t=0 1.00e+00  build 0s
+
+wrote out\u2_2d\prolongator_L64\prolongator.json and report.md

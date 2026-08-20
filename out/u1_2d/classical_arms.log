@@ -1,0 +1,29 @@
+
+=== L=32 beta=14.1464 ===
+  hmc       tau(Q^2)=     nan  changes=     0  s/traj=0.0125  s/indep=     nan  [FROZEN - tau meaningless]
+  hmc+inst  tau(Q^2)=    2.85  changes=  8447  s/traj=0.0136  s/indep=    0.08
+  open      tau(Q^2)=    1.04  changes=  9778  s/traj=0.0135  s/indep=    0.03
+
+=== L=32 beta=55.0237 ===
+  hmc       tau(Q^2)=     nan  changes=     0  s/traj=0.0208  s/indep=     nan  [FROZEN - tau meaningless]
+  hmc+inst  tau(Q^2)=    1.20  changes=  5092  s/traj=0.0229  s/indep=    0.05
+  open      tau(Q^2)=    0.55  changes=  9680  s/traj=0.0285  s/indep=    0.03
+
+=== L=32 beta=218.58 ===
+  hmc       tau(Q^2)=     nan  changes=     0  s/traj=0.0478  s/indep=     nan  [FROZEN - tau meaningless]
+  hmc+inst  tau(Q^2)=    1.39  changes=   358  s/traj=0.0462  s/indep=    0.13
+  open      tau(Q^2)=    0.52  changes=  9574  s/traj=0.0465  s/indep=    0.05
+
+| L | beta | arm | tau_int(Q^2) | sector changes | s/traj | replicas | s per independent config |
+|---|---|---|---|---|---|---|---|
+| 32 | 14.1464 | hmc | frozen | 0 | 0.0125 | 1 | -- |
+| 32 | 14.1464 | hmc+inst | 2.9 | 8447 | 0.0136 | 1 | 0.08 |
+| 32 | 14.1464 | open | 1.0 | 9778 | 0.0135 | 1 | 0.03 |
+| 32 | 55.0237 | hmc | frozen | 0 | 0.0208 | 1 | -- |
+| 32 | 55.0237 | hmc+inst | 1.2 | 5092 | 0.0229 | 1 | 0.05 |
+| 32 | 55.0237 | open | 0.5 | 9680 | 0.0285 | 1 | 0.03 |
+| 32 | 218.58 | hmc | frozen | 0 | 0.0478 | 1 | -- |
+| 32 | 218.58 | hmc+inst | 1.4 | 358 | 0.0462 | 1 | 0.13 |
+| 32 | 218.58 | open | 0.5 | 9574 | 0.0465 | 1 | 0.05 |
+
+wrote out\u1_2d\classical_arms\ptbc_benchmark.json

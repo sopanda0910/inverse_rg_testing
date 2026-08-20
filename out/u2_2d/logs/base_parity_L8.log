@@ -1,0 +1,11 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+
+L = 8, 128 chains, hot start, no burn-in, 1000 trajectories each
+
+    beta  beta L   Q chg  parity flips  odd frac   exact  binom z  tau(Q^2)
+    6.00      48   20304         12810    0.4983  0.4999    -1.77      0.53
+   10.00      80   14296          7100    0.4895  0.4854    +0.51      0.56
+   14.00     112    6864           347    0.4041  0.4341    +0.26      3.63
+   20.00     160    5862             4    0.4437  0.3335    +2.87      1.46
+
+wrote out\u2_2d\base_parity_L8\report.md

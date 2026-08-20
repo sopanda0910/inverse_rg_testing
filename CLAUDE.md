@@ -96,26 +96,48 @@ closed and `su2_2d/` is set aside.
     `beta / V` — which the matched ladder holds nearly CONSTANT (0.219 -> 0.202 ->
     0.198 -> 0.197 across L = 8..64). Even-charge mobility is a ladder invariant
     and never degrades.
-  * ODD dQ must cross the Z_2 monodromy at cost `O(beta L)`, governed by `beta L`,
-    which grows as L^3 along the ladder (112 -> 828 -> 6501 -> 51766).
+  * ODD dQ must cross the Z_2 monodromy. **Its controlling parameter is `beta`,
+    NOT `beta L` — corrected 2026-08-20, and the earlier `beta L` claim here was
+    wrong.** `scripts/15_base_parity.py` counts PARITY FLIPS directly instead of
+    inferring mobility from a verdict, and they collapse on `beta` at both volumes:
+    L=8 gives 12810 / 7100 / 347 / 4 flips at beta = 6 / 10 / 14 / 20, and L=16
+    gives 2453 / 2 / 0 at beta = 14 / 21 / 28. Under `beta L` that does not
+    collapse at all — L=16 at `beta L` = 224 flips 2453 times while L=8 at
+    `beta L` = 160 flips four. Odd mobility dies between **beta = 14 and beta = 20
+    at every volume tested**, with the per-site rate falling ~100x across it.
   Consequence: the ordinary freezing diagnostic ("does the chain change sector?")
   reports HEALTHY in a regime where P(Q) is 20% wrong, because even moves keep
   firing while the odd/even balance is stuck. Do NOT conclude a coupling is ergodic
-  from sector-change counts. `scripts/07_pq_sampling.py` is the correct test; its
-  `PARITY-STUCK` verdict is the case that matters, and it needs the COHERENT
-  odd-sector weight (each odd sector is individually within 1 sigma; jointly they
-  are not). Measured boundary: **beta L ~ 450 SAMPLED, ~830 PARITY-STUCK**, sharp,
-  with 13000-22000 sector changes and zero frozen chains on the frozen side.
+  from sector-change counts. But do NOT use `07_pq_sampling.py`'s `PARITY-STUCK`
+  verdict as the mobility test either: it is a hypothesis test on ONE binomial draw
+  of the odd weight and it passes on luck. It calls L=16, beta=28 SAMPLED, and that
+  coupling has **zero** parity flips in 256 chains over 2000 trajectories. Count
+  flips (stage 15) to establish mobility; use stage 07 to test the resulting
+  distribution. The superseded boundary quoted here — `beta L ~ 450 SAMPLED, ~830
+  PARITY-STUCK` — was fitted to the L=16 verdicts alone and the L=8 points
+  contradict it.
   Separately, a thermalization boundary at `beta / V ~ 0.25`: at beta = 20, L = 8 a
   hot start cannot relax DOWN (17% of chains stranded, <Q^2> 63% high) and a cold
   start cannot climb UP. beta = 14 at L = 8 is inside the window in both directions.
 
-  **The ladder base is now SAMPLED, not seeded (2026-08-19).** `seed_exact_sectors`
-  is off at L = 8 and at the L = 16 base, because those couplings genuinely
-  equilibrate topology; the colder rungs stay seeded, which is safe because they
-  are training data and validation references and topology is TRANSPORTED, not
-  learned (`apply_coarse_charge` imposes Q). This converts the study's weakest claim
-  ("P(Q) is exact by construction so it is not evidence") into its strongest.
+  **The ladder base is UNSEEDED, and the claim has to be stated in two halves
+  (revised 2026-08-20).** `seed_exact_sectors` is off at L = 8 and at the L = 16
+  base; the colder rungs stay seeded, which is safe because they are training data
+  and validation references and topology is TRANSPORTED, not learned
+  (`apply_coarse_charge` imposes Q). What the base genuinely samples is the sector
+  shape WITHIN a parity class — 106823 Q changes per 1024 chains per 1200
+  trajectories, tau_int(Q^2) = 0.55 draws, chi2/dof 1.53. What it does NOT sample is
+  the parity weight itself: zero flips, ever. That weight is frozen in during the
+  hot-start ordering, one independent draw per chain, and the proof is that the
+  identical procedure from a COLD start gives odd fraction 0.0000 against a hot
+  start's 0.4727 at the same coupling (exact 0.4928). At L = 8, beta = 20 — where
+  the exact odd weight is 0.3335 rather than ~1/2 — the hot quench returns 0.5156,
+  wrong by +55%, so the quench does not sample parity, it lands near 1/2.
+  **The base is safe for a reason that must be quoted, not assumed:** exact P(odd)
+  is within 1% of 1/2 whenever <Q^2> >~ 1, and the base has <Q^2> = 1.0012, so the
+  frozen-in weight is right to ~0.007 absolute — 0.45 sigma at 1024 chains. A base
+  with narrow P(Q) would fail this badly. If a fully mobile base is ever needed,
+  L = 16 at beta = 14 has 2453 flips and odd z = +0.50.
   beta = 51.75 and 56 at L = 16 are NOT usable as a base — both PARITY-STUCK. Do
   not raise the base coupling without re-running `07_pq_sampling.py`.
 
@@ -138,16 +160,29 @@ closed and `su2_2d/` is set aside.
   cost, because odd charge has probability zero in its stationary distribution
   rather than merely long autocorrelation. A seconds-ratio against an arm sampling
   the wrong distribution is meaningless, so state the two claims separately.
-  `scripts/13_cost_comparison.py`.
+  `scripts/13_cost_comparison.py`. **The "the sampler is untuned" hedge was tested
+  (2026-08-20, `scripts/14_sampler_steps.py`) and it is REAL, worth about 3x:** at 25
+  steps instead of 200 the top rung goes from 2.22x slower to 1.38x FASTER than
+  hmc+winding, at ~2.7x the extended-loop error and no measurable change in local
+  observables after retherm. Below 18 steps the lift collapses. The ladder of record
+  stays at 200 because it is the accuracy measurement; a production run should use
+  25. What does not move is the ~90 s fixed overhead per ladder pass (30 SU(2) +
+  10 retherm sweeps) — that is the next knob, not the sampler.
 
   **The seed benchmark (`scripts/08_hmc_seed_benchmark.py`) is the headline.** At
   L = 64, beta = 416.524, 300 trajectories, four arms: the diffusion seed starts at
-  relative plaquette error 7.8e-07 (cold start 4.8e-03, i.e. 6200x worse) and does
-  not move; the cold arms plateau at 5e-05 after 300 trajectories, still 25x
-  further from exact than the seed was at t = 0; a hot start never thermalizes at
-  all (flat at 6e-02). Sector coverage: seed 0.991 of exact P(Q) with 2 odd
-  sectors, cold 0.399 with 0, cold+winding 0.507 with 0. Read coverage WITH <Q^2>
-  — the hot arm "covers" 1.000 while carrying <Q^2> = 109 against exact 1.001.
+  relative plaquette error 8.2e-06 against a cold start's 4.8e-03, and does not
+  move; the cold arms plateau at ~4e-05 after 300 trajectories, still 5x further
+  from exact than the seed was at t = 0; a hot start never thermalizes at all (flat
+  at 6e-02). **Do NOT quote the seed's t=0 error as a ratio.** With 64
+  configurations the sampling floor on that number is ~7e-06, so 8.2e-06 IS the
+  floor; an earlier run measured 7.8e-07 and a "6200x better" ratio was quoted off
+  it, which was measuring noise. The defensible statement: the seed is at
+  equilibrium to within the resolution the ensemble can offer, while a cold start
+  is three orders of magnitude away. Sector coverage: seed 0.995 of exact P(Q) with
+  3 odd sectors, cold 0.399 with 0, cold+winding 0.507 with 0. Read coverage WITH
+  <Q^2> — the hot arm "covers" 1.000 while carrying <Q^2> = 109 against exact
+  1.001.
 
   **Training needs COUPLING coverage, not lattice-size coverage.** The score net is
   fully convolutional and conditioned on `det_lift.model_beta` (the minimum-KL U(1)
@@ -311,6 +346,14 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
   seeded; the `PARITY-STUCK` verdict is the U(2)-specific one. Minutes.
 - `python u2_2d/scripts/08_hmc_seed_benchmark.py` — the headline claim: a generated
   configuration as an HMC starting point, against cold, hot, and winding baselines.
+- `python u2_2d/scripts/15_base_parity.py` — counts PARITY FLIPS. The correct test
+  for odd-charge mobility, and it supersedes reading it off 07's verdict. `--cold`
+  adds the cold-start arm, which is what proves the split is inherited rather than
+  sampled where the flip count is zero.
+- `python u2_2d/scripts/14_sampler_steps.py` — the reverse-diffusion step count as a
+  cost/accuracy dial. Read the RUNG 0 pre-retherm column (its input is the fixed HMC
+  base) and the top rung's extended loops; the top rung's plaquette compounds two
+  lifts and crosses zero near 18 steps, so tuning on it picks a bad setting.
 - `python u2_2d/scripts/09_verify_identities.py` — the exact U(2) identities
   (group representation, gauge invariance, the determinant telescope, analytic
   force vs autograd, microcanonical overrelaxation, winding parity, the character

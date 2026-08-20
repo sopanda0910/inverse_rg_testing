@@ -13,9 +13,15 @@ Six figures carrying the study's claims, in the order the argument runs:
                                  ensembles can agree on <W> to 1e-6 and disagree
                                  on its width, and the width is what a density
                                  claim rests on.
-    fig09  sampling regimes   -- where P(Q) can be sampled rather than seeded,
-                                 in the (beta/V, beta L) plane that separates the
-                                 two U(2) freezing mechanisms.
+    fig09  parity mobility    -- parity FLIPS per chain-trajectory against beta,
+                                 beside the ordinary sector-change count over the
+                                 same range. The left panel falls by three orders
+                                 of magnitude where the right one barely moves,
+                                 which is the whole two-mechanism story in one
+                                 picture. Replaces an earlier version drawn in
+                                 the (beta L, beta/V) plane off stage-07
+                                 verdicts: beta L does not organise the data and
+                                 the verdict passes on luck.
     fig10  winding economics  -- the Z_2 obstruction as a cost curve: even charge
                                  free, odd charge O(beta L), and what the exact
                                  conditional SU(2) sampler recovers.
@@ -202,36 +208,60 @@ def figure_area_law(validation, path: Path) -> None:
     plt.close(fig)
 
 
-def figure_sampling_regimes(scans: list, path: Path) -> None:
-    """Where P(Q) can be sampled, in the plane of the two freezing mechanisms."""
-    fig, ax = plt.subplots(figsize=(6.6, 4.6))
-    marks = {"SAMPLED": ("o", "#2e7d32", "sampled"),
-             "PARITY-STUCK": ("s", "#c2571a", "parity-stuck"),
-             "FROZEN": ("v", "#7a1fa2", "frozen"),
-             "DISAGREES": ("X", "#b00020", "disagrees")}
-    seen = set()
-    for r in scans:
-        v = r.get("verdict", "SAMPLED")
-        m, c, lab = marks.get(v, ("o", "0.4", v))
-        ax.scatter(r["beta"] * r["lattice_size"],
-                   r.get("beta_over_volume", r["beta"] / r["lattice_size"] ** 2),
-                   marker=m, color=c, s=64, zorder=3,
-                   label=lab if lab not in seen else None)
-        seen.add(lab)
-        ax.annotate(f"  {r['lattice_size']}/{r['beta']:g}",
-                    (r["beta"] * r["lattice_size"],
-                     r.get("beta_over_volume", r["beta"] / r["lattice_size"] ** 2)),
-                    fontsize=6.5, color="0.3")
-    ax.axvspan(450, 830, color="0.85", zorder=0)
-    ax.text(610, ax.get_ylim()[1] * 0.92, "parity\nboundary", fontsize=7.5,
-            ha="center", color="0.4")
-    ax.set_xscale("log")
-    ax.set_xlabel(r"$\beta L$  (odd-charge barrier)")
-    ax.set_ylabel(r"$\beta / V$  (even-charge / central instanton cost)")
-    ax.set_title("Where P(Q) can be sampled rather than seeded")
-    ax.legend(frameon=False, fontsize=8, loc="upper left")
-    ax.grid(alpha=0.25, which="both")
-    fig.tight_layout()
+def figure_sampling_regimes(records: list, path: Path) -> None:
+    """Parity mobility against beta, with the ordinary diagnostic beside it.
+
+    This replaces an earlier version drawn in the (beta L, beta / V) plane with
+    stage-07 verdicts as the markers. Both choices were wrong. The verdict is a
+    hypothesis test on one binomial draw of the odd weight and passes on luck --
+    it calls the ladder base SAMPLED at a coupling with zero parity flips -- and
+    beta L does not organise the data: L = 16 at beta L = 224 flips 2453 times
+    while L = 8 at beta L = 160 flips four. Counting flips against beta does.
+    """
+    hot = [r for r in records if r.get("start", "hot") == "hot"]
+    if not hot:
+        return
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9.4, 4.2), sharex=True)
+    styles = {8: ("o", "#2e7d32", r"$L = 8$"), 16: ("s", "#1f4e9c", r"$L = 16$")}
+    floor = 3e-7
+    for size in sorted({r["lattice_size"] for r in hot}):
+        rows = sorted((r for r in hot if r["lattice_size"] == size),
+                      key=lambda r: r["beta"])
+        m, c, lab = styles.get(size, ("^", "0.4", f"$L = {size}$"))
+        norm = [r["n_chains"] * r["n_trajectories"] for r in rows]
+        beta = [r["beta"] for r in rows]
+        # Zero flips cannot be drawn on a log axis; plot it at a visible floor and
+        # mark it open, so "none observed" never reads as a small measured rate.
+        rate = [r["parity_flips"] / n for r, n in zip(rows, norm)]
+        ax.plot(beta, [max(x, floor) for x in rate], m + "-", color=c, label=lab,
+                markersize=6, linewidth=1.2)
+        for b, x in zip(beta, rate):
+            if x == 0:
+                ax.plot([b], [floor], m, color=c, markersize=9,
+                        markerfacecolor="white", markeredgewidth=1.4, zorder=4)
+        ax2.plot(beta, [r["q_sector_changes"] / n for r, n in zip(rows, norm)],
+                 m + "-", color=c, label=lab, markersize=6, linewidth=1.2)
+    ax.axvspan(14, 20, color="#c2571a", alpha=0.13, zorder=0)
+    ax.text(17, floor * 4, "mobility\nedge", fontsize=7.5, ha="center",
+            color="#8a3d10")
+    ax.axhline(floor, color="0.7", linewidth=0.8, linestyle=":")
+    ax.text(24.5, floor * 1.25, "none observed", fontsize=6.5, color="0.45",
+            ha="right")
+    ax.set_yscale("log")
+    ax.set_ylabel("parity flips per chain-trajectory")
+    ax.set_title(r"Odd/even mobility dies at $\beta \approx 15$-$20$")
+    ax2.axvspan(14, 20, color="#c2571a", alpha=0.13, zorder=0)
+    ax2.set_yscale("log")
+    ax2.set_ylabel("$Q$ changes per chain-trajectory")
+    ax2.set_title("The usual diagnostic, over the same range")
+    for a in (ax, ax2):
+        a.set_xlabel(r"$\beta$")
+        a.grid(alpha=0.25, which="both")
+        a.legend(frameon=False, fontsize=8)
+    ax2.set_ylim(ax2.get_ylim()[0] * 0.5, ax2.get_ylim()[1] * 2)
+    fig.suptitle("Two mechanisms, one axis: only the left panel sees the freeze",
+                 fontsize=10)
+    fig.tight_layout(rect=(0, 0, 1, 0.95))
     fig.savefig(path, dpi=150)
     plt.close(fig)
 
@@ -324,13 +354,13 @@ def main() -> int:
         figure_wilson_spread(dists, out_dir / "fig08_wilson_spread.png")
         print("wrote fig08")
 
-    scans = []
-    for name in ("pq_sampling", "pq_sampling_L16", "pq_sampling_L32"):
-        rows = _load(Path("out/u2_2d") / name / "pq_sampling.json")
+    parity = []
+    for name in ("base_parity_L8", "base_parity"):
+        rows = _load(Path("out/u2_2d") / name / "base_parity.json")
         if rows:
-            scans.extend(rows)
-    if scans:
-        figure_sampling_regimes(scans, out_dir / "fig09_sampling_regimes.png")
+            parity.extend(rows if isinstance(rows, list) else [rows])
+    if parity:
+        figure_sampling_regimes(parity, out_dir / "fig09_parity_mobility.png")
         print("wrote fig09")
 
     topo = _load(Path("out/u2_2d/topology/topology_study.json"))
