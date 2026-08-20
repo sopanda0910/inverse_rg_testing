@@ -102,6 +102,10 @@ def main() -> int:
     parser.add_argument("--device", default=None)
     parser.add_argument("--seed", type=int, default=1818)
     parser.add_argument("--out-dir", default="out/u2_2d/density_gap")
+    parser.add_argument("--checkpoint", default=None,
+                        help="override the config checkpoint; required to A/B two "
+                             "trained nets, since --out-dir alone silently reruns "
+                             "the same weights into a new directory")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -111,11 +115,12 @@ def main() -> int:
     print(configure_device(device))
     set_seed(args.seed)
 
-    checkpoint = config["train"].get("checkpoint_path",
-                                     "out/u2_2d/checkpoints/det_score_net.pt")
+    checkpoint = args.checkpoint or config["train"].get(
+        "checkpoint_path", "out/u2_2d/checkpoints/det_score_net.pt")
     if not Path(checkpoint).exists():
         print(f"missing {checkpoint} -- run stage 02 first")
         return 1
+    print(f"checkpoint {checkpoint}")
     model, schedule = load_model(checkpoint, device)
 
     data_dir = config["data"].get("out_dir", "out/u2_2d/data")

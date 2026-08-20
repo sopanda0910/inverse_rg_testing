@@ -250,9 +250,25 @@ def main() -> int:
     parser.add_argument("--n-chains", type=int, default=64)
     parser.add_argument("--rung", type=int, default=-1,
                         help="ladder rung to test (-1 = the top one)")
+    parser.add_argument("--checkpoint", default=None,
+                        help="score-net checkpoint for the `diffusion_raw` arm "
+                             "(default: the config's)")
+    parser.add_argument("--n-su2", type=int, default=None,
+                        help="conditional SU(2) sweeps (default: ladder config)")
+    parser.add_argument("--n-retherm", type=int, default=None,
+                        help="rethermalization sweeps (default: ladder config). "
+                             "Pass 0 to measure the LIFT alone, which is what "
+                             "u1_2d's 37_tiling_baseline.py does -- the default "
+                             "10 sweeps repair a bad lift and saturate t_therm.")
     parser.add_argument("--arms", nargs="+",
                         default=["diffusion", "tile", "halve", "flux", "smear",
-                                 "cold", "hot"])
+                                 "cold", "hot"],
+                        help="`diffusion` loads stage 03's saved output, which "
+                             "already carries the ladder's retherm sweeps; "
+                             "`diffusion_raw` regenerates the lift here so it "
+                             "gets exactly the same post-processing as the "
+                             "geometric arms. Use diffusion_raw with "
+                             "--n-retherm 0.")
     args = parser.parse_args()
 
     config = load_config(args.config)
@@ -292,8 +308,26 @@ def main() -> int:
           f"{args.n_traj} trajectories per arm")
     print(f"  coarse from {coarse_path.name}  ({coarse.shape[-3]}^2)")
 
-    n_su2 = int(ladder_cfg.get("n_su2_sweeps", 30))
-    n_retherm = int(ladder_cfg.get("n_retherm_sweeps", 10))
+    # Both sweep counts are overridable, and --n-retherm 0 is the setting that
+    # makes this ablation comparable to u1_2d's `37_tiling_baseline.py`.
+    #
+    # THE DEFAULT IS NOT A NEUTRAL COMPARISON. `retherm_sweeps` is heatbath plus
+    # two overrelaxations on BOTH sectors, so ten of them equilibrate local
+    # structure from almost any start -- which is why every arm here lands at
+    # t_therm = 0 while u1_2d's geometric arms, fed straight to HMC with no
+    # rethermalization, need 49-696 trajectories. The saturation is the repair
+    # stage, not evidence that the arms are equally good lifts.
+    #
+    # Note it is NOT the conditional SU(2) sampler that repairs a bad psi: that
+    # runs with update_phase=False and returns psi bit-for-bit unchanged, which
+    # is why `halve` is still -18.8% wrong in the pre-retherm column measured
+    # after those 30 sweeps.
+    n_su2 = int(args.n_su2 if args.n_su2 is not None
+                else ladder_cfg.get("n_su2_sweeps", 30))
+    n_retherm = int(args.n_retherm if args.n_retherm is not None
+                    else ladder_cfg.get("n_retherm_sweeps", 10))
+    print(f"  post-processing: {n_su2} conditional SU(2) sweeps, "
+          f"{n_retherm} rethermalization sweeps")
     action = WilsonU2Action(beta)
     step_size, n_steps = adapted_hmc_params(beta)
     sampler = BatchedHMCU2(size, action, n_chains=n_chains, n_steps=n_steps,
@@ -311,6 +345,35 @@ def main() -> int:
         if name == "diffusion":
             starts[name] = generated
             pre_plaq[name] = raw_pre
+        elif name == "diffusion_raw":
+            # Regenerate rather than load, so this arm receives the same
+            # n_su2/n_retherm every other arm does. Loading stage 03's output
+            # would silently import ten rethermalization sweeps the geometric
+            # arms did not get.
+            from u2_2d.model.det_lift import load_det_model
+            from u2_2d.pipeline.ladder import generate_fine_from_coarse
+
+            ckpt = args.checkpoint or config["train"].get(
+                "checkpoint_path", "out/u2_2d/checkpoints/det_score_net.pt")
+            if not Path(ckpt).exists():
+                print(f"  missing checkpoint {ckpt}, skipping diffusion_raw")
+                continue
+            model, sched = load_det_model(ckpt, device=device)
+            fine = generate_fine_from_coarse(
+                model, sched, coarse, beta,
+                n_su2_sweeps=n_su2, device=device,
+                n_sampler_steps=int(ladder_cfg.get("n_sampler_steps", 200)),
+                n_corrector_steps=int(ladder_cfg.get("n_corrector_steps", 1)),
+                batch_size=int(ladder_cfg.get("batch_size", 64)),
+                consistency_weight=float(ladder_cfg.get("consistency_weight", 1.0)),
+                physics_blend_coef=float(ladder_cfg.get("physics_blend_coef", 0.0)),
+            )
+            with torch.no_grad():
+                pre_plaq[name] = float(half_retr(plaquette(fine.to(device))).mean())
+                if n_retherm:
+                    fine = retherm_sweeps(fine.to(device), WilsonU2Action(beta),
+                                          n_retherm, topological_updates=False)
+            starts[name] = fine.cpu()
         elif name in GEOMETRIC:
             starts[name], pre_plaq[name] = assemble(
                 GEOMETRIC[name](psi_coarse), coarse, beta, n_su2, n_retherm, device)
@@ -453,10 +516,63 @@ def _write_report(path: Path, rows: list, n_su2: int, n_retherm: int) -> None:
     diff = next((r for r in rows if r["arm"] == "diffusion"), None)
     lines += ["", "## What to read off it", ""]
     if diff is not None and cold is not None:
+        # Report BOTH columns and name the best geometric arm in each. Quoting
+        # the diffusion-vs-cold margin alone made an earlier version of this
+        # report self-undermining: it advertised a three-orders-of-magnitude win
+        # over the weakest arm two lines above telling the reader not to compare
+        # against that arm. The pre-retherm column is where the lift wins; the
+        # t=0 column is where the exact SU(2) sampler erases the difference.
+        def _pre(r):
+            v = r.get("rel_err_pre_retherm")
+            return None if v is None else abs(v)
+
+        d_pre = _pre(diff)
+        d_t0 = abs(diff["rel_err_initial"]["plaquette"])
+        # Compare against every NON-LEARNED lift, not just GEOMETRIC. `smear` is
+        # built outside that dict, and it is the strongest baseline at the top
+        # rung (1.14e-06 vs tile's 7.24e-06 at t=0) as well as the arm this
+        # report already calls "the arm that matters" -- omitting it understated
+        # the baseline and flattered the model.
+        baselines = [r for r in rows
+                     if r["arm"] in GEOMETRIC or r["arm"] == "smear"]
+        cand = [r for r in baselines if _pre(r) is not None]
+        best_pre = min(cand, key=_pre) if cand else None
+        best_t0 = (min(baselines,
+                       key=lambda r: abs(r["rel_err_initial"]["plaquette"]))
+                   if baselines else None)
+
+        if d_pre is not None and best_pre is not None and d_pre > 0:
+            b = _pre(best_pre)
+            lines.append(
+                f"**Pre-rethermalization the learned lift is {b / d_pre:.0f}x "
+                f"closer to exact than the best geometric arm** "
+                f"(`{best_pre['arm']}`): {d_pre:.2e} against {b:.2e}.")
+
+        if best_t0 is not None:
+            b0 = abs(best_t0["rel_err_initial"]["plaquette"])
+            if b0 > 0 and d_t0 > 0:
+                rel = d_t0 / b0
+                def _x(v):
+                    return f"{v:.1f}x" if v < 10 else f"{v:.0f}x"
+
+                verdict = (
+                    f"**{_x(rel)} WORSE than `{best_t0['arm']}`**" if rel > 1.05
+                    else f"{_x(1 / rel)} better than `{best_t0['arm']}`"
+                    if rel < 0.95 else f"level with `{best_t0['arm']}`")
+                lines.append(
+                    f"After the identical post-processing every arm receives, "
+                    f"that margin is gone: at $t = 0$ the diffusion arm is "
+                    f"{verdict} ({d_t0:.2e} against {b0:.2e}). The exact "
+                    f"conditional SU(2) sampler repairs a bad determinant "
+                    f"sector, so **local observables do not discriminate the "
+                    f"lift.** Argue the model on topology and extended loops, "
+                    f"not on the plaquette.")
+
         lines.append(
-            f"The diffusion arm starts at $|\\Delta P/P| = "
-            f"{abs(diff['rel_err_initial']['plaquette']):.2e}$ against the cold "
-            f"start's ${abs(cold['rel_err_initial']['plaquette']):.2e}$.")
+            f"For scale the cold start begins at "
+            f"{abs(cold['rel_err_initial']['plaquette']):.2e}. It is the control "
+            f"that gives the plot dynamic range, not the comparison that "
+            f"supports the claim.")
     if geo and cold is not None:
         worse = [r["arm"] for r in geo
                  if (r["t_therm_slowest"] is None
@@ -471,9 +587,10 @@ def _write_report(path: Path, rows: list, n_su2: int, n_retherm: int) -> None:
                 "not to having been handed the coarse configuration.")
         else:
             lines.append(
-                "The geometric prolongators beat a fresh cold start here, so part "
-                "of the seed's advantage is available without a model. Quote the "
-                "margin over `flux`, not over `cold`.")
+                "Every geometric prolongator beats a fresh cold start here, so "
+                "the bulk of the seed's advantage over `cold` is available "
+                "without a model at all -- which is why the cold margin must "
+                "never be the headline number.")
     lines += [
         "",
         "`smear` is the arm that matters: `flux` plus heatbath + overrelaxation "

@@ -685,6 +685,98 @@ The diffusion arm uses the first 64 configurations of the 512-configuration
 ensemble, so its sampling error on the second moment is about 0.09 and it
 will not equal the ladder value exactly.
 
+### Is the *learned* lift necessary? The prolongator ablation
+
+The seed benchmark above compares the diffusion seed against cold, hot and
+winding starts, and wins by three orders of magnitude. That comparison is too
+easy, and on its own it does not support the claim the method needs. A cold
+start is not the alternative a skeptic has in mind. The alternative is a
+**cheap geometric prolongator** — an explicit, non-learned map from the coarse
+$\psi$ to a fine $\psi$ — and if one of those does the same job, the score
+network is decoration.
+
+Four were built (`u2_2d/scripts/17_prolongator_baseline.py`), all acting on the
+determinant sector only, so they are drop-in replacements for the model:
+
+* `halve` — the exact inverse of determinant blocking: give each of the four
+  fine links the coarse link phase halved. Reproduces the coarse plaquette
+  exactly and is maximally smooth.
+* `tile` — nearest-neighbour replication of the coarse field.
+* `flux` — `halve` with the plaquette flux redistributed uniformly.
+* `smear` — `flux` followed by heatbath + overrelaxation sweeps, the sweep count
+  tuned *per coupling* to match the exact plaquette. This is the arm that
+  matters; it is what a competent practitioner would actually write.
+
+Every arm then receives **identical** post-processing — coarse-charge
+enforcement on $\psi$, 30 conditional SU(2) sweeps, 10 rethermalization sweeps.
+Only the lift differs. Because the SU(2) sampler is exact at frozen $\psi$, the
+ablation is clean: the map from coarse $\psi$ to fine $\psi$ is the only learned
+object in the pipeline, and it is the only thing being swapped.
+
+Run at both rungs, 64 chains, 400 trajectories per arm:
+
+| | rel err **pre**-retherm | $\|\Delta P/P\|$ at $t=0$ | $t_{\rm therm}$ |
+|---|---|---|---|
+| **$L=32$, $\beta=105.651$** | | | |
+| diffusion | $+1.02\times10^{-4}$ | $3.27\times10^{-5}$ | 0 |
+| tile | $-1.49\times10^{-2}$ | $7.69\times10^{-5}$ | 0 |
+| flux | $-9.46\times10^{-2}$ | $6.72\times10^{-5}$ | 0 |
+| smear | $-9.46\times10^{-2}$ | $4.85\times10^{-6}$ | 0 |
+| halve | $-1.88\times10^{-1}$ | $\mathbf{1.83\times10^{-6}}$ | 0 |
+| cold | — | $1.93\times10^{-2}$ | 136 |
+| **$L=64$, $\beta=416.524$** | | | |
+| diffusion | $+6.47\times10^{-5}$ | $8.21\times10^{-6}$ | 0 |
+| tile | $-3.64\times10^{-3}$ | $7.24\times10^{-6}$ | 2 |
+| flux | $-9.65\times10^{-2}$ | $8.32\times10^{-6}$ | 0 |
+| smear | $-9.65\times10^{-2}$ | $\mathbf{1.14\times10^{-6}}$ | 0 |
+| halve | $-1.89\times10^{-1}$ | $1.12\times10^{-5}$ | 2 |
+| cold | — | $4.83\times10^{-3}$ | > 400 |
+
+**The result is a split verdict, and the negative half is the more important
+one.**
+
+On the **raw lift** the model is not close to being matched. Pre-rethermalization
+it sits at $1.0\times10^{-4}$ and $6.5\times10^{-5}$ where the best geometric map
+is off by $1.5\times10^{-2}$ and the worst by $19\%$ — a margin of two to three
+orders of magnitude at both rungs. As a learned approximation to
+$p(\psi_{\rm fine} \mid \psi_{\rm coarse})$ the network is doing something no
+cheap explicit map comes near.
+
+On the **delivered configuration** that margin is gone. After the post-processing
+every arm receives anyway, the ordering *reverses*: `smear` beats diffusion by
+$7\times$ at both rungs, and at $L=32$ `halve` — which arrives $19\%$ wrong on the
+plaquette — finishes $18\times$ closer than the model. Thermalization time cannot
+separate the arms at all: every lift reaches $t_{\rm therm} = 0$, against 136 and
+$> 400$ for a cold start.
+
+The explanation is not subtle, and it is the same fact that makes the U(2)
+factorization attractive in the first place: **the exact conditional SU(2)
+sampler is strong enough to repair a bad $\psi$.** Thirty sweeps at frozen
+determinant plus ten rethermalization sweeps take an $19\%$ plaquette error to
+$10^{-6}$. The pipeline's own correctness machinery dominates the quality of its
+input, which is a good property for exactness and a bad one for any claim that
+the learned lift is what delivers local accuracy.
+
+So the claim must be stated at the right altitude:
+
+> On local observables, the learned prolongator is **not** measurably better
+> than a naive geometric one once the pipeline's exact SU(2) sampler has run.
+> Its advantage is in the lift itself, and it survives into the delivered
+> ensemble only through quantities the sampler does not fix — topology and
+> extended loops.
+
+Those quantities are measured separately and the advantage there is real: the
+classical arm reaches **zero** odd sectors at any cost (§11), and the extended-loop
+agreement at the top rung is the subject of the next section. Neither is visible
+in the plaquette, which is precisely why the plaquette is the wrong place to
+argue this.
+
+Two honest caveats on the table. The `smear` build cost (5–7 s per ensemble) is
+charged in the source report but omitted above; it is small but not zero, and the
+model's is zero because the lift *is* the generation. And $t_{\rm therm}$
+saturating at 0 for every arm means the metric has no resolution here — it is
+reported to show that it *fails* to separate, not as evidence of a tie.
+
 ### Per-configuration Wilson spread
 
 At $L = 32$, $\beta = 105.651$. Means agree to $10^{-6}$; the width is the informative quantity.
@@ -756,6 +848,91 @@ Scan run at 512 configurations per rung, so the comparable quantity across rows 
 $\langle Q^2\rangle$ is deliberately absent from this table. It is flat by construction -- `apply_coarse_charge` imposes the coarse charge on the final sample -- so topology is transported correctly at any step count, and printing it invites reading a tautology as a result.
 
 **Cost is not linear in the step count.** The two cheapest points fit about 1.05 s per step on a fixed overhead near 90 s: the exact conditional SU(2) sampler (30 sweeps) and the rethermalization (10 sweeps), which no amount of sampler tuning touches. At 200 steps that overhead is 30% of the run, at 25 steps it is three quarters. Anyone moving down the dial hits it quickly, so `n_su2_sweeps` is the next knob to measure, not this one.
+
+### Coupling coverage: what the retrain bought, and what it cost
+
+The score network is fully convolutional and conditioned on the minimum-KL U(1)
+projection `det_lift.model_beta`, never on $L$. So its training set must cover
+the *couplings* the ladder asks for, not the volumes. The deployed checkpoint saw
+a maximum model $\beta$ of $50.8$ while the top rung needs $104.1$ — a $2.05\times$
+extrapolation, and the documented cause of a coherent negative bias in the
+extended loops there.
+
+Two rungs were added to the training set at $L = 32$ ($\beta = 105.651$ and
+$416.524$), supplying the missing couplings at a quarter of the cost of supplying
+them at $L = 64$, since the map is local. The retrained checkpoint is
+`det_score_net_cov.pt`; everything downstream was rebuilt beside the record
+(`ladder_cov/`, `validation_cov/`, `density_gap_cov/`) so the comparison is an
+A/B rather than a replacement.
+
+**The extrapolation closed, and the bias it was blamed for went with it.**
+Extended loops (area $\ge 64$) at the top rung, against the closed form:
+
+| | mean $z$ | mean $|z|$ | max $|z|$ |
+|---|---|---|---|
+| deployed | $-1.14$ | 1.14 | 2.43 |
+| coverage | $-0.23$ | **0.34** | **0.65** |
+
+$W(12\times12)$ moves $-2.43 \to -0.26$, $W(10\times12)$ $-2.11 \to -0.45$,
+$W(10\times10)$ $-1.96 \to -0.26$. The deviation is not merely smaller, it is no
+longer *coherent* — a mean of $-1.14$ over ten same-signed rows becomes $-0.23$
+with mixed signs. The corroborating detail is which validation rung moved most
+during training: `val_L32_b203.15` improved $0.694 \to 0.621$, the largest single
+change and exactly the rung sitting nearest the old extrapolation edge. Adding
+coverage repaired the neighbourhood, which is the signature a genuine
+extrapolation fix should have.
+
+**It is a trade, not an improvement, and the other two measurements both go the
+wrong way.** At the $L = 32$ rung, against the closed form:
+
+| observable set | deployed mean $|z|$ | coverage mean $|z|$ |
+|---|---|---|
+| all 41 | 0.52 | 0.92 |
+| full-U(2) Wilson loops | 0.21 | **1.10** |
+| extended loops | 0.72 | 1.56 |
+
+and the density gap is uniformly worse at every case measured:
+
+| case | deployed KL/site | coverage KL/site | $z$ |
+|---|---|---|---|
+| $8{:}3.5{:}14$ | 1.110 | 1.120 | $+1.2$ |
+| $8{:}7{:}28$ | 1.117 | 1.133 | $+2.2$ |
+| $16{:}28{:}105.651$ | 1.136 | 1.142 | $+1.6$ |
+| $32{:}105.651{:}416.524$ | 1.147 | 1.155 | $+1.9$ |
+
+The $L=32$ regression is coherent (mean $+1.10$, one sign) rather than scatter,
+so it is not a sampling artifact. The density regression is small — under $1.5\%$
+— but it is in the same direction at all four cases, which is what makes it
+believable at $z \approx 2$.
+
+The mechanism is the least interesting one available: **fixed capacity, two more
+rungs to cover.** It is visible in training before any of the downstream
+measurements — on the nine shared validation rungs the retrained net is
+marginally *better* in total ($6.098 \to 6.086$), but the improvement is
+concentrated near the new couplings while `val_L32_b56` ($+0.039$) and
+`val_L16_b14` ($+0.047$) degrade.
+
+So the correct claim is a redistribution, not a win:
+
+> Adding coupling coverage relocates accuracy toward the rung that needed it,
+> at a measurable cost everywhere else. It removes a specific, diagnosable
+> extrapolation artifact; it does not make the model better.
+
+Two consequences for anyone repeating this. First, do not report `val_total`
+across the two checkpoints — it sums over 11 rungs after the retrain and 9
+before, and the apparent degradation ($6.098 \to 7.415$) is entirely the two
+extra terms. Compare the shared rungs. Second, if both the top rung *and* the
+middle rungs need to be right, more coverage is the wrong knob; capacity or
+per-rung loss weighting is, and neither has been tried.
+
+One caveat that must be stated before these numbers are quoted. The two added
+training couplings include $L=32$, $\beta=105.651$, which is also the coupling of
+the $L=32$ validation rung. The reference *ensembles* are separate draws, so the
+$z$ columns are not circular in the strict sense — but the model has now seen data
+at that coupling, and the $L=32$ comparison above is therefore no longer a clean
+held-out test for the coverage arm. It regressed anyway, which is the direction
+that makes the conclusion safe rather than suspect; a *gain* there would have
+needed a fresh coupling to believe.
 
 ### Parity mobility: the odd fraction is a label, not an observable
 
@@ -932,6 +1109,16 @@ main presentational risk.
    U(2)-specific contribution. Show it as *sector coverage weighted by exact
    $P(Q)$*, never as a count of sectors visited: a hot start visits many sectors
    and covers little, because it visits the wrong ones.
+
+   **This claim carries more weight than the ordering suggests, because claim 1
+   does not survive the prolongator ablation intact (Part IV, "Is the *learned* lift necessary?").** Against cold and
+   hot controls the seed wins by three orders of magnitude, but against four cheap
+   geometric lifts given the same post-processing it does not win at all on local
+   observables — `smear` finishes $7\times$ closer to exact at both rungs, and
+   $t_{\rm therm}$ is 0 for every lift. What no geometric lift can do is reach odd
+   charge, because the exact SU(2) sampler repairs a bad $\psi$ but cannot change
+   $Q$. So claim 2 is the one that genuinely requires the model, and the paper
+   should be organised around it rather than around the relaxation curve.
 3. **The generated density is close to the target.** Weakest, and it should be
    stated with the U(1) caveat attached: observable agreement does not constrain
    the density. Report per-configuration *spread*, not just means.
@@ -1033,6 +1220,43 @@ into the paper:
   honest scope, and it is the right lead-in to the outlook section. Claiming
   otherwise is the one thing that would make the objection fatal instead of
   answerable.
+
+* ***"A cheap explicit prolongator would do the same job."*** — **This is the
+  strongest objection in the study and it is half correct.** It must be raised
+  and answered by the authors, because the ablation that settles it has been run
+  and it does not fully vindicate the model. Four non-learned lifts (`halve`,
+  `tile`, `flux`, `smear`) were given identical post-processing and compared at
+  both rungs (Part IV, "Is the *learned* lift necessary?"). Two facts come out, and both belong in the paper:
+
+  1. **On the raw lift the model wins by two to three orders of magnitude** —
+     pre-rethermalization relative error $\sim 10^{-4}$ against $1.5\times10^{-2}$
+     for the best geometric map and $19\%$ for the worst, at both rungs.
+  2. **On the delivered configuration the margin is gone, and the ordering
+     reverses.** `smear` finishes $7\times$ closer to exact than the model at both
+     rungs; at $L=32$ `halve` finishes $18\times$ closer. $t_{\rm therm}$ is 0 for
+     every lift and cannot separate them at all.
+
+  The cause is the exact conditional SU(2) sampler: 30 sweeps at frozen $\psi$
+  plus 10 rethermalization sweeps take a $19\%$ plaquette error to $10^{-6}$. The
+  pipeline's correctness machinery dominates the quality of its own input.
+
+  So concede the local-observable claim outright — *on the plaquette and small
+  Wilson loops, the learned prolongator is not measurably better than a naive
+  geometric one once the exact sampler has run* — and move the argument to the
+  quantities the sampler provably does not fix: the odd sectors the classical arm
+  reaches with probability **zero** at any cost (§11), and extended-loop agreement
+  at the top rung. A referee who is told this first will read the topology result
+  as the claim; one who has to discover it will read the whole paper as oversold.
+
+* *"You fixed the top rung by retraining, so the original result was an
+  artifact."* — Partly, and the A/B is reported rather than the winner (Part IV, "Coupling coverage").
+  Adding the missing couplings removed a coherent $-1.14\sigma$ extended-loop bias
+  at $L = 64$ (mean $|z|$ $1.14 \to 0.34$), which confirms the bias was
+  extrapolation and not a property of the method. But the same retrain *degraded*
+  the $L = 32$ rung (mean $|z|$ $0.52 \to 0.92$) and raised the density gap at all
+  four measured cases. It is a redistribution of fixed capacity, not an
+  improvement, and it is reported as one. The trap to avoid: `val_total` is not
+  comparable across the two checkpoints — it sums 11 rungs after and 9 before.
 
 * *"Your $P(Q)$ agreement is circular."* — Answer, and it has to be given in two
   halves (§12.2). The sector shape *within* a parity class is genuinely sampled at

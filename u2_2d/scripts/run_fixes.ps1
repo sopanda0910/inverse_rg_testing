@@ -156,8 +156,13 @@ Stage "fix3c_validate_cov" "out\u2_2d\validation_cov\summary.json" @(
     "--ladder-dir", "out\u2_2d\ladder_cov",
     "--out-dir", "out\u2_2d\validation_cov")
 
+# --checkpoint is NOT optional here. 18_density_gap.py otherwise takes the
+# checkpoint from the config, so --out-dir alone reruns the SAME weights into a
+# new directory and produces a bit-identical "A/B" -- which is exactly what
+# happened on the 2026-08-20 run (KL 9394.0 in both arms, to the decimal).
 Stage "fix3d_density_cov" "out\u2_2d\density_gap_cov\report.md" @(
     "u2_2d\scripts\18_density_gap.py", "--config", "u2_2d\configs\default.yaml",
+    "--checkpoint", "out\u2_2d\checkpoints\det_score_net_cov.pt",
     "--n-configs", "64", "--ode-steps", "120", "--n-probes", "2",
     "--batch-size", "8", "--out-dir", "out\u2_2d\density_gap_cov")
 

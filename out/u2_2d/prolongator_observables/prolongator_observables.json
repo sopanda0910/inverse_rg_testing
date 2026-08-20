@@ -1,0 +1,246 @@
+{
+  "lattice_size": 64,
+  "beta": 416.524,
+  "rung": 1,
+  "n_configs": 256,
+  "n_su2_sweeps": 30,
+  "n_retherm_sweeps": 10,
+  "reference": "u2_L64_beta416.524.pt",
+  "arms": [
+    {
+      "arm": "diffusion",
+      "n_configs": 256,
+      "extended": {
+        "n": 5,
+        "mean_z": -1.5383203027828167,
+        "mean_abs_z": 1.5383203027828167,
+        "max_abs_z": 1.784488518380017,
+        "loops": [
+          "wilson_10x10",
+          "wilson_10x12",
+          "wilson_12x12",
+          "wilson_8x10",
+          "wilson_8x8"
+        ]
+      },
+      "topology": {
+        "sectors": 7,
+        "odd_sectors": 4,
+        "p_q_covered": 0.9997269154882388,
+        "q_squared": 1.0546875
+      },
+      "seconds": 116.11189460754395,
+      "spread": {
+        "plaquette": {
+          "generated": 4.956962519391149e-05,
+          "reference": 5.417584763028882e-05,
+          "ratio": 0.9149764583692075
+        },
+        "wilson_2x2": {
+          "generated": 0.00028902878054804854,
+          "reference": 0.0003307128291993121,
+          "ratio": 0.8739569651646575
+        },
+        "wilson_4x4": {
+          "generated": 0.002091505435986025,
+          "reference": 0.002174005061917404,
+          "ratio": 0.9620517783621825
+        },
+        "wilson_8x8": {
+          "generated": 0.013595860294403607,
+          "reference": 0.013911461357156823,
+          "ratio": 0.9773135938309706
+        }
+      },
+      "plaquette_z_vs_exact": 0.41315509424932084
+    },
+    {
+      "arm": "tile",
+      "n_configs": 256,
+      "extended": {
+        "n": 5,
+        "mean_z": 0.5289292667397671,
+        "mean_abs_z": 0.5289292667397671,
+        "max_abs_z": 0.5765312494359809,
+        "loops": [
+          "wilson_10x10",
+          "wilson_10x12",
+          "wilson_12x12",
+          "wilson_8x10",
+          "wilson_8x8"
+        ]
+      },
+      "topology": {
+        "sectors": 7,
+        "odd_sectors": 4,
+        "p_q_covered": 0.9997269154882388,
+        "q_squared": 1.0546875
+      },
+      "seconds": 162.56100821495056,
+      "spread": {
+        "plaquette": {
+          "generated": 5.04054872232774e-05,
+          "reference": 5.417584763028882e-05,
+          "ratio": 0.9304051422925319
+        },
+        "wilson_2x2": {
+          "generated": 0.00032225203820248645,
+          "reference": 0.0003307128291993121,
+          "ratio": 0.9744165020228878
+        },
+        "wilson_4x4": {
+          "generated": 0.00226813731706045,
+          "reference": 0.002174005061917404,
+          "ratio": 1.0432990045846646
+        },
+        "wilson_8x8": {
+          "generated": 0.014413962488159413,
+          "reference": 0.013911461357156823,
+          "ratio": 1.0361213763314718
+        }
+      },
+      "plaquette_z_vs_exact": 0.4169463709135044
+    },
+    {
+      "arm": "halve",
+      "n_configs": 256,
+      "extended": {
+        "n": 5,
+        "mean_z": 1.9317034533311161,
+        "mean_abs_z": 1.9317034533311161,
+        "max_abs_z": 1.9709274041363631,
+        "loops": [
+          "wilson_10x10",
+          "wilson_10x12",
+          "wilson_12x12",
+          "wilson_8x10",
+          "wilson_8x8"
+        ]
+      },
+      "topology": {
+        "sectors": 7,
+        "odd_sectors": 4,
+        "p_q_covered": 0.9997269154882388,
+        "q_squared": 1.03515625
+      },
+      "seconds": 118.23660778999329,
+      "spread": {
+        "plaquette": {
+          "generated": 5.037203050453456e-05,
+          "reference": 5.417584763028882e-05,
+          "ratio": 0.9297875844654507
+        },
+        "wilson_2x2": {
+          "generated": 0.00028146441324486036,
+          "reference": 0.0003307128291993121,
+          "ratio": 0.8510840475294322
+        },
+        "wilson_4x4": {
+          "generated": 0.0020608166627200603,
+          "reference": 0.002174005061917404,
+          "ratio": 0.9479355401787726
+        },
+        "wilson_8x8": {
+          "generated": 0.013375926771830639,
+          "reference": 0.013911461357156823,
+          "ratio": 0.9615040741172259
+        }
+      },
+      "plaquette_z_vs_exact": -0.16880032962686
+    },
+    {
+      "arm": "flux",
+      "n_configs": 256,
+      "extended": {
+        "n": 5,
+        "mean_z": -0.026267249577163643,
+        "mean_abs_z": 0.13347864537737983,
+        "max_abs_z": 0.1841518322131071,
+        "loops": [
+          "wilson_10x10",
+          "wilson_10x12",
+          "wilson_12x12",
+          "wilson_8x10",
+          "wilson_8x8"
+        ]
+      },
+      "topology": {
+        "sectors": 7,
+        "odd_sectors": 4,
+        "p_q_covered": 0.9997269154882388,
+        "q_squared": 1.0546875
+      },
+      "seconds": 139.05018067359924,
+      "spread": {
+        "plaquette": {
+          "generated": 5.187471159757686e-05,
+          "reference": 5.417584763028882e-05,
+          "ratio": 0.9575246879676796
+        },
+        "wilson_2x2": {
+          "generated": 0.00030820737373431087,
+          "reference": 0.0003307128291993121,
+          "ratio": 0.9319486470498011
+        },
+        "wilson_4x4": {
+          "generated": 0.0021110340286258048,
+          "reference": 0.002174005061917404,
+          "ratio": 0.9710345507493617
+        },
+        "wilson_8x8": {
+          "generated": 0.013532156168854208,
+          "reference": 0.013911461357156823,
+          "ratio": 0.9727343390773623
+        }
+      },
+      "plaquette_z_vs_exact": -1.466387053608153
+    },
+    {
+      "arm": "smear",
+      "n_configs": 256,
+      "extended": {
+        "n": 5,
+        "mean_z": -0.3162038698300341,
+        "mean_abs_z": 0.3686624596305024,
+        "max_abs_z": 0.6984287932550595,
+        "loops": [
+          "wilson_10x10",
+          "wilson_10x12",
+          "wilson_12x12",
+          "wilson_8x10",
+          "wilson_8x8"
+        ]
+      },
+      "topology": {
+        "sectors": 7,
+        "odd_sectors": 4,
+        "p_q_covered": 0.9997269154882388,
+        "q_squared": 1.0546875
+      },
+      "seconds": 145.47295355796814,
+      "spread": {
+        "plaquette": {
+          "generated": 4.9000719610108744e-05,
+          "reference": 5.417584763028882e-05,
+          "ratio": 0.9044753659324981
+        },
+        "wilson_2x2": {
+          "generated": 0.00028934990947684436,
+          "reference": 0.0003307128291993121,
+          "ratio": 0.874927985640559
+        },
+        "wilson_4x4": {
+          "generated": 0.002121844372529756,
+          "reference": 0.002174005061917404,
+          "ratio": 0.9760070984647828
+        },
+        "wilson_8x8": {
+          "generated": 0.01404699537043496,
+          "reference": 0.013911461357156823,
+          "ratio": 1.0097426150853959
+        }
+      },
+      "plaquette_z_vs_exact": 0.06823589168840342
+    }
+  ]
+}
