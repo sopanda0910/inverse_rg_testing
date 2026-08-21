@@ -1,0 +1,978 @@
+[
+  {
+    "beta": 105.651,
+    "lattice_size": 32,
+    "n_generated": 1024,
+    "q_squared": 0.912109375,
+    "q_squared_exact": 1.001189460037426,
+    "rows": [
+      {
+        "observable": "det_plaquette",
+        "generated": 0.9809033807250671,
+        "generated_err": 2.6401899180045075e-05,
+        "reference": 0.9808678824144105,
+        "reference_err": 3.102764708714707e-05,
+        "z_vs_reference": 0.8713307779366304,
+        "exact": 0.9808861624718921,
+        "z_vs_exact": 0.6521596441833173
+      },
+      {
+        "observable": "det_wilson_10x10",
+        "generated": 0.1477993139164937,
+        "generated_err": 0.0033778433680627883,
+        "reference": 0.1278101509754682,
+        "reference_err": 0.003938064840884148,
+        "z_vs_reference": 3.852758236641086,
+        "exact": 0.14516462318362425,
+        "z_vs_exact": 0.7799919788407668
+      },
+      {
+        "observable": "det_wilson_10x12",
+        "generated": 0.10226675779688321,
+        "generated_err": 0.003344533022635699,
+        "reference": 0.08503249033249934,
+        "reference_err": 0.003876843825835227,
+        "z_vs_reference": 3.3659767521163326,
+        "exact": 0.09868086536871373,
+        "z_vs_exact": 1.0721653528012034
+      },
+      {
+        "observable": "det_wilson_12x12",
+        "generated": 0.0668211177971898,
+        "generated_err": 0.0032032920072525618,
+        "reference": 0.052634523488147046,
+        "reference_err": 0.0036746679709299943,
+        "z_vs_reference": 2.9101539341505793,
+        "exact": 0.06209827541652586,
+        "z_vs_exact": 1.4743714809548965
+      },
+      {
+        "observable": "det_wilson_1x1",
+        "generated": 0.9809033807250671,
+        "generated_err": 2.6401899180045075e-05,
+        "reference": 0.9808678824144105,
+        "reference_err": 3.102764708714707e-05,
+        "z_vs_reference": 0.8713307779366304,
+        "exact": 0.9808861624718921,
+        "z_vs_exact": 0.6521596441833173
+      },
+      {
+        "observable": "det_wilson_1x2",
+        "generated": 0.9621942580561154,
+        "generated_err": 6.171886928516046e-05,
+        "reference": 0.9620996819964299,
+        "reference_err": 7.261481593093805e-05,
+        "z_vs_reference": 0.992401361577108,
+        "exact": 0.9621376637288351,
+        "z_vs_exact": 0.9169696064705976
+      },
+      {
+        "observable": "det_wilson_2x2",
+        "generated": 0.9259491157135926,
+        "generated_err": 0.0001469284634981722,
+        "reference": 0.9254172846364478,
+        "reference_err": 0.00017477301031017532,
+        "z_vs_reference": 2.329243773172298,
+        "exact": 0.9257088839655809,
+        "z_vs_exact": 1.635025251691115
+      },
+      {
+        "observable": "det_wilson_2x3",
+        "generated": 0.8909593187272549,
+        "generated_err": 0.00025510037537342643,
+        "reference": 0.8901474381952236,
+        "reference_err": 0.0003021771397753228,
+        "z_vs_reference": 2.0530120124589595,
+        "exact": 0.8906593829116713,
+        "z_vs_exact": 1.1757560730534409
+      },
+      {
+        "observable": "det_wilson_3x3",
+        "generated": 0.8411403342033736,
+        "generated_err": 0.0004395455480268097,
+        "reference": 0.8396010333672166,
+        "reference_err": 0.0005103805499628942,
+        "z_vs_reference": 2.285307129572364,
+        "exact": 0.8405575844508486,
+        "z_vs_exact": 1.3258006027841545
+      },
+      {
+        "observable": "det_wilson_3x4",
+        "generated": 0.793785952962935,
+        "generated_err": 0.0006370468199115756,
+        "reference": 0.7913986542262137,
+        "reference_err": 0.0007370335401974345,
+        "z_vs_reference": 2.4505461582979944,
+        "exact": 0.7932741363685991,
+        "z_vs_exact": 0.8034206879910311
+      },
+      {
+        "observable": "det_wilson_4x4",
+        "generated": 0.7349644109490328,
+        "generated_err": 0.0009057453847164076,
+        "reference": 0.7313314635927478,
+        "reference_err": 0.0010305301337131384,
+        "z_vs_reference": 2.647932729425927,
+        "exact": 0.734340915456536,
+        "z_vs_exact": 0.6883783268649593
+      },
+      {
+        "observable": "det_wilson_4x5",
+        "generated": 0.680153543537017,
+        "generated_err": 0.0011733008642126586,
+        "reference": 0.6755266767771294,
+        "reference_err": 0.0013377698041374373,
+        "z_vs_reference": 2.600240405649594,
+        "exact": 0.6797859092975329,
+        "z_vs_exact": 0.3133333066542566
+      },
+      {
+        "observable": "det_wilson_5x5",
+        "generated": 0.6180775380926207,
+        "generated_err": 0.001489289186659862,
+        "reference": 0.6118895908584818,
+        "reference_err": 0.001705255615502054,
+        "z_vs_reference": 2.733143452824394,
+        "exact": 0.6172558260595707,
+        "z_vs_exact": 0.5517478005012847
+      },
+      {
+        "observable": "det_wilson_5x6",
+        "generated": 0.5608749408856966,
+        "generated_err": 0.0018000755712053865,
+        "reference": 0.5532098244099567,
+        "reference_err": 0.0020554260025755435,
+        "z_vs_reference": 2.8054494836647406,
+        "exact": 0.5604775703547608,
+        "z_vs_exact": 0.22075213801702318
+      },
+      {
+        "observable": "det_wilson_6x6",
+        "generated": 0.5003492381656542,
+        "generated_err": 0.0021273572118518107,
+        "reference": 0.4897862247695836,
+        "reference_err": 0.002443065069962725,
+        "z_vs_reference": 3.2607149786637035,
+        "exact": 0.49919460694800405,
+        "z_vs_exact": 0.5427538032717671
+      },
+      {
+        "observable": "det_wilson_6x7",
+        "generated": 0.4456261282903142,
+        "generated_err": 0.002414663644460151,
+        "reference": 0.4325610151863657,
+        "reference_err": 0.0027693608818526593,
+        "z_vs_reference": 3.5558786332759613,
+        "exact": 0.4446123605771436,
+        "z_vs_exact": 0.41983806543676255
+      },
+      {
+        "observable": "det_wilson_7x7",
+        "generated": 0.39004144810314756,
+        "generated_err": 0.0026889397897751884,
+        "reference": 0.37354579744472477,
+        "reference_err": 0.003108664808287207,
+        "z_vs_reference": 4.013291553619223,
+        "exact": 0.3884291260102275,
+        "z_vs_exact": 0.5996125681396756
+      },
+      {
+        "observable": "det_wilson_7x8",
+        "generated": 0.3407042602357251,
+        "generated_err": 0.0029035451580051224,
+        "reference": 0.3226985525091853,
+        "reference_err": 0.0033675057973736136,
+        "z_vs_reference": 4.0494823006443355,
+        "exact": 0.3393454598005735,
+        "z_vs_exact": 0.46797978374999244
+      },
+      {
+        "observable": "det_wilson_8x10",
+        "generated": 0.21415886966769904,
+        "generated_err": 0.0032954463073110334,
+        "reference": 0.19630237739966105,
+        "reference_err": 0.0038834606997578624,
+        "z_vs_reference": 3.5059106180590067,
+        "exact": 0.213544619266428,
+        "z_vs_exact": 0.18639369116962898
+      },
+      {
+        "observable": "det_wilson_8x8",
+        "generated": 0.29286151762335066,
+        "generated_err": 0.0030849177313703037,
+        "reference": 0.2726078209246528,
+        "reference_err": 0.0036203161311062666,
+        "z_vs_reference": 4.2581926354828115,
+        "exact": 0.29079765919575434,
+        "z_vs_exact": 0.6690157104058546
+      },
+      {
+        "observable": "plaquette",
+        "generated": 0.9810298819211312,
+        "generated_err": 1.3219200915565984e-05,
+        "reference": 0.9810016923584044,
+        "reference_err": 1.533366659306316e-05,
+        "z_vs_reference": 1.3924064067583781,
+        "exact": 0.9810231809265313,
+        "z_vs_exact": 0.5069137418119157
+      },
+      {
+        "observable": "topological_charge",
+        "generated": -0.03125,
+        "generated_err": 0.029843724810371522,
+        "reference": -0.20052083333333334,
+        "reference_err": 0.04560484520545798,
+        "z_vs_reference": 3.1057823847088106,
+        "exact": 0.0,
+        "z_vs_exact": -1.047121302671299
+      },
+      {
+        "observable": "wilson_10x10",
+        "generated": 0.147217045289608,
+        "generated_err": 0.001679022147223463,
+        "reference": 0.14112974044413326,
+        "reference_err": 0.002113105451027124,
+        "z_vs_reference": 2.255434631470003,
+        "exact": 0.14720649149025655,
+        "z_vs_exact": 0.006285682037544922
+      },
+      {
+        "observable": "wilson_10x12",
+        "generated": 0.10008051787008299,
+        "generated_err": 0.0016383780432261462,
+        "reference": 0.09524939108208248,
+        "reference_err": 0.002111596021955679,
+        "z_vs_reference": 1.8076088164520676,
+        "exact": 0.10034883946956186,
+        "z_vs_exact": -0.16377270226993312
+      },
+      {
+        "observable": "wilson_12x12",
+        "generated": 0.06265019425336504,
+        "generated_err": 0.0016035928523757323,
+        "reference": 0.05827166331164335,
+        "reference_err": 0.001987438067591731,
+        "z_vs_reference": 1.7145783435046271,
+        "exact": 0.0633599498895455,
+        "z_vs_exact": -0.44260339220703976
+      },
+      {
+        "observable": "wilson_1x1",
+        "generated": 0.9810298819211312,
+        "generated_err": 1.3219200915565984e-05,
+        "reference": 0.9810016923584044,
+        "reference_err": 1.533366659306316e-05,
+        "z_vs_reference": 1.3924064067583781,
+        "exact": 0.9810231809881497,
+        "z_vs_exact": 0.5069090805334118
+      },
+      {
+        "observable": "wilson_1x2",
+        "generated": 0.9624424391658977,
+        "generated_err": 3.1148519882769796e-05,
+        "reference": 0.9623390506797781,
+        "reference_err": 3.7506314219967614e-05,
+        "z_vs_reference": 2.120614843498055,
+        "exact": 0.9624064816361079,
+        "z_vs_exact": 1.1543896764638522
+      },
+      {
+        "observable": "wilson_2x2",
+        "generated": 0.9263276301790029,
+        "generated_err": 7.420503442690898e-05,
+        "reference": 0.9259612359261761,
+        "reference_err": 8.922547116060265e-05,
+        "z_vs_reference": 3.157213872596755,
+        "exact": 0.926226235895192,
+        "z_vs_exact": 1.3664070718909602
+      },
+      {
+        "observable": "wilson_2x3",
+        "generated": 0.8915220043272711,
+        "generated_err": 0.00012494591760747224,
+        "reference": 0.8910086411051452,
+        "reference_err": 0.0001549765215588011,
+        "z_vs_reference": 2.5787965143290172,
+        "exact": 0.8914061328869474,
+        "z_vs_exact": 0.9273727588906635
+      },
+      {
+        "observable": "wilson_3x3",
+        "generated": 0.8418299666373059,
+        "generated_err": 0.000213397814707058,
+        "reference": 0.8409044203969339,
+        "reference_err": 0.00026439257264808093,
+        "z_vs_reference": 2.724056351780633,
+        "exact": 0.8416149211541822,
+        "z_vs_exact": 1.0077211119470968
+      },
+      {
+        "observable": "wilson_3x4",
+        "generated": 0.7949456840869971,
+        "generated_err": 0.0003057196119462093,
+        "reference": 0.7935800012201071,
+        "reference_err": 0.00037795072086134907,
+        "z_vs_reference": 2.8093618593392176,
+        "exact": 0.7946048937484622,
+        "z_vs_exact": 1.1147153313631966
+      },
+      {
+        "observable": "wilson_4x4",
+        "generated": 0.7363461049972102,
+        "generated_err": 0.0004360833915022085,
+        "reference": 0.7345681944085906,
+        "reference_err": 0.0005355017422975264,
+        "z_vs_reference": 2.5744366716958704,
+        "exact": 0.7359838997605371,
+        "z_vs_exact": 0.8305870935037433
+      },
+      {
+        "observable": "wilson_4x5",
+        "generated": 0.6820218724897131,
+        "generated_err": 0.0005669246588490197,
+        "reference": 0.6798251188204935,
+        "reference_err": 0.0006835900217341229,
+        "z_vs_reference": 2.473578780052522,
+        "exact": 0.6816875971546666,
+        "z_vs_exact": 0.5896292035085176
+      },
+      {
+        "observable": "wilson_5x5",
+        "generated": 0.6196391038829461,
+        "generated_err": 0.000718478378771099,
+        "reference": 0.6173111050544927,
+        "reference_err": 0.0008645713883502608,
+        "z_vs_reference": 2.070912010336583,
+        "exact": 0.619415031767712,
+        "z_vs_exact": 0.3118703663948489
+      },
+      {
+        "observable": "wilson_5x6",
+        "generated": 0.5630467637092806,
+        "generated_err": 0.0008679435943079883,
+        "reference": 0.5602842908507834,
+        "reference_err": 0.0010290687680109976,
+        "z_vs_reference": 2.05202166935479,
+        "exact": 0.5628311020784855,
+        "z_vs_exact": 0.24847424672459684
+      },
+      {
+        "observable": "wilson_6x6",
+        "generated": 0.5018040809663944,
+        "generated_err": 0.0010282907471235393,
+        "reference": 0.4989316852685685,
+        "reference_err": 0.0012188050455013235,
+        "z_vs_reference": 1.8012848382197575,
+        "exact": 0.5017110961722815,
+        "z_vs_exact": 0.09042655919350939
+      },
+      {
+        "observable": "wilson_6x7",
+        "generated": 0.4471438975306228,
+        "generated_err": 0.0011690989827155922,
+        "reference": 0.44369678796889883,
+        "reference_err": 0.001386810245007636,
+        "z_vs_reference": 1.900442886091234,
+        "exact": 0.44722834806540485,
+        "z_vs_exact": -0.07223557289041797
+      },
+      {
+        "observable": "wilson_7x7",
+        "generated": 0.3910371763049625,
+        "generated_err": 0.001308276948205942,
+        "reference": 0.3870096324244514,
+        "reference_err": 0.001553818018429069,
+        "z_vs_reference": 1.9827998572873977,
+        "exact": 0.3910967538945752,
+        "z_vs_exact": -0.04553897375813616
+      },
+      {
+        "observable": "wilson_7x8",
+        "generated": 0.3415541023132391,
+        "generated_err": 0.001417567668082946,
+        "reference": 0.33737507415935397,
+        "reference_err": 0.0016946555117289823,
+        "z_vs_reference": 1.8914944996136338,
+        "exact": 0.34201023161551647,
+        "z_vs_exact": -0.32176897974414875
+      },
+      {
+        "observable": "wilson_8x10",
+        "generated": 0.21517529708216898,
+        "generated_err": 0.0016198256924690264,
+        "reference": 0.21048658109793905,
+        "reference_err": 0.002007775266782103,
+        "z_vs_reference": 1.8175233586701718,
+        "exact": 0.21594421272249903,
+        "z_vs_exact": -0.4746903595275272
+      },
+      {
+        "observable": "wilson_8x8",
+        "generated": 0.2931113336235285,
+        "generated_err": 0.0015107312070783987,
+        "reference": 0.2885432706098072,
+        "reference_err": 0.0018201676531941682,
+        "z_vs_reference": 1.9311662273767682,
+        "exact": 0.2934088813529203,
+        "z_vs_exact": -0.1969561017854798
+      }
+    ],
+    "q_squared_reference": 1.6354166666666667,
+    "sector_histogram": [
+      {
+        "Q": -4,
+        "measured": 0.0,
+        "exact": 0.0001350373281297808,
+        "expected_count": 0.13827822400489553,
+        "z": -0.37188291067035967
+      },
+      {
+        "Q": -3,
+        "measured": 0.00390625,
+        "exact": 0.00445301698788858,
+        "expected_count": 4.559889395597906,
+        "z": -0.26278114908875794
+      },
+      {
+        "Q": -2,
+        "measured": 0.041015625,
+        "exact": 0.05408715251160723,
+        "expected_count": 55.3852441718858,
+        "z": -1.8492843677275366
+      },
+      {
+        "Q": -1,
+        "measured": 0.26953125,
+        "exact": 0.24197043670530058,
+        "expected_count": 247.7777271862278,
+        "z": 2.0592912846351097
+      },
+      {
+        "Q": 0,
+        "measured": 0.4072265625,
+        "exact": 0.39870568376373317,
+        "expected_count": 408.27462017406276,
+        "z": 0.5568838206108021
+      },
+      {
+        "Q": 1,
+        "measured": 0.2265625,
+        "exact": 0.24197043670530058,
+        "expected_count": 247.7777271862278,
+        "z": -1.1512515770910574
+      },
+      {
+        "Q": 2,
+        "measured": 0.0498046875,
+        "exact": 0.05408715251160723,
+        "expected_count": 55.3852441718858,
+        "z": -0.6058584656057246
+      },
+      {
+        "Q": 3,
+        "measured": 0.001953125,
+        "exact": 0.00445301698788858,
+        "expected_count": 4.559889395597906,
+        "z": -1.2014706515328402
+      },
+      {
+        "Q": 4,
+        "measured": 0.0,
+        "exact": 0.0001350373281297808,
+        "expected_count": 0.13827822400489553,
+        "z": -0.37188291067035967
+      }
+    ],
+    "max_wilson_z": 3.157213872596755,
+    "mean_wilson_z": 2.1608280230751307,
+    "reference_source": "stage-01 ensemble"
+  },
+  {
+    "beta": 416.524,
+    "lattice_size": 64,
+    "n_generated": 1024,
+    "q_squared": 0.912109375,
+    "q_squared_exact": 1.0011887008808318,
+    "rows": [
+      {
+        "observable": "det_plaquette",
+        "generated": 0.9951876497943886,
+        "generated_err": 3.3196822682487543e-06,
+        "reference": 0.9951869187643752,
+        "reference_err": 4.759686079271571e-06,
+        "z_vs_reference": 0.1259743244305296,
+        "exact": 0.9951867581601219,
+        "z_vs_exact": 0.2685902428585249
+      },
+      {
+        "observable": "det_wilson_10x10",
+        "generated": 0.6195977343304548,
+        "generated_err": 0.0013786616355646983,
+        "reference": 0.6105074834777042,
+        "reference_err": 0.0020455153051818884,
+        "z_vs_reference": 3.6851168147546147,
+        "exact": 0.6172468344138229,
+        "z_vs_exact": 1.7052044214380626
+      },
+      {
+        "observable": "det_wilson_10x12",
+        "generated": 0.5633184885955416,
+        "generated_err": 0.0016575436641876997,
+        "reference": 0.5526025326689705,
+        "reference_err": 0.0024463272639554776,
+        "z_vs_reference": 3.6263928434014696,
+        "exact": 0.5604677729096014,
+        "z_vs_exact": 1.7198434934365525
+      },
+      {
+        "observable": "det_wilson_12x12",
+        "generated": 0.5026080379902851,
+        "generated_err": 0.001947348246471307,
+        "reference": 0.48863773874472827,
+        "reference_err": 0.0029016085473210014,
+        "z_vs_reference": 3.9978017061083495,
+        "exact": 0.49918413554255703,
+        "z_vs_exact": 1.7582383910696708
+      },
+      {
+        "observable": "det_wilson_1x1",
+        "generated": 0.9951876497943886,
+        "generated_err": 3.3196822682487543e-06,
+        "reference": 0.9951869187643752,
+        "reference_err": 4.759686079271571e-06,
+        "z_vs_reference": 0.1259743244305296,
+        "exact": 0.9951867581601219,
+        "z_vs_exact": 0.2685902428585249
+      },
+      {
+        "observable": "det_wilson_1x2",
+        "generated": 0.990399511938449,
+        "generated_err": 8.121134154106475e-06,
+        "reference": 0.9903894928283989,
+        "reference_err": 1.0458044256423991e-05,
+        "z_vs_reference": 0.7566744487762628,
+        "exact": 0.990396683617253,
+        "z_vs_exact": 0.3482667743635719
+      },
+      {
+        "observable": "det_wilson_2x2",
+        "generated": 0.9808781000319868,
+        "generated_err": 1.945843886883296e-05,
+        "reference": 0.980879261624068,
+        "reference_err": 2.813252445274516e-05,
+        "z_vs_reference": -0.033958442424204364,
+        "exact": 0.9808855909200531,
+        "z_vs_exact": -0.3849686049729505
+      },
+      {
+        "observable": "det_wilson_2x3",
+        "generated": 0.9714711071574129,
+        "generated_err": 3.394404510077872e-05,
+        "reference": 0.9714135334361345,
+        "reference_err": 4.888838691335036e-05,
+        "z_vs_reference": 0.9673492800180004,
+        "exact": 0.9714658362551701,
+        "z_vs_exact": 0.15528208930706458
+      },
+      {
+        "observable": "det_wilson_3x3",
+        "generated": 0.9575266258325428,
+        "generated_err": 5.891937291058438e-05,
+        "reference": 0.9574582205386832,
+        "reference_err": 8.988534953942481e-05,
+        "z_vs_reference": 0.6364765272068381,
+        "exact": 0.9575055466126675,
+        "z_vs_exact": 0.3577638191644324
+      },
+      {
+        "observable": "det_wilson_3x4",
+        "generated": 0.9438105161534622,
+        "generated_err": 8.868321371551141e-05,
+        "reference": 0.9436067854985595,
+        "reference_err": 0.0001330963013870069,
+        "z_vs_reference": 1.2738307613214421,
+        "exact": 0.943745871010957,
+        "z_vs_exact": 0.7289445183237953
+      },
+      {
+        "observable": "det_wilson_4x4",
+        "generated": 0.9258367738802917,
+        "generated_err": 0.00013166506552971758,
+        "reference": 0.9255556986900046,
+        "reference_err": 0.00020612510070094838,
+        "z_vs_reference": 1.1491785843735007,
+        "exact": 0.9257067263649428,
+        "z_vs_exact": 0.9877146593573807
+      },
+      {
+        "observable": "det_wilson_4x5",
+        "generated": 0.9082426427048631,
+        "generated_err": 0.0001810229590080283,
+        "reference": 0.9076215957757086,
+        "reference_err": 0.0002805844458842332,
+        "z_vs_reference": 1.8599143221814642,
+        "exact": 0.9080123893091449,
+        "z_vs_exact": 1.271956866576454
+      },
+      {
+        "observable": "det_wilson_5x5",
+        "generated": 0.886684057302773,
+        "generated_err": 0.0002456788036094088,
+        "reference": 0.885887776967138,
+        "reference_err": 0.0003848301888500466,
+        "z_vs_reference": 1.7440647092350756,
+        "exact": 0.8863693250310876,
+        "z_vs_exact": 1.2810721440414194
+      },
+      {
+        "observable": "det_wilson_5x6",
+        "generated": 0.8657451255712658,
+        "generated_err": 0.00031551967616583063,
+        "reference": 0.8642475799424574,
+        "reference_err": 0.0004876487142476665,
+        "z_vs_reference": 2.578322116579452,
+        "exact": 0.8652421372287913,
+        "z_vs_exact": 1.594158401107671
+      },
+      {
+        "observable": "det_wilson_6x6",
+        "generated": 0.8411296081030741,
+        "generated_err": 0.00040492608780136276,
+        "reference": 0.8392559322528541,
+        "reference_err": 0.0006208393724950235,
+        "z_vs_reference": 2.5278278723809904,
+        "exact": 0.8405531764061783,
+        "z_vs_exact": 1.423547936922693
+      },
+      {
+        "observable": "det_wilson_6x7",
+        "generated": 0.8173387911519967,
+        "generated_err": 0.000496158661743933,
+        "reference": 0.8144701712299138,
+        "reference_err": 0.0007491413192721191,
+        "z_vs_reference": 3.1925107398136294,
+        "exact": 0.8165686944343676,
+        "z_vs_exact": 1.5521178546440682
+      },
+      {
+        "observable": "det_wilson_7x7",
+        "generated": 0.7903738442691974,
+        "generated_err": 0.0006070335389475277,
+        "reference": 0.7868807278573513,
+        "reference_err": 0.0009045293078523346,
+        "z_vs_reference": 3.206633763603424,
+        "exact": 0.7894503960327589,
+        "z_vs_exact": 1.5212474718276683
+      },
+      {
+        "observable": "det_wilson_7x8",
+        "generated": 0.7644055845448747,
+        "generated_err": 0.0007159031787741886,
+        "reference": 0.759873335598968,
+        "reference_err": 0.001058725657242048,
+        "z_vs_reference": 3.5462158833964357,
+        "exact": 0.7632326980499651,
+        "z_vs_exact": 1.6383311733828838
+      },
+      {
+        "observable": "det_wilson_8x10",
+        "generated": 0.6816837719525211,
+        "generated_err": 0.001091861763163699,
+        "reference": 0.6748395767062902,
+        "reference_err": 0.0015907487559825915,
+        "z_vs_reference": 3.5472896669724374,
+        "exact": 0.6797779872623225,
+        "z_vs_exact": 1.7454450320491746
+      },
+      {
+        "observable": "det_wilson_8x8",
+        "generated": 0.7358030013274401,
+        "generated_err": 0.0008396933441978581,
+        "reference": 0.7305107930442318,
+        "reference_err": 0.0012417577440217956,
+        "z_vs_reference": 3.530456217343436,
+        "exact": 0.73433406920534,
+        "z_vs_exact": 1.7493673520818938
+      },
+      {
+        "observable": "plaquette",
+        "generated": 0.9951978258322924,
+        "generated_err": 1.5955856178640744e-06,
+        "reference": 0.9951916369609535,
+        "reference_err": 2.406482050130157e-06,
+        "z_vs_reference": 2.143410080187871,
+        "exact": 0.9951954459438838,
+        "z_vs_exact": 1.4915454125630598
+      },
+      {
+        "observable": "topological_charge",
+        "generated": -0.03125,
+        "generated_err": 0.029843724810371522,
+        "reference": 0.013671875,
+        "reference_err": 0.04444875905659462,
+        "z_vs_reference": -0.8390619284580804,
+        "exact": 0.0,
+        "z_vs_exact": -1.047121302671299
+      },
+      {
+        "observable": "wilson_10x10",
+        "generated": 0.6189256064244546,
+        "generated_err": 0.0007312330166443984,
+        "reference": 0.6151531724026427,
+        "reference_err": 0.0009913765229178368,
+        "z_vs_reference": 3.0623380742630593,
+        "exact": 0.6177859126315346,
+        "z_vs_exact": 1.5585918127029026
+      },
+      {
+        "observable": "wilson_10x12",
+        "generated": 0.5624812504975125,
+        "generated_err": 0.0008747540129996915,
+        "reference": 0.5578737008618191,
+        "reference_err": 0.0012011429777626565,
+        "z_vs_reference": 3.100819478557923,
+        "exact": 0.5610552118382868,
+        "z_vs_exact": 1.6302167672664918
+      },
+      {
+        "observable": "wilson_12x12",
+        "generated": 0.5015809253673069,
+        "generated_err": 0.0010344973978790328,
+        "reference": 0.4957731526228599,
+        "reference_err": 0.0014154630346371367,
+        "z_vs_reference": 3.3126643172288035,
+        "exact": 0.49981204872769774,
+        "z_vs_exact": 1.709889887819722
+      },
+      {
+        "observable": "wilson_1x1",
+        "generated": 0.9951978258322924,
+        "generated_err": 1.5955856178640744e-06,
+        "reference": 0.9951916369609535,
+        "reference_err": 2.406482050130157e-06,
+        "z_vs_reference": 2.143410080187871,
+        "exact": 0.9951954459601974,
+        "z_vs_exact": 1.4915351883438508
+      },
+      {
+        "observable": "wilson_1x2",
+        "generated": 0.9904145308537409,
+        "generated_err": 3.842817477387912e-06,
+        "reference": 0.9903948199935257,
+        "reference_err": 5.619835827782765e-06,
+        "z_vs_reference": 2.8952204759875824,
+        "exact": 0.9904139756599162,
+        "z_vs_exact": 0.14447572073318884
+      },
+      {
+        "observable": "wilson_2x2",
+        "generated": 0.9809179122676142,
+        "generated_err": 9.39472340725351e-06,
+        "reference": 0.9808733607642353,
+        "reference_err": 1.349656395841601e-05,
+        "z_vs_reference": 2.7092214915108297,
+        "exact": 0.9809198431824809,
+        "z_vs_exact": -0.20553184836564106
+      },
+      {
+        "observable": "wilson_2x3",
+        "generated": 0.9715209120768122,
+        "generated_err": 1.6665674908542634e-05,
+        "reference": 0.9714248370146379,
+        "reference_err": 2.363304009058028e-05,
+        "z_vs_reference": 3.3222983832956046,
+        "exact": 0.9715167216900624,
+        "z_vs_exact": 0.2514381669395173
+      },
+      {
+        "observable": "wilson_3x3",
+        "generated": 0.9575859800679609,
+        "generated_err": 2.960460516127347e-05,
+        "reference": 0.9574594813166186,
+        "reference_err": 4.195343444474131e-05,
+        "z_vs_reference": 2.463601336918132,
+        "exact": 0.9575807788890227,
+        "z_vs_exact": 0.17568817114344126
+      },
+      {
+        "observable": "wilson_3x4",
+        "generated": 0.9438676767167635,
+        "generated_err": 4.476466749583779e-05,
+        "reference": 0.9436681849183515,
+        "reference_err": 6.17105182007016e-05,
+        "z_vs_reference": 2.616735761725597,
+        "exact": 0.9438447405234063,
+        "z_vs_exact": 0.5123726957065113
+      },
+      {
+        "observable": "wilson_4x4",
+        "generated": 0.9258808723534457,
+        "generated_err": 6.733189760306278e-05,
+        "reference": 0.925631440593861,
+        "reference_err": 9.289447701780355e-05,
+        "z_vs_reference": 2.1740765555099086,
+        "exact": 0.9258360348628291,
+        "z_vs_exact": 0.6659175251677242
+      },
+      {
+        "observable": "wilson_4x5",
+        "generated": 0.908257216331549,
+        "generated_err": 9.24199213002754e-05,
+        "reference": 0.9078394476091489,
+        "reference_err": 0.00012636003837921626,
+        "z_vs_reference": 2.6685744150144326,
+        "exact": 0.9081709381303363,
+        "z_vs_exact": 0.9335454953735796
+      },
+      {
+        "observable": "wilson_5x5",
+        "generated": 0.886672209657263,
+        "generated_err": 0.00012692774168225488,
+        "reference": 0.8861673917854205,
+        "reference_err": 0.00017465310283180054,
+        "z_vs_reference": 2.3381634550797448,
+        "exact": 0.8865627913874722,
+        "z_vs_exact": 0.8620516550648265
+      },
+      {
+        "observable": "wilson_5x6",
+        "generated": 0.8656377117149532,
+        "generated_err": 0.00016302176197153473,
+        "reference": 0.8648870411561802,
+        "reference_err": 0.00022225131830369755,
+        "z_vs_reference": 2.723474648299275,
+        "exact": 0.8654687681273772,
+        "z_vs_exact": 1.0363253686677711
+      },
+      {
+        "observable": "wilson_6x6",
+        "generated": 0.8410313433851115,
+        "generated_err": 0.00021030513700134277,
+        "reference": 0.8401157190091908,
+        "reference_err": 0.000286554250187717,
+        "z_vs_reference": 2.5759900355369636,
+        "exact": 0.8408173803362462,
+        "z_vs_exact": 1.0173933547993828
+      },
+      {
+        "observable": "wilson_6x7",
+        "generated": 0.8171503489720635,
+        "generated_err": 0.00025694172268033295,
+        "reference": 0.8159220915986225,
+        "reference_err": 0.00034879234563019987,
+        "z_vs_reference": 2.8352149813222534,
+        "exact": 0.8168681448842964,
+        "z_vs_exact": 1.0983194353306005
+      },
+      {
+        "observable": "wilson_7x7",
+        "generated": 0.7901499014114961,
+        "generated_err": 0.00031574287245913265,
+        "reference": 0.7886063801124692,
+        "reference_err": 0.0004278648678093623,
+        "z_vs_reference": 2.902700154203319,
+        "exact": 0.789788162981789,
+        "z_vs_exact": 1.14567409515768
+      },
+      {
+        "observable": "wilson_7x8",
+        "generated": 0.764103009190876,
+        "generated_err": 0.00037375616904535935,
+        "reference": 0.7621012256713584,
+        "reference_err": 0.0005040364269885461,
+        "z_vs_reference": 3.1901331855960806,
+        "exact": 0.7636059090962606,
+        "z_vs_exact": 1.3300117450506248
+      },
+      {
+        "observable": "wilson_8x10",
+        "generated": 0.6811456966679543,
+        "generated_err": 0.0005715098251912535,
+        "reference": 0.6781042909715325,
+        "reference_err": 0.0007779553686324471,
+        "z_vs_reference": 3.1506788545745246,
+        "exact": 0.6802528980979933,
+        "z_vs_exact": 1.5621753653356338
+      },
+      {
+        "observable": "wilson_8x8",
+        "generated": 0.7353521221666597,
+        "generated_err": 0.0004413242834482241,
+        "reference": 0.7330859616631642,
+        "reference_err": 0.0005956166963729263,
+        "z_vs_reference": 3.0570067407744976,
+        "exact": 0.7347444606633602,
+        "z_vs_exact": 1.3769047525588636
+      }
+    ],
+    "q_squared_reference": 1.009765625,
+    "sector_histogram": [
+      {
+        "Q": -4,
+        "measured": 0.0,
+        "exact": 0.00013502796864475414,
+        "expected_count": 0.13826863989222823,
+        "z": -0.37187002103844136
+      },
+      {
+        "Q": -3,
+        "measured": 0.00390625,
+        "exact": 0.004452951412501876,
+        "expected_count": 4.559822246401921,
+        "z": -0.2627515589670643
+      },
+      {
+        "Q": -2,
+        "measured": 0.041015625,
+        "exact": 0.054087197180337825,
+        "expected_count": 55.38528991266593,
+        "z": -1.8492899672339587
+      },
+      {
+        "Q": -1,
+        "measured": 0.26953125,
+        "exact": 0.24197062586193613,
+        "expected_count": 247.7779208826226,
+        "z": 2.0592766032425343
+      },
+      {
+        "Q": 0,
+        "measured": 0.4072265625,
+        "exact": 0.3987053665786871,
+        "expected_count": 408.2742953765756,
+        "z": 0.5569046249406768
+      },
+      {
+        "Q": 1,
+        "measured": 0.2265625,
+        "exact": 0.24197062586193613,
+        "expected_count": 247.7779208826226,
+        "z": -1.1512654041633135
+      },
+      {
+        "Q": 2,
+        "measured": 0.0498046875,
+        "exact": 0.054087197180337825,
+        "expected_count": 55.38528991266593,
+        "z": -0.6058645492042388
+      },
+      {
+        "Q": 3,
+        "measured": 0.001953125,
+        "exact": 0.004452951412501876,
+        "expected_count": 4.559822246401921,
+        "z": -1.201447942170184
+      },
+      {
+        "Q": 4,
+        "measured": 0.0,
+        "exact": 0.00013502796864475414,
+        "expected_count": 0.13826863989222823,
+        "z": -0.37187002103844136
+      }
+    ],
+    "max_wilson_z": 3.3222983832956046,
+    "mean_wilson_z": 2.802227496083495,
+    "reference_source": "stage-01 ensemble"
+  }
+]

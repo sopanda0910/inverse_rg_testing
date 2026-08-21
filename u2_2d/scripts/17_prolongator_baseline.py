@@ -62,7 +62,7 @@ from u1_2d.lgt.lattice import topological_charge as u1_charge
 from u1_2d.lgt.lattice import wrap as u1_wrap
 from u1_2d.pipeline.ladder import apply_coarse_charge
 from u2_2d.lgt.actions import WilsonU2Action
-from u2_2d.lgt.exact import plaquette_exact, wilson_loop_exact
+from u2_2d.lgt.exact import det_character_exact, plaquette_exact, wilson_loop_exact
 from u2_2d.lgt.hmc import BatchedHMCU2, adapted_hmc_params
 from u2_2d.lgt.lattice import det_links, half_retr, plaquette, topological_charge, wilson_loop
 from u2_2d.lgt.local_updates import conditional_su2_sweeps, retherm_sweeps
@@ -126,6 +126,74 @@ def flux(psi: torch.Tensor) -> torch.Tensor:
         cell = u1_plaquette_angles(fine)
         fine[:, 1, 1::2, 1::2] += want - cell[:, 0::2, 1::2]
     return u1_wrap(fine)
+
+
+def _staples(psi):
+    """Forward and backward staple angles for both link directions.
+
+    Verbatim from `u1_2d/scripts/37_tiling_baseline.py`: psi is a compact U(1)
+    field in the same [B, 2, L, L] layout, so the determinant sector reuses it
+    unchanged.
+    """
+    ux, uy = psi[:, 0], psi[:, 1]
+    fx = uy + ux.roll(-1, dims=-1) - uy.roll(-1, dims=-2)
+    bx = (-uy.roll(1, dims=-1) + ux.roll(1, dims=-1)
+          + uy.roll(-1, dims=-2).roll(1, dims=-1))
+    fy = ux + uy.roll(-1, dims=-2) - ux.roll(-1, dims=-1)
+    by = (-ux.roll(1, dims=-2) + uy.roll(1, dims=-2)
+          + ux.roll(-1, dims=-1).roll(1, dims=-2))
+    return (torch.stack([fx, fy], dim=1), torch.stack([bx, by], dim=1))
+
+
+def ape_smear(psi, alpha: float = 0.5, n_iter: int = 20):
+    """Blend each link with its staples, project back by taking the angle.
+
+    DETERMINISTIC. This is the point of the arm: unlike heatbath it samples
+    nothing, so it is a genuine interpolation kernel rather than local
+    thermalization in disguise. U(1) makes the group projection trivial, which
+    is why it stands in for the SU(N) APE/HYP kernel of Endres-style
+    multiscale thermalization.
+    """
+    out = u1_wrap(psi)
+    for _ in range(n_iter):
+        fwd, bwd = _staples(out)
+        z = ((1.0 - alpha) * torch.exp(1j * out)
+             + (alpha / 2.0) * (torch.exp(1j * fwd) + torch.exp(1j * bwd)))
+        out = torch.angle(z)
+    return u1_wrap(out)
+
+
+def ape(psi):
+    """Endres-style prolong-then-smooth: `flux`, then APE to the exact target.
+
+    The smearing count is TUNED, not fixed. Smearing is monotone in <cos p> and
+    runs past equilibrium if left alone, so a fixed count hands the arm an
+    over-ordered configuration and beats a strawman. The target is the exact
+    determinant-sector plaquette `det_character_exact(beta)` -- the determinant
+    analogue of the U(1) mean plaquette -- and beta is bound in at call time.
+    """
+    raise RuntimeError("ape() is beta-dependent; use ape_for(beta)")
+
+
+def ape_for(beta: float):
+    """`ape` with the target bound in, so it fits the GEOMETRIC signature."""
+    target = det_character_exact(beta)
+
+    def _ape(psi):
+        fine = flux(psi)
+        best = fine
+        best_gap = abs(float(torch.cos(u1_plaquette_angles(fine)).mean()) - target)
+        cur = fine
+        for _ in range(40):
+            cur = ape_smear(cur, n_iter=1)
+            gap = abs(float(torch.cos(u1_plaquette_angles(cur)).mean()) - target)
+            if gap < best_gap:
+                best, best_gap = cur, gap
+            else:
+                break
+        return best
+
+    return _ape
 
 
 GEOMETRIC = {"tile": tile, "halve": halve, "flux": flux}
@@ -339,6 +407,7 @@ def main() -> int:
 
     psi_coarse = det_links(coarse)
     starts, build_cost, smear_count, pre_plaq = {}, {}, {}, {}
+    _diffusion_lift_cache = {}
     raw_pre = _load_raw_pre_retherm(ladder_dir, size, beta)
     for name in args.arms:
         t0 = time.time()
@@ -374,12 +443,38 @@ def main() -> int:
                     fine = retherm_sweeps(fine.to(device), WilsonU2Action(beta),
                                           n_retherm, topological_updates=False)
             starts[name] = fine.cpu()
+            _diffusion_lift_cache["fine"] = fine.cpu()
+        elif name == "diffusion_tuned":
+            # The matched competitor to `smear`: identical tune_smear, applied to
+            # the LEARNED lift instead of `flux`. The tuned sweep count is then a
+            # direct measure of lift quality -- how much local updating each
+            # starting point needs to reach the exact plaquette. Requires
+            # diffusion_raw earlier in --arms so the lift is generated once.
+            base = _diffusion_lift_cache.get("fine")
+            if base is None:
+                print("  diffusion_tuned needs `diffusion_raw` listed first, "
+                      "skipping")
+                continue
+            tuned, count, secs = tune_smear(base, beta, device)
+            starts[name] = tuned
+            smear_count[name] = count
+            pre_plaq[name] = pre_plaq.get("diffusion_raw")
+            print(f"  diffusion_tuned: {count} tuned sweeps ({secs:.0f}s)")
         elif name in GEOMETRIC:
             starts[name], pre_plaq[name] = assemble(
                 GEOMETRIC[name](psi_coarse), coarse, beta, n_su2, n_retherm, device)
+        elif name == "ape":
+            # Deterministic staple-blend interpolation, the true u1_2d analogue.
+            # It goes through assemble() like any geometric arm, so it receives
+            # exactly n_retherm sweeps -- no more.
+            starts[name], pre_plaq[name] = assemble(
+                ape_for(beta)(psi_coarse), coarse, beta, n_su2, n_retherm, device)
         elif name == "smear":
-            fine, pre = assemble(flux(psi_coarse), coarse, beta, n_su2, n_retherm,
-                                 device)
+            # n_retherm=0 INSIDE assemble: the tuned count below is this arm's
+            # entire local-update budget. Previously it got n_retherm on top,
+            # which is why it always carried ~25 more sweeps than every other
+            # arm and won comparisons it was not entitled to win.
+            fine, pre = assemble(flux(psi_coarse), coarse, beta, n_su2, 0, device)
             smeared, count, secs = tune_smear(fine, beta, device)
             starts[name] = smeared
             smear_count[name] = count
@@ -466,7 +561,8 @@ def _load_raw_pre_retherm(ladder_dir: Path, size: int, beta: float):
     return None
 
 
-ORDER = ["tile", "halve", "flux", "smear", "hot", "cold", "diffusion"]
+ORDER = ["tile", "halve", "flux", "ape", "smear", "hot", "cold",
+         "diffusion_raw", "diffusion_tuned", "diffusion"]
 
 
 def _write_report(path: Path, rows: list, n_su2: int, n_retherm: int) -> None:

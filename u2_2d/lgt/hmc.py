@@ -84,6 +84,7 @@ class BatchedHMCU2:
         hot_start: bool = False,
         topological_updates: bool = False,
         winding_charge_step: int = 2,
+        winding_interval: int = 1,
     ) -> None:
         self.lattice_size = lattice_size
         self.action = action
@@ -94,6 +95,8 @@ class BatchedHMCU2:
         self.hot_start = hot_start
         self.topological_updates = topological_updates
         self.winding_charge_step = winding_charge_step
+        self.winding_interval = max(1, int(winding_interval))
+        self._step_counter = 0
         self.last_winding_accept: torch.Tensor | None = None
 
     def initialize(self, hot: bool | None = None) -> torch.Tensor:
@@ -126,7 +129,8 @@ class BatchedHMCU2:
         accept = torch.rand(links.shape[0], device=links.device) < torch.exp(old_h - new_h)
         links = torch.where(accept.view(-1, 1, 1, 1, 1), new_links, links)
         self.last_winding_accept = None
-        if self.topological_updates:
+        self._step_counter += 1
+        if self.topological_updates and self._step_counter % self.winding_interval == 0:
             from .local_updates import winding_update
 
             links, winding_accept = winding_update(links, self.action, charge_step=self.winding_charge_step)
@@ -189,6 +193,7 @@ def run_hmc_ensemble(
     topological_updates: bool = False,
     hot_start: bool = False,
     winding_charge_step: int = 2,
+    winding_interval: int = 1,
     initial_state: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, HMCStats]:
     """Convenience wrapper. NOTE (device convention, inherited from `u1_2d`): this
@@ -205,6 +210,7 @@ def run_hmc_ensemble(
         hot_start=hot_start,
         topological_updates=topological_updates,
         winding_charge_step=winding_charge_step,
+        winding_interval=winding_interval,
     )
     configs, stats = sampler.sample(
         n_per_chain, burn_in=burn_in, thin=thin, record_history=record_history,

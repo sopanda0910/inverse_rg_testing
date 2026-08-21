@@ -29,6 +29,7 @@ from u2_2d.model.det_lift import det_rung_data, model_beta, train_det_model
 from u2_2d.utils import (
     configure_device,
     ensemble_path,
+    expand_rungs,
     load_config,
     load_ensemble,
     resolve_device,
@@ -60,7 +61,14 @@ def main() -> int:
 
     val_fraction = float(train_cfg.get("val_fraction", 0.1))
     train_rungs, val_rungs = [], []
-    for rung in config["data"]["rungs"]:
+    # expand_rungs, NOT data["rungs"] -- stage 01 generates the random-beta draws
+    # too, and reading the fixed list here would silently train on 12 couplings
+    # out of 114 while every log line said the data was there. A rung whose
+    # ensemble is absent is SKIPPED rather than fatal: with ~100 draws a single
+    # failed shard should cost one coupling, not the whole retrain.
+    all_rungs = expand_rungs(config["data"], int(config.get("seed", 0)))
+    missing = 0
+    for rung in all_rungs:
         beta, size = float(rung["beta"]), int(rung["lattice_size"])
         # A rung marked `train: false` is a REFERENCE, not training data. The
         # L = 64 top-rung ensemble is the control the ladder's own output is
@@ -72,8 +80,8 @@ def main() -> int:
             continue
         path = ensemble_path(data_dir, size, beta)
         if not path.exists():
-            print(f"missing {path} -- run stage 01 first")
-            return 1
+            missing += 1
+            continue
         configs, _ = load_ensemble(path)
         n_val = max(1, int(round(val_fraction * configs.shape[0])))
         name = f"L{size}_b{beta:g}"
@@ -84,6 +92,14 @@ def main() -> int:
               f"(beta/4 = {beta / 4:.4f}, ratio {residual['tree_level_ratio']:.4f}), "
               f"chi_t residual {residual['chi_t_residual']:+.2e}, "
               f"{train_rungs[-1].fine.shape[0]} train / {n_val} val")
+
+    if not train_rungs:
+        print(f"no training ensembles found under {data_dir} -- run stage 01 first")
+        return 1
+    print(f"\n{len(train_rungs)} training rungs of {len(all_rungs)} configured"
+          f"{f' ({missing} ensembles missing)' if missing else ''}; "
+          f"model beta {min(model_beta(float(r['beta'])) for r in all_rungs):.2f} .. "
+          f"{max(model_beta(float(r['beta'])) for r in all_rungs):.2f}\n")
 
     train_config = TrainConfig(
         epochs=int(train_cfg.get("epochs", 40)),

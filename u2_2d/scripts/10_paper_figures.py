@@ -14,14 +14,17 @@ Six figures carrying the study's claims, in the order the argument runs:
                                  on its width, and the width is what a density
                                  claim rests on.
     fig09  parity mobility    -- parity FLIPS per chain-trajectory against beta,
-                                 beside the ordinary sector-change count over the
-                                 same range. The left panel falls by three orders
-                                 of magnitude where the right one barely moves,
-                                 which is the whole two-mechanism story in one
-                                 picture. Replaces an earlier version drawn in
-                                 the (beta L, beta/V) plane off stage-07
-                                 verdicts: beta L does not organise the data and
-                                 the verdict passes on luck.
+                                 for BOTH winding moves, beside the ordinary
+                                 sector-change count over the same range. The
+                                 joint proposal falls off a cliff at beta ~ 20
+                                 while the marginal move is flat through it, and
+                                 the right-hand panel sees neither -- so the two
+                                 lessons are that the cliff belongs to a
+                                 PROPOSAL, not to the theory, and that a
+                                 sector-change count cannot tell you either way.
+                                 Supersedes two earlier versions: the (beta L,
+                                 beta/V) plane off stage-07 verdicts, and the
+                                 single-move "mobility dies at beta = 14-20".
     fig10  winding economics  -- the Z_2 obstruction as a cost curve: even charge
                                  free, odd charge O(beta L), and what the exact
                                  conditional SU(2) sampler recovers.
@@ -54,8 +57,36 @@ ARM_STYLE = {
     "A_diffusion_seed": ("diffusion seed", "#1b6ca8", "-", 2.2),
     "B_cold_start": ("cold start", "#c2571a", "--", 1.6),
     "C_hot_start": ("hot start", "#7a1fa2", "-.", 1.6),
-    "D_cold_plus_winding": ("cold + winding", "#2e7d32", ":", 1.8),
+    "D_cold_plus_winding": ("cold start", "#c2571a", "--", 1.6),
+    "E_diffusion_plus_winding": ("diffusion seed", "#1b6ca8", "-", 2.2),
+    "F_hot_plus_winding": ("hot start", "#7a1fa2", "-.", 1.6),
+    "G_cold_plus_odd_winding": ("cold start", "#c2571a", "--", 1.6),
+    "H_diffusion_plus_odd_winding": ("diffusion seed", "#1b6ca8", "-", 2.2),
 }
+
+# One column per SAMPLER, three seeds inside each. The grid is only meaningful
+# read along a row -- same sampler, different seed. Comparing a diffusion seed
+# under one sampler against a cold start under a weaker one measures the sampler.
+SAMPLER_COLUMNS = [
+    ("plain HMC", ["A_diffusion_seed", "B_cold_start", "C_hot_start"]),
+    ("+ winding ($\\Delta Q = 2$)",
+     ["E_diffusion_plus_winding", "D_cold_plus_winding", "F_hot_plus_winding"]),
+    # No hot arm here by design: a hot start is two orders from equilibrium in
+    # <Q^2>, so giving it a parity move answers no question stage 08 is asking.
+    ("+ winding ($\\Delta Q = 1$, marginal)",
+     ["H_diffusion_plus_odd_winding", "G_cold_plus_odd_winding"]),
+]
+
+
+def _columns(bench):
+    """(title, [arm dicts]) per sampler, skipping arms this run did not produce."""
+    by_name = {a["arm"]: a for a in bench["arms"]}
+    out = []
+    for title, names in SAMPLER_COLUMNS:
+        arms = [by_name[n] for n in names if n in by_name]
+        if arms:
+            out.append((title, arms))
+    return out
 
 
 def _load(path: Path):
@@ -66,61 +97,82 @@ def _load(path: Path):
 
 
 def figure_seed_quality(bench: dict, path: Path) -> None:
-    """Plaquette relative error vs trajectory, per arm, log-scaled."""
-    fig, ax = plt.subplots(figsize=(7.0, 4.4))
+    """Plaquette relative error vs trajectory: one panel per sampler.
+
+    The claim this figure carries is that a generated configuration is already at
+    equilibrium while a cold start is three orders away, and that this is true
+    whatever sampler is wrapped around it. One panel per sampler is what makes
+    that a claim about the SEED rather than about the move.
+    """
+    columns = _columns(bench)
     exact = bench["plaquette_exact"]
-    for arm in bench["arms"]:
-        label, colour, ls, lw = ARM_STYLE[arm["arm"]]
-        traj = [h["trajectory"] for h in arm["history"]]
-        rel = [abs(h["plaquette"] / exact - 1.0) + 1e-12 for h in arm["history"]]
-        ax.semilogy(traj, rel, ls, color=colour, lw=lw, label=label)
+    fig, axes = plt.subplots(1, len(columns), figsize=(4.6 * len(columns), 4.2),
+                             sharey=True, squeeze=False)
     interval = bench.get("independent_interval_trajectories")
-    if interval and np.isfinite(interval):
-        ax.axvline(interval, color="0.35", lw=1.0, ls=(0, (1, 2)))
-        ax.text(interval, ax.get_ylim()[1], r"  $2\tau_{\rm int}$", va="top",
-                fontsize=8, color="0.35")
-    ax.set_xlabel("HMC trajectory")
-    ax.set_ylabel(r"$|\langle \frac{1}{2}{\rm ReTr}P\rangle / {\rm exact} - 1|$")
-    ax.set_title(f"Seed quality: L = {bench['lattice_size']}, "
-                 r"$\beta$ = " + f"{bench['beta']:g}")
-    ax.legend(frameon=False, fontsize=9)
-    ax.grid(alpha=0.25, which="both")
+    for ax, (title, arms) in zip(axes[0], columns):
+        for arm in arms:
+            label, colour, ls, lw = ARM_STYLE[arm["arm"]]
+            traj = [h["trajectory"] for h in arm["history"]]
+            rel = [abs(h["plaquette"] / exact - 1.0) + 1e-12 for h in arm["history"]]
+            ax.semilogy(traj, rel, ls, color=colour, lw=lw, label=label)
+        if interval and np.isfinite(interval):
+            ax.axvline(interval, color="0.35", lw=1.0, ls=(0, (1, 2)))
+        ax.set_title(title, fontsize=10)
+        ax.set_xlabel("HMC trajectory")
+        ax.grid(alpha=0.25, which="both")
+        ax.legend(frameon=False, fontsize=8)
+    axes[0][0].set_ylabel(
+        r"$|\langle \frac{1}{2}{\rm ReTr}P\rangle / {\rm exact} - 1|$")
+    fig.suptitle(f"Seed quality, read ACROSS each panel: L = {bench['lattice_size']}, "
+                 r"$\beta$ = " + f"{bench['beta']:g}", y=1.02)
     fig.tight_layout()
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 
 def figure_topological_reach(bench: dict, path: Path) -> None:
-    """Sector coverage and <Q^2> vs trajectory -- the half that cannot be matched."""
-    fig, axes = plt.subplots(1, 2, figsize=(10.0, 4.0))
-    for arm in bench["arms"]:
-        label, colour, ls, lw = ARM_STYLE[arm["arm"]]
-        traj = [h["trajectory"] for h in arm["history"]]
-        axes[0].plot(traj, [h["n_sectors"] for h in arm["history"]], ls,
-                     color=colour, lw=lw, label=label)
-        axes[1].plot(traj, [h["q_squared"] for h in arm["history"]], ls,
-                     color=colour, lw=lw, label=label, zorder=3)
-    q2_exact = bench["arms"][0]["topology"]["q_squared_exact"]
-    axes[1].axhline(q2_exact, color="k", lw=1.0, ls=(0, (6, 3)), zorder=1,
-                    label="exact")
-    # The hot arm sits two orders above everything else and flattens the panel on a
-    # linear axis, hiding the comparison that matters (0.86 vs 0.92 vs exact 1.00).
-    # symlog rather than log because the cold arm is identically zero.
-    axes[1].set_yscale("symlog", linthresh=0.1)
-    # No arm is negative, so the symlog mirror below zero is dead space.
-    axes[1].set_ylim(bottom=0.0)
-    axes[0].set_ylabel("distinct sectors occupied")
-    axes[1].set_ylabel(r"$\langle Q^2 \rangle$")
-    for ax in axes:
-        ax.set_xlabel("HMC trajectory")
-        ax.grid(alpha=0.25)
-        ax.legend(frameon=False, fontsize=8)
-    fig.suptitle(f"Topological reach: L = {bench['lattice_size']}, "
-                 r"$\beta$ = " + f"{bench['beta']:g}", y=1.0)
-    fig.tight_layout()
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
+    """Sectors occupied and <Q^2> vs trajectory, one column per sampler.
 
+    THIS FIGURE USED TO CARRY THE REACHABILITY CLAIM AND NO LONGER DOES. With the
+    marginal odd move the classical arm reaches full P(Q) coverage from a cold
+    start, so "the classical arm cannot get here" is withdrawn. What the columns
+    now show is the COST of arriving: the cold arm needs the expensive odd move
+    (right column) to reach coverage the diffusion seed already has in the left
+    column, having made no winding move at all.
+    """
+    columns = _columns(bench)
+    q2_exact = bench["arms"][0]["topology"]["q_squared_exact"]
+    fig, axes = plt.subplots(2, len(columns), figsize=(4.6 * len(columns), 7.2),
+                             sharey="row", squeeze=False)
+    for col, (title, arms) in enumerate(columns):
+        top, bot = axes[0][col], axes[1][col]
+        for arm in arms:
+            label, colour, ls, lw = ARM_STYLE[arm["arm"]]
+            traj = [h["trajectory"] for h in arm["history"]]
+            top.plot(traj, [h["n_sectors"] for h in arm["history"]], ls,
+                     color=colour, lw=lw, label=label)
+            bot.plot(traj, [h["q_squared"] for h in arm["history"]], ls,
+                     color=colour, lw=lw, label=label, zorder=3)
+        bot.axhline(q2_exact, color="k", lw=1.0, ls=(0, (6, 3)), zorder=1,
+                    label="exact")
+        top.set_title(title, fontsize=10)
+        for ax in (top, bot):
+            ax.grid(alpha=0.25)
+            ax.legend(frameon=False, fontsize=8)
+        bot.set_xlabel("HMC trajectory")
+        # The hot arm sits two orders above everything else and flattens the panel
+        # on a linear axis, hiding the comparison that matters. symlog rather than
+        # log because the cold arm is identically zero.
+        bot.set_yscale("symlog", linthresh=0.1)
+        bot.set_ylim(bottom=0.0)
+    axes[0][0].set_ylabel("distinct sectors occupied")
+    axes[1][0].set_ylabel(r"$\langle Q^2 \rangle$")
+    fig.suptitle(f"Topological reach: L = {bench['lattice_size']}, "
+                 r"$\beta$ = " + f"{bench['beta']:g}"
+                 + "  --  compare WITHIN a panel, not across", y=1.0)
+    fig.tight_layout()
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
 
 def figure_wilson_spread(dists: dict, path: Path) -> None:
     """Per-configuration Wilson-loop distributions, generated vs reference."""
@@ -209,65 +261,114 @@ def figure_area_law(validation, path: Path) -> None:
 
 
 def figure_sampling_regimes(records: list, path: Path) -> None:
-    """Parity mobility against beta, with the ordinary diagnostic beside it.
+    """Parity mobility against beta, for BOTH winding moves.
 
-    This replaces an earlier version drawn in the (beta L, beta / V) plane with
-    stage-07 verdicts as the markers. Both choices were wrong. The verdict is a
-    hypothesis test on one binomial draw of the odd weight and passes on luck --
-    it calls the ladder base SAMPLED at a coupling with zero parity flips -- and
-    beta L does not organise the data: L = 16 at beta L = 224 flips 2453 times
-    while L = 8 at beta L = 160 flips four. Counting flips against beta does.
+    This figure has now been wrong twice, and the second time is the instructive
+    one.
+
+    Version 1 drew the (beta L, beta / V) plane with stage-07 verdicts as
+    markers. Both choices were wrong: the verdict is a hypothesis test on one
+    binomial draw of the odd weight and passes on luck, and beta L does not
+    organise the data.
+
+    Version 2 counted parity FLIPS against beta and concluded "odd mobility dies
+    between beta = 14 and beta = 20 at every volume tested". The measurement was
+    right and the conclusion was not, because every flip in it came from the
+    JOINT winding proposal -- propose on (phi, q) together, accept on the full
+    U(2) action. What died at beta = 20 was that proposal's acceptance, not the
+    theory's odd charge.
+
+    The MARGINAL move (docs/INSTANTON.md) proposes on psi alone and accepts on
+    the exact SU(2)-integrated marginal, then resamples SU(2) conditionally. At
+    L = 16 it flips parity 61403 times at beta = 28, where the joint proposal
+    flips ZERO. There is no mobility edge in this range at all.
+
+    So the figure draws both moves, and the honest reading of the left panel is
+    that the cliff is a property of a PROPOSAL. Keeping the joint series in it is
+    the point -- it is what a plausible-looking global move does when it is
+    priced wrong, and it is why the right-hand panel exists.
     """
-    hot = [r for r in records if r.get("start", "hot") == "hot"]
+    hot = [r for r in records if r.get("start") in (None, "hot")]
     if not hot:
         return
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9.4, 4.2), sharex=True)
-    styles = {8: ("o", "#2e7d32", r"$L = 8$"), 16: ("s", "#1f4e9c", r"$L = 16$")}
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9.8, 4.3), sharex=True)
+    colour = {8: "#2e7d32", 16: "#1f4e9c"}
+    marker = {8: "o", 16: "s"}
+    # Solid = the marginal move, dashed = the joint proposal. Line style carries
+    # the move and hue carries the volume, so neither rests on the other.
+    dash = {1: "-", 2: "--"}
+    move_name = {1: r"marginal $\Delta Q=1$", 2: r"joint $\Delta Q=2$ proposal"}
     floor = 3e-7
-    for size in sorted({r["lattice_size"] for r in hot}):
-        rows = sorted((r for r in hot if r["lattice_size"] == size),
-                      key=lambda r: r["beta"])
-        m, c, lab = styles.get(size, ("^", "0.4", f"$L = {size}$"))
-        norm = [r["n_chains"] * r["n_trajectories"] for r in rows]
-        beta = [r["beta"] for r in rows]
-        # Zero flips cannot be drawn on a log axis; plot it at a visible floor and
-        # mark it open, so "none observed" never reads as a small measured rate.
-        rate = [r["parity_flips"] / n for r, n in zip(rows, norm)]
-        ax.plot(beta, [max(x, floor) for x in rate], m + "-", color=c, label=lab,
-                markersize=6, linewidth=1.2)
-        for b, x in zip(beta, rate):
-            if x == 0:
-                ax.plot([b], [floor], m, color=c, markersize=9,
-                        markerfacecolor="white", markeredgewidth=1.4, zorder=4)
-        ax2.plot(beta, [r["q_sector_changes"] / n for r, n in zip(rows, norm)],
-                 m + "-", color=c, label=lab, markersize=6, linewidth=1.2)
-    ax.axvspan(14, 20, color="#c2571a", alpha=0.13, zorder=0)
-    ax.text(17, floor * 4, "mobility\nedge", fontsize=7.5, ha="center",
-            color="#8a3d10")
+
+    for step in (2, 1):
+        for size in sorted({r["lattice_size"] for r in hot}):
+            rows = sorted((r for r in hot
+                           if r["lattice_size"] == size
+                           and int(r.get("winding_charge_step") or 2) == step),
+                          key=lambda r: r["beta"])
+            if not rows:
+                continue
+            c, m = colour.get(size, "0.4"), marker.get(size, "^")
+            norm = [r["n_chains"] * r["n_trajectories"] for r in rows]
+            beta = [r["beta"] for r in rows]
+            lab = f"$L={size}$, " + move_name[step]
+            rate = [r["parity_flips"] / n for r, n in zip(rows, norm)]
+            ax.plot(beta, [max(x, floor) for x in rate], marker=m, ls=dash[step],
+                    color=c, label=lab, markersize=6, linewidth=1.4,
+                    markerfacecolor=(c if step == 1 else "white"),
+                    markeredgecolor=c, markeredgewidth=1.3)
+            # Zero flips cannot be drawn on a log axis; plot at a visible floor
+            # and ring it, so "none observed" never reads as a small rate.
+            for b, x in zip(beta, rate):
+                if x == 0:
+                    ax.plot([b], [floor], m, color=c, markersize=10,
+                            markerfacecolor="white", markeredgewidth=1.6, zorder=4)
+            ax2.plot(beta, [r["q_sector_changes"] / n for r, n in zip(rows, norm)],
+                     marker=m, ls=dash[step], color=c, label=lab, markersize=6,
+                     linewidth=1.4, markerfacecolor=(c if step == 1 else "white"),
+                     markeredgecolor=c, markeredgewidth=1.3)
+
     ax.axhline(floor, color="0.7", linewidth=0.8, linestyle=":")
-    ax.text(24.5, floor * 1.25, "none observed", fontsize=6.5, color="0.45",
-            ha="right")
+    ax.text(ax.get_xlim()[1], floor * 1.3, "none observed", fontsize=6.5,
+            color="0.45", ha="right")
     ax.set_yscale("log")
     ax.set_ylabel("parity flips per chain-trajectory")
-    ax.set_title(r"Odd/even mobility dies at $\beta \approx 15$-$20$")
-    ax2.axvspan(14, 20, color="#c2571a", alpha=0.13, zorder=0)
+    ax.set_title("The cliff belongs to the PROPOSAL, not the theory", fontsize=10)
+    ax.annotate("joint proposal:" + chr(10) + "acceptance collapses",
+                xy=(0.97, 0.42), xycoords="axes fraction", fontsize=7.5,
+                ha="right", color="#8a3d10")
+    ax.annotate("marginal move: flat", xy=(0.97, 0.84), xycoords="axes fraction",
+                fontsize=7.5, ha="right", color="#1f4e9c")
+
     ax2.set_yscale("log")
     ax2.set_ylabel("$Q$ changes per chain-trajectory")
-    ax2.set_title("The usual diagnostic, over the same range")
+    ax2.set_title("The usual diagnostic sees none of it", fontsize=10)
     for a in (ax, ax2):
         a.set_xlabel(r"$\beta$")
         a.grid(alpha=0.25, which="both")
-        a.legend(frameon=False, fontsize=8)
+    ax.legend(frameon=False, fontsize=7)
     ax2.set_ylim(ax2.get_ylim()[0] * 0.5, ax2.get_ylim()[1] * 2)
-    fig.suptitle("Two mechanisms, one axis: only the left panel sees the freeze",
-                 fontsize=10)
-    fig.tight_layout(rect=(0, 0, 1, 0.95))
+    fig.suptitle("Do not read odd-charge mobility off a sector-change count",
+                 fontsize=10.5)
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(path, dpi=150)
     plt.close(fig)
 
 
 def figure_winding_economics(topo: dict, path: Path) -> None:
-    """The Z_2 obstruction as a cost curve."""
+    """The Z_2 obstruction as a cost curve, beside what it costs in ACCEPTANCE.
+
+    Panel (a) is the forced-route cost and is the obstruction itself: crossing
+    Z_2 with the SU(2) sector held fixed drives one plaquette's cos(phi_p) to -1
+    and the joint action pays 2 beta there.
+
+    Panel (b) is why that is not the end of the story. Accepting on the exact
+    psi-marginal instead of the joint action -- and resampling SU(2), which is
+    what absorbs the flipped plaquette -- takes odd acceptance from 0.000 to
+    0.28-0.66 at the same couplings. Panel (a) without panel (b) reads as "odd
+    charge is unreachable", which is what this study believed until 2026-08-20
+    and is not true. See `docs/INSTANTON.md`.
+    """
     rows = topo.get("winding", [])
     if not rows:
         return
@@ -278,7 +379,11 @@ def figure_winding_economics(topo: dict, path: Path) -> None:
     odd = [r["charge_step_1"]["forced_cost"] for r in rows]
     after = [r["ladder_route"]["cost_after_conditional_su2"] for r in rows]
 
-    fig, ax = plt.subplots(figsize=(7.6, 4.5))
+    acc_even = [r["charge_step_2"].get("acceptance", float("nan")) for r in rows]
+    acc_odd = [r["charge_step_1"].get("acceptance", float("nan")) for r in rows]
+
+    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.5))
+    ax = axes[0]
     w = 0.26
     groups = [
         (x - w, even, "#2e7d32", r"$\Delta Q = 2$ (central, free)"),
@@ -296,15 +401,34 @@ def figure_winding_economics(topo: dict, path: Path) -> None:
     ax.plot(x - w, expect, "k_", ms=16, label=r"predicted $2\pi^2\beta/V$")
     ax.axhline(0, color="0.5", lw=0.8)
     ax.set_ylim(min(0.0, min(after) * 1.8), max(odd) * 1.18)
-    ax.set_xticks(x)
-    ax.set_xticklabels(labels)
-    ax.set_xlabel(r"lattice size $L$  /  coupling $\beta$")
-    ax.set_ylabel(r"$\Delta S$ of the forced move")
-    ax.set_title(r"Winding economics: even charge is the U(1) instanton, odd is not")
+    ax.set_ylabel(r"$\Delta S$ of the FORCED move")
+    ax.set_title("(a) the $Z_2$ obstruction, with SU(2) held fixed", fontsize=10)
     ax.legend(frameon=False, fontsize=8)
-    ax.grid(alpha=0.25, axis="y")
+
+    ax = axes[1]
+    ax.bar(x - w / 2, acc_even, w, color="#2e7d32",
+           label=r"$\Delta Q = 2$ (central)")
+    ax.bar(x + w / 2, acc_odd, w, color="#8a6fbf",
+           label=r"$\Delta Q = 1$ (marginal acceptance)")
+    for pos, vals in ((x - w / 2, acc_even), (x + w / 2, acc_odd)):
+        for xi, v in zip(pos, vals):
+            ax.annotate(f"{v:.3f}", (xi, v), textcoords="offset points",
+                        xytext=(0, 3), ha="center", fontsize=7.5)
+    ax.axhline(0, color="0.5", lw=0.8)
+    ax.set_ylim(0, 1.0)
+    ax.set_ylabel("Metropolis acceptance")
+    ax.set_title("(b) accepted on the exact $\\psi$-marginal instead", fontsize=10)
+    ax.legend(frameon=False, fontsize=8)
+
+    for ax in axes:
+        ax.set_xticks(x)
+        ax.set_xticklabels(labels)
+        ax.set_xlabel(r"lattice size $L$  /  coupling $\beta$")
+        ax.grid(alpha=0.25, axis="y")
+    fig.suptitle(r"Winding economics: the obstruction is in the PROPOSAL, "
+                 r"not in the theory", y=1.02)
     fig.tight_layout()
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=150, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -354,11 +478,22 @@ def main() -> int:
         figure_wilson_spread(dists, out_dir / "fig08_wilson_spread.png")
         print("wrote fig08")
 
+    # Four runs, two winding moves. Older records predate `winding_charge_step`
+    # and are all from the JOINT (charge_step 2) proposal, so they default to 2 --
+    # the directory name is the fallback, never the primary source.
     parity = []
-    for name in ("base_parity_L8", "base_parity"):
+    for name, default_step in (("base_parity_L8", 2), ("base_parity", 2),
+                               ("base_parity_v2", 2),
+                               ("base_parity_L8_marginal", 1),
+                               ("base_parity_v2_marginal", 1)):
         rows = _load(Path("out/u2_2d") / name / "base_parity.json")
-        if rows:
-            parity.extend(rows if isinstance(rows, list) else [rows])
+        if not rows:
+            continue
+        for r in (rows if isinstance(rows, list) else [rows]):
+            r.setdefault("winding_charge_step", default_step)
+            if r.get("winding_charge_step") is None:
+                r["winding_charge_step"] = default_step
+            parity.append(r)
     if parity:
         figure_sampling_regimes(parity, out_dir / "fig09_parity_mobility.png")
         print("wrote fig09")

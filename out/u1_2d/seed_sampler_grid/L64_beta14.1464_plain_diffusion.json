@@ -1,0 +1,19 @@
+{
+  "arm": "plain_diffusion",
+  "topological_updates": false,
+  "n_chains": 64,
+  "n_traj": 400,
+  "t_therm": {
+    "plaquette": 11.0,
+    "wilson_2x2": 4.0,
+    "wilson_4x4": 4.0,
+    "wilson_6x6": 0.0
+  },
+  "t_therm_slowest": 11.0,
+  "acceptance": 0.9707421875,
+  "seconds": 16.285712003707886,
+  "q_mean_final": -0.03125,
+  "q_squared_final": 8.65625,
+  "q_squared_initial": 8.65625,
+  "q_changes": 0
+}

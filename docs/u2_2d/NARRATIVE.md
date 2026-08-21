@@ -26,11 +26,18 @@ obstruction: $U(2) = (U(1)\times SU(2))/\mathbb{Z}_2$ makes even charge changes 
 and forces odd ones across a monodromy, which splits the classical freezing problem
 into two mechanisms with different controlling parameters — the even channel is a
 ladder invariant and never closes, the odd one closes at $\beta \approx 15$–$20$
-and stays closed. The measured advantage is **reachability, not speed**: for local
-observables the ladder is $3.7\times$ more expensive than HMC with a winding update
-at the accuracy-of-record setting, of which a tunable factor of three is
-recoverable, while for topology the classical arm covers only half the exact
-$P(Q)$, reaches *no* odd sector at all, and cannot improve on that at any cost.
+and stays closed **for the winding move as originally proposed** — a qualification
+that turned out to carry the whole claim, and is developed in §11.5.
+
+The measured advantage is that **the seed starts where the classical chain has to
+travel to.** For local observables the ladder is $3.7\times$ more expensive than
+HMC with a winding update at the accuracy-of-record setting, of which a tunable
+factor of three is recoverable. For topology, the honest 2026-08-20 statement is
+not that the classical arm *cannot* reach odd sectors — with the marginal odd move
+of §11.5 it reaches full $P(Q)$ coverage from a cold start — but that it must
+*manufacture* that coverage, at 2587 accepted parity flips and 1100 s, where the
+diffusion seed *inherits* it: arm E reaches the same coverage in 379 s with **zero**
+parity flips, and arm A is already there having made no winding move at all.
 
 ---
 
@@ -142,6 +149,17 @@ theory, and therefore
 > approximation.** Setting $\psi$ sets $Q$.
 
 This is verified numerically in `scripts/09_verify_identities.py`.
+
+**Read that statement as being about the blocking relation, not about the
+sampler.** It says a fine configuration *satisfying blocking consistency* has its
+charge fixed by the coarse one. It does not say the generative lift produces such
+a configuration: the reverse diffusion only *penalizes* blocking mismatch
+(`blocking_consistency_score`, strength $\sim 1/8\sigma^2$), a charge projection
+fires periodically inside the trajectory, and `apply_coarse_charge` then imposes
+the sector outright by adding a smooth instanton — retrying up to three times
+because wrapping makes it miss. Section 20 spells out the consequences; the one
+to carry from here is that imposing $Q$ fixes the global winding number and does
+not by itself make the local cell sums match.
 
 ### 6. The joint does not factorize — and the fix is free
 
@@ -306,6 +324,129 @@ sector?" — reports **healthy** in a regime where $P(Q)$ is badly wrong, becaus
 even-charge moves keep firing while the odd/even balance is stuck. The measurement
 that exposes it is the total odd-sector weight, and it needs a *coherent* test:
 each odd sector is individually within $1\sigma$, and jointly they are not.
+
+### 11.5 The odd instanton: why the U(1) move does not generalize, and the fix
+
+This section replaces the earlier reading that odd-charge winding is intrinsically
+expensive in U(2). It is not. The cost was an artifact of insisting that the SU(2)
+sector stay fixed while the move is proposed, and it disappears once the move is
+made in the sector where it belongs. Measured in `scripts/23_odd_instanton.py`.
+
+#### The U(1) instanton, stated exactly
+
+`u1_2d.lgt.local_updates.instanton_field` builds a smooth $Q = +1$ configuration:
+
+$$\theta_y(x, y) = \frac{2\pi x}{L^2}, \qquad
+  \theta_x(L-1, y) = -\frac{2\pi y}{L}$$
+
+Every plaquette angle is $2\pi / L^2$. The second line is a transition-function
+correction on the last column, and it is not cosmetic: the raw alternating sum of
+plaquette angles telescopes to **zero** identically, because each link enters two
+plaquettes with opposite sign. A configuration whose wrapped plaquettes sum to
+$2\pi$ must therefore have at least one plaquette whose *raw* angle differs from
+its wrapped one. Here exactly one does — the corner, at
+$2\pi/L^2 - 2\pi$, which wraps back to $2\pi/L^2$.
+
+`topological_update` adds $\pm$ this field and applies a Metropolis test. The
+proposal is symmetric, so acceptance is $\min(1, e^{-\Delta S})$ with
+$$\Delta S \;=\; \tfrac{1}{2}\beta \sum_p \left(\tfrac{2\pi}{V}\right)^2
+            \;=\; \frac{2\pi^2\beta}{V},$$
+governed by $\beta / V$, which the matched ladder holds nearly constant. That is
+the whole reason the U(1) move works at every rung.
+
+#### Why halving it breaks in U(2)
+
+In the split representation $U = e^{i\phi} q$ the determinant phase is
+$\psi = \mathrm{wrap}(2\phi)$ — the factor of two is the entire difficulty. A
+purely central shift $\phi \to \phi + \lambda$ moves $\psi$ by $2\lambda$ and
+therefore $Q$ by **two**. That is `central_winding_field`, it commutes with
+everything, and it costs $2\pi^2\beta_{\rm det}/V$ exactly as in U(1).
+
+For $\Delta Q = 1$ the shift must be $\lambda / 2$. Every plaquette then picks up
+$\pi/V$, which is harmless — except the corner, which goes to
+$$\phi_p \;=\; \frac{\pi}{V} - \pi \quad\Longrightarrow\quad
+  \cos\phi_p \approx -1 .$$
+The U(2) plaquette is $\tfrac12\mathrm{ReTr}\,P = q^0_p\cos\phi_p$, so that single
+plaquette flips sign and the joint action pays $\approx 2\beta$ **on one
+plaquette**. Measured, at 32 configurations:
+
+| construction | $|\Delta Q|$ | $\Delta S$ joint |
+|---|---|---|
+| `half_central`, $L=8$, $\beta=14$ | 1.000 | 24.0 |
+| `half_central`, $L=16$, $\beta=28$ | 1.000 | 52.6 |
+| `u1_t`, $L=16$, $\beta=28$ | 1.000 | 278.1 |
+
+The obvious repair — flip $q^0_p$ at that corner too, so the two sign flips
+cancel — is blocked: $\mathbb{Z}_2$ curvature has an even number of $-1$
+plaquettes, always, so no single plaquette can be flipped alone.
+
+#### The two published constructions are the same construction
+
+`winding_field(charge=1)` uses the $U(1)_T$ subgroup element
+$\exp(i\lambda T)$ with $T = (I + n\cdot\sigma)/2$. Writing it out,
+$$\exp(i\lambda T) \;=\; e^{i\lambda/2}\,\exp\!\big(i\tfrac{\lambda}{2}\,n\cdot\sigma\big)
+  \;=\; \mathrm{diag}\big(e^{i\lambda},\,1\big),$$
+which is precisely "half-instanton on $\phi$ **and** the matching half-instanton
+on SU(2) about a fixed axis". The SU(2) half carries $\cos(\lambda_p/2)$, negative
+at the same corner where $\cos\phi_p$ is — so **on a cold background the two $-1$s
+cancel plaquette by plaquette and the move is free.** The script builds both forms
+independently (`u1_t` and `spread_twist`) and they return byte-identical joint
+costs (77.79 and 278.08), confirming the identity.
+
+What ruins it is the thermalized background: a *fixed* colour axis $n$ does not
+commute with the local SU(2) field, so the cancellation that is exact on an
+ordered configuration is destroyed on a real one. That, not topology, is the
+origin of the measured $O(\beta L)$.
+
+#### The fix: propose in the marginal, resample the conditional
+
+In two dimensions the SU(2) sector integrates out **exactly, plaquette by
+plaquette** (§7, `DetSectorAction`), so the $\psi$-marginal is known in closed
+form: $w_{\rm det}(\alpha) = 2I_1(z)/z$ with $z = \beta\cos(\alpha/2)$. That makes
+the following a valid Markov chain:
+
+1. propose $\psi' = \psi \pm \lambda$, with $\lambda$ the winding-1 U(1)
+   instanton — a symmetric, involutive proposal;
+2. accept with $\min(1, e^{-[S_{\rm det}(\psi') - S_{\rm det}(\psi)]})$, using the
+   **marginal** action and ignoring $q$ entirely;
+3. on acceptance, resample $q \sim p(q\mid\psi')$ with `conditional_su2_sweeps`,
+   which is exact at frozen $\psi$ and cannot change $Q$.
+
+Step 2 is a collapsed Metropolis step against $\pi(\psi) = \int\! dq\,\pi(\psi,q)$,
+and step 3 leaves $p(q\mid\psi)$ invariant, so the pair targets $\pi(\psi, q)$.
+The $2\beta$ never appears in the acceptance, because it is paid by an SU(2)
+configuration that is about to be discarded.
+
+**And the odd move is then CHEAPER than the even one.** Measured marginal costs:
+
+| | $\beta_{\rm det}$ | even $\Delta S$ | odd $\Delta S$ | ratio |
+|---|---|---|---|---|
+| $L = 8$, $\beta = 14$ | 3.560 | 3.393 | **0.787** | 4.3 |
+| $L = 16$, $\beta = 28$ | 7.020 | 2.062 | **0.532** | 3.9 |
+
+The factor of four is not luck: the odd move adds half the flux of the even move
+and the action is quadratic in it, so $\Delta S_{\rm odd} = \Delta S_{\rm even}/4$.
+Acceptance at these couplings is $e^{-0.5} \approx 0.6$.
+
+For completeness, the relaxation route also works but is not the recommended one:
+25 conditional SU(2) sweeps after a naive `half_central` bring the joint cost from
+24.0 to $-2.0$ at $L=8$ and from 52.6 to $-0.04$ at $L=16$ — i.e. to $O(1)$. It is
+a legitimate way to *reach* an odd sector, and it is what
+`set_topological_charge` already relies on. It is not a legitimate Metropolis
+acceptance, because the sweeps are a stochastic map whose reverse probability is
+not accounted for. Use it to construct configurations; use the marginal route to
+sample.
+
+#### What this changes
+
+The claim that "an ODD change cannot leave SU(2) alone and no fixed shift field
+does it cheaply" stands as written — no *fixed shift field* does. The conclusion
+drawn from it, that odd-charge mobility is therefore obstructed in a way even
+mobility is not, does **not** follow: the obstruction is in the joint proposal,
+not in the theory. A marginal-space odd move costs a quarter of the even move and
+should be adopted before any further claim about odd-sector freezing is made.
+The `beta`-controlled odd-mobility boundary measured in `15_base_parity.py`
+(§11) is a property of `winding_update` as currently implemented, not of U(2).
 
 ### 12. Where $P(Q)$ can be sampled rather than seeded
 
@@ -663,16 +804,54 @@ Two cautions on reading the $z$ columns. The deviations of large loops *within o
 
 ### Seed quality and topological reach
 
-$L = 64$, $\beta = 416.524$, 64 chains, 300 trajectories per arm.
+$L = 64$, $\beta = 416.524$, 64 chains. Extended 2026-08-20 to eight arms, so that
+every seed is compared against a sampler of the same strength. **Read this grid by
+row, never diagonally** — comparing a diffusion seed under one sampler against a
+cold start under a weaker one measures the sampler, not the seed.
 
-| arm | $|\Delta P/P|$ at $t=0$ | at $t=T$ | $\langle Q^2\rangle$ | sectors | $P(Q)$ covered | odd sectors |
-|---|---|---|---|---|---|---|
-| **A** diffusion seed | $8.21e-06$ | $4.49e-06$ | 1.141 | 6 | 0.995 | 3 |
-| B cold start | $4.83e-03$ | $4.30e-05$ | 0.000 | 1 | 0.399 | 0 |
-| C hot start | $1.00e+00$ | $6.24e-02$ | 109.370 | 51 | 1.000 | 25 |
-| D cold + winding | $4.83e-03$ | $5.18e-05$ | 0.856 | 3 | 0.507 | 0 |
+One bookkeeping caveat, stated because it is visible in figure 7: arms **A–D ran
+300 trajectories and E–H ran 400**. A–D were reused from the earlier four-arm run
+rather than regenerated, and the arm cache is keyed on the arm name, not on the
+trajectory count. Every arm is equilibrated well before 300 — the independent
+interval is $2\tau_{\rm int} = 3.2$ — so the $t=0$ and final columns are
+comparable, but the cumulative `sectors` count is not: it can only grow with
+trajectory number, so A–D are mildly understated against E–H on that one column.
+Do not read the sector counts across that boundary without regenerating A–D.
+
+| arm | sampler | $|\Delta P/P|$ at $t=0$ | at $t=T$ | $\langle Q^2\rangle$ | sectors | $P(Q)$ covered | odd | parity flips |
+|---|---|---|---|---|---|---|---|---|
+| **A** diffusion seed | plain | $8.21e-06$ | $4.49e-06$ | 1.141 | 6 | 0.995 | 3 | 0 |
+| B cold start | plain | $4.83e-03$ | $4.30e-05$ | 0.000 | 1 | 0.399 | 0 | 0 |
+| C hot start | plain | $1.00e+00$ | $6.24e-02$ | 109.370 | 51 | 1.000 | 25 | 31 |
+| D cold | + even winding | $4.83e-03$ | $5.18e-05$ | 0.856 | 3 | 0.507 | 0 | 0 |
+| **E** diffusion seed | + even winding | $8.21e-06$ | $9.40e-06$ | 0.989 | 8 | **1.000** | 4 | **0** |
+| F hot start | + even winding | $1.00e+00$ | $6.24e-02$ | 6.284 | 52 | 1.000 | 25 | 32 |
+| G cold | + **odd** winding | $4.83e-03$ | $5.47e-05$ | 0.973 | 9 | **1.000** | 4 | **2587** |
+| **H** diffusion seed | + **odd** winding | $8.21e-06$ | $1.26e-05$ | 1.011 | 7 | **1.000** | 4 | — |
 
 Exact $\langle Q^2\rangle = 1.0012$. The independent-configuration interval for a plain chain is $2\tau_{\rm int} = 3.2$ trajectories.
+
+**Three readings, in order of what they cost the argument.**
+
+*The reachability claim is dead.* Arms D and G differ only in how the winding
+move is priced, and parity flips go $0 \to 2587$. A classical chain at the top
+rung reaches full $P(Q)$ coverage with $\langle Q^2\rangle = 0.973$ against exact
+$1.0012$. The earlier claim — that odd charge has probability zero in the
+classical arm's stationary distribution — was a property of the *proposal*, and
+is withdrawn (§11.5, `docs/INSTANTON.md`).
+
+*What replaces it is stronger, because it is a cost statement.* Arm E reaches
+coverage $1.000$ using only the **cheap even** move, in 379 s, with **zero**
+parity flips. The even move cannot change parity, so every odd sector E occupies
+was inherited from the seed rather than manufactured. G needs the expensive odd
+move and 1100 s to arrive at the same place. Arm A is already there having made
+no winding move at all.
+
+*Arm H is the control that keeps A honest.* A's topology could in principle be
+correct-looking only because nothing was able to move it. H gives the same seed a
+sampler that flips parity freely, and $\langle Q^2\rangle$ sits at $1.011$ against
+exact $1.0012$ — the seed's sector weights survive contact with a sampler free to
+change them. That is a claim about the model's $P(Q)$, not about its immobility.
 
 **Read coverage together with the second moment, never alone.** The
 hot-start arm covers 1.000 of the exact $P(Q)$ by visiting 51 sectors
@@ -687,95 +866,110 @@ will not equal the ladder value exactly.
 
 ### Is the *learned* lift necessary? The prolongator ablation
 
-The seed benchmark above compares the diffusion seed against cold, hot and
-winding starts, and wins by three orders of magnitude. That comparison is too
-easy, and on its own it does not support the claim the method needs. A cold
-start is not the alternative a skeptic has in mind. The alternative is a
-**cheap geometric prolongator** — an explicit, non-learned map from the coarse
-$\psi$ to a fine $\psi$ — and if one of those does the same job, the score
-network is decoration.
+The seed benchmark compares the diffusion seed against cold, hot and winding
+starts and wins by three orders of magnitude. That comparison is too easy on its
+own. A cold start is not the alternative a skeptic has in mind; the alternative
+is a **cheap explicit prolongator** — a non-learned map from coarse $\psi$ to
+fine $\psi$ — and if one of those does the same job, the score network is
+decoration.
 
-Four were built (`u2_2d/scripts/17_prolongator_baseline.py`), all acting on the
+Five were built (`u2_2d/scripts/17_prolongator_baseline.py`), all acting on the
 determinant sector only, so they are drop-in replacements for the model:
 
-* `halve` — the exact inverse of determinant blocking: give each of the four
-  fine links the coarse link phase halved. Reproduces the coarse plaquette
-  exactly and is maximally smooth.
+* `halve` — the exact inverse of determinant blocking: each of the four fine
+  links takes the coarse link phase halved. Blocking-consistent, so it carries
+  the coarse sector exactly, but cold in every plaquette blocking leaves free.
 * `tile` — nearest-neighbour replication of the coarse field.
-* `flux` — `halve` with the plaquette flux redistributed uniformly.
-* `smear` — `flux` followed by heatbath + overrelaxation sweeps, the sweep count
-  tuned *per coupling* to match the exact plaquette. This is the arm that
-  matters; it is what a competent practitioner would actually write.
+* `flux` — `halve` with the cell's coarse flux spread evenly over its four fine
+  plaquettes. The strongest purely geometric map.
+* `ape` — `flux`, then **deterministic** APE smearing (blend each link with its
+  staples, project back by taking the angle), the iteration count tuned per
+  coupling against `det_character_exact(beta)`. This is the U(2) analogue of the
+  Endres-style prolong-then-smooth kernel and the honest classical competitor.
+* `smear` — `flux`, then heatbath + overrelaxation sweeps, count tuned the same
+  way. **Not an interpolation kernel**: heatbath is an exact local sampler, so
+  this arm is prolongation plus local Monte Carlo. It is reported because it is
+  the strongest thing available, not because it is a fair prolongator.
 
-Every arm then receives **identical** post-processing — coarse-charge
-enforcement on $\psi$, 30 conditional SU(2) sweeps, 10 rethermalization sweeps.
-Only the lift differs. Because the SU(2) sampler is exact at frozen $\psi$, the
-ablation is clean: the map from coarse $\psi$ to fine $\psi$ is the only learned
-object in the pipeline, and it is the only thing being swapped.
+Because Q is a functional of $\psi$ alone and $\psi$ is an honest compact U(1)
+field in `u1_2d`'s layout, all five are that study's maps verbatim.
 
-Run at both rungs, 64 chains, 400 trajectories per arm:
+**Two measurement traps, both of which produced a wrong answer before they were
+found.** They are recorded because either one silently inverts the conclusion.
 
-| | rel err **pre**-retherm | $\|\Delta P/P\|$ at $t=0$ | $t_{\rm therm}$ |
+1. **The rethermalization sweeps mask everything.** The deployed pipeline applies
+   10 `retherm_sweeps` — heatbath plus two overrelaxations, on *both* sectors —
+   after the lift. Ten such sweeps equilibrate short-distance structure from
+   almost any start, so with them every arm reaches $t_{\rm therm} = 0$ and the
+   metric has no resolution at all. Set `--n-retherm 0` to measure the lift. This
+   is also what makes the U(2) table comparable to `u1_2d`'s, whose arms go
+   straight into HMC.
+2. **`smear` was double-counting its budget.** It ran `assemble(..., n_retherm)`
+   *and then* its tuned sweeps, so it always carried ~25 more local updates than
+   every other arm. Combined with trap 1 this made `smear` appear to beat the
+   learned lift by 7x, which was entirely the extra sweeps.
+
+A third point is conceptual rather than a bug: the *conditional SU(2) sampler
+cannot repair a bad $\psi$*. It runs with `update_phase=False` and returns the
+determinant sector bit-for-bit unchanged, which is why `halve` is still $-18.8\%$
+wrong on the plaquette in the pre-retherm column measured *after* those 30
+sweeps. Any repair comes from the joint rethermalization, never from the exact
+sampler.
+
+**The measurement, with the budget matched.** 64 chains, 400 trajectories,
+`--n-retherm 0`, and `diffusion_tuned` is the learned lift put through the
+identical `tune_smear` procedure `smear` gets, so the two differ only in their
+starting point:
+
+| arm | tuned sweeps | $t_{\rm therm}$ plaq / slowest | $|\Delta P/P|$ at $t=0$ |
 |---|---|---|---|
-| **$L=32$, $\beta=105.651$** | | | |
-| diffusion | $+1.02\times10^{-4}$ | $3.27\times10^{-5}$ | 0 |
-| tile | $-1.49\times10^{-2}$ | $7.69\times10^{-5}$ | 0 |
-| flux | $-9.46\times10^{-2}$ | $6.72\times10^{-5}$ | 0 |
-| smear | $-9.46\times10^{-2}$ | $4.85\times10^{-6}$ | 0 |
-| halve | $-1.88\times10^{-1}$ | $\mathbf{1.83\times10^{-6}}$ | 0 |
-| cold | — | $1.93\times10^{-2}$ | 136 |
-| **$L=64$, $\beta=416.524$** | | | |
-| diffusion | $+6.47\times10^{-5}$ | $8.21\times10^{-6}$ | 0 |
-| tile | $-3.64\times10^{-3}$ | $7.24\times10^{-6}$ | 2 |
-| flux | $-9.65\times10^{-2}$ | $8.32\times10^{-6}$ | 0 |
-| smear | $-9.65\times10^{-2}$ | $\mathbf{1.14\times10^{-6}}$ | 0 |
-| halve | $-1.89\times10^{-1}$ | $1.12\times10^{-5}$ | 2 |
-| cold | — | $4.83\times10^{-3}$ | > 400 |
+| **$L = 32$, $\beta = 105.651$** | | | |
+| **diffusion_tuned** | **5** | **0 / 0** | $6.70\times10^{-6}$ |
+| smear | 35 | 5 / 5 | $3.06\times10^{-5}$ |
+| ape | — | 0 / 331 | $7.67\times10^{-5}$ |
+| diffusion_raw | — | 0 / 2 | $7.96\times10^{-5}$ |
+| tile / halve / flux | — | > 400 | $1.5\times10^{-2}$ – $1.9\times10^{-1}$ |
+| cold | — | 210 | $1.93\times10^{-2}$ |
+| **$L = 64$, $\beta = 416.524$** | | | |
+| **diffusion_tuned** | **5** | **0 / 1** | $1.50\times10^{-6}$ |
+| smear | 15 | 6 / 6 | $2.47\times10^{-9}$ |
+| ape | — | 1 / > 400 | $7.18\times10^{-5}$ |
+| diffusion_raw | — | 24 / 24 | $6.37\times10^{-5}$ |
+| tile / halve / flux | — | > 400 | $1.5\times10^{-2}$ – $1.9\times10^{-1}$ |
+| cold | — | > 400 | $4.83\times10^{-3}$ |
 
-**The result is a split verdict, and the negative half is the more important
-one.**
+**Read it in four steps.**
 
-On the **raw lift** the model is not close to being matched. Pre-rethermalization
-it sits at $1.0\times10^{-4}$ and $6.5\times10^{-5}$ where the best geometric map
-is off by $1.5\times10^{-2}$ and the worst by $19\%$ — a margin of two to three
-orders of magnitude at both rungs. As a learned approximation to
-$p(\psi_{\rm fine} \mid \psi_{\rm coarse})$ the network is doing something no
-cheap explicit map comes near.
+*The naive maps are worse than nothing.* `tile`, `halve` and `flux` fail to
+thermalize inside 400 trajectories at both rungs, and at $L = 32$ they are worse
+than a fresh cold start (210). Prolonging by an obvious deterministic rule
+satisfies the coarse constraint while being wrong at short distances, and the
+chain must then undo it. This reproduces `u1_2d` exactly.
 
-On the **delivered configuration** that margin is gone. After the post-processing
-every arm receives anyway, the ordering *reverses*: `smear` beats diffusion by
-$7\times$ at both rungs, and at $L=32$ `halve` — which arrives $19\%$ wrong on the
-plaquette — finishes $18\times$ closer than the model. Thermalization time cannot
-separate the arms at all: every lift reaches $t_{\rm therm} = 0$, against 136 and
-$> 400$ for a cold start.
+*The honest classical competitor works, slowly.* `ape` needs 331 trajectories at
+$L = 32$ and never converges at $L = 64$. Again this matches `u1_2d`, where APE
+was the only non-learned arm to beat a cold start and still needed 150–321
+trajectories. It is a real method and the naive maps are a strawman for it.
 
-The explanation is not subtle, and it is the same fact that makes the U(2)
-factorization attractive in the first place: **the exact conditional SU(2)
-sampler is strong enough to repair a bad $\psi$.** Thirty sweeps at frozen
-determinant plus ten rethermalization sweeps take an $19\%$ plaquette error to
-$10^{-6}$. The pipeline's own correctness machinery dominates the quality of its
-input, which is a good property for exactness and a bad one for any claim that
-the learned lift is what delivers local accuracy.
+*At matched budget the learned lift wins.* `diffusion_tuned` reaches the target
+in **5 tuned sweeps at both rungs**, against 35 and 15 for `smear` — 7x and 3x
+less repair — and thermalizes in 0–1 trajectories against 5–6. Since both arms
+run the identical tuning procedure to the identical target, the sweep count is a
+direct measure of how far from equilibrium each lift starts.
 
-So the claim must be stated at the right altitude:
+*One number is a tuning artifact, not a result.* At $L = 64$ `smear` ends at
+$2.47\times10^{-9}$ against `diffusion_tuned`'s $1.50\times10^{-6}$. `tune_smear`
+optimizes the plaquette specifically, and 15 sweeps of an exact local sampler
+land almost exactly on that one observable. The slowest-Wilson-loop column, which
+is not tuned, gives 6 against 1. Judge on $t_{\rm therm}$(slowest).
 
-> On local observables, the learned prolongator is **not** measurably better
-> than a naive geometric one once the pipeline's exact SU(2) sampler has run.
-> Its advantage is in the lift itself, and it survives into the delivered
-> ensemble only through quantities the sampler does not fix — topology and
-> extended loops.
-
-Those quantities are measured separately and the advantage there is real: the
-classical arm reaches **zero** odd sectors at any cost (§11), and the extended-loop
-agreement at the top rung is the subject of the next section. Neither is visible
-in the plaquette, which is precisely why the plaquette is the wrong place to
-argue this.
-
-Two honest caveats on the table. The `smear` build cost (5–7 s per ensemble) is
-charged in the source report but omitted above; it is small but not zero, and the
-model's is zero because the lift *is* the generation. And $t_{\rm therm}$
-saturating at 0 for every arm means the metric has no resolution here — it is
-reported to show that it *fails* to separate, not as evidence of a tie.
+**What the ablation does NOT support.** Sector transport is imposed by
+`apply_coarse_charge` and is identical across arms — at $L = 64$ every
+prolongator carries $\langle Q^2\rangle = 1.141$ to three decimals. Topological
+reach is a property of the **ladder**, not of the learned lift, and must be
+claimed as such; a five-line geometric map inherits it in full. What the model
+buys is a starting point that needs 3–7x less local repair, and that is the claim
+the ablation supports.
 
 ### Per-configuration Wilson spread
 
@@ -816,7 +1010,20 @@ Ladder: **0.7803 s** per configuration including base generation, **0.4678 s** f
 
 **For local observables the ladder is 3.68x SLOWER than HMC + winding.** That is the honest headline and it should not be buried: this method is not a speed-up for the plaquette or small Wilson loops. The cost is dominated by the 200-step diffusion sampler, and the obvious hedge -- that the sampler is tunable and was never tuned -- **is real and worth about a factor of three**, measured in the scan below. At 25 steps the top rung turns from 2.22x slower into 1.38x *faster* than HMC + winding, at roughly 2.7x the extended-loop error and no measurable change in local observables after rethermalization. So the number quoted here is the cost of the ACCURACY-OF-RECORD setting, not a floor. What does not move is the remaining overhead: the exact conditional SU(2) sampler, which no amount of sampler tuning touches.
 
-**The topological claim is reachability, not speed.** The classical arm covers 0.507 of the exact $P(Q)$ with zero odd sectors and cannot improve on that at any cost, because odd charge has probability *zero* in its stationary distribution rather than merely long autocorrelation. A ratio of seconds against an arm that never arrives is meaningless, so the two claims must be stated separately.
+**The topological claim is now a cost claim, not an impossibility claim
+(revised 2026-08-20).** It used to read: the classical arm covers 0.507 of exact
+$P(Q)$ with zero odd sectors "and cannot improve on that at any cost, because odd
+charge has probability *zero* in its stationary distribution". That is withdrawn
+— it described the winding *proposal*, not the theory (§11.5).
+
+The `s / independent config` column above is therefore now a fair comparison
+where it previously was not, but it must be read with the winding move's own
+price attached. The even move is what arms A, D and E pay for; the odd move
+costs $1609$ ms/trajectory against the even move's $211$ ms, because each
+accepted move triggers 25 conditional SU(2) sweeps. So arm D's $0.2122$ s buys
+half of $P(Q)$; buying the other half costs arm G a further $2.9\times$ in
+wall-clock. The diffusion seed gets it for nothing, because its sectors arrive
+with the configuration rather than being sampled into it.
 
 ### How many reverse-diffusion steps the lift needs
 
@@ -905,6 +1112,89 @@ so it is not a sampling artifact. The density regression is small — under $1.5
 — but it is in the same direction at all four cases, which is what makes it
 believable at $z \approx 2$.
 
+**And it costs seed quality at the very rung it was built for.** Re-running the
+prolongator ablation at $L = 64$ against `det_score_net_cov.pt`, with the lift
+regenerated and the budget matched:
+
+| checkpoint | `diffusion_raw` $t_{
+m therm}$ | `diffusion_tuned` sweeps | $t_{
+m therm}$ slowest |
+|---|---|---|---|
+| deployed (2.05x extrapolation) | 24 | **5** | **1** |
+| coverage (in range) | 46 | 30 | 4 |
+
+The coverage checkpoint has model $eta = 104$ *inside* its training range and is
+worse on every seed metric: twice as slow raw, six times more local repair when
+tuned. So the raw lift's $L = 64$ penalty is **not** a coupling-coverage artifact,
+and the obvious explanation for it is eliminated rather than confirmed. Whatever
+drives it, more training coverage at the same capacity is not the fix.
+
+### Replicated, at nine times the scale (2026-08-21)
+
+The sentence above was written from a two-rung experiment, which is thin evidence
+for a general claim. It was then tested properly, and it held.
+
+The entire `u1_2d` training structure was ported: `expand_rungs` with 102
+log-uniform draws across three volumes, charged-sector augmentation on the six
+fixed high-$\beta$ rungs (newly possible — odd-charge augmentation requires the
+marginal move of §11.5), one heldout coupling, and `winding_charge_step = 1` in
+stage 01 so the base samples its own parity. **114 rungs, 28 928 configurations,
+model $\beta$ from 0.62 to 104.13** — the top rung is now *inside* the training
+range rather than a $2.05\times$ extrapolation. Config `configs/v2.yaml`,
+checkpoint `det_score_net_v2.pt`, everything downstream rebuilt beside the record.
+
+Four criteria were fixed **before** the run (`25_challenger_report.py`):
+
+| criterion | incumbent | challenger | |
+|---|---|---|---|
+| (a) $\langle Q^2\rangle$ at the ladder base | 0.9668 | **0.9822** | PASS ($z$ $-0.78 \to -0.43$) |
+| (b) `diffusion_tuned` sweeps, $L=32$ | **5** | 30 | FAIL |
+| (c) extended-loop mean $|z|$, $L=32$ | **0.187** | 0.292 | FAIL |
+| (c) extended-loop mean $|z|$, $L=64$ | **1.134** | 1.225 | FAIL |
+| (d) density gap, cases worse | — | 3 of 4 | FAIL |
+
+**The tuned-sweep count went $5 \to 30$ again.** Two experiments, nine times apart
+in scale, different rung sets, different data, different seeds, the same number.
+That is no longer an anecdote about one checkpoint; it is the price of coverage at
+this capacity.
+
+The density gap shows the trade directly, ordered by coupling:
+
+| case | deployed | v2 | $\Delta$ |
+|---|---|---|---|
+| $8{:}3.5{:}14$ | 1.1099 | 1.1291 | $+0.0192$ |
+| $8{:}7{:}28$ | 1.1172 | 1.1309 | $+0.0137$ |
+| $16{:}28{:}105.651$ | 1.1362 | 1.1396 | $+0.0034$ |
+| $32{:}105.651{:}416.524$ | 1.1467 | **1.1409** | $-0.0058$ |
+
+Monotone in $\beta$, and the *only* improvement is at the top rung — the one place
+the added coverage was aimed. The network is buying accuracy at the far end by
+selling it everywhere else, which is what capacity dilution looks like and is not
+what a genuine improvement looks like.
+
+Two independent corroborations that capacity, not data, is the binding constraint:
+`val_total` was still at its best at **epoch 118 of 120** (no early stop, patience
+25), and the GPU sat at **30%** throughout — input-bound at `batch_size = 32`. The
+run ended because the epoch budget ran out, not because the model had converged.
+
+**Verdict: the incumbent stays deployed.** Two things are nevertheless kept.
+`out/u2_2d/data_v2/` is retained, because criterion (a) is a measurement of the
+*data* — topology is transported, so training cannot reach $\langle Q^2\rangle$ —
+and the base ensemble genuinely improved once stage 01 could sample parity. And
+the negative result itself names the next experiment: raise `hidden`/`depth` and
+the epoch budget, then re-test coverage on `data_v2`. "Try more couplings" is now
+a closed loop rather than an open one.
+
+One methodological note worth keeping. Criterion (a) was originally written as
+"$\langle Q^2\rangle$ at the top rung" and had to be corrected mid-run, before any
+verdict was read: `enforce_coarse_charge` sets the fine charge from the coarse one,
+so an inverse-RG step moves $\langle Q^2\rangle$ by an identity and the network
+cannot influence it at all. The incumbent's ladder reports 1.0156 and the
+challenger's 0.9121, but each sits within $1.6$ SEM of its own base
+($\mathrm{SEM} \approx 0.044$ at 1024 independent charges) — the gap is a
+subsample draw. Scored as written, the challenger would have failed on a quantity
+training cannot touch.
+
 The mechanism is the least interesting one available: **fixed capacity, two more
 rungs to cover.** It is visible in training before any of the downstream
 measurements — on the nine shared validation rungs the retrained net is
@@ -917,6 +1207,12 @@ So the correct claim is a redistribution, not a win:
 > Adding coupling coverage relocates accuracy toward the rung that needed it,
 > at a measurable cost everywhere else. It removes a specific, diagnosable
 > extrapolation artifact; it does not make the model better.
+
+One metric improved and four regressed — extended loops at $L = 64$ against the
+$L = 32$ rung, the density gap at all four cases, and seed quality at the top
+rung. **`det_score_net.pt` remains the checkpoint of record**; `_cov` is reported
+as the A/B that establishes the extended-loop bias was extrapolation, not as a
+replacement.
 
 Two consequences for anyone repeating this. First, do not report `val_total`
 across the two checkpoints — it sums over 11 rungs after the retrain and 9
@@ -1110,15 +1406,55 @@ main presentational risk.
    $P(Q)$*, never as a count of sectors visited: a hot start visits many sectors
    and covers little, because it visits the wrong ones.
 
-   **This claim carries more weight than the ordering suggests, because claim 1
-   does not survive the prolongator ablation intact (Part IV, "Is the *learned* lift necessary?").** Against cold and
-   hot controls the seed wins by three orders of magnitude, but against four cheap
-   geometric lifts given the same post-processing it does not win at all on local
-   observables — `smear` finishes $7\times$ closer to exact at both rungs, and
-   $t_{\rm therm}$ is 0 for every lift. What no geometric lift can do is reach odd
-   charge, because the exact SU(2) sampler repairs a bad $\psi$ but cannot change
-   $Q$. So claim 2 is the one that genuinely requires the model, and the paper
-   should be organised around it rather than around the relaxation curve.
+   **`apply_coarse_charge` is the mechanism, not a shortcut, and it should be
+   presented that way** — but state precisely what is exact and what is not.
+   They are different objects, and the distinction is the first thing a careful
+   referee will probe.
+
+   *Exact:* the blocking telescope. $\Theta_P = \mathrm{wrap}(\sum$ four fine
+   plaquettes$)$ holds identically because det is a homomorphism (Part I,
+   section 5, checked in `09_verify_identities.py`). So a fine configuration
+   that satisfies blocking consistency has its charge fixed by the coarse one,
+   and the exact $\langle Q^2\rangle$ is a fixed point of the matched ladder.
+
+   *Not exact:* the sampler reaching such a configuration. Three separate
+   mechanisms get it there and none is an identity. `blocking_consistency_score`
+   adds reconstruction guidance, the gradient of
+   $-(\text{cell sum} - \Theta_P)^2 / 2\lambda(\sigma)$ with
+   $\lambda \approx 8\sigma^2$ — a *penalty*, not a constraint. An in-trajectory
+   charge projection fires periodically below `charge_projection_sigma`. And
+   `apply_coarse_charge` finally imposes the sector by adding
+   $\Delta Q \times$ `instanton_field`, **looping up to three times for
+   wrap-induced misses**. That retry loop is the honest signal: were transport an
+   identity at the level of the sampler, there would be nothing to miss.
+
+   Two consequences worth writing down. Imposing $Q$ sets the *global* winding
+   number and does not make the local cell sums match, so a configuration can
+   carry the right charge with blocking consistency still violated cell by cell.
+   And the guidance residual is deliberately left **unwrapped**, because a
+   wrapped one is blind to a cell sum landing $2\pi$ from its target and lets
+   spurious winding defects freeze in and inflate $\langle Q^2\rangle$ at large
+   $\beta$. So write "$P(Q)$ is sampled where sampling is possible and
+   transported *by construction*", not "transport is exact".
+
+   **What the ablation adds is the second half of the claim.** Every
+   prolongator inherits the same charge — at $L = 64$ all of them carry
+   $\langle Q^2\rangle = 1.141$ to three decimals — but a transported charge is
+   only worth having if the rest of the configuration arrives at equilibrium.
+   `halve` carries the correct winding number while sitting $19\%$ wrong on the
+   plaquette and failing to thermalize in 400 trajectories: that is a broken
+   configuration with the right topology, not a sample from the target
+   distribution in the right sector. So state both halves together:
+
+   > The matched ladder reaches sectors no local algorithm can, because $P(Q)$
+   > is sampled where sampling is possible and transported exactly; the learned
+   > lift is what makes the transported configuration *usable*, since every
+   > non-learned lift carries the same charge and fails to thermalize.
+
+   The only phrasing to avoid is attributing sector reach to the score network
+   *alone*, which invites a referee to point at `halve` and note that it has the
+   charge too. Claiming it for the ladder-plus-lift is both accurate and
+   stronger.
 3. **The generated density is close to the target.** Weakest, and it should be
    stated with the U(1) caveat attached: observable agreement does not constrain
    the density. Report per-configuration *spread*, not just means.
@@ -1221,32 +1557,35 @@ into the paper:
   otherwise is the one thing that would make the objection fatal instead of
   answerable.
 
-* ***"A cheap explicit prolongator would do the same job."*** — **This is the
-  strongest objection in the study and it is half correct.** It must be raised
-  and answered by the authors, because the ablation that settles it has been run
-  and it does not fully vindicate the model. Four non-learned lifts (`halve`,
-  `tile`, `flux`, `smear`) were given identical post-processing and compared at
-  both rungs (Part IV, "Is the *learned* lift necessary?"). Two facts come out, and both belong in the paper:
+* ***"A cheap explicit prolongator would do the same job."*** — **The strongest
+  objection in the study, and the ablation that settles it is run and comes out
+  in the pipeline's favour** (Part IV, "Is the *learned* lift necessary?"). Five
+  non-learned lifts, `--n-retherm 0` so the measurement is of the lift and not of
+  the repair stage, at both rungs:
 
-  1. **On the raw lift the model wins by two to three orders of magnitude** —
-     pre-rethermalization relative error $\sim 10^{-4}$ against $1.5\times10^{-2}$
-     for the best geometric map and $19\%$ for the worst, at both rungs.
-  2. **On the delivered configuration the margin is gone, and the ordering
-     reverses.** `smear` finishes $7\times$ closer to exact than the model at both
-     rungs; at $L=32$ `halve` finishes $18\times$ closer. $t_{\rm therm}$ is 0 for
-     every lift and cannot separate them at all.
+  1. `tile`, `halve` and `flux` **never thermalize inside 400 trajectories**, and
+     at $L = 32$ are worse than a fresh cold start (210). Satisfying the coarse
+     constraint while being wrong at short distances gives the chain work to undo.
+  2. `ape` — deterministic staple-blend smearing, count tuned per coupling, the
+     honest Endres-style competitor — needs **331 trajectories at $L = 32$ and
+     never converges at $L = 64$**. Both figures match `u1_2d`'s (150–321).
+  3. At **matched local-update budget** the learned lift reaches the target in
+     **5 tuned sweeps at both rungs** against 35 and 15 for the strongest
+     available arm, and thermalizes in 0–1 trajectories against 5–6.
 
-  The cause is the exact conditional SU(2) sampler: 30 sweeps at frozen $\psi$
-  plus 10 rethermalization sweeps take a $19\%$ plaquette error to $10^{-6}$. The
-  pipeline's correctness machinery dominates the quality of its own input.
+  Two traps to disclose before a referee finds them, because either inverts the
+  answer. The deployed 10 rethermalization sweeps equilibrate local structure
+  from almost any start, so with them every arm ties at $t_{\rm therm} = 0$ and
+  the metric measures nothing; and an arm built as "prolong then smooth" must use
+  a *deterministic* kernel, since heatbath is an exact local sampler and an arm
+  containing one is local Monte Carlo rather than an interpolation.
 
-  So concede the local-observable claim outright — *on the plaquette and small
-  Wilson loops, the learned prolongator is not measurably better than a naive
-  geometric one once the exact sampler has run* — and move the argument to the
-  quantities the sampler provably does not fix: the odd sectors the classical arm
-  reaches with probability **zero** at any cost (§11), and extended-loop agreement
-  at the top rung. A referee who is told this first will read the topology result
-  as the claim; one who has to discover it will read the whole paper as oversold.
+  One phrasing point. `apply_coarse_charge` imposes the coarse sector on every
+  arm identically, so odd-sector reach is a property of the ladder and the lift
+  together, not of the score network alone -- but that is the design, not a
+  concession: transport is exact, and a charge is only worth transporting if the
+  configuration carrying it thermalizes. `halve` has the right winding number and
+  never reaches equilibrium. Claim both halves and the objection has no purchase.
 
 * *"You fixed the top rung by retraining, so the original result was an
   artifact."* — Partly, and the A/B is reported rather than the winner (Part IV, "Coupling coverage").

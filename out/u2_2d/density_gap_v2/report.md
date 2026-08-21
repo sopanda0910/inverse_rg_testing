@@ -8,14 +8,14 @@ So the number below is **the whole pipeline's** density gap, not one sector's --
 
 | case | $L$ | $\beta_f$ | model $\beta$ | KL (nats) | **nats/site** | certificate gap | ESS/$N$ |
 |---|---|---|---|---|---|---|---|
-| 8:3.5:14 | 16 | 14 | 3.56 | 568.2 $\pm$ 3.4 | **1.110** | -499.27 | 0.0161 |
-| 8:7:28 | 16 | 28 | 7.02 | 572.0 $\pm$ 3.1 | **1.117** | -495.04 | 0.0156 |
-| 16:28:105.651 | 32 | 105.651 | 26.42 | 2326.9 $\pm$ 5.9 | **1.136** | -2201.79 | 0.0156 |
-| 32:105.651:416.524 | 64 | 416.524 | 104.13 | 9394.0 $\pm$ 29.1 | **1.147** | -8929.50 | 0.0156 |
+| 8:3.5:14 | 16 | 14 | 3.56 | 578.1 $\pm$ 2.4 | **1.129** | -509.92 | 0.0156 |
+| 8:7:28 | 16 | 28 | 7.02 | 579.0 $\pm$ 2.2 | **1.131** | -523.30 | 0.0156 |
+| 16:28:105.651 | 32 | 105.651 | 26.42 | 2333.9 $\pm$ 3.0 | **1.140** | -2285.56 | 0.0256 |
+| 32:105.651:416.524 | 64 | 416.524 | 104.13 | 9346.4 $\pm$ 9.7 | **1.141** | -9180.25 | 0.0156 |
 
 ## How to read it
 
-**Read the first row first.** It is the instrument validation: the smallest, most weakly coupled case, comfortably inside the training range. Its certificate gap is -499.27 nats at ESS/$N$ = 0.0161. The `gap` is the certificate and must go to zero as the ESS goes to one; where the ESS has collapsed the log-mean-exp sits near $\max \log w$ and the gap reads roughly $-$KL, which is a diagnostic of weight degeneracy and not a defect of the free energy.
+**Read the first row first.** It is the instrument validation: the smallest, most weakly coupled case, comfortably inside the training range. Its certificate gap is -509.92 nats at ESS/$N$ = 0.0156. The `gap` is the certificate and must go to zero as the ESS goes to one; where the ESS has collapsed the log-mean-exp sits near $\max \log w$ and the gap reads roughly $-$KL, which is a diagnostic of weight degeneracy and not a defect of the free energy.
 
 **The KL column is the measurement and survives ESS collapse.** The identity $E[\log w] - \Delta F_{\rm exact} = -\mathrm{KL}$ holds whatever the weights do, so `nats/site` stays quantitative long after `ESS/N` has bottomed out. That is why this replaces ESS as the reported quantity -- a saturated ESS says only "too small to measure".
 

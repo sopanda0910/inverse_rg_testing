@@ -51,3 +51,40 @@ def to_cpu(configs: torch.Tensor) -> torch.Tensor:
     U(1) study came from skipping exactly this step.
     """
     return configs.detach().cpu()
+
+
+def expand_rungs(data_cfg: dict, seed: int) -> list[dict]:
+    """Fixed rungs plus deterministic log-uniform draws from data.random_rungs.
+
+    Ported from `u1_2d.utils.expand_rungs`, with the U(2) start policy: the base
+    couplings are hot-started below beta = 15 and cold above, and thermalization
+    is done with heatbath + overrelaxation sweeps rather than burn-in
+    trajectories (7x cheaper at L = 32, see the stage-01 module comment).
+
+    Each spec {n, beta_min, beta_max, lattice_size, n_configs?} expands to n
+    rungs with betas drawn log-uniformly, deterministic in the config seed and
+    the spec's position, so a rerun reproduces the same training set.
+    """
+    import numpy as np
+
+    rungs = [dict(r) for r in data_cfg.get("rungs", [])]
+    for index, spec in enumerate(data_cfg.get("random_rungs", [])):
+        rng = np.random.default_rng(seed + 1000 * (index + 1))
+        betas = np.exp(rng.uniform(np.log(float(spec["beta_min"])),
+                                   np.log(float(spec["beta_max"])),
+                                   int(spec["n"])))
+        for beta in np.sort(betas):
+            beta = round(float(beta), 4)
+            rung = {
+                "beta": beta,
+                "lattice_size": int(spec["lattice_size"]),
+                "hot_start": beta < 15.0,
+                "burn_in": int(spec.get("burn_in", 300)),
+                "thermalize_sweeps": int(spec.get("thermalize_sweeps", 60)),
+                "seed_exact_sectors": bool(spec.get("seed_exact_sectors", False)),
+            }
+            for key in ("n_configs", "n_chains", "sector_augment"):
+                if key in spec:
+                    rung[key] = spec[key]
+            rungs.append(rung)
+    return rungs

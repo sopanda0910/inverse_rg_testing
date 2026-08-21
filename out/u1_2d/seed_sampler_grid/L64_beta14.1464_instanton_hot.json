@@ -1,0 +1,19 @@
+{
+  "arm": "instanton_hot",
+  "topological_updates": true,
+  "n_chains": 64,
+  "n_traj": 400,
+  "t_therm": {
+    "plaquette": null,
+    "wilson_2x2": null,
+    "wilson_4x4": null,
+    "wilson_6x6": null
+  },
+  "t_therm_slowest": null,
+  "acceptance": 0.971640625,
+  "seconds": 17.300326108932495,
+  "q_mean_final": 0.359375,
+  "q_squared_final": 8.078125,
+  "q_squared_initial": 315.59375,
+  "q_changes": 21878
+}

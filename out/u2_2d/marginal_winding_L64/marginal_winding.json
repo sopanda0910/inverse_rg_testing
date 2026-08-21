@@ -1,0 +1,40 @@
+[
+  {
+    "lattice_size": 64,
+    "beta": 416.524,
+    "arms": [
+      {
+        "mode": "step2",
+        "parity_flips": 0,
+        "winding_acceptance": 0.220234375,
+        "seconds": 146.2524218559265,
+        "n_chains": 64,
+        "n_traj": 200,
+        "p_odd": 0.0,
+        "p_odd_exact": 0.4928501707160929,
+        "p_odd_z": -78.86409080071796,
+        "q_squared": 0.9075,
+        "q_squared_exact": 1.001188700880832,
+        "chi2_per_dof": 1039.3639692239683,
+        "n_sectors": 4,
+        "n_odd_sectors": 0
+      },
+      {
+        "mode": "marginal",
+        "parity_flips": 7661,
+        "winding_acceptance": 0.598515625,
+        "seconds": 452.44241762161255,
+        "n_chains": 64,
+        "n_traj": 200,
+        "p_odd": 0.49390625,
+        "p_odd_exact": 0.4928501707160929,
+        "p_odd_z": 0.16898996386223186,
+        "q_squared": 1.03140625,
+        "q_squared_exact": 1.001188700880832,
+        "chi2_per_dof": 3.1163110122363578,
+        "n_sectors": 7,
+        "n_odd_sectors": 4
+      }
+    ]
+  }
+]

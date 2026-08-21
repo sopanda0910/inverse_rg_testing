@@ -1,0 +1,246 @@
+[
+  {
+    "lattice_size": 32,
+    "beta": 14.1464,
+    "seed_source": "A_bc4_raw_wilson_L32_beta14.1464.pt",
+    "q_squared_exact": 1.9039978031709028,
+    "arms": [
+      {
+        "arm": "plain_diffusion",
+        "topological_updates": false,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 1.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 0.0,
+          "wilson_6x6": 0.0
+        },
+        "t_therm_slowest": 1.0,
+        "acceptance": 0.98375,
+        "seconds": 21.296238660812378,
+        "q_mean_final": 0.03125,
+        "q_squared_final": 1.71875,
+        "q_squared_initial": 1.71875,
+        "q_changes": 0
+      },
+      {
+        "arm": "plain_cold",
+        "topological_updates": false,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 262.0,
+          "wilson_2x2": 186.0,
+          "wilson_4x4": 142.0,
+          "wilson_6x6": 67.0
+        },
+        "t_therm_slowest": 262.0,
+        "acceptance": 0.9859765625,
+        "seconds": 17.43480634689331,
+        "q_mean_final": 0.0,
+        "q_squared_final": 0.0,
+        "q_squared_initial": 0.0,
+        "q_changes": 0
+      },
+      {
+        "arm": "plain_hot",
+        "topological_updates": false,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null,
+          "wilson_6x6": null
+        },
+        "t_therm_slowest": null,
+        "acceptance": 0.984296875,
+        "seconds": 16.43933343887329,
+        "q_mean_final": -0.125,
+        "q_squared_final": 12.3125,
+        "q_squared_initial": 79.0,
+        "q_changes": 225
+      },
+      {
+        "arm": "instanton_diffusion",
+        "topological_updates": true,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 6.0,
+          "wilson_2x2": 3.0,
+          "wilson_4x4": 3.0,
+          "wilson_6x6": 3.0
+        },
+        "t_therm_slowest": 6.0,
+        "acceptance": 0.9868359375,
+        "seconds": 15.837908744812012,
+        "q_mean_final": 0.125,
+        "q_squared_final": 1.4375,
+        "q_squared_initial": 1.71875,
+        "q_changes": 18254
+      },
+      {
+        "arm": "instanton_cold",
+        "topological_updates": true,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 244.0,
+          "wilson_2x2": 194.0,
+          "wilson_4x4": 75.0,
+          "wilson_6x6": 31.0
+        },
+        "t_therm_slowest": 244.0,
+        "acceptance": 0.986640625,
+        "seconds": 16.36863684654236,
+        "q_mean_final": -0.0625,
+        "q_squared_final": 2.03125,
+        "q_squared_initial": 0.0,
+        "q_changes": 18164
+      },
+      {
+        "arm": "instanton_hot",
+        "topological_updates": true,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": 363.0,
+          "wilson_4x4": 332.0,
+          "wilson_6x6": 91.0
+        },
+        "t_therm_slowest": null,
+        "acceptance": 0.98515625,
+        "seconds": 16.91149067878723,
+        "q_mean_final": 0.0625,
+        "q_squared_final": 1.21875,
+        "q_squared_initial": 97.234375,
+        "q_changes": 18238
+      }
+    ]
+  },
+  {
+    "lattice_size": 64,
+    "beta": 14.1464,
+    "seed_source": "C_L64_raw_wilson_L64_beta14.1464.pt",
+    "q_squared_exact": 7.615991154932692,
+    "arms": [
+      {
+        "arm": "plain_diffusion",
+        "topological_updates": false,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 11.0,
+          "wilson_2x2": 4.0,
+          "wilson_4x4": 4.0,
+          "wilson_6x6": 0.0
+        },
+        "t_therm_slowest": 11.0,
+        "acceptance": 0.9707421875,
+        "seconds": 16.285712003707886,
+        "q_mean_final": -0.03125,
+        "q_squared_final": 8.65625,
+        "q_squared_initial": 8.65625,
+        "q_changes": 0
+      },
+      {
+        "arm": "plain_cold",
+        "topological_updates": false,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": 383.0,
+          "wilson_6x6": 40.0
+        },
+        "t_therm_slowest": null,
+        "acceptance": 0.971640625,
+        "seconds": 16.546584844589233,
+        "q_mean_final": 0.0,
+        "q_squared_final": 0.0,
+        "q_squared_initial": 0.0,
+        "q_changes": 0
+      },
+      {
+        "arm": "plain_hot",
+        "topological_updates": false,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null,
+          "wilson_6x6": null
+        },
+        "t_therm_slowest": null,
+        "acceptance": 0.9678515625,
+        "seconds": 15.563199996948242,
+        "q_mean_final": -0.21875,
+        "q_squared_final": 40.75,
+        "q_squared_initial": 416.34375,
+        "q_changes": 296
+      },
+      {
+        "arm": "instanton_diffusion",
+        "topological_updates": true,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 8.0,
+          "wilson_2x2": 3.0,
+          "wilson_4x4": 0.0,
+          "wilson_6x6": 0.0
+        },
+        "t_therm_slowest": 8.0,
+        "acceptance": 0.970390625,
+        "seconds": 16.30584716796875,
+        "q_mean_final": 0.578125,
+        "q_squared_final": 6.234375,
+        "q_squared_initial": 8.65625,
+        "q_changes": 21759
+      },
+      {
+        "arm": "instanton_cold",
+        "topological_updates": true,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": 377.0,
+          "wilson_2x2": null,
+          "wilson_4x4": null,
+          "wilson_6x6": 26.0
+        },
+        "t_therm_slowest": null,
+        "acceptance": 0.9734375,
+        "seconds": 16.72238516807556,
+        "q_mean_final": -0.234375,
+        "q_squared_final": 5.828125,
+        "q_squared_initial": 0.0,
+        "q_changes": 21953
+      },
+      {
+        "arm": "instanton_hot",
+        "topological_updates": true,
+        "n_chains": 64,
+        "n_traj": 400,
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null,
+          "wilson_6x6": null
+        },
+        "t_therm_slowest": null,
+        "acceptance": 0.971640625,
+        "seconds": 17.300326108932495,
+        "q_mean_final": 0.359375,
+        "q_squared_final": 8.078125,
+        "q_squared_initial": 315.59375,
+        "q_changes": 21878
+      }
+    ]
+  }
+]

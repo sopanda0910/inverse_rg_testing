@@ -1,0 +1,282 @@
+[
+  {
+    "arm": "diffusion",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 1.9073486328125e-06,
+    "tuned_sweeps": null,
+    "hmc_seconds": 144.40382027626038,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 0.0,
+    "rel_err_initial": {
+      "plaquette": 3.269930688921748e-05,
+      "wilson_2x2": -2.3657423777399122e-05,
+      "wilson_4x4": -0.0017315575713983441,
+      "wilson_8x8": -0.013525249413381686
+    },
+    "rel_err_final": {
+      "plaquette": 2.6319755597162218e-05,
+      "wilson_2x2": 0.00017300273048560894,
+      "wilson_4x4": 0.00247778860839402,
+      "wilson_8x8": -0.008397454929169372
+    },
+    "plaquette_pre_retherm": 0.9811232089996338,
+    "rel_err_pre_retherm": 0.00010196300663153175,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 1.140625,
+    "q_squared_final": 1.140625
+  },
+  {
+    "arm": "tile",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 2.924757480621338,
+    "tuned_sweeps": null,
+    "hmc_seconds": 154.1993100643158,
+    "t_therm": {
+      "plaquette": null,
+      "wilson_2x2": null,
+      "wilson_4x4": null,
+      "wilson_8x8": null
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": null,
+    "rel_err_initial": {
+      "plaquette": -0.01494442136739054,
+      "wilson_2x2": -0.057975916998842074,
+      "wilson_4x4": -0.19649545262084994,
+      "wilson_8x8": -0.5144816394802372
+    },
+    "rel_err_final": {
+      "plaquette": -0.0030881771851842166,
+      "wilson_2x2": -0.01070843012443604,
+      "wilson_4x4": -0.035059462501347796,
+      "wilson_8x8": -0.06117928466815583
+    },
+    "plaquette_pre_retherm": 0.9663624167442322,
+    "rel_err_pre_retherm": -0.014944360609759186,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.953125,
+    "q_squared_final": 0.953125
+  },
+  {
+    "arm": "halve",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 1.8636019229888916,
+    "tuned_sweeps": null,
+    "hmc_seconds": 157.15455436706543,
+    "t_therm": {
+      "plaquette": null,
+      "wilson_2x2": null,
+      "wilson_4x4": null,
+      "wilson_8x8": 192.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": null,
+    "rel_err_initial": {
+      "plaquette": -0.1878317195652406,
+      "wilson_2x2": -0.34003432750337753,
+      "wilson_4x4": -0.611681416993033,
+      "wilson_8x8": -0.7653005092363503
+    },
+    "rel_err_final": {
+      "plaquette": -0.00047687494726761565,
+      "wilson_2x2": -0.00214463976158973,
+      "wilson_4x4": -0.007905065535446985,
+      "wilson_8x8": -0.029478658669152287
+    },
+    "plaquette_pre_retherm": 0.7967559099197388,
+    "rel_err_pre_retherm": -0.1878317195652406,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.953125,
+    "q_squared_final": 1.109375
+  },
+  {
+    "arm": "flux",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 1.7297520637512207,
+    "tuned_sweeps": null,
+    "hmc_seconds": 164.36937308311462,
+    "t_therm": {
+      "plaquette": null,
+      "wilson_2x2": null,
+      "wilson_4x4": null,
+      "wilson_8x8": 396.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": null,
+    "rel_err_initial": {
+      "plaquette": -0.0946069112310176,
+      "wilson_2x2": -0.43961380152461205,
+      "wilson_4x4": -0.845224407740516,
+      "wilson_8x8": -0.9804808584885621
+    },
+    "rel_err_final": {
+      "plaquette": -0.00037297939765414427,
+      "wilson_2x2": -0.003017705309000145,
+      "wilson_4x4": -0.009986981462873534,
+      "wilson_8x8": -0.036541209300565224
+    },
+    "plaquette_pre_retherm": 0.8882116079330444,
+    "rel_err_pre_retherm": -0.0946069112310176,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.953125,
+    "q_squared_final": 0.953125
+  },
+  {
+    "arm": "smear",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 6.553934574127197,
+    "tuned_sweeps": 25,
+    "hmc_seconds": 161.19343328475952,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 0.0,
+    "rel_err_initial": {
+      "plaquette": -1.627134398122577e-05,
+      "wilson_2x2": 0.00013085207569429012,
+      "wilson_4x4": 0.001983366982496829,
+      "wilson_8x8": 0.018845857755701197
+    },
+    "rel_err_final": {
+      "plaquette": 3.7863705554214594e-05,
+      "wilson_2x2": 0.00042905991432478074,
+      "wilson_4x4": 0.0037761616643127356,
+      "wilson_8x8": 0.02004289162774862
+    },
+    "plaquette_pre_retherm": 0.888247549533844,
+    "rel_err_pre_retherm": -0.09457027437931179,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.953125,
+    "q_squared_final": 0.953125
+  },
+  {
+    "arm": "cold",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 0.0014812946319580078,
+    "tuned_sweeps": null,
+    "hmc_seconds": 157.69901394844055,
+    "t_therm": {
+      "plaquette": 168.0,
+      "wilson_2x2": 185.0,
+      "wilson_4x4": 210.0,
+      "wilson_8x8": 40.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 210.0,
+    "rel_err_initial": {
+      "plaquette": 0.01934390485609726,
+      "wilson_2x2": 0.079649832023497,
+      "wilson_4x4": 0.35872537473355637,
+      "wilson_8x8": 2.4082131235733533
+    },
+    "rel_err_final": {
+      "plaquette": 5.3356901549205944e-05,
+      "wilson_2x2": 6.283185872570389e-05,
+      "wilson_4x4": 0.0021593503065057717,
+      "wilson_8x8": 0.03358963812880631
+    },
+    "plaquette_pre_retherm": null,
+    "rel_err_pre_retherm": null,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.0,
+    "q_squared_final": 0.0
+  },
+  {
+    "arm": "hot",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 0.00171661376953125,
+    "tuned_sweeps": null,
+    "hmc_seconds": 321.72520685195923,
+    "t_therm": {
+      "plaquette": null,
+      "wilson_2x2": null,
+      "wilson_4x4": null,
+      "wilson_8x8": null
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": null,
+    "rel_err_initial": {
+      "plaquette": -0.9992162653597378,
+      "wilson_2x2": -1.000552348346628,
+      "wilson_4x4": -1.0022090526231866,
+      "wilson_8x8": -0.9994866491656541
+    },
+    "rel_err_final": {
+      "plaquette": -0.05476254265083184,
+      "wilson_2x2": -0.22665196196124232,
+      "wilson_4x4": -0.647801123642678,
+      "wilson_8x8": -0.9767899252251281
+    },
+    "plaquette_pre_retherm": null,
+    "rel_err_pre_retherm": null,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 90.75,
+    "q_squared_final": 31.1875
+  }
+]

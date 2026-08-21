@@ -193,6 +193,14 @@ def main() -> int:
     parser.add_argument("--burn-in", type=int, default=300)
     parser.add_argument("--thermalize-sweeps", type=int, default=40)
     parser.add_argument("--seed", type=int, default=0)
+    # EVERY `PARITY-STUCK` verdict this script produced before 2026-08-21 was
+    # measured with charge_step 2, the JOINT proposal, which is now known to
+    # score zero parity flips at couplings where the marginal move scores 61403.
+    # Those verdicts gate `seed_exact_sectors` and the choice of ladder base, so
+    # they have to be re-measured under the move actually in use.
+    parser.add_argument("--charge-step", type=int, default=2, choices=(1, 2),
+                        help="2 = central/joint (historical); 1 = marginal odd")
+    parser.add_argument("--winding-interval", type=int, default=1)
     args = parser.parse_args()
 
     device = resolve_device({"device": args.device or "auto"})
@@ -210,7 +218,9 @@ def main() -> int:
         step_size, n_steps = adapted_hmc_params(beta)
         sampler = BatchedHMCU2(size, action, n_chains=args.n_chains,
                                n_steps=n_steps, step_size=step_size, device=device,
-                               hot_start=True, topological_updates=True)
+                               hot_start=True, topological_updates=True,
+                               winding_charge_step=args.charge_step,
+                               winding_interval=args.winding_interval)
         # Deliberately NOT seeded: the whole point is to find out whether the
         # dynamics reaches the right sector weights on its own. A hot start puts
         # the chains in a spread of sectors without using the closed form.
@@ -222,6 +232,9 @@ def main() -> int:
         record = analyse(q_history, beta, size, seed=args.seed)
         record["hmc_acceptance"] = stats.acceptance_rate
         record["winding_acceptance"] = stats.winding_acceptance_rate
+        # Which winding move produced this verdict is part of the verdict.
+        record["winding_charge_step"] = int(args.charge_step)
+        record["winding_interval"] = int(args.winding_interval)
         record["verdict"] = verdict(record)
         records.append(record)
         print(f"L={size:3d} beta={beta:6.2f}  <Q^2> {record['q_squared']:.4f} "

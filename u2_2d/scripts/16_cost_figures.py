@@ -47,7 +47,14 @@ ARM_STYLE = {
     "B_cold_start": (COLD_C, "cold start"),
     "C_hot_start": (HOT_C, "hot start"),
     "D_cold_plus_winding": (WIND_C, "HMC + winding"),
+    "E_diffusion_plus_winding": (SEED_C, "diffusion + winding"),
+    "F_hot_plus_winding": (HOT_C, "hot + winding"),
+    "G_cold_plus_odd_winding": (WIND_C, "HMC + odd winding"),
+    "H_diffusion_plus_odd_winding": (SEED_C, "diffusion + odd winding"),
 }
+# Fallback rather than KeyError: stage 08 gained four arms on 2026-08-20 and this
+# figure should degrade to a grey unnamed bar rather than take the queue down.
+ARM_FALLBACK = ("#777777", None)
 
 
 def dress(ax):
@@ -67,7 +74,8 @@ def figure_cost(cost: dict, path: Path) -> None:
 
     labels, secs, cover, odd, colors = [], [], [], [], []
     for a in arms:
-        color, name = ARM_STYLE[a["arm"]]
+        color, name = ARM_STYLE.get(a["arm"], ARM_FALLBACK)
+        name = name or a["arm"].replace("_", " ")
         labels.append(name)
         secs.append(a["seconds_per_independent_config_local"])
         cover.append(a["exact_probability_covered"])

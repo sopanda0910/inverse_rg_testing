@@ -1,0 +1,338 @@
+{
+  "sector_histograms": [
+    {
+      "beta": 2.0,
+      "lattice_size": 6,
+      "n_samples": 9600,
+      "q_squared": 2.556354284286499,
+      "q_squared_exact": 2.5848690393121174,
+      "sectors": [
+        {
+          "Q": -6,
+          "measured": 0.0003125,
+          "error": 0.00014562598281465881,
+          "exact": 0.0002036279623060919
+        },
+        {
+          "Q": -5,
+          "measured": 0.0015625,
+          "error": 0.00044206042548169337,
+          "exact": 0.0018795399000957873
+        },
+        {
+          "Q": -4,
+          "measured": 0.012395833333333333,
+          "error": 0.0010730517099005687,
+          "exact": 0.011178789057141189
+        },
+        {
+          "Q": -3,
+          "measured": 0.043645833333333335,
+          "error": 0.002088972162476765,
+          "exact": 0.04381201799892554
+        },
+        {
+          "Q": -2,
+          "measured": 0.11385416666666667,
+          "error": 0.0032558189879266044,
+          "exact": 0.11498497420045647
+        },
+        {
+          "Q": -1,
+          "measured": 0.2090625,
+          "error": 0.004114987584908369,
+          "exact": 0.20429402966784746
+        },
+        {
+          "Q": 0,
+          "measured": 0.2421875,
+          "error": 0.0044031851397221536,
+          "exact": 0.24726531301942742
+        },
+        {
+          "Q": 1,
+          "measured": 0.20947916666666666,
+          "error": 0.004114987584908369,
+          "exact": 0.20429402966784746
+        },
+        {
+          "Q": 2,
+          "measured": 0.11166666666666666,
+          "error": 0.0032558189879266044,
+          "exact": 0.11498497420045647
+        },
+        {
+          "Q": 3,
+          "measured": 0.045,
+          "error": 0.002088972162476765,
+          "exact": 0.04381201799892554
+        },
+        {
+          "Q": 4,
+          "measured": 0.0090625,
+          "error": 0.0010730517099005687,
+          "exact": 0.011178789057141189
+        },
+        {
+          "Q": 5,
+          "measured": 0.0017708333333333332,
+          "error": 0.00044206042548169337,
+          "exact": 0.0018795399000957873
+        },
+        {
+          "Q": 6,
+          "measured": 0.0,
+          "error": 0.00014562598281465881,
+          "exact": 0.0002036279623060919
+        }
+      ]
+    },
+    {
+      "beta": 5.0,
+      "lattice_size": 6,
+      "n_samples": 9600,
+      "q_squared": 1.3810416460037231,
+      "q_squared_exact": 1.3498966441578,
+      "sectors": [
+        {
+          "Q": -4,
+          "measured": 0.0014583333333333334,
+          "error": 0.00030714151438181875,
+          "exact": 0.0009064463796640728
+        },
+        {
+          "Q": -3,
+          "measured": 0.013020833333333334,
+          "error": 0.0011219829940936632,
+          "exact": 0.01223460562965279
+        },
+        {
+          "Q": -2,
+          "measured": 0.080625,
+          "error": 0.002738701928927805,
+          "exact": 0.07810509276944767
+        },
+        {
+          "Q": -1,
+          "measured": 0.23541666666666666,
+          "error": 0.0043407934611664235,
+          "exact": 0.23710816592379613
+        },
+        {
+          "Q": 0,
+          "measured": 0.3378125,
+          "error": 0.004845770883888283,
+          "exact": 0.3432274144109963
+        },
+        {
+          "Q": 1,
+          "measured": 0.23989583333333334,
+          "error": 0.0043407934611664235,
+          "exact": 0.23710816592379613
+        },
+        {
+          "Q": 2,
+          "measured": 0.0784375,
+          "error": 0.002738701928927805,
+          "exact": 0.07810509276944767
+        },
+        {
+          "Q": 3,
+          "measured": 0.0121875,
+          "error": 0.0011219829940936632,
+          "exact": 0.01223460562965279
+        },
+        {
+          "Q": 4,
+          "measured": 0.0010416666666666667,
+          "error": 0.00030714151438181875,
+          "exact": 0.0009064463796640728
+        }
+      ]
+    },
+    {
+      "beta": 8.0,
+      "lattice_size": 6,
+      "n_samples": 9600,
+      "q_squared": 0.668749988079071,
+      "q_squared_exact": 0.6753226167375141,
+      "sectors": [
+        {
+          "Q": -3,
+          "measured": 0.0009375,
+          "error": 0.00026036820508513954,
+          "exact": 0.0006512234733170692
+        },
+        {
+          "Q": -2,
+          "measured": 0.0240625,
+          "error": 0.001598364844137868,
+          "exact": 0.02515875671943614
+        },
+        {
+          "Q": -1,
+          "measured": 0.2284375,
+          "error": 0.004302269715742662,
+          "exact": 0.23109748455465481
+        },
+        {
+          "Q": 0,
+          "measured": 0.49083333333333334,
+          "error": 0.005101152992258008,
+          "exact": 0.48617660548415054
+        },
+        {
+          "Q": 1,
+          "measured": 0.2303125,
+          "error": 0.004302269715742662,
+          "exact": 0.23109748455465481
+        },
+        {
+          "Q": 2,
+          "measured": 0.0246875,
+          "error": 0.001598364844137868,
+          "exact": 0.02515875671943614
+        },
+        {
+          "Q": 3,
+          "measured": 0.0007291666666666667,
+          "error": 0.00026036820508513954,
+          "exact": 0.0006512234733170692
+        }
+      ]
+    }
+  ],
+  "winding": [
+    {
+      "beta": 8.0,
+      "lattice_size": 8,
+      "expected_central_cost": 2.4674011002723395,
+      "charge_step_2": {
+        "acceptance": 0.40625,
+        "sectors_reached": [
+          -2,
+          0,
+          1,
+          2
+        ],
+        "forced_cost": 5.943725605121472
+      },
+      "charge_step_1": {
+        "acceptance": 0.0,
+        "sectors_reached": [
+          0
+        ],
+        "forced_cost": 39.95297062001092
+      },
+      "ladder_route": {
+        "cost_before_conditional_su2": 39.95297062001092,
+        "cost_after_conditional_su2": -0.886915693397949,
+        "sector_preserved": true
+      }
+    },
+    {
+      "beta": 20.0,
+      "lattice_size": 8,
+      "expected_central_cost": 6.168502750680849,
+      "charge_step_2": {
+        "acceptance": 0.0,
+        "sectors_reached": [
+          0
+        ],
+        "forced_cost": 5.489863149014134
+      },
+      "charge_step_1": {
+        "acceptance": 0.0,
+        "sectors_reached": [
+          0
+        ],
+        "forced_cost": 112.4824281582795
+      },
+      "ladder_route": {
+        "cost_before_conditional_su2": 112.4824281582795,
+        "cost_after_conditional_su2": -1.5549752704426183,
+        "sector_preserved": true
+      }
+    },
+    {
+      "beta": 20.0,
+      "lattice_size": 16,
+      "expected_central_cost": 1.5421256876702123,
+      "charge_step_2": {
+        "acceptance": 0.28125,
+        "sectors_reached": [
+          -2,
+          0,
+          2
+        ],
+        "forced_cost": 1.3746981152355602
+      },
+      "charge_step_1": {
+        "acceptance": 0.0,
+        "sectors_reached": [
+          0
+        ],
+        "forced_cost": 191.0457492246228
+      },
+      "ladder_route": {
+        "cost_before_conditional_su2": 191.0457492246228,
+        "cost_after_conditional_su2": 1.5841869069982408,
+        "sector_preserved": true
+      }
+    }
+  ],
+  "freezing": [
+    {
+      "beta": 8.0,
+      "lattice_size": 8,
+      "q_squared_exact": 1.2007084824673306,
+      "hmc": {
+        "acceptance": 0.85125,
+        "sector_changes": 2129,
+        "changes_per_trajectory": 0.33265625,
+        "q_squared": 1.218593716621399
+      },
+      "hmc+winding": {
+        "acceptance": 0.85453125,
+        "sector_changes": 3466,
+        "changes_per_trajectory": 0.5415625,
+        "q_squared": 1.242031216621399
+      }
+    },
+    {
+      "beta": 20.0,
+      "lattice_size": 8,
+      "q_squared_exact": 0.3550716533215742,
+      "hmc": {
+        "acceptance": 0.89515625,
+        "sector_changes": 0,
+        "changes_per_trajectory": 0.0,
+        "q_squared": 0.0
+      },
+      "hmc+winding": {
+        "acceptance": 0.90421875,
+        "sector_changes": 55,
+        "changes_per_trajectory": 0.00859375,
+        "q_squared": 0.04749999940395355
+      }
+    },
+    {
+      "beta": 56.0,
+      "lattice_size": 8,
+      "q_squared_exact": 0.03026369398311789,
+      "hmc": {
+        "acceptance": 0.906875,
+        "sector_changes": 0,
+        "changes_per_trajectory": 0.0,
+        "q_squared": 0.0
+      },
+      "hmc+winding": {
+        "acceptance": 0.908125,
+        "sector_changes": 0,
+        "changes_per_trajectory": 0.0,
+        "q_squared": 0.0
+      }
+    }
+  ],
+  "seconds": 433.28770875930786
+}

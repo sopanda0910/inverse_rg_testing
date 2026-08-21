@@ -342,16 +342,78 @@ def set_topological_charge(links: torch.Tensor, target_q: torch.Tensor,
     return links
 
 
+def marginal_winding_update(links: torch.Tensor, action, charge_step: int = 1,
+                            n_su2_sweeps: int = 25,
+                            generator: torch.Generator | None = None
+                            ) -> tuple[torch.Tensor, torch.Tensor]:
+    """Q -> Q +- charge_step, accepted on the EXACT psi-marginal.
+
+    The proposal is a pure phase multiply U -> e^{i s lam / 2} U with lam the
+    winding-1 U(1) instanton: phi shifts by s lam / 2, so psi = 2 phi shifts by
+    s lam and delta Q = s exactly. Symmetric and involutive, so no Jacobian.
+
+    THE POINT IS THE ACCEPTANCE, NOT THE PROPOSAL. Accepting on the joint action
+    charges the move 2 beta for one plaquette whose cos(phi_p) flips sign -- an
+    SU(2) sector that cannot follow. `DetSectorAction` is the SU(2)-integrated
+    marginal, exact plaquette by plaquette in 2D, so accepting on it prices only
+    the determinant sector; the SU(2) sector is then resampled from its exact
+    conditional, which is where the flipped plaquette is absorbed for free.
+
+    Validity: step one is a collapsed Metropolis step whose acceptance depends on
+    psi alone, so the psi-marginal evolves under a kernel with pi(psi) stationary;
+    the conditional resample restores p(q | psi). The composite is stationary for
+    pi(psi, q) provided the resample reaches equilibrium -- at finite
+    `n_su2_sweeps` it is approximate, and that is the one approximation here.
+    2D SU(2) at frozen psi has no topological obstruction and mixes fast.
+    """
+    from u1_2d.lgt.local_updates import instanton_field
+
+    from .actions import DetSectorAction
+    from .lattice import det_links
+
+    batch, size = links.shape[0], links.shape[-2]
+    det_action = DetSectorAction(action.beta)
+    lam = instanton_field(size, device=links.device, dtype=links.dtype)
+
+    signs = torch.where(
+        torch.rand(batch, device=links.device, generator=generator) < 0.5, 1.0, -1.0)
+    alpha = 0.5 * charge_step * signs.view(-1, 1, 1, 1) * lam.unsqueeze(0)
+    proposal = links.clone()
+    proposal[..., 0] = wrap(proposal[..., 0] + alpha)
+
+    delta_s = (det_action.per_config(det_links(proposal))
+               - det_action.per_config(det_links(links)))
+    u = torch.rand(batch, device=links.device, generator=generator)
+    accept = u < torch.exp(-delta_s.clamp(max=60.0))
+    out = torch.where(accept.view(-1, 1, 1, 1, 1), proposal, links)
+    if n_su2_sweeps and bool(accept.any()):
+        # Only accepted configurations need refreshing. Resampling the rest would
+        # be valid but wasteful, and it would decorrelate SU(2) faster in the
+        # rejected arm than in the accepted one for no reason.
+        out = torch.where(accept.view(-1, 1, 1, 1, 1),
+                          conditional_su2_sweeps(out, action, n_su2_sweeps),
+                          out)
+    return out, accept
+
+
 def winding_update(links: torch.Tensor, action, charge_step: int = 2,
-                   random_axis: bool = True) -> tuple[torch.Tensor, torch.Tensor]:
+                   random_axis: bool = True, odd_mode: str = "marginal",
+                   n_su2_sweeps: int = 25) -> tuple[torch.Tensor, torch.Tensor]:
     """Global Metropolis move Q -> Q +- charge_step; symmetric, so acceptance is
     min(1, e^{-dS}).
 
     `charge_step=2` (default) is the cheap central move: dS = O(beta / V) and high
-    acceptance at any coupling. It cannot change the parity of Q. Pair it with
-    `charge_step=1` attempts when odd sectors matter, and read the module comment
-    above for why those are expensive in U(2) but not in U(1).
+    acceptance at any coupling. It cannot change the parity of Q.
+
+    `charge_step` odd routes to `marginal_winding_update` unless
+    `odd_mode="joint"`. The joint route is kept only to reproduce pre-2026-08-20
+    results: it proposes a correct delta Q = +-1 and is accepted essentially
+    never (measured 0.000 at L=16, beta=28), because it prices a 2 beta plaquette
+    against an SU(2) sector it forbids to move. See `docs/INSTANTON.md`.
     """
+    if charge_step % 2 and odd_mode == "marginal":
+        return marginal_winding_update(links, action, charge_step=charge_step,
+                                       n_su2_sweeps=n_su2_sweeps)
     batch = links.shape[0]
     signs = torch.where(torch.rand(batch, device=links.device) < 0.5, 1.0, -1.0)
     axis = None

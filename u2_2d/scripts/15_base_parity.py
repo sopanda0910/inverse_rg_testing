@@ -78,7 +78,9 @@ def measure(size: int, beta: float, args, device: str, hot: bool = True) -> dict
     step_size, n_steps = adapted_hmc_params(beta)
     sampler = BatchedHMCU2(size, action, n_chains=args.n_chains, n_steps=n_steps,
                            step_size=step_size, device=device, hot_start=hot,
-                           topological_updates=True)
+                           topological_updates=True,
+                           winding_charge_step=args.charge_step,
+                           winding_interval=args.winding_interval)
     # NO burn-in: the transient is part of the measurement. Recording from
     # trajectory zero is the only way to tell a slow relaxation from a frozen
     # label, and those two prescribe opposite fixes.
@@ -130,6 +132,12 @@ def measure(size: int, beta: float, args, device: str, hot: bool = True) -> dict
 
     return {
         "start": "hot" if hot else "cold",
+        # WHICH WINDING MOVE produced these flips is the whole story -- the same
+        # coupling reads PARITY-STUCK under charge_step 2 and fully mobile under
+        # charge_step 1 -- so it is recorded, never inferred from the directory
+        # name a run happened to be written to.
+        "winding_charge_step": int(args.charge_step),
+        "winding_interval": int(args.winding_interval),
         "lattice_size": size, "beta": beta, "n_chains": args.n_chains,
         "n_draws": args.n_draws, "thin": args.thin,
         "beta_L": beta * size,
@@ -165,6 +173,17 @@ def main() -> int:
     parser.add_argument("--thermalize-sweeps", type=int, default=40)
     parser.add_argument("--n-blocks", type=int, default=20)
     parser.add_argument("--seed", type=int, default=11)
+    # charge_step 2 is the CENTRAL move and cannot change parity by construction --
+    # it is the correct baseline, not a bug, and it is what every pre-2026-08-20
+    # number in this script was measured with. charge_step 1 routes to the
+    # marginal odd move (docs/INSTANTON.md), which is the one that flips parity.
+    # Run BOTH: the contrast is the result, and quoting either alone misleads.
+    parser.add_argument("--charge-step", type=int, default=2,
+                        choices=(1, 2),
+                        help="2 = central (cannot flip parity); 1 = marginal odd")
+    parser.add_argument("--winding-interval", type=int, default=1,
+                        help="attempt the winding move every N trajectories; the "
+                             "marginal move costs 25 SU(2) sweeps per attempt")
     parser.add_argument("--cold", action="store_true",
                         help="cold start as well as hot: where parity is frozen "
                              "the two disagree, which is the proof that the "

@@ -61,7 +61,18 @@ def figure_density(measured, beta, size, path):
     plt.close(fig)
 
 
-def figure_sectors(measured, reference, beta, size, path):
+def figure_sectors(measured, reference, beta, size, path, reference_seeded=False):
+    """P(Q) of the generated ensemble against the HMC reference and the closed form.
+
+    `reference_seeded` IS NOT COSMETIC. Where `seed_exact_sectors` is on, the
+    reference's chains were STARTED from sectors drawn out of the exact P(Q), so
+    its sector histogram is exact BY CONSTRUCTION and agreeing with it
+    demonstrates nothing. That is the state of the L = 64, beta = 416.524 rung,
+    where plain HMC is completely frozen -- measured, 0 sector changes in 400
+    trajectories and <Q^2> = 0.000 against an exact 1.0012 (stage 08 arm B).
+    Labelling that bar "HMC reference" unqualified invites the reader to conclude
+    the chain sampled its own topology when it did no such thing.
+    """
     q_values, probs = det_topological_charge_distribution(beta, size)
     keep = probs > 1e-4
     q_values, probs = q_values[keep], probs[keep]
@@ -71,12 +82,18 @@ def figure_sectors(measured, reference, beta, size, path):
     ax.bar(q_values - width / 2, counts, width, label="generated", color="tab:blue", alpha=0.8)
     if reference is not None:
         ref_counts = np.array([np.mean(reference["topological_charge"] == q) for q in q_values])
-        ax.bar(q_values + width / 2, ref_counts, width, label="HMC reference",
-               color="tab:orange", alpha=0.8)
+        ref_label = ("HMC reference (sectors SEEDED)"
+                     if reference_seeded else "HMC reference")
+        ax.bar(q_values + width / 2, ref_counts, width, label=ref_label,
+               color="tab:orange", alpha=0.8,
+               hatch="///" if reference_seeded else None)
     ax.plot(q_values, probs, "ko-", lw=1.4, ms=5, label="exact")
     ax.set_xlabel("topological charge Q")
     ax.set_ylabel("P(Q)")
-    ax.set_title(fr"$\beta={beta:g}$, $L={size}$")
+    title = fr"$\beta={beta:g}$, $L={size}$"
+    if reference_seeded:
+        title += "\n" + "reference topology is INSTALLED; plain HMC is frozen here"
+    ax.set_title(title, fontsize=10)
     ax.legend(fontsize=8)
     fig.tight_layout()
     fig.savefig(path, dpi=150)
@@ -198,7 +215,15 @@ def main() -> int:
             reference = measure_ensemble(load_ensemble(reference_path)[0])
         tag = f"L{size}_beta{beta:g}"
         figure_density(measured, beta, size, out_dir / f"fig1_det_density_{tag}.png")
-        figure_sectors(measured, reference, beta, size, out_dir / f"fig2_sectors_{tag}.png")
+        # Did THIS rung's reference have its sectors installed? Resolve the rung's
+        # own override against the global default, the same order stage 01 uses.
+        rung_cfg = next((r for r in config["data"].get("rungs", [])
+                         if int(r.get("lattice_size", -1)) == size
+                         and abs(float(r.get("beta", -1)) - beta) < 1e-6), {})
+        seeded = bool(rung_cfg.get("seed_exact_sectors",
+                                   config["data"].get("seed_exact_sectors", False)))
+        figure_sectors(measured, reference, beta, size,
+                       out_dir / f"fig2_sectors_{tag}.png", reference_seeded=seeded)
         figure_area_law(measured, beta, size, out_dir / f"fig3_area_law_{tag}.png")
         print(f"wrote figures 1-3 for {tag}")
     return 0

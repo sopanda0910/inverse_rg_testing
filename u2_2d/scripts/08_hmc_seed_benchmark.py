@@ -18,13 +18,21 @@ arrives with the sector distribution transported from a base coupling where the
 dynamics genuinely samples it. The measurement is therefore not "how fast does Q
 decorrelate" -- it never does -- but how much of the exact P(Q) each arm covers.
 
-THE FOUR ARMS.
+THE SIX ARMS -- the full {plain, instanton} x {diffusion, cold, hot} grid.
     A  diffusion seed + plain HMC           -- the proposal
     B  cold start + plain HMC               -- control, and the honest default
     C  hot start + plain HMC                -- control from the other side
     D  cold start + HMC with winding update -- the strongest CLASSICAL baseline,
        and the one that matters: U(2)'s winding move is free at even charge and
        obstructed at odd, so arm D is expected to reach Q even and nothing else.
+    E  diffusion seed + HMC with winding update  -- the fair partner to D
+    F  hot start + HMC with winding update       -- the fair partner to C
+
+READ THE GRID BY ROW, NEVER DIAGONALLY. A vs D changes the seed and the sampler
+at once; the comparison that supports the claim is A vs B vs C within plain HMC,
+and E vs D vs F within instanton HMC. E is also the sharper diagnostic: if the
+generated P(Q) is wrong, winding moves drift <Q^2> over the run, whereas arm A
+cannot distinguish "correct" from "frozen".
 
 Arm D is the reason this script exists in the form it does. In U(1) the instanton
 update is a complete solution and the diffusion ladder has to beat a genuinely
@@ -184,6 +192,11 @@ def main() -> int:
                             topological_updates=topological)
 
     plain, winding = make(False), make(True)
+    # charge_step=1 now routes to the marginal odd move (2026-08-20), which
+    # is accepted 0.60 at this coupling where the joint route was 0.000.
+    odd = BatchedHMCU2(size, action, n_chains=n_chains, n_steps=n_steps,
+                       step_size=step_size, device=device,
+                       topological_updates=True, winding_charge_step=1)
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -193,11 +206,31 @@ def main() -> int:
     # 2026-08-19, twice, when another job on the machine exhausted system memory.
     # Completed arms are cached on disk and reused, so a rerun resumes rather than
     # restarts. Delete the cache directory to force a clean run.
+    # THE FULL 2x3 GRID, {plain, instanton} x {diffusion, cold, hot}.
+    #
+    # Comparing A (diffusion seed, plain HMC) against D (cold start, instanton
+    # HMC) varies the seed AND the sampler at once, so it isolates neither -- and
+    # it lets the classical arm repair a wrong sector by winding moves while
+    # denying the diffusion arm the same. Report the two samplers separately;
+    # within each, only the starting configuration differs.
+    #
+    # A-D keep their names so the per-arm cache is reused and every previously
+    # published number is unchanged: completing the grid costs two arms, not six.
+    #
+    # Note what the instanton arms can and cannot do here. `winding_update`
+    # defaults to charge_step=2 and odd-charge moves are dead above beta ~ 14-20
+    # (Part II), so at the top rung these arms move Q by +-2 and never by +-1.
+    # They can correct an even-sector error and cannot touch the odd/even
+    # balance, which is why the reachability claim is unaffected by this change.
     plan = [
         ("A_diffusion_seed", plain, lambda: generated),
         ("B_cold_start", plain, lambda: plain.initialize(hot=False)),
         ("C_hot_start", plain, lambda: plain.initialize(hot=True)),
         ("D_cold_plus_winding", winding, lambda: winding.initialize(hot=False)),
+        ("E_diffusion_plus_winding", winding, lambda: generated),
+        ("F_hot_plus_winding", winding, lambda: winding.initialize(hot=True)),
+        ("G_cold_plus_odd_winding", odd, lambda: odd.initialize(hot=False)),
+        ("H_diffusion_plus_odd_winding", odd, lambda: generated),
     ]
     arms = []
     for name, sampler, start_fn in plan:

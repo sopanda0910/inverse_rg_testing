@@ -1,0 +1,80 @@
+[
+  {
+    "lattice_size": 32,
+    "beta": 10.929898155975241,
+    "base_beta": 4.0544,
+    "model_beta": 2.7913854161697973,
+    "q_squared_exact": 12.15801186652663,
+    "build_seconds": 7.131723880767822,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": 5.0,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 5.0
+      },
+      "cold start": {
+        "plaquette": 19.0,
+        "wilson_2x2": 18.0,
+        "wilson_4x4": 8.0
+      },
+      "hot start": {
+        "plaquette": 16.0,
+        "wilson_2x2": 15.0,
+        "wilson_4x4": 6.0
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 187,
+      "cold start": 173,
+      "hot start": 233
+    },
+    "tau_int_plaquette": 1.7316243517977061,
+    "interval": 3.4632487035954123,
+    "q_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 3.2,
+    "speedup_is_bound": false,
+    "seed": 5.0,
+    "cold": 19.0,
+    "hot": 16.0
+  },
+  {
+    "lattice_size": 32,
+    "beta": 1623.1918974976752,
+    "base_beta": 407.306,
+    "model_beta": 405.79820654608096,
+    "q_squared_exact": 0.0008084380030222021,
+    "build_seconds": 5.449360132217407,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 24
+    },
+    "tau_int_plaquette": 1.4163431768435517,
+    "interval": 2.8326863536871034,
+    "q_frozen": true,
+    "regime": "HMC dead",
+    "speedup": NaN,
+    "speedup_is_bound": true,
+    "seed": Infinity,
+    "cold": Infinity,
+    "hot": Infinity
+  }
+]

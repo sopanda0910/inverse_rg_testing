@@ -1,0 +1,21 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+
+=== L=32 beta=14.1464  (64 chains x 400 traj) ===
+  seed from A_bc4_raw_wilson_L32_beta14.1464.pt
+  plain_diffusion        t_therm 1       acc 0.984  <Q^2> 1.719 -> 1.719  Q-changes 0
+  plain_cold             t_therm 262     acc 0.986  <Q^2> 0.000 -> 0.000  Q-changes 0
+  plain_hot              t_therm > 400   acc 0.984  <Q^2> 79.000 -> 12.312  Q-changes 225
+  instanton_diffusion    t_therm 6       acc 0.987  <Q^2> 1.719 -> 1.438  Q-changes 18254
+  instanton_cold         t_therm 244     acc 0.987  <Q^2> 0.000 -> 2.031  Q-changes 18164
+  instanton_hot          t_therm > 400   acc 0.985  <Q^2> 97.234 -> 1.219  Q-changes 18238
+
+=== L=64 beta=14.1464  (64 chains x 400 traj) ===
+  seed from C_L64_raw_wilson_L64_beta14.1464.pt
+  plain_diffusion        t_therm 11      acc 0.971  <Q^2> 8.656 -> 8.656  Q-changes 0
+  plain_cold             t_therm > 400   acc 0.972  <Q^2> 0.000 -> 0.000  Q-changes 0
+  plain_hot              t_therm > 400   acc 0.968  <Q^2> 416.344 -> 40.750  Q-changes 296
+  instanton_diffusion    t_therm 8       acc 0.970  <Q^2> 8.656 -> 6.234  Q-changes 21759
+  instanton_cold         t_therm > 400   acc 0.973  <Q^2> 0.000 -> 5.828  Q-changes 21953
+  instanton_hot          t_therm > 400   acc 0.972  <Q^2> 315.594 -> 8.078  Q-changes 21878
+
+wrote out\u1_2d\seed_sampler_grid\seed_sampler_grid.json and report.md

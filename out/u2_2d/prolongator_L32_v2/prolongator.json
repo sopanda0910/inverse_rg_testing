@@ -1,0 +1,282 @@
+[
+  {
+    "arm": "diffusion",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 1.6689300537109375e-06,
+    "tuned_sweeps": null,
+    "hmc_seconds": 128.00141668319702,
+    "t_therm": {
+      "plaquette": 5.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 1.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 5.0,
+    "rel_err_initial": {
+      "plaquette": 2.745794632234202e-06,
+      "wilson_2x2": 0.00035962395017236396,
+      "wilson_4x4": 0.004273903730285567,
+      "wilson_8x8": 0.0077113605060015284
+    },
+    "rel_err_final": {
+      "plaquette": -2.0281347650517648e-05,
+      "wilson_2x2": -0.00029277809299464377,
+      "wilson_4x4": 0.0019000320352325851,
+      "wilson_8x8": 0.03806046060755382
+    },
+    "plaquette_pre_retherm": 0.9811251759529114,
+    "rel_err_pre_retherm": 0.00010396800846617769,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "tile",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 4.552840709686279,
+    "tuned_sweeps": null,
+    "hmc_seconds": 128.30968952178955,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 4.0,
+    "rel_err_initial": {
+      "plaquette": 1.3985956432522044e-05,
+      "wilson_2x2": 0.0004022894221214393,
+      "wilson_4x4": 0.0010456261133299871,
+      "wilson_8x8": -0.009760560110575942
+    },
+    "rel_err_final": {
+      "plaquette": 3.7620675028802964e-05,
+      "wilson_2x2": 0.000455251237225646,
+      "wilson_4x4": 0.0009064915755263223,
+      "wilson_8x8": 0.004227925916110448
+    },
+    "plaquette_pre_retherm": 0.9666862487792969,
+    "rel_err_pre_retherm": -0.014614264398618841,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "halve",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 2.9312100410461426,
+    "tuned_sweeps": null,
+    "hmc_seconds": 127.76381349563599,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 0.0,
+    "rel_err_initial": {
+      "plaquette": -1.0803157159464116e-05,
+      "wilson_2x2": 0.0002838171236927097,
+      "wilson_4x4": 0.00201624743788,
+      "wilson_8x8": -0.027460206644941306
+    },
+    "rel_err_final": {
+      "plaquette": -0.00016852996815161134,
+      "wilson_2x2": -0.0009461454183324451,
+      "wilson_4x4": -0.0037686880509754015,
+      "wilson_8x8": 0.012982270876994906
+    },
+    "plaquette_pre_retherm": 0.7967871427536011,
+    "rel_err_pre_retherm": -0.18779988256641167,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 1.03125,
+    "q_squared_final": 1.03125
+  },
+  {
+    "arm": "flux",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 2.7269961833953857,
+    "tuned_sweeps": null,
+    "hmc_seconds": 128.21074843406677,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 6.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 6.0,
+    "rel_err_initial": {
+      "plaquette": 3.847128186774367e-05,
+      "wilson_2x2": 5.794109572701652e-05,
+      "wilson_4x4": -0.0010890929099335754,
+      "wilson_8x8": -0.01900235229691272
+    },
+    "rel_err_final": {
+      "plaquette": -6.2629416703494e-05,
+      "wilson_2x2": -5.409598822975606e-05,
+      "wilson_4x4": 0.0014108745216504343,
+      "wilson_8x8": 0.02806774169944813
+    },
+    "plaquette_pre_retherm": 0.8879938125610352,
+    "rel_err_pre_retherm": -0.09482891961598111,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "smear",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 4.8036720752716064,
+    "tuned_sweeps": 20,
+    "hmc_seconds": 136.34161686897278,
+    "t_therm": {
+      "plaquette": 3.0,
+      "wilson_2x2": 3.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 3.0,
+    "rel_err_initial": {
+      "plaquette": 7.241859352349339e-06,
+      "wilson_2x2": -0.0001625293520822327,
+      "wilson_4x4": -0.001244181757368976,
+      "wilson_8x8": 0.006417731028326859
+    },
+    "rel_err_final": {
+      "plaquette": -2.9394992353453737e-05,
+      "wilson_2x2": -0.00021967405659321145,
+      "wilson_4x4": 0.0009390480855362602,
+      "wilson_8x8": 0.02283228018898463
+    },
+    "plaquette_pre_retherm": 0.8879454731941223,
+    "rel_err_pre_retherm": -0.09487819405500833,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "cold",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 0.0014286041259765625,
+    "tuned_sweeps": null,
+    "hmc_seconds": 135.52919125556946,
+    "t_therm": {
+      "plaquette": 157.0,
+      "wilson_2x2": 130.0,
+      "wilson_4x4": 151.0,
+      "wilson_8x8": 48.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 157.0,
+    "rel_err_initial": {
+      "plaquette": 0.01934390485609726,
+      "wilson_2x2": 0.079649832023497,
+      "wilson_4x4": 0.35872537473355637,
+      "wilson_8x8": 2.4082131235733533
+    },
+    "rel_err_final": {
+      "plaquette": 1.0462013814053424e-05,
+      "wilson_2x2": 0.00010343806204375301,
+      "wilson_4x4": -5.878465036534282e-05,
+      "wilson_8x8": 0.021502490842116164
+    },
+    "plaquette_pre_retherm": null,
+    "rel_err_pre_retherm": null,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 0.0,
+    "q_squared_final": 0.0
+  },
+  {
+    "arm": "hot",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 0.0017609596252441406,
+    "tuned_sweeps": null,
+    "hmc_seconds": 127.56737422943115,
+    "t_therm": {
+      "plaquette": null,
+      "wilson_2x2": null,
+      "wilson_4x4": null,
+      "wilson_8x8": null
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": null,
+    "rel_err_initial": {
+      "plaquette": -1.0034162879277497,
+      "wilson_2x2": -0.9999162676161656,
+      "wilson_4x4": -0.9977319284209509,
+      "wilson_8x8": -1.0023320806438913
+    },
+    "rel_err_final": {
+      "plaquette": -0.05081949389129086,
+      "wilson_2x2": -0.21433418923617986,
+      "wilson_4x4": -0.6336418358171991,
+      "wilson_8x8": -0.9699402010710189
+    },
+    "plaquette_pre_retherm": null,
+    "rel_err_pre_retherm": null,
+    "exact": {
+      "plaquette": 0.9810231809265313,
+      "wilson_2x2": 0.926226235895192,
+      "wilson_4x4": 0.7359838997605371,
+      "wilson_8x8": 0.2934088813529203
+    },
+    "q_squared_initial": 62.109375,
+    "q_squared_final": 21.875
+  }
+]

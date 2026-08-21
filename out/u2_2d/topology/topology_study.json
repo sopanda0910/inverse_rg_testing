@@ -218,15 +218,17 @@
         "forced_cost": 5.943725605121472
       },
       "charge_step_1": {
-        "acceptance": 0.0,
+        "acceptance": 0.625,
         "sectors_reached": [
-          0
+          -1,
+          0,
+          1
         ],
         "forced_cost": 39.95297062001092
       },
       "ladder_route": {
         "cost_before_conditional_su2": 39.95297062001092,
-        "cost_after_conditional_su2": -0.886915693397949,
+        "cost_after_conditional_su2": -1.8200882440582689,
         "sector_preserved": true
       }
     },
@@ -239,18 +241,20 @@
         "sectors_reached": [
           0
         ],
-        "forced_cost": 5.489863149014134
+        "forced_cost": 5.525941994841801
       },
       "charge_step_1": {
-        "acceptance": 0.0,
+        "acceptance": 0.28125,
         "sectors_reached": [
-          0
+          -1,
+          0,
+          1
         ],
-        "forced_cost": 112.4824281582795
+        "forced_cost": 115.24798513590508
       },
       "ladder_route": {
-        "cost_before_conditional_su2": 112.4824281582795,
-        "cost_after_conditional_su2": -1.5549752704426183,
+        "cost_before_conditional_su2": 115.24798513590508,
+        "cost_after_conditional_su2": -1.491117639569012,
         "sector_preserved": true
       }
     },
@@ -261,22 +265,23 @@
       "charge_step_2": {
         "acceptance": 0.28125,
         "sectors_reached": [
-          -2,
           0,
           2
         ],
-        "forced_cost": 1.3746981152355602
+        "forced_cost": 1.3117928261626446
       },
       "charge_step_1": {
-        "acceptance": 0.0,
+        "acceptance": 0.65625,
         "sectors_reached": [
-          0
+          -1,
+          0,
+          1
         ],
-        "forced_cost": 191.0457492246228
+        "forced_cost": 197.77745165273757
       },
       "ladder_route": {
-        "cost_before_conditional_su2": 191.0457492246228,
-        "cost_after_conditional_su2": 1.5841869069982408,
+        "cost_before_conditional_su2": 197.77745165273757,
+        "cost_after_conditional_su2": 0.6543776610345731,
         "sector_preserved": true
       }
     }
@@ -287,16 +292,16 @@
       "lattice_size": 8,
       "q_squared_exact": 1.2007084824673306,
       "hmc": {
-        "acceptance": 0.85125,
-        "sector_changes": 2129,
-        "changes_per_trajectory": 0.33265625,
-        "q_squared": 1.218593716621399
+        "acceptance": 0.85703125,
+        "sector_changes": 2132,
+        "changes_per_trajectory": 0.333125,
+        "q_squared": 1.2643749713897705
       },
       "hmc+winding": {
-        "acceptance": 0.85453125,
-        "sector_changes": 3466,
-        "changes_per_trajectory": 0.5415625,
-        "q_squared": 1.242031216621399
+        "acceptance": 0.8646875,
+        "sector_changes": 3495,
+        "changes_per_trajectory": 0.54609375,
+        "q_squared": 1.225156307220459
       }
     },
     {
@@ -304,16 +309,16 @@
       "lattice_size": 8,
       "q_squared_exact": 0.3550716533215742,
       "hmc": {
-        "acceptance": 0.89515625,
+        "acceptance": 0.89328125,
         "sector_changes": 0,
         "changes_per_trajectory": 0.0,
         "q_squared": 0.0
       },
       "hmc+winding": {
-        "acceptance": 0.90421875,
-        "sector_changes": 55,
-        "changes_per_trajectory": 0.00859375,
-        "q_squared": 0.04749999940395355
+        "acceptance": 0.894375,
+        "sector_changes": 42,
+        "changes_per_trajectory": 0.0065625,
+        "q_squared": 0.025624999776482582
       }
     },
     {
@@ -321,18 +326,18 @@
       "lattice_size": 8,
       "q_squared_exact": 0.03026369398311789,
       "hmc": {
-        "acceptance": 0.906875,
+        "acceptance": 0.90734375,
         "sector_changes": 0,
         "changes_per_trajectory": 0.0,
         "q_squared": 0.0
       },
       "hmc+winding": {
-        "acceptance": 0.908125,
+        "acceptance": 0.91859375,
         "sector_changes": 0,
         "changes_per_trajectory": 0.0,
         "q_squared": 0.0
       }
     }
   ],
-  "seconds": 433.28770875930786
+  "seconds": 359.18055391311646
 }

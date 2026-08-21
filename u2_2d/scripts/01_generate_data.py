@@ -74,6 +74,51 @@ from u2_2d.utils import (
 )
 
 
+def sector_augment(links, action, fraction: float):
+    """Append instanton-shifted copies so charged sectors are represented at high
+    beta, where P(|Q| > 0) is tiny and the conditional model otherwise sees almost
+    no charged coarse configurations.
+
+    Ported from `u1_2d/scripts/01_generate_data.py`, with the U(2) difference that
+    matters: the shift goes on phi as charge * lam / 2, because psi = 2 phi, and
+    for ODD charge that drives one plaquette's cos(phi_p) to -1. In U(1) there is
+    nothing to repair; here the exact conditional SU(2) sampler absorbs it at
+    frozen psi, which is why odd-charge augmentation was not available before
+    2026-08-20 (docs/INSTANTON.md).
+
+    Shifting fine configs shifts their blocked partners' charge identically, so
+    the (fine | coarse) pairs stay on the correct conditional relation: this
+    broadens conditioning coverage without biasing the conditional law.
+    """
+    import torch
+
+    from u1_2d.lgt.lattice import wrap as u1_wrap
+    from u1_2d.lgt.local_updates import instanton_field
+    from u2_2d.lgt.local_updates import conditional_su2_sweeps, retherm_sweeps
+
+    n_aug = int(fraction * links.shape[0])
+    if n_aug == 0:
+        return links
+    size = links.shape[-2]
+    index = torch.randperm(links.shape[0])[:n_aug]
+    charges = torch.tensor([-2.0, -1.0, 1.0, 2.0], dtype=links.dtype,
+                           device=links.device)[torch.randint(0, 4, (n_aug,))]
+    inst = instanton_field(size, device=links.device, dtype=links.dtype)
+    shifted = links[index].clone()
+    shifted[..., 0] = u1_wrap(
+        shifted[..., 0] + 0.5 * charges.view(-1, 1, 1, 1) * inst.unsqueeze(0))
+    with torch.no_grad():
+        # Odd charges cross Z_2 and leave a -1 plaquette; the conditional sampler
+        # is exact at frozen psi and removes it without touching Q.
+        shifted = conditional_su2_sweeps(shifted, action, 25)
+        # Then relax the smooth instanton strain INSIDE the fixed sector.
+        shifted = retherm_sweeps(shifted, action, 8, topological_updates=False)
+    n_odd = int((charges.abs() == 1).sum())
+    print(f"    sector augmentation: +{n_aug} configs at Q shifts of +-1, +-2 "
+          f"({n_odd} odd, which needs the marginal-route repair)")
+    return torch.cat([links, shifted.to(links.device)], dim=0)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="u2_2d/configs/smoke.yaml")
@@ -111,7 +156,13 @@ def main() -> int:
     if args.merge_shards:
         return merge_shards(out_dir)
 
-    rungs = list(data_cfg["rungs"])
+    from u2_2d.utils import expand_rungs
+
+    # The heldout couplings are GENERATED here but carry train: false, so stage 02
+    # skips them and they stay a genuine out-of-sample test of the beta
+    # conditioning rather than a coupling the net has already seen.
+    rungs = expand_rungs(data_cfg, int(config.get("seed", 0)))
+    rungs += [dict(r, train=False) for r in data_cfg.get("heldout", []) or []]
     shard_index = None
     if args.only_sizes:
         keep = {int(v) for v in args.only_sizes.split(",")}
@@ -141,6 +192,19 @@ def main() -> int:
         # number of independent charges is what the sector claim rests on, and
         # chains are the cheap axis at small L.
         n_chains = int(rung.get("n_chains", data_cfg.get("n_chains", 16)))
+        # PER-RUNG SEED, derived from (config seed, L, beta). The global set_seed
+        # above is not enough once this stage is sharded and resumable:
+        #   * every shard seeds identically, so the FIRST rung of each shard drew
+        #     the same initial links and the same momentum stream -- same-L rungs
+        #     in different shards were correlated for no reason;
+        #   * the RNG state at rung k depends on how many rungs ran before it, so
+        #     a resumed shard produced different ensembles than a clean run. For a
+        #     queue whose whole design is "kill it and it resumes", that silently
+        #     broke reproducibility exactly where it was being relied on.
+        # Deriving the seed from the rung's own identity fixes both, and makes a
+        # single rung reproducible in isolation with --only-betas.
+        set_seed((int(config.get("seed", 0)) * 1_000_003
+                  + size * 7919 + int(round(beta * 1000))) % (2**31 - 1))
         t0 = time.time()
         # Above the freezing threshold no local dynamics equilibrates P(Q) in U(2)
         # -- the only cheap global move is even-charge -- so the chains are started
@@ -177,10 +241,18 @@ def main() -> int:
             device=device,
             topological_updates=bool(data_cfg.get("topological_updates", True)),
             winding_charge_step=int(data_cfg.get("winding_charge_step", 2)),
+            winding_interval=int(rung.get("winding_interval",
+                                          data_cfg.get("winding_interval", 1))),
             hot_start=bool(rung.get("hot_start", beta < 4.0)),
             initial_state=seeded,
         )
         configs = to_cpu(configs)
+        # Charged-sector augmentation, AFTER thermalization and BEFORE the
+        # observables are recorded, so the metadata describes what is on disk.
+        fraction = float(rung.get("sector_augment",
+                                  data_cfg.get("sector_augment", 0.0)))
+        if fraction:
+            configs = to_cpu(sector_augment(configs.to(device), action, fraction))
         measured = float(half_retr(plaquette(configs)).mean())
         q_squared = float(topological_charge(configs).square().mean())
         metadata = {

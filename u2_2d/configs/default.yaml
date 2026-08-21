@@ -15,7 +15,21 @@ data:
   n_chains: 32
   thin: 5
   topological_updates: true
-  winding_charge_step: 2
+  # 1 (was 2) since 2026-08-20. charge_step=1 now routes to the marginal odd
+  # move, accepted 0.28-0.66 where the joint route was 0.000, so the base can
+  # finally FLIP PARITY instead of freezing in whatever the hot quench drew.
+  # That mattered: at L=8, beta=20 the frozen-in weight was 0.5156 against an
+  # exact 0.3335, wrong by +55%. See docs/INSTANTON.md.
+  winding_charge_step: 1
+  # The marginal odd move costs 1609 ms/trajectory against the central move's
+  # 211 ms, and the number is FLAT in L (1609 at L=16, 1610 at L=32) -- it is
+  # entirely the 25 conditional SU(2) sweeps, which are launch-bound. Attempting
+  # it every trajectory makes odd-charge sampling 7.6x more expensive than the
+  # HMC it rides on, for no benefit: mobility is set by the number of ACCEPTED
+  # flips, not attempted ones, and at interval 5 a 300-trajectory burn-in still
+  # lands 18-36 accepted flips per chain. Composing kernels on a fixed scan is
+  # valid at any interval.
+  winding_interval: 5
   # Above the freezing threshold the winding move only reaches even charge, so
   # frozen rungs are started from sectors drawn out of the exact P(Q). Ensembles
   # built this way have exact sector weights BY CONSTRUCTION and must not also be
@@ -26,9 +40,13 @@ data:
   #   * the central (even) instanton costs 2 pi^2 beta / V, and the ladder holds
   #     beta / V nearly constant (0.219 -> 0.202 -> 0.198 -> 0.197), so even-charge
   #     mobility is a LADDER INVARIANT and never degrades as L grows;
-  #   * an odd charge change must drag SU(2) across the Z_2 monodromy at cost
-  #     O(beta L), which along the ladder goes as L^3 (112 -> 828 -> 6500 -> 51766),
-  #     so the odd/even BALANCE freezes quickly.
+  #   * an odd charge change must cross the Z_2 monodromy. SUPERSEDED 2026-08-20:
+  #     the O(beta L) cost quoted here was a property of the JOINT proposal, which
+  #     held SU(2) fixed and therefore paid 2 beta for a flipped plaquette. The
+  #     marginal route (accept on the exact psi-marginal, then resample SU(2))
+  #     prices only the determinant sector and is accepted 0.28-0.66 at every
+  #     coupling tested, including L = 64 at beta = 416.5. Odd charge is NOT
+  #     obstructed; the old proposal was. See docs/INSTANTON.md.
   # At L = 8, beta <= 14 both are healthy: unseeded HMC + winding reproduces the
   # closed form with <Q^2> z = +0.16, chi2/dof = 1.29, odd-sector ratio 0.978 and
   # no frozen chains. By L = 32, beta = 203 the chains still tunnel (796 changes)
@@ -96,10 +114,10 @@ data:
     # needed, for different quantities.
     - {beta: 28.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
        seed_exact_sectors: false, n_chains: 1024, hot_start: true}
-    - {beta: 56.0,  lattice_size: 16, n_configs: 1024, burn_in: 250}
-    - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250}
-    - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250}
-    - {beta: 203.15, lattice_size: 32, n_configs: 512, burn_in: 300}
+    - {beta: 56.0,  lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250, sector_augment: 0.5}
+    - {beta: 203.15, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
     # COUPLING COVERAGE FOR THE LADDER. The score net is fully convolutional and
     # conditioned on the coupling, not on L, so what it has to have SEEN is the
     # model beta (`det_lift.model_beta` = the minimum-KL U(1) projection), and the
@@ -109,8 +127,8 @@ data:
     # rung was clean. Supplying the coupling at L = 32 rather than L = 64 is
     # deliberate -- the map is local, so the smaller lattice teaches the same
     # thing for a quarter of the cost.
-    - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300}
-    - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300}
+    - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
     # THE TOP RUNG'S REFERENCE. L = 64 at this coupling is exactly the
     # extrapolation the ladder exists for, so direct HMC here is not a competing
     # sampler -- it is a CONTROL. Two things needed one: the top rung had no
@@ -130,6 +148,27 @@ data:
     # `z vs reference` column there would be circular.
     - {beta: 416.524, lattice_size: 64, n_configs: 512, burn_in: 300, n_chains: 64,
        train: false}
+
+  # RANDOM-BETA TRAINING AT MULTIPLE VOLUMES, ported wholesale from u1_2d
+  # (2026-08-20). The score net is conditioned on model_beta, and a dozen fixed
+  # couplings teach it those couplings rather than the beta-dependence -- the
+  # likeliest reason the coverage retrain came out a trade rather than a gain.
+  #
+  # Volume weighting mirrors u1: L=16 heavy, L=32 substantial, L=8 light. Ranges
+  # are the U(2) images of u1's, since model_beta ~ beta_u2 / 4, extended to 430
+  # so the ladder's top rung (model beta 104) is INSIDE the training set rather
+  # than a 2.05x extrapolation.
+  random_rungs:
+    - {n: 60, beta_min: 4.0,  beta_max: 430.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 8.0,  beta_max: 430.0, lattice_size: 32, n_configs: 128}
+    - {n: 6,  beta_min: 4.0,  beta_max: 60.0,  lattice_size: 8,  n_configs: 128}
+    - {n: 24, beta_min: 8.0,  beta_max: 430.0, lattice_size: 32, n_configs: 128}
+
+  # A coupling never trained on, so coupling generalization is measured rather
+  # than assumed. u1 holds out beta = 20 at L = 16; this is its U(2) image.
+  heldout:
+    - {beta: 80.0, lattice_size: 16, n_configs: 128, burn_in: 300,
+       thermalize_sweeps: 60}
 
 train:
   checkpoint_path: out/u2_2d/checkpoints/det_score_net.pt

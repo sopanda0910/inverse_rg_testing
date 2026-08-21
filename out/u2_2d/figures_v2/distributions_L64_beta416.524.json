@@ -1,0 +1,25 @@
+{
+  "lattice_size": 64,
+  "beta": 416.524,
+  "n_configs": 256,
+  "arms": {
+    "hmc": {
+      "mean_abs_z": 1.7617499869034774,
+      "max_abs_z": 3.247358336679947,
+      "q_squared": 0.92578125,
+      "n_observables": 20
+    },
+    "pre": {
+      "mean_abs_z": 3.91281814158273,
+      "max_abs_z": 24.004865769710545,
+      "q_squared": 0.890625,
+      "n_observables": 20
+    },
+    "post": {
+      "mean_abs_z": 1.2077396633323652,
+      "max_abs_z": 2.1673626657207623,
+      "q_squared": 0.890625,
+      "n_observables": 20
+    }
+  }
+}

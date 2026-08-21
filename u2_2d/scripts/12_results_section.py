@@ -102,7 +102,11 @@ def benchmark_table(bench) -> list:
     names = {"A_diffusion_seed": "**A** diffusion seed",
              "B_cold_start": "B cold start",
              "C_hot_start": "C hot start",
-             "D_cold_plus_winding": "D cold + winding"}
+             "D_cold_plus_winding": "D cold + even winding",
+             "E_diffusion_plus_winding": "**E** diffusion + even winding",
+             "F_hot_plus_winding": "F hot + even winding",
+             "G_cold_plus_odd_winding": "G cold + **odd** winding",
+             "H_diffusion_plus_odd_winding": "**H** diffusion + **odd** winding"}
     for a in bench["arms"]:
         t = a["topology"]
         out.append(

@@ -13,11 +13,16 @@ direct HMC suffers from critical slowing down and topological freezing.
 Three sibling packages, one per theory. `u2_2d/` is the ACTIVE one; `u1_2d/` is
 closed and `su2_2d/` is set aside.
 
-- `u1_2d/` — 2D compact U(1). **CLOSED / frozen** (2026-08-02): the complete
-  study — campaign, ESS/exactness program, matching-residual decomposition,
+- `u1_2d/` — 2D compact U(1). **REOPENED 2026-08-20** (it was closed/frozen from
+  2026-08-02, and much of what follows was written under that assumption). It is
+  the paper being written first, with `u2_2d` as its extension, and the claim
+  the paper makes is that **a diffusion-model configuration is a better HMC
+  starting seed**. New U(1) work is in scope again — `scripts/58_seed_sampler_grid.py`
+  is the 2x3 seed/sampler grid added under the reopening. The body of the study —
+  campaign, ESS/exactness program, matching-residual decomposition,
   AIS transport, L=64 head-to-head — is finished and documented. Results in
   `out/u1_2d/paper_appendix/appendix.md`, full story in `docs/u1_2d/NARRATIVE.md`,
-  audit in `docs/u1_2d/V2_AUDIT.md`. Do not reopen model-quality work; bug-parity
+  audit in `docs/u1_2d/V2_AUDIT.md`. Treat settled results as settled; bug-parity
   fixes only. **Post-closure corrections (2026-08-14/15) are in
   `docs/u1_2d/NARRATIVE.md` §25.5** — read it before quoting Tables S1, S3, S4, S6b
   or S7b, all of which carried numbers from superseded runs, and before
@@ -105,6 +110,34 @@ closed and `su2_2d/` is set aside.
     collapse at all — L=16 at `beta L` = 224 flips 2453 times while L=8 at
     `beta L` = 160 flips four. Odd mobility dies between **beta = 14 and beta = 20
     at every volume tested**, with the per-site rate falling ~100x across it.
+    **All of those flip counts are for the JOINT proposal and are SUPERSEDED as a
+    statement about the theory (2026-08-20).** They measure how badly that
+    proposal was priced, not where odd charge becomes unreachable. Under the
+    marginal move there is no death at all in the range tested: acceptance is
+    0.339 at L=8/beta=20, 0.602 at L=16/beta=28 and 0.599 at L=64/beta=416.5,
+    with correct P(odd) from a COLD start in every case. Quote these numbers only
+    to explain why the old proposal failed.
+    **The head-to-head at MATCHED protocol was run 2026-08-21 and settles it.**
+    L = 16, hot start, 256 chains, 2000 trajectories, the same script and seed,
+    only `--charge-step` differing (`out/u2_2d/base_parity_v2{,_marginal}/`):
+
+    | beta | joint flips | MARGINAL flips | joint tau(Q^2) | marginal tau(Q^2) |
+    |---|---|---|---|---|
+    | 14 | 4919 | 72522 | 0.55 | 2.73 |
+    | 21 | 13 | 67298 | 0.53 | 2.37 |
+    | 28 | 0 | 61403 | 0.55 | 1.98 |
+
+    The marginal rate is FLAT across the whole range the joint proposal dies in
+    — it falls 15% while the joint falls to zero — and odd fraction is correct at
+    every point (z = -0.50 / +0.41 / -1.65 against exact 0.5000 / 0.4989 /
+    0.4928). There is no odd-charge mobility edge at L = 16 below beta = 28.
+    **And note which way tau_int(Q^2) points: the BROKEN sampler looks 4x
+    better.** The joint move shuffles Q by +-2 quickly inside one parity class,
+    so Q^2 decorrelates in 0.55 draws while the chain never crosses the
+    monodromy at all; the marginal move's 1.98-2.73 is the honest cost of
+    sampling the parity degree of freedom too. So tau_int(Q^2) joins
+    sector-change counts on the list of diagnostics that report HEALTHY on a
+    parity-frozen chain — do not use it as an ergodicity test either.
   Consequence: the ordinary freezing diagnostic ("does the chain change sector?")
   reports HEALTHY in a regime where P(Q) is 20% wrong, because even moves keep
   firing while the odd/even balance is stuck. Do NOT conclude a coupling is ergodic
@@ -137,9 +170,18 @@ closed and `su2_2d/` is set aside.
   is within 1% of 1/2 whenever <Q^2> >~ 1, and the base has <Q^2> = 1.0012, so the
   frozen-in weight is right to ~0.007 absolute — 0.45 sigma at 1024 chains. A base
   with narrow P(Q) would fail this badly. If a fully mobile base is ever needed,
-  L = 16 at beta = 14 has 2453 flips and odd z = +0.50.
-  beta = 51.75 and 56 at L = 16 are NOT usable as a base — both PARITY-STUCK. Do
-  not raise the base coupling without re-running `07_pq_sampling.py`.
+  L = 16 under the MARGINAL move is mobile at every coupling tested — 72522 flips
+  at beta = 14, 61403 at beta = 28, odd z within 1.7 sigma throughout — so the
+  base no longer has to rely on the frozen-in argument above if the move is
+  switched. (`--charge-step 1 --winding-interval 5`.)
+  beta = 51.75 and 56 at L = 16 were called NOT usable as a base — both
+  PARITY-STUCK. **Treat that verdict as UNTESTED rather than as a fact
+  (2026-08-21):** it was measured under the retired joint proposal, which is now
+  known to score zero flips at couplings where the marginal move scores 61403,
+  and `07_pq_sampling.py` has not been re-run under the marginal move.
+  Do not raise the base coupling on the strength of the old verdict OR in defiance
+  of it — re-run stage 07 with `--charge-step 1` first. Same for every other
+  `PARITY-STUCK` label in this file.
 
   **The ladder schedule is TOPOLOGY-matched, not plaquette-matched.** Because
   transport is an identity, the base's P(Q) is what every rung inherits, and under
@@ -155,11 +197,21 @@ closed and `su2_2d/` is set aside.
   observables) in 0.212 s, the ladder in 0.820 s including base generation, 0.481 s
   for the top rung alone — so the ladder is **3.87x SLOWER**. Do not lead with
   speed; the cost is dominated by the 200-step diffusion sampler, which is tunable
-  and untuned. What the method actually buys is REACHABILITY: the classical arm
-  covers 0.507 of the exact P(Q) with ZERO odd sectors and cannot improve at any
-  cost, because odd charge has probability zero in its stationary distribution
-  rather than merely long autocorrelation. A seconds-ratio against an arm sampling
-  the wrong distribution is meaningless, so state the two claims separately.
+  and untuned. **The REACHABILITY claim that used to sit here is RETIRED
+  (2026-08-20).** It read: the classical arm covers 0.507 of exact P(Q) with zero
+  odd sectors "and cannot improve at any cost, because odd charge has probability
+  zero in its stationary distribution". That was false — it was a property of the
+  *joint* winding proposal, not of the theory. With the marginal odd move
+  (`docs/INSTANTON.md`) a cold classical chain at the top rung reaches P(Q)
+  coverage **1.000** with 4 odd sectors and <Q^2> = 0.973 against exact 1.001
+  (stage 08 arm G, 2587 parity flips). Do not claim the classical arm cannot reach
+  odd charge.
+  What survives, and is the better claim because it is a cost statement rather
+  than an impossibility one: arm G needs the EXPENSIVE odd move and 1100 s to get
+  there, while the diffusion seed plus the CHEAP even move (arm E) is already at
+  coverage 1.000 in 379 s with **zero parity flips** — every odd sector it
+  occupies was inherited from the seed, not manufactured. Same endpoint, 2.9x less
+  cost, and arm A shows the seed starts there with no winding moves at all.
   `scripts/13_cost_comparison.py`. **The "the sampler is untuned" hedge was tested
   (2026-08-20, `scripts/14_sampler_steps.py`) and it is REAL, worth about 3x:** at 25
   steps instead of 200 the top rung goes from 2.22x slower to 1.38x FASTER than
@@ -191,6 +243,193 @@ closed and `su2_2d/` is set aside.
   rung (plaquette z = -1.86) while the interpolated rung was clean. Supply the
   coupling at a SMALLER L — the map is local, so it teaches the same thing for a
   quarter of the cost.
+  **The beta scan (2026-08-21) turns that into a quantitative rule.**
+  `scripts/28_crossover_scan.py` measures seed t_therm at 14 couplings, and it
+  tracks DISTANCE TO THE NEAREST TRAINING RUNG in model beta, not beta itself.
+  The deployed `det_score_net.pt` has rungs at model beta 0.6, 1.7, 3.6, 7.0,
+  12.9, 14.0, 26.4, 50.8, 104.1. Against those: <= 4% from a rung gives seed
+  t_therm 3-10 (beta_f = 414.9 sits 0% from the 104.1 rung and is the BEST point
+  in the scan, t_therm 3); 16-21% away gives 51-59 (beta_f = 88.8 is model beta
+  22.2, in the middle of the 14.0 -> 26.4 gap, and is the worst interpolated
+  point); past the top rung the seed does not thermalize on ANY local observable
+  (beta_f = 537 is model beta 134, +29%, t_therm inf). So a bad point in that
+  scan is a COVERAGE hole, not a beta effect — check the gap before concluding
+  anything about the method. NOTE the ceiling: no available checkpoint
+  (incumbent, `_cov`, or v2) exceeds model beta 104.1, so beta_f >~ 460 at
+  L = 32 is extrapolation for all of them, and `30_seed_quality_figure.py`
+  hatches that region for exactly that reason.
+
+  **THE BETA SCAN IS DONE (2026-08-21) AND SEED QUALITY TRACKS TRAINING
+  COVERAGE, NOT BETA.** `scripts/28_crossover_scan.py` + `30_seed_quality_figure.py`
+  (fig21): 14 couplings, beta_f = 10.9 to 1623, L_f = 32 lifted from L_c = 16,
+  run TWICE over the same couplings with the same seed -- once with plain HMC in
+  every arm and once with the marginal odd winding move in every arm, so cold and
+  hot starts are PAIRED and the only difference is the move. Six arms total; the
+  diffusion seed is never given a sampler the classical arms are denied.
+  Spearman(gap to nearest training rung, seed t_therm) = **+0.62** over the ten
+  in-coverage couplings, and the split is the result:
+
+  | gap to nearest rung (model beta) | seed t_therm | median |
+  |---|---|---|
+  | <= 10% | 10, 4, 6, 3 | 5 |
+  | >= 16% | 10, 51, 50 | 50 |
+  | past the top rung (104.1) | inf, inf, inf, inf | never |
+
+  The three couplings where the seed beats the decorrelation interval --
+  beta_f = 44.0 (t_therm 0), 58.0 (4), 414.9 (3) -- are all within 15% of a rung,
+  and 414.9 is 0.4% from one. The three worst (88.8, 127.6, 264.2) sit 16 / 21 /
+  30% into gaps. **Do not report a bad point in that scan as a beta effect.**
+  DENSITY and WIDTH fail differently and need different fixes: a density gap
+  degrades the seed but leaves it finite and still far better than a cold start,
+  and it is a CAPACITY problem (both coverage retrains regressed precision at
+  fixed capacity, see below) rather than a data problem; past the top rung the
+  failure is total, and no checkpoint we have exceeds model beta 104.1.
+
+  Two limits the scan establishes for the paper:
+  * The classical arms confirm the target regime. In the PLAIN round cold start
+    is `inf` from beta_f = 58 upward and hot start from 44. In the WINDING round,
+    with the fully ergodic dQ=1 move, cold and hot are STILL `inf` everywhere
+    above beta_f = 127 -- topological ergodicity does not buy local
+    thermalization, and they are separate failures.
+  * The marginal winding move itself decays at the very top: parity flips fall
+    5712 -> 3301 -> 515 -> 2 across beta_f = 10.9 -> 1623. The classical baseline
+    does eventually die, just far later than the joint proposal did.
+
+  **THE TRAINING DATA HAS A BOOTSTRAP CEILING, and it is the sharper limit.**
+  Every training rung from model beta 12.9 upward carries `seed_exact_sectors:
+  true` and `sector_augment: 0.5`; only the low rungs (<= 7.0) are honestly
+  sampled. So the high-beta training data does not sample its own topology, it
+  INSTALLS it from the exactly-known P(Q). This is sound HERE for a reason that
+  must be quoted rather than assumed: the score net models `psi` only and Q is
+  TRANSPORTED by `enforce_coarse_charge`, so what the data must be right about is
+  the conditional local structure at fixed sector, which heatbath/overrelaxation
+  equilibrates whether or not the chain can tunnel. Freezing is a global
+  pathology; the learned object is local. Two things this does NOT rescue:
+  (i) the exact-sector crutch exists because 2D U(2) is solvable, and closes in
+  4D SU(3) where there is no closed-form P(Q) to seed from -- a real limit on
+  transferring the method, and it belongs in the discussion; (ii) local
+  equilibration at high beta is not free either (cold starts fail to thermalize
+  LOCALLY within 200 trajectories from beta_f = 537 up), so a rung at model
+  beta 200 is expensive even with sectors installed. The natural escape is to
+  bootstrap -- train rung n+1 on rung n's lifted output instead of on HMC -- which
+  the pipeline does not do (the net trains once on fixed HMC rungs) and which
+  risks compounding error up the ladder. Settle the capacity experiment first;
+  bootstrapping onto a capacity-limited net compounds the wrong thing.
+
+  **THE DIVISION OF LABOUR IS A REQUIREMENT, NOT AN OBSERVATION — measured in
+  BOTH studies, 2026-08-21.** `u1_2d/scripts/59_pre_post_retherm.py` scores the
+  lift at every scale BEFORE and AFTER the rethermalization tail, cumulatively on
+  the same configurations. The repair factor (|relative deviation raw| / |after
+  10 sweeps|) at u1 beta_f = 55.02, L = 32 is MONOTONE in loop size:
+
+  | Q | W(1x1) | W(2x2) | W(4x4) | W(6x6) | W(8x8) |
+  |---|---|---|---|---|---|
+  | 0 (cannot move it) | 64x | 14x | 3.9x | 1.6x | **0.99x** |
+
+  Local rethermalization is a LOW-PASS repair and it reaches exactly 1.0 at
+  W(8x8) — ten sweeps do nothing at all for the largest loop — while Q is at
+  zero by construction, since retherm runs `topological_updates=False`. So the
+  accuracy demanded of the model is SCALE-DEPENDENT and strictest where nothing
+  downstream can help: it may be wrong in the ultraviolet (repaired 64x), must be
+  accurate in the infrared (repaired 1.0x), and must be EXACT in topology — which
+  is why Q is TRANSPORTED rather than generated, a requirement rather than a
+  convenience. The model meets the obligation: after ten sweeps W(8x8) sits at
+  +1.54 sigma (beta_f = 55) and +0.14 sigma (beta_f = 218).
+  The residual REVERSES across the tail — z falls with loop area before it
+  (+34.61 -> +1.42) and grows with loop area after it (+0.53 -> +1.54) — which is
+  the measured cause of u1's Fig. 38, previously asserted.
+  Do NOT state this as "rethermalization damages the infrared": that happens only
+  at the much stiffer u2 coupling (beta = 416.5, W(8x8) 4x worse). In u1 the
+  factor merely reaches 1.
+
+  **AND A CAVEAT ON u1'S GENERALIZATION CLAIM, found the same way.** At
+  beta_f = 218.58, one of u1's own "validated far outside the training range"
+  cases, the RAW lift is 257 sigma off on the plaquette and 8.7% off at W(8x8);
+  ten sweeps bring it to 0.17 sigma, repair factors 1e3-1e5. Outside the training
+  range the validation is largely validating the HMC TAIL, not the model. u1's
+  claim is about the delivered pipeline and stays true as stated, but "the model
+  generalizes far outside its training range" and "the pipeline's output agrees
+  far outside its training range" are different sentences and only the second is
+  measured. Consistent with the u2 beta scan, where the raw lift also collapses
+  past the top training rung.
+  Caveat on the numbers themselves: those z use a NAIVE across-configuration SEM
+  while u1's convention is tau_int-aware error bars (NARRATIVE 25.7 / M4), so with
+  256 configurations from 16 chains they are inflated and must be recomputed
+  before they go in a figure. `N*` is unaffected — it uses the single-configuration
+  sigma.
+
+  **THE SCALE DECOMPOSITION — a DISCUSSION point for the paper, and it changes
+  no number of record.** `scripts/31_division_of_labour.py` (fig22), at L = 64,
+  beta = 416.524, 256 configurations, cold-start UNSEEDED classical arms.
+  **z stays the presentation of record everywhere** (fig18, fig20, the
+  validation tables): large Wilson loops genuinely fluctuate more per
+  configuration, so the same absolute error legitimately shows as less
+  significant on them, and z is the statistic that says so. Panel (a) is z,
+  unchanged. What follows is reported alongside it, not instead of it.
+
+  |z| by scale — W(1x1) / W(2x2) / W(4x4) / W(8x8) / <Q^2>:
+  seed PRE-retherm 17.54 / 3.14 / 0.46 / 0.32 / 0.52; seed POST 10 retherm
+  sweeps 0.40 / 0.10 / 0.49 / 1.37 / 0.52; plain HMC after 400 trajectories
+  13.53 / 9.36 / 6.45 / 4.74 / inf. No classical arm reaches |z| <= 2 at ANY
+  scale, including the fully ergodic dQ=1 one.
+
+  Three things the z table alone does not show. **Do not build a mechanism on
+  the z shape without checking the numerator — that error was made here once.**
+  * The fall with loop size is NOT special to the seed. `z = sqrt(N) bias/sigma`
+    and sqrt(N) is common to every observable, so the z SHAPE is the shape of the
+    N-independent ratio bias/sigma — the shape is real. But the frozen classical
+    chain, with no model in it at all, falls 2.9x across the same axis; the seed
+    falls 55x. **The EXCESS over the classical baseline is the signal, not the
+    fall itself.**
+  * The model does NOT get better in the infrared. Its relative bias is FLAT in
+    scale — 62 / 67 / 69 ppm at W(1x1) / W(2x2) / W(4x4) — while the theory's own
+    per-configuration sigma grows 374x. The bar rises and the model's error does
+    not. At the plaquette the seed is actually WORSE than a cold start (62 vs
+    42 ppm). So the correct claim is "the model's systematic is scale-independent
+    while a classical chain's grows", NOT "the model supplies the infrared".
+    Topology is the one place the strong claim holds unconditionally, because Q
+    is TRANSPORTED rather than modelled.
+  * `N* = (sigma/bias)^2`, configurations usable before the model's systematic
+    exceeds the user's own statistical error, is the N-independent practitioner's
+    form. Seed PRE: 1 / 26 / 1221 / 2501. Frozen classical: 1 / 3 / 6 / 11. That
+    ~200x is a statement about the method, not about the ensemble size.
+
+  **ONE ACTIONABLE DEFECT falls out, and it is not cosmetic.** Rethermalization
+  is a low-pass repair: ten sweeps take W(1x1) from 62 -> 1.3 ppm and W(2x2) from
+  67 -> 1.9, leave W(4x4) unmoved at 69, and make W(8x8) FOUR TIMES WORSE,
+  378 -> 1581. So POST-retherm N* at W(8x8) is **137 while the delivered L = 64
+  ensemble carries 256 configurations** — it is already past the point where its
+  own W(8x8) systematic exceeds its statistical error. `n_retherm` is 10 and was
+  never tuned against this; this is the quantity that should set it. It is also
+  the mechanism behind u1's Fig. 38 (`54_seed_accuracy_figures.py`): that
+  figure's residual is infrared-dominated because rethermalization PUT it there.
+  u1 is not wrong — it measures post-retherm output and attributes the residual
+  correctly — but it never measured the PRE-retherm lift separately, so the
+  causal half of its story is asserted rather than shown.
+
+  **BUT COVERAGE IS BOUGHT, NOT FREE — measured twice, 2026-08-20 and 2026-08-21,
+  and this is the more useful half of the lesson.** Two independent attempts to
+  widen coupling coverage BOTH regressed lift precision, with the SAME signature:
+  the tuned-sweep count the diffusion lift needs to hit the exact plaquette went
+  **5 -> 30** in each. The first was the `_cov` retrain (12 fixed rungs, wider
+  beta); the second was the full u1-style port (114 rungs, 3 volumes, random beta,
+  sector augmentation, `configs/v2.yaml`, `det_score_net_v2.pt`). Different rung
+  sets, different data, different seeds, same number.
+  The v2 challenger's full scorecard against `25_challenger_report.py`: <Q^2> at
+  the ladder base IMPROVED (z -0.78 -> -0.43, but that is a stage-01 data gain,
+  not a model gain — topology is transported, so training cannot touch it);
+  extended-loop mean |z| regressed at BOTH volumes (L=32 0.187 -> 0.292,
+  L=64 1.134 -> 1.225); density gap regressed in 3 of 4 cases, improving ONLY at
+  the top-rung case (+0.019 / +0.014 / +0.003 / -0.006 as beta rises — a
+  monotone trade, which is what capacity dilution looks like).
+  Diagnosis: at `hidden: 64, depth: 4` the net is CAPACITY-LIMITED, and 113 rungs
+  share what 12 rungs used to own. Corroborating: `val_total` was still at its
+  best at epoch 118 of 120 (no early stop) with the GPU at 30% — input-bound at
+  `batch_size: 32`, i.e. it ran out of budget, not out of signal.
+  **So do not widen coverage again without raising capacity and epochs first.**
+  `det_score_net.pt` stays deployed; `out/u2_2d/data_v2/` is KEPT because its
+  improvement is in the data and is independent of the net, and is the right
+  starting point for the capacity experiment.
 
 - `su2_2d/` — 2D SU(2). **SET ASIDE (2026-08-03) and NOT in the working tree.**
   It was removed from tracking in `f7bca3b` while the focus moved to
