@@ -1,0 +1,218 @@
+[
+  {
+    "lattice_size": 64,
+    "beta": 87.0402014570074,
+    "base_beta": 23.3695,
+    "model_beta": 21.764805522682014,
+    "q_squared_exact": 4.88168566192785,
+    "build_seconds": 123.49764561653137,
+    "n_traj": 400,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": 90.0,
+        "wilson_2x2": 30.0,
+        "wilson_4x4": 15.0
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 4140,
+      "cold start": 4152,
+      "hot start": 4062
+    },
+    "parity_flips": {
+      "diffusion seed": 4140,
+      "cold start": 4152,
+      "hot start": 4033
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "tau_int_plaquette": {
+      "diffusion seed": 2.616549541896636,
+      "cold start": 2.8097737074161806,
+      "hot start": 2.8998306206838844
+    },
+    "interval_source": "diffusion seed",
+    "interval": 5.233099083793272,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC dead",
+    "speedup": Infinity,
+    "speedup_is_bound": true,
+    "seed": 90.0,
+    "cold": Infinity,
+    "hot": Infinity
+  },
+  {
+    "lattice_size": 64,
+    "beta": 179.5951347278144,
+    "base_beta": 46.4473,
+    "model_beta": 44.900970069295504,
+    "q_squared_exact": 2.337003553380293,
+    "build_seconds": 0.0,
+    "n_traj": 200,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 1862,
+      "cold start": 1844,
+      "hot start": 1780
+    },
+    "parity_flips": {
+      "diffusion seed": 1862,
+      "cold start": 1844,
+      "hot start": 1747
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "tau_int_plaquette": {
+      "diffusion seed": 2.5629987399170586,
+      "cold start": 2.1128569002463573,
+      "hot start": 2.663667358284086
+    },
+    "interval_source": "diffusion seed",
+    "interval": 5.125997479834117,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC dead",
+    "speedup": NaN,
+    "speedup_is_bound": true,
+    "seed": Infinity,
+    "cold": Infinity,
+    "hot": Infinity
+  },
+  {
+    "lattice_size": 64,
+    "beta": 415.61150416161695,
+    "base_beta": 105.423,
+    "model_beta": 103.90379610825191,
+    "q_squared_exact": 1.0033975546065779,
+    "build_seconds": 0.0,
+    "n_traj": 200,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": 11.0,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 1.0
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 1489,
+      "cold start": 1493,
+      "hot start": 1517
+    },
+    "parity_flips": {
+      "diffusion seed": 1489,
+      "cold start": 1493,
+      "hot start": 1477
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "tau_int_plaquette": {
+      "diffusion seed": 1.8676505049507979,
+      "cold start": 2.365497572045792,
+      "hot start": 2.3721184632961845
+    },
+    "interval_source": "diffusion seed",
+    "interval": 3.7353010099015957,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC dead",
+    "speedup": Infinity,
+    "speedup_is_bound": true,
+    "seed": 11.0,
+    "cold": Infinity,
+    "hot": Infinity
+  },
+  {
+    "lattice_size": 64,
+    "beta": 800.6508621597786,
+    "base_beta": 201.673,
+    "model_beta": 200.16318864603738,
+    "q_squared_exact": 0.5188942793900628,
+    "build_seconds": 0.0,
+    "n_traj": 150,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 854,
+      "cold start": 810,
+      "hot start": 949
+    },
+    "parity_flips": {
+      "diffusion seed": 854,
+      "cold start": 810,
+      "hot start": 906
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "tau_int_plaquette": {
+      "diffusion seed": 4.91179901416527,
+      "cold start": 2.1356438645634492,
+      "hot start": 4.300448394373557
+    },
+    "interval_source": "diffusion seed",
+    "interval": 9.82359802833054,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC dead",
+    "speedup": NaN,
+    "speedup_is_bound": true,
+    "seed": Infinity,
+    "cold": Infinity,
+    "hot": Infinity
+  }
+]

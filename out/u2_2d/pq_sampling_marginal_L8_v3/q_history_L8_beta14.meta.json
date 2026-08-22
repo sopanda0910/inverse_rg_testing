@@ -1,0 +1,15 @@
+{
+  "lattice_size": 8,
+  "beta": 14.0,
+  "winding_charge_step": 1,
+  "winding_interval": 5,
+  "n_chains": 128,
+  "n_draws": 300,
+  "thin": 5,
+  "burn_in": 300,
+  "thermalize_sweeps": 40,
+  "seed": 0,
+  "hot_start": true,
+  "seeded_sectors": false,
+  "note": "back-filled 2026-08-22 from the launch command; the sidecar mechanism postdates this run"
+}

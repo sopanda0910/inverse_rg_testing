@@ -15,19 +15,19 @@ but does not carry the same claim. **GAP** = nothing equivalent.
 
 | # | u1 figure | claim it carries | u2 equivalent | status |
 |---|---|---|---|---|
-| 1 | `44_pipeline.png` | schematic | — | GAP (cosmetic; draw once for both) |
+| 1 | `44_pipeline.png` | schematic | **`fig28_pipeline`** | **CLOSED 2026-08-21** -- `41_pipeline_schematic.py`, drawn once for BOTH studies (the SU(2) box is dashed and labelled `u2 only`). Makes three things visual that a reader would otherwise reconstruct from prose: where P(Q) is sampled, that the charge branch runs AROUND the network, and that exactness lives in the HMC tail. |
 | 2 | `29_seed_quality.png` **lead** | `t_therm` vs beta, 5 arms, 586x coupling range | `fig21_seed_quality` -- 14 couplings, beta_f 11-1623, SIX arms | **CLOSED 2026-08-21** |
 | 3 | `31_frozen_traces.png` | Q traces showing HMC frozen | `fig19_freezing` | OK |
 | 4 | `33_ladder_fixed_point.png` | exact <Q^2> is a ladder fixed point | `fig11_ladder_accuracy` | OK |
-| 5 | `34_match_rate_volume.png` | raw Q-match rate vs volume | `parity_transport/` data, no figure | PARTIAL |
+| 5 | `34_match_rate_volume.png` | raw Q-match rate vs volume | **`fig26_transport_exactness`** | **CLOSED 2026-08-21 -- and stronger than u1's: 100% CONFIG BY CONFIG at 10 couplings, both volumes, model beta 5.97-327** |
 | 6 | `15_relaxation_high.png` | relaxation from a diffusion seed | `fig06_seed_quality` | OK |
 | 7 | `36_sector_tail.png` | sector-tail recovery | `fig20_honest_distributions` (unseeded arms, PRE/POST split) | OK |
-| 8 | `13_beta_scan.png` | observable agreement across beta | `fig12_area_law` at 2 couplings | PARTIAL |
+| 8 | `13_beta_scan.png` | observable agreement across beta | **`fig29_observable_scan`** | **CLOSED 2026-08-21** -- `43_observable_scan.py`, 12 couplings, raw lift and after 10 retherm sweeps, against the closed form. Shows the coverage story on OBSERVABLES rather than inferred from a thermalization count. |
 | 9 | `38_z_vs_loop_area.png` | std(z) grows with loop area | `fig18_z_vs_loop_area_*` | OK |
-| 10 | `28_dissociation.png` | observables sharp, density off | — | GAP |
-| 11 | `39_kl_per_site.png` | KL per site across cases | `density_gap/` data, no figure | GAP (data exists) |
+| 10 | `28_dissociation.png` | observables sharp, density off | `fig23_dissociation` | **CLOSED 2026-08-21** |
+| 11 | `39_kl_per_site.png` | KL per site across cases | `fig24_kl_per_site` | **CLOSED 2026-08-21** |
 | 12 | `40_cost_per_config.png` | s per independent configuration | `fig13_cost` | OK |
-| 13 | `30_volume_scan.png` | does the advantage survive volume | — | GAP |
+| 13 | `30_volume_scan.png` | does the advantage survive volume | **`fig27_volume_scan`** | **CLOSED 2026-08-21.** Data complete 2026-08-21; needs one appendix panel. The result to draw: coverage ORDERING transfers, but at model beta ~45 and the same gap `t_therm` is 6 at L=32 and `inf` at L=64. |
 
 ## The three that matter for u2's specific claim
 
@@ -128,3 +128,56 @@ against plain HMC alone overstates the case; the comparison must include
 `winding_odd`, which is genuinely ergodic. What survives is a COST claim -- the
 classical arm must manufacture the sectors the seed arrives with -- and that is
 weaker but true, which is the trade worth making.
+
+
+---
+
+## Publication readiness, 2026-08-21
+
+Assessed against `docs/u1_2d/PAPER_OUTLINE.md` section 8, which now carries the
+u2 material as a five-figure section of the U(1) paper.
+
+**Main-text five, all existing and all regenerable from tracked scripts:**
+`fig07_topological_reach` (strongest panel), `fig06_seed_quality` (lead),
+`fig09_parity_mobility`, `fig13_cost`, `fig26_transport_exactness` (new).
+
+**Required edits, both DONE 2026-08-21:**
+* `fig21_seed_quality` now marks its IN-SAMPLE coupling (`beta_f = 414.90`, whose
+  fine side is the `L=32 beta=416.524` training rung). `30_seed_quality_figure.py`
+  gained `TRAIN_RUNGS` and `in_sample()` for this. Anything marked must be
+  excluded from a coverage-vs-quality correlation.
+* `fig26` created from `36_transport_check.py` + `37_transport_figure.py`.
+
+**RESOLVED 2026-08-21, and it is a RETRACTION.** `fig22_division_of_labour`
+was held back because its companion analysis reported rethermalization making
+W(8x8) four times worse at L=64, beta=416.5 while `33_retherm_scan.py` found the
+same loop IMPROVING 2.3x across the same ten sweeps. `42_retherm_reconcile.py`
+measured both statistics on the SAME configurations and the answer is that
+NEITHER WAS EVER RESOLVED: sigma at W(8x8) is 19500 ppm, so 256 configurations
+give a standard error of 1219 ppm, and the two disputed numbers are 378 ppm
+(z = 0.31) and 1581 ppm (z = 1.30). Both scripts are arithmetically right and
+neither result exists. The metric-artefact hypothesis is refuted directly --
+sigma moves only x0.93 across the tail, far too little to carry a 4x
+disagreement. Full write-up: `out/u2_2d/retherm_reconcile/RECONCILIATION.md`.
+
+Consequences:
+
+* **The "ACTIONABLE DEFECT" (post-retherm `N* = 137` at W(8x8) against a
+  256-configuration ensemble) is WITHDRAWN.** `N* = (sigma/bias)^2` on a bias
+  consistent with zero is unbounded. No basis for retuning `n_retherm`.
+* **`fig22` MAY enter the paper**, with panels restricted to the scales that
+  are resolved. W(1x1) is z = 18.6 raw and W(2x2) is z = 3.2, and ten sweeps
+  remove both; W(4x4) and larger are already indistinguishable from exact at
+  256 configurations RAW, so the figure must say so rather than plot a trend
+  through them.
+* The flatness claim (62 / 67 / 69 ppm across three scales) stands on two
+  resolved points plus a consistent 2-sigma bound of ~290 ppm at the third.
+
+**ALL THIRTEEN PARITY ITEMS ARE NOW CLOSED (2026-08-21).** #1 with
+`fig28_pipeline`, #5 with `fig26_transport_exactness`, #8 with
+`fig29_observable_scan`, #10/#11 with `fig23`/`fig24`, #13 with
+`fig27_volume_scan`. Parity #13 closed with `fig27_volume_scan`
+(`38_volume_figure.py`), which is the two-sided answer: the coverage ORDERING
+transfers -- best point stays best, past-the-rung stays dead -- while quality
+degrades with volume at fixed coverage, catastrophically at model beta ~45
+(t_therm 6 at L=32, never at L=64).

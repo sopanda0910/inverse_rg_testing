@@ -1,0 +1,124 @@
+[
+  {
+    "beta": 56.0,
+    "lattice_size": 16,
+    "n_chains": 256,
+    "n_draws": 300,
+    "q_squared": 0.47898438572883606,
+    "q_squared_err": 0.0037600595969706774,
+    "q_squared_exact": 0.47932966641771396,
+    "q_squared_z": -0.09182851494058251,
+    "sector_changes": 32406,
+    "frozen_chains": 0,
+    "frozen_fraction": 0.0,
+    "tau_int_q_squared": 1.1086586939636618,
+    "chi2": 10.448733919630055,
+    "n_sectors": 6,
+    "odd_measured": 0.406328125,
+    "odd_exact": 0.4067332416945211,
+    "odd_err": 0.0018978252155060766,
+    "odd_tabulated": 0.406328125,
+    "odd_ratio": 0.9990039744653442,
+    "odd_z": -0.21346364839665252,
+    "odd_error_model": "chain bootstrap of the parity indicator",
+    "charge_asymmetry": -0.0034244791604578495,
+    "charge_asymmetry_err": 0.004074316006153822,
+    "charge_asymmetry_z": -0.8405040638196785,
+    "parity_flips": 32406,
+    "parity_frozen_chains": 0,
+    "parity_frozen_fraction": 0.0,
+    "beta_over_volume": 0.21875,
+    "sectors": [
+      {
+        "q": -5.0,
+        "measured": 0.0,
+        "err": 0.0,
+        "exact": 2.9551843744853822e-12,
+        "z": 0.0
+      },
+      {
+        "q": -4.0,
+        "measured": 0.0,
+        "err": 0.0,
+        "exact": 3.4175362179622935e-08,
+        "z": 0.0
+      },
+      {
+        "q": -3.0,
+        "measured": 1.3020833333333334e-05,
+        "err": 1.3053253502944224e-05,
+        "exact": 4.951900965055394e-05,
+        "z": -2.7960980233003414
+      },
+      {
+        "q": -2.0,
+        "measured": 0.009674479166666666,
+        "err": 0.000606677387652842,
+        "exact": 0.008975378351918181,
+        "z": 1.1523436161898462
+      },
+      {
+        "q": -1.0,
+        "measured": 0.2042578125,
+        "err": 0.00209039400023916,
+        "exact": 0.2033171018346548,
+        "z": 0.4500159612195505
+      },
+      {
+        "q": 0.0,
+        "measured": 0.5755338541666667,
+        "err": 0.0020615343263975503,
+        "exact": 0.5753159332509182,
+        "z": 0.10570811892774437
+      },
+      {
+        "q": 1.0,
+        "measured": 0.20205729166666667,
+        "err": 0.002081517840342251,
+        "exact": 0.2033171018346548,
+        "z": -0.6052363057243751
+      },
+      {
+        "q": 2.0,
+        "measured": 0.008463541666666666,
+        "err": 0.000602088144804529,
+        "exact": 0.008975378351918181,
+        "z": -0.8501025799431502
+      },
+      {
+        "q": 3.0,
+        "measured": 0.0,
+        "err": 0.0,
+        "exact": 4.951900965055394e-05,
+        "z": 0.0
+      },
+      {
+        "q": 4.0,
+        "measured": 0.0,
+        "err": 0.0,
+        "exact": 3.4175362179622935e-08,
+        "z": 0.0
+      },
+      {
+        "q": 5.0,
+        "measured": 0.0,
+        "err": 0.0,
+        "exact": 2.9551843744853822e-12,
+        "z": 0.0
+      }
+    ],
+    "mean_abs_z": 0.5417731459368189,
+    "gof_chi2": 1.97106655086616,
+    "gof_dof": 4,
+    "gof_p": 0.742907136607924,
+    "gof_bins": 5,
+    "gof_pooled_tail": 9.910637593583586e-05,
+    "gof_note": "one bin dropped to remove the sum-to-one redundancy",
+    "verdict": "SAMPLED",
+    "reanalysed_from": "q_history_L16_beta56.npy",
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "hmc_acceptance": 0.8221223958333334,
+    "winding_acceptance": 0.423359375
+  }
+]

@@ -8,31 +8,106 @@ Ordered by how much they would change what the paper says.
 
 ---
 
-## 1. Re-run `07_pq_sampling.py` under the marginal move — the largest one
+## 1. Re-run `07_pq_sampling.py` under the marginal move -- **DONE 2026-08-22**
 
-`out/u2_2d/pq_sampling*` and every `PARITY-STUCK` verdict quoted in
-`12_results_section.py` were measured with the **joint** proposal, whose odd
-acceptance was 0.000. They say where P(Q) could be sampled *by a move that no
-longer exists*.
+**RESULT: every coupling tested SAMPLES topology honestly, at both volumes.**
+The old verdicts were measured under the retired JOINT proposal, whose odd
+acceptance was 0.000, and they said where P(Q) could be sampled *by a move that
+no longer exists*. Under the marginal odd move (`--charge-step 1
+--winding-interval 5`), 256 chains x 300 draws at L = 16 and 128 x 300 at L = 8:
 
-Why this matters beyond bookkeeping: `seed_exact_sectors` is switched on exactly
-where those verdicts said sampling was impossible, and a seeded ensemble has
-exact sector weights **by construction** — so it can never be cited as evidence
-that P(Q) is reproduced. The marginal move reaches correct P(odd) from a cold
-start at L=16/β=28 (z = +0.29), L=8/β=20 (z = −1.25) and L=64/β=416.5 (z = +0.17).
-If it also clears β = 51.75 and 56 at L=16 and β = 203.15 at L=32, those rungs
-convert from *installed* topology to *sampled* topology, which is a strictly
-stronger claim and removes a standing caveat from the validation chapter.
+| L | beta | <Q^2> z | sector changes | parity flips | frozen | gof p | C-asym z | odd/exact | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| 16 | 28 | +0.45 | 45909 | 45909 | 0% | 0.287 | -0.48 | 1.0078 | **SAMPLED** |
+| 16 | 51.75 | +0.29 | 34152 | 34152 | 0% | 0.612 | -0.61 | 0.9948 | **SAMPLED** |
+| 16 | 56 | +0.55 | 32556 | 32556 | 0% | 0.493 | +1.66 | 1.0020 | **SAMPLED** |
+| 16 | 56 (seed 4242) | -0.09 | 32406 | 32406 | 0% | 0.743 | -0.84 | 0.9990 | **SAMPLED** |
+| 8 | 6 | -0.68 | 30368 | 19330 | 0% | 0.500 | -1.91 | 1.0056 | **SAMPLED** |
+| 8 | 10 | -0.99 | 22853 | 20333 | 0% | 0.665 | -0.07 | 0.9919 | **SAMPLED** |
+| 8 | 14 | +0.63 | 17924 | 17839 | 0% | 0.345 | +0.89 | 0.9978 | **SAMPLED** |
+| 8 | 20 | +0.20 | 12851 | 12851 | 0% | 0.864 | -0.39 | 1.0042 | **SAMPLED** |
 
-Currently stuck under the old move, per stage 12:
+`out/u2_2d/pq_sampling_marginal_L{8,16}_v3/`. **beta = 51.75 and 56 at L = 16
+are no longer PARITY-STUCK**, so the standing caveat that they were unusable as
+a ladder base is lifted -- those rungs convert from *installed* topology to
+*sampled* topology, which is the strictly stronger claim this item was opened
+for. At L = 16, every sector change IS a parity flip, as it must be for a
+dQ = +-1 move.
 
-| L | β | ⟨Q²⟩ | exact | z | verdict (OLD move) |
-|---|---|---|---|---|---|
-| 16 | 51.75 | 0.5746 ± 0.0265 | 0.5211 | +2.02 | PARITY-STUCK |
-| 16 | 56 | 0.5331 ± 0.0274 | 0.4793 | +1.96 | PARITY-STUCK |
-| 32 | 203.15 | 0.4323 ± 0.0505 | 0.5150 | −1.64 | PARITY-STUCK |
+**BUT THE VERDICTS THEMSELVES HAD TO BE FIXED FIRST, AND THAT IS THE LARGER
+FINDING.** Correcting the `odd_z` error bar (it summed multinomial cells in
+quadrature) first turned beta = 28 into PARITY-STUCK and beta = 51.75 into
+DISAGREES. Neither survived calibration. `48_verdict_calibration.py` feeds the
+script synthetic histories drawn from the closed form, so the null is true by
+construction, and found that on EXACT data the old verdict misfired **13%** of
+the time -- and that on the `parity_frozen` arm, the precise pathology
+`PARITY-STUCK` exists to catch, the old `|odd_z| > 2` rule fired at 5%, its NULL
+rate, because each chain's parity had been drawn from the correct weight so the
+pooled odd fraction came out right. **The old rule had no power on its own
+target while rejecting good data.** Three changes followed:
 
-Cost: minutes. Do this first.
+* mobility is now a parity FLIP COUNT, not a significance gate (a z-threshold
+  gets arbitrarily strict as statistics grow -- it was calling a chain with
+  45909 sector changes and no frozen chains "stuck" over a 0.8% deviation);
+* agreement uses `sector_goodness_of_fit`, a Mahalanobis statistic on the
+  per-chain sector-frequency vectors with a bootstrapped p-value and per-chain
+  bin pooling (`p * n_draws >= 1`); the old rule kept bins expected to hold 7
+  configurations out of 76800, empty in every chain, which destabilized the
+  pseudo-inverse and is exactly what produced the spurious beta = 51.75 flag --
+  re-analysing that coupling under the new binning moved it 0.041 -> 0.732;
+* one bin is dropped before the statistic is formed, removing the
+  sum-to-one redundancy (see the flag below -- this was the third and
+  last of the statistics bugs);
+* a CHARGE-CONJUGATION test was added, `mean(sign Q)` bootstrapped over chains.
+  P(Q) must be exactly even in Q, so this needs no closed form at all and cannot
+  be blamed on the reference. It is the sharpest diagnostic here.
+
+**Final calibration, all 12 cells at 300 replicas**
+(`out/u2_2d/verdict_calibration_v3/`); rejection at alpha = 0.01 against a
+nominal 1%, and median goodness-of-fit p against a target of 0.5:
+
+| beta | iid | sticky | parity_frozen caught | odd_bias power |
+|---|---|---|---|---|
+| 28 | 2% (p 0.527) | 1% (p 0.499) | **100%** | 22% |
+| 51.75 | 1% (p 0.493) | 1% (p 0.463) | **100%** | 19% |
+| 56 | 1% (p 0.507) | 0% (p 0.525) | **100%** | 15% |
+
+Calibrated on true nulls at every coupling and under autocorrelation, with full
+power on the pathology -- against the old test's 13% misfire rate and ~5% power.
+
+**One question this LEAVES OPEN, deliberately.** The `odd_bias` column is the
+power at the 0.8% odd-weight deviation actually seen at L = 16, beta = 28, and
+it is only 15-22%. So that coupling's `odd_z = +2.61` is neither dismissible nor
+established: it is a weak hint of a small real bias in the marginal winding
+move. Settling it needs roughly 5-10x the statistics at that one coupling.
+Nothing downstream depends on it -- `<Q^2>` is right (z = +0.45), the sector
+histogram is right (p = 0.287), and topology is TRANSPORTED from the base rather
+than regenerated -- so this is a question about the move's precision, not about
+the ladder.
+
+**THE ONE FLAG WAS A THIRD STATISTICS BUG, AND AN INDEPENDENT SEED IS WHAT
+FOUND IT.** L = 16, beta = 56 first came back at gof p = 0.022 -- above the
+alpha = 0.01 gate but lowest in the set. A confirmation run at seed 4242 came
+back at **p = 0.0002, X^2 = 51.6**, with `<Q^2>` z = -0.09 and odd/exact z =
+-0.21, and with NO individual sector deviating by more than 1.2 sigma. A
+`DISAGREES` with no disagreement anywhere in it is not a physics result, and the
+mechanism was the pseudo-inverse: sector frequencies are multinomial and sum to
+a constant, so the all-ones direction carries essentially zero variance, and
+`rcond = 1e-10` inverted it, dividing a tiny mean offset by a tinier variance.
+Dropping ONE bin removes the redundancy exactly -- the textbook multinomial
+treatment, and unlike raising `rcond` it has no tuning parameter. The same two
+datasets then give X^2 = 3.46 (p = 0.493) and 1.97 (p = 0.743).
+
+Note what did NOT catch this: the pooled-tail rule, which was the first
+suspect and turned out to make no difference at all (dropping the near-empty
+tail bin changed X^2 by less than 0.01). The bug was found by an independent
+SEED disagreeing with the first, not by inspection.
+
+**And the charge histories are now saved**, with a sidecar recording the move
+that produced them, so a further change to these statistics costs a
+`--reanalyse` (seconds) rather than another afternoon of HMC. That mechanism
+paid for itself the same day: the binning-rule change above was applied by
+re-analysis, not by re-running.
 
 ## 2. Regenerate seed-benchmark arms A–D at 400 trajectories
 

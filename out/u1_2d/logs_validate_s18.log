@@ -1,0 +1,20 @@
+device: cpu | torch 2.11.0+cu128 | 8 threads
+loaded out\u1_2d\generated_s18\ladder_rung0_raw_wilson_L16_beta4.pt
+loaded out\u1_2d\generated_s18\ladder_rung0_wilson_L16_beta4.pt
+loaded out\u1_2d\generated_s18\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+loaded out\u1_2d\generated_s18\ladder_rung1_wilson_L32_beta14.1464.pt
+loaded out\u1_2d\generated_s18\ladder_rung2_raw_wilson_L64_beta55.0237.pt
+loaded out\u1_2d\generated_s18\ladder_rung2_wilson_L64_beta55.0237.pt
+simulating reference HMC at L=16 beta=4.0 (no Q-hops) ...
+  acceptance 0.983, 5s
+simulating reference HMC at L=32 beta=14.1464 (no Q-hops) ...
+  acceptance 0.987, 11s
+simulating reference HMC at L=64 beta=55.0237 (no Q-hops) ...
+  acceptance 0.951, 51s
+freezing demo: direct HMC time series at L=64 beta=55.0237 ...
+  freezing-chain acceptance 0.950
+  tau_int(Q) HMC = 300.0 +- nan
+report: out\u1_2d\validation_s18\report.md
+{'rung': 0, 'L': 16, 'beta': 4.0, 'plaq_deviation': 0.0007185025512455034, 'plaq_z': 0.6242958806248551, 'z': {'plaquette': 0.6242958806248551, 'wilson_2x2': 0.255548706651106, 'wilson_4x4': -0.4673214253603095}}
+{'rung': 1, 'L': 32, 'beta': 14.1464, 'plaq_deviation': -0.00013077134080263786, 'plaq_z': -1.0058655883432368, 'z': {'plaquette': -1.0058655883432368, 'wilson_2x2': 0.19354680804149244, 'wilson_4x4': 0.41559829687577216}}
+{'rung': 2, 'L': 64, 'beta': 55.0237, 'plaq_deviation': 3.1438081313783783e-06, 'plaq_z': 0.20080750731694, 'z': {'plaquette': 0.20080750731694, 'wilson_2x2': -1.561663934347899, 'wilson_4x4': -0.9310838207802313}}

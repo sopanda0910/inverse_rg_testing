@@ -1,0 +1,258 @@
+# SECTOR-DISTRIBUTION EXPERIMENT, arm B (uniform). Generated 2026-08-21.
+#
+# The two arms are IDENTICAL in every respect except the distribution the
+# training data's topological charges were drawn from:
+#
+#   arm A (exact)   -- Q ~ P(Q), the closed form. The deployed recipe.
+#   arm B (uniform) -- Q ~ Uniform over the SAME support. Same sector COVERAGE,
+#                      deliberately wrong sector FREQUENCIES.
+#
+# Both datasets were produced from the same source ensembles through the same
+# code path by `39_sector_distribution_data.py`, so neither arm has been through
+# an extra pass the other has not.
+#
+# WHAT IT DECIDES. `seed_exact_sectors` is currently recorded as the method's
+# dependency on 2D U(2) being exactly solvable, and therefore as what closes in
+# 4D SU(3). But the closed form only sets training sector FREQUENCIES, and at
+# deployment those are overridden -- the fine charge is imposed from the coarse
+# ensemble and `36_transport_check.py` measures that transport as exact config by
+# config. If the two arms agree, the exact P(Q) is a convenience for building
+# training data and a requirement for SCORING, not a requirement of the method.
+#
+# Architecture is the INCUMBENT recipe (hidden 64, depth 4, batch 32), not the
+# capacity one: the comparison is arm against arm, so the cheaper net is the
+# right choice and it keeps both trainings inside one GPU.
+#
+#   python u2_2d/scripts/02_train.py --config u2_2d/configs/sector_uniform.yaml
+
+# CHALLENGER CONFIG -- generated from default.yaml, 2026-08-20.
+# Identical physics; only the output paths differ, so the incumbent
+# det_score_net.pt and its directories of record survive for comparison.
+# Regenerate with scripts/make_v2_config.py after editing default.yaml.
+# Full three-rung ladder: L = 8 -> 16 -> 32 -> 64 with beta_f = 4 beta_c.
+# The determinant sector's exact <Q^2> is nearly a fixed point of this ladder
+# (lgt.blocking.ladder_charge_fixed_point), so climbing it is a continuum-limit
+# trajectory at fixed physical volume, and the coarse P(Q) already IS the fine
+# theory's P(Q).
+seed: 0
+device: auto
+
+data:
+  out_dir: out/u2_2d/data_sector_uniform
+  # n_chains matters more than n_configs above the freezing threshold: local
+  # dynamics never moves a chain between sectors there, so the number of
+  # INDEPENDENT topological charges in the ensemble is exactly n_chains, no
+  # matter how many configurations are drawn from them.
+  n_chains: 32
+  thin: 5
+  topological_updates: true
+  # 1 (was 2) since 2026-08-20. charge_step=1 now routes to the marginal odd
+  # move, accepted 0.28-0.66 where the joint route was 0.000, so the base can
+  # finally FLIP PARITY instead of freezing in whatever the hot quench drew.
+  # That mattered: at L=8, beta=20 the frozen-in weight was 0.5156 against an
+  # exact 0.3335, wrong by +55%. See docs/INSTANTON.md.
+  winding_charge_step: 1
+  # The marginal odd move costs 1609 ms/trajectory against the central move's
+  # 211 ms, and the number is FLAT in L (1609 at L=16, 1610 at L=32) -- it is
+  # entirely the 25 conditional SU(2) sweeps, which are launch-bound. Attempting
+  # it every trajectory makes odd-charge sampling 7.6x more expensive than the
+  # HMC it rides on, for no benefit: mobility is set by the number of ACCEPTED
+  # flips, not attempted ones, and at interval 5 a 300-trajectory burn-in still
+  # lands 18-36 accepted flips per chain. Composing kernels on a fixed scan is
+  # valid at any interval.
+  winding_interval: 5
+  # Above the freezing threshold the winding move only reaches even charge, so
+  # frozen rungs are started from sectors drawn out of the exact P(Q). Ensembles
+  # built this way have exact sector weights BY CONSTRUCTION and must not also be
+  # cited as evidence that P(Q) is reproduced. See lgt/sector_seed.py.
+  #
+  # SEEDING IS OFF AT L = 8 (measured, scripts/07_pq_sampling.py). Two thresholds
+  # govern this and they are not the same:
+  #   * the central (even) instanton costs 2 pi^2 beta / V, and the ladder holds
+  #     beta / V nearly constant (0.219 -> 0.202 -> 0.198 -> 0.197), so even-charge
+  #     mobility is a LADDER INVARIANT and never degrades as L grows;
+  #   * an odd charge change must cross the Z_2 monodromy. SUPERSEDED 2026-08-20:
+  #     the O(beta L) cost quoted here was a property of the JOINT proposal, which
+  #     held SU(2) fixed and therefore paid 2 beta for a flipped plaquette. The
+  #     marginal route (accept on the exact psi-marginal, then resample SU(2))
+  #     prices only the determinant sector and is accepted 0.28-0.66 at every
+  #     coupling tested, including L = 64 at beta = 416.5. Odd charge is NOT
+  #     obstructed; the old proposal was. See docs/INSTANTON.md.
+  # At L = 8, beta <= 14 both are healthy: unseeded HMC + winding reproduces the
+  # closed form with <Q^2> z = +0.16, chi2/dof = 1.29, odd-sector ratio 0.978 and
+  # no frozen chains. By L = 32, beta = 203 the chains still tunnel (796 changes)
+  # but the odd sectors are 22% depleted at z = -2.22 -- PARITY-FROZEN, not frozen.
+  # So the ladder's base is now sampled rather than installed, and its P(Q) IS
+  # evidence. The colder rungs stay seeded: they are training data and validation
+  # references, and topology is transported rather than learned, so their sector
+  # weights never enter the ladder's topological claim.
+  seed_exact_sectors: true
+  # Heatbath + overrelaxation equilibrates the local modes far faster per unit
+  # work than HMC trajectories do, so burn_in drops from thousands to hundreds.
+  # The check is printed every run: measured plaquette against the closed form.
+  thermalize_sweeps: 60
+  rungs:
+    - {beta: 3.5,   lattice_size: 8,  n_configs: 1024, burn_in: 300, hot_start: true, seed_exact_sectors: false, n_chains: 128}
+    - {beta: 7.0,   lattice_size: 8,  n_configs: 1024, burn_in: 150, seed_exact_sectors: false, n_chains: 128}
+    # The ladder BASE. hot_start is not the default here (beta > 4) but it is
+    # required: from a cold start every chain begins at Q = 0 and topology has to
+    # climb, which 200 trajectories does not finish -- measured <Q^2> = 0.484
+    # against an exact 0.551, still visibly rising at the thermalization check
+    # (0.227 after 60 sweeps). Starting hot and relaxing DOWN reaches 0.5547 +-
+    # 0.0209 (scripts/07_pq_sampling.py). This rung carries the whole sampled-P(Q)
+    # claim, so it gets the longer burn-in too.
+    - {beta: 14.0,  lattice_size: 8,  n_configs: 1024, burn_in: 400, seed_exact_sectors: false, n_chains: 128, hot_start: true}
+    # THE PARITY POSITIVE CONTROL. Stage 15 counts 2453 parity flips here, so
+    # unlike the beta = 28 base this coupling genuinely SAMPLES the odd/even
+    # weight -- which is what makes it the control for the frozen-in argument of
+    # section 12.2 (`scripts/19_parity_transport.py`).
+    #
+    # It needs the base recipe, not the default one. On burn_in 200 with 1024
+    # configurations it returned P(odd) = 0.6025 against an exact 0.5000
+    # (z = +6.6, chi2 p = 0.000) and <Q^2> = 2.407 against 2.207: a control that
+    # is itself wrong cannot certify anything. Hot start, unseeded, 4096
+    # configurations over 1024 chains and the long burn-in, exactly as the
+    # beta = 28 base has -- the flips are there, they just need the trajectories
+    # to happen in.
+    - {beta: 14.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
+    # The ladder BASE (see the `ladder:` block). Unseeded and hot-started for the
+    # same reasons as the L = 8 rungs, and measured clean at this coupling:
+    # <Q^2> = 1.0088 +- 0.0110 against an exact 1.0012 (z = +0.69), chi2/dof 0.27,
+    # 22260 sector changes, no frozen chains (scripts/07_pq_sampling.py).
+    # beta = 51.75 at this L is NOT usable -- it is PARITY-FROZEN (z_odd puts the
+    # odd sectors outside tolerance at chi2/dof 2.89 despite 14455 sector changes),
+    # because the odd-charge barrier goes as beta L and 828 is already past it
+    # while 448 is not. Do not raise this coupling without re-running that scan.
+    # 1024 CHAINS, ONE DRAW EACH -- and the reason is measured, not stylistic.
+    # scripts/15_base_parity.py: at this coupling NO CHAIN EVER CHANGES PARITY.
+    # Zero flips in 256 chains over 2000 trajectories, against 22283 Q changes, all
+    # of them even. So the odd/even split is not an observable with a relaxation
+    # time; it is a label fixed during hot-start ordering and carried forever, the
+    # independent parity draws are exactly n_chains however long anything runs, and
+    # the only lever is more chains. An earlier reading of the same symptom -- the
+    # stored ensemble measured z_odd = +2.42 while a scan at the identical coupling
+    # measured +0.69 -- blamed too few draws per chain and prescribed a longer run.
+    # That was wrong: they are two draws of a 256-chain binomial, two sigma apart.
+    # n_configs = n_chains puts every configuration in its own chain.
+    # n_configs = 4 x n_chains, and the two knobs do DIFFERENT jobs -- this is the
+    # part that was originally got backwards. Parity is frozen (zero flips), so only
+    # more CHAINS buy independent odd/even draws. The shape WITHIN a parity class is
+    # not frozen at all: 106823 Q changes per 1024 chains per 1200 trajectories, with
+    # tau_int(Q^2) = 0.55 draws, so there more DRAWS buy independent samples. Taking
+    # a single time slice measured <Q^2> = 0.891 against an exact 1.001, a -2.5 sigma
+    # fluctuation of one slice; four slices average it down by two. Both levers are
+    # needed, for different quantities.
+    - {beta: 28.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
+    - {beta: 56.0,  lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250, sector_augment: 0.5}
+    - {beta: 203.15, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    # COUPLING COVERAGE FOR THE LADDER. The score net is fully convolutional and
+    # conditioned on the coupling, not on L, so what it has to have SEEN is the
+    # model beta (`det_lift.model_beta` = the minimum-KL U(1) projection), and the
+    # ladder's two rungs need 26.4 and 104.1. Without these the top rung sits 2.05x
+    # beyond the training maximum of 50.8, and it shows: every one of ~24
+    # observables came out low there (plaquette z = -1.86) while the interpolated
+    # rung was clean. Supplying the coupling at L = 32 rather than L = 64 is
+    # deliberate -- the map is local, so the smaller lattice teaches the same
+    # thing for a quarter of the cost.
+    - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    # THE TOP RUNG'S REFERENCE. L = 64 at this coupling is exactly the
+    # extrapolation the ladder exists for, so direct HMC here is not a competing
+    # sampler -- it is a CONTROL. Two things needed one: the top rung had no
+    # `z vs reference` column at all (only closed-form comparisons), and the
+    # area-law deviation at L = 64 was left as "suggestive and uncontrolled"
+    # because there was nothing to measure it against.
+    #
+    # ITS TOPOLOGY IS INSTALLED, NOT SAMPLED. beta L = 26657 here, two orders past
+    # the parity boundary, so `seed_exact_sectors` is on (the default) and P(Q) is
+    # exact by construction. That makes this reference valid for LOCAL and Wilson
+    # observables and worth NOTHING as a topological comparison -- do not quote a
+    # sector agreement against it.
+    #
+    # `train: false` keeps it OUT of the score net's training set. Stage 02 loads
+    # every data rung by default, so without the flag the checkpoint would be
+    # fitted to the very ensemble the top rung is scored against and every
+    # `z vs reference` column there would be circular.
+    - {beta: 416.524, lattice_size: 64, n_configs: 512, burn_in: 300, n_chains: 64,
+       train: false}
+
+  # RANDOM-BETA TRAINING AT MULTIPLE VOLUMES, ported wholesale from u1_2d
+  # (2026-08-20). The score net is conditioned on model_beta, and a dozen fixed
+  # couplings teach it those couplings rather than the beta-dependence -- the
+  # likeliest reason the coverage retrain came out a trade rather than a gain.
+  #
+  # Volume weighting mirrors u1: L=16 heavy, L=32 substantial, L=8 light. Ranges
+  # are the U(2) images of u1's, since model_beta ~ beta_u2 / 4, extended to 430
+  # so the ladder's top rung (model beta 104) is INSIDE the training set rather
+  # than a 2.05x extrapolation.
+  random_rungs:
+    - {n: 60, beta_min: 4.0,  beta_max: 430.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 8.0,  beta_max: 430.0, lattice_size: 32, n_configs: 128}
+    - {n: 6,  beta_min: 4.0,  beta_max: 60.0,  lattice_size: 8,  n_configs: 128}
+    - {n: 24, beta_min: 8.0,  beta_max: 430.0, lattice_size: 32, n_configs: 128}
+
+  # A coupling never trained on, so coupling generalization is measured rather
+  # than assumed. u1 holds out beta = 20 at L = 16; this is its U(2) image.
+  heldout:
+    - {beta: 80.0, lattice_size: 16, n_configs: 128, burn_in: 300,
+       thermalize_sweeps: 60}
+
+train:
+  checkpoint_path: out/u2_2d/checkpoints/det_score_net_sectorB.pt
+  epochs: 120
+  resume: true
+  snapshot_every: 2
+  batch_size: 32
+  learning_rate: 2.0e-4
+  hidden: 64
+  depth: 4
+  cond_channels: 5
+  cond_film: true
+  norm_type: channel
+  sigma_min_beta_coef: 0.35
+  high_beta_sigma_bias: 0.5
+  sym_augment: 0.5
+  early_stop_patience: 25
+  val_fraction: 0.1
+
+ladder:
+  out_dir: out/u2_2d/ladder_sectorB
+  # RG-MATCHED, not tree level: the base ensemble has to be distributed as the
+  # blocked fine ensemble, so beta_base = approx_matched_coarse_beta(beta_fine).
+  # At beta_fine = 56 that is 15.05, not 14.00; the two agree only as beta -> inf.
+  # TOPOLOGY-MATCHED, not plaquette-matched. An inverse-RG step transports Q as an
+  # IDENTITY, so the base's P(Q) is what every rung above it gets -- and under the
+  # plaquette-matched schedule the exact <Q^2> still drifts -6.9% from L = 8 to
+  # L = 64, a systematic the ladder cannot correct. `blocking.topology_matched_
+  # schedule` picks beta_f so the exact <Q^2> is preserved instead (1.00119 at
+  # every rung here), leaving only the base's statistical error. The price is a
+  # coupling 2-3% below the plaquette-matched one; the two agree to 0.3% by the
+  # top rung and diverge only where the small-lattice P(Q) is pre-asymptotic.
+  base: {beta: 28.0, lattice_size: 16}
+  beta_schedule: [105.651, 416.524]
+  # 1024 to carry all 1024 of the base's independent parity draws. At 512 the
+  # stride subsample would keep only half of them, and the parity weight is the
+  # one quantity the ladder cannot regenerate -- it is transported, not sampled.
+  n_configs: 1024
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  n_su2_sweeps: 30
+  n_retherm_sweeps: 10
+  batch_size: 64
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  physics_blend_coef: 0.0
+
+validate:
+  out_dir: out/u2_2d/validation_sectorB
+  n_reference_configs: 512
+  n_chains: 32
+  burn_in: 1500
+  generate_reference: true
+  # The L = 64 rung is the extrapolation the method exists for: no direct HMC
+  # reference is generated there, it is compared against the closed form only.
+  max_reference_lattice_size: 32

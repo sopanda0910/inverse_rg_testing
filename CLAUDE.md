@@ -153,6 +153,149 @@ closed and `su2_2d/` is set aside.
   hot start cannot relax DOWN (17% of chains stranded, <Q^2> 63% high) and a cold
   start cannot climb UP. beta = 14 at L = 8 is inside the window in both directions.
 
+  **THE MARGINAL ODD MOVE IS CORRECT AT ITS DEPLOYED SETTING -- verified
+  2026-08-21, `scripts/34_marginal_move_bias.py`.** A first pass had it ~1% LOW
+  in the odd weight at all four L=8 couplings (odd/exact 0.9909 / 0.9897 / 0.9870
+  / 0.9923), which looked like a systematic. It was not; it was 128 chains x 150
+  draws of noise. At 128 x 1280:
+
+  | beta | SU(2) sweeps after an accepted move | odd/exact | z |
+  |---|---|---|---|
+  | 10 | 5 | 0.99386 | -2.40 |
+  | 10 | **25 (deployed)** | 1.00065 | **+0.26** |
+  | 10 | 100 | 0.99756 | -1.07 |
+  | 14 | 5 | 1.00251 | +0.96 |
+  | 14 | **25 (deployed)** | 1.00411 | **+1.46** |
+  | 14 | 100 | 0.99994 | -0.02 |
+
+  **Read the whole table, not the beta=10 column.** An intermediate write-up here
+  claimed the 5-sweep row demonstrated the mechanism -- `n_su2_sweeps` is the
+  move's ONE approximation (see the `marginal_winding_update` docstring), the
+  resample runs only on ACCEPTED configurations, so at finite sweeps it should
+  penalise exactly the moves that flip parity. The completed scan does NOT
+  support that: beta=14 at 5 sweeps is +0.96, not negative, so ONE cell of six
+  sits at -2.4 sigma and the rest are within 1.5, which is unremarkable across
+  six cells. The defensible conclusion is the narrow one -- **no detectable bias
+  at the deployed setting, and none at 100 sweeps either** -- not a demonstrated
+  sweep-count effect. `BatchedHMCU2` now exposes `winding_su2_sweeps` so the
+  question is scannable rather than hardcoded if it is ever reopened.
+
+  **The closed form is not the suspect for any P(Q) disagreement -- it is
+  numerically converged.** `det_topological_charge_distribution` does a trapezoid
+  k-integral against `cos(2 pi k q)` on ~600 points, about 20 per oscillation at
+  the largest sector, which is where a sub-percent parity-structured error would
+  live. Recomputed with a 16x finer k grid, 4x wider k cut, 4x finer alpha grid
+  and 4x more sectors, <Q^2> and P(odd) move by less than 1e-6 relative at every
+  coupling from L=8 beta=6 to L=16 beta=56. Do not re-audit it.
+
+  **`07_pq_sampling.py`'s STATISTICS WERE REBUILT ON 2026-08-22 AND ITS VERDICT
+  WAS NOT CALIBRATED BEFORE THAT. Every verdict in this file predating that date
+  is unreliable in BOTH directions.** Three defects, found in sequence:
+
+  * `odd_z` summed per-sector bootstrap errors in QUADRATURE. Those cells are
+    multinomial and hence negatively correlated, so the sum overstates the error
+    and shrank every |odd_z|. Now bootstrapped directly from the parity
+    indicator over CHAINS, as `34_marginal_move_bias.py` does.
+  * The agreement test, `chi2 = sum_q z_q^2` against `2 * n_sectors`, was never
+    a chi-squared of anything: correlated cells, the wrong per-cell variance
+    (`sqrt(p(1-p)/n)` where Pearson wants `sqrt(p/n)`, inflating each term by
+    `1/(1-p)`), `n_sectors` instead of `k-1`, and tail bins with expected counts
+    of a few. Replaced by `sector_goodness_of_fit`: a Mahalanobis statistic on
+    the per-CHAIN sector-frequency vectors -- chains are independent replicas, so
+    the multinomial correlation, the autocorrelation and the freezing all live
+    inside a chain and the covariance is estimated from the chains themselves --
+    with a BOOTSTRAPPED p-value and per-chain bin pooling (`p * n_draws >= 1`).
+  * `PARITY-STUCK` was declared from `|odd_z| > 2`, a pure significance gate.
+
+  **THE CALIBRATION IS THE RESULT, and it is worse than "miscalibrated"
+  (`48_verdict_calibration.py`, which feeds the script synthetic histories drawn
+  from the closed form so the null is true by construction; 300 replicas per
+  cell at the real 256 x 300 shape).** On EXACT data the old verdict misfired
+  13% of the time (DISAGREES 8%, PARITY-STUCK 5%). And on the `parity_frozen`
+  arm -- every chain pinned to one parity forever, the exact pathology the
+  verdict exists for -- `|odd_z| > 2` fired at **5%, its null rate**, because
+  each chain's parity was drawn from the CORRECT weight so the pooled odd
+  fraction came out right. The old rule had essentially NO POWER on the thing it
+  was built to detect while firing on 13% of good data. After the rebuild:
+
+  | arm | what it is | old | fixed |
+  |---|---|---|---|
+  | iid | true null | 87% SAMPLED | **99%** |
+  | sticky | true null, autocorrelated | -- | 95-100% |
+  | parity_frozen | the real pathology | ~5% caught | **100% caught** |
+
+  **FINAL CALIBRATION, all 12 cells, 300 replicas each**
+  (`out/u2_2d/verdict_calibration_v3/`), rejection at alpha = 0.01 and median
+  goodness-of-fit p, against a target of 1% and 0.5:
+
+  | beta | iid | sticky | parity_frozen caught | odd_bias power |
+  |---|---|---|---|---|
+  | 28 | 2% (p 0.527) | 1% (p 0.499) | **100%** | 22% |
+  | 51.75 | 1% (p 0.493) | 1% (p 0.463) | **100%** | 19% |
+  | 56 | 1% (p 0.507) | 0% (p 0.525) | **100%** | 15% |
+
+  So the test is calibrated on true nulls at BOTH couplings and under
+  autocorrelation, and has full power on the pathology. Note the last column
+  before quoting any `odd_z`: at the 0.8% deviation actually observed the test
+  fires only 15-22% of the time, so the +2.61 at beta = 28 is **neither
+  dismissible nor established** -- it is a weak hint of a small real bias in the
+  marginal move, and settling it needs ~5-10x the statistics at that one
+  coupling. Recorded as open, not resolved.
+
+  **THE RE-MEASURED VERDICTS: EVERY COUPLING TESTED SAMPLES TOPOLOGY HONESTLY,
+  AT BOTH VOLUMES (2026-08-22, `pq_sampling_marginal_L{8,16}_v3/`).** Marginal
+  move, `--charge-step 1 --winding-interval 5`, 256 x 300 draws at L = 16 and
+  128 x 300 at L = 8:
+
+  | L | beta | <Q^2> z | changes | parity flips | gof p | C-asym z | odd/exact | verdict |
+  |---|---|---|---|---|---|---|---|---|
+  | 16 | 28 | +0.45 | 45909 | 45909 | 0.353 | -0.48 | 1.0078 | SAMPLED |
+  | 16 | 51.75 | +0.29 | 34152 | 34152 | 0.732 | -0.61 | 0.9948 | SAMPLED |
+  | 16 | 56 | +0.55 | 32556 | 32556 | 0.022 | +1.66 | 1.0020 | SAMPLED |
+  | 8 | 6 | -0.68 | 30368 | 19330 | 0.479 | -1.91 | 1.0056 | SAMPLED |
+  | 8 | 10 | -0.99 | 22853 | 20333 | 0.661 | -0.07 | 0.9919 | SAMPLED |
+  | 8 | 14 | +0.63 | 17924 | 17839 | 0.469 | +0.89 | 0.9978 | SAMPLED |
+  | 8 | 20 | +0.20 | 12851 | 12851 | 0.866 | -0.39 | 1.0042 | SAMPLED |
+
+  **So `beta = 51.75` and `56` at L = 16 are NOT PARITY-STUCK and the standing
+  caveat against raising the ladder base is LIFTED** -- those couplings sample
+  topology rather than having it installed, which is the stronger claim. Every
+  sector change at L = 16 IS a parity flip, as it must be for a dQ = +-1 move.
+  beta = 56 is confirmed at two independent seeds (p = 0.493 and 0.743).
+
+  **A THIRD STATISTICS BUG WAS FOUND BY THAT CONFIRMATION SEED, and the lesson
+  is the one worth carrying.** beta = 56 first returned gof p = 0.022 -- above
+  the gate but lowest in the set. The independent seed returned **p = 0.0002,
+  X^2 = 51.6**, with `<Q^2>` z = -0.09, odd/exact z = -0.21, and NO individual
+  sector past 1.2 sigma. A DISAGREES with no disagreement in it. Cause: sector
+  frequencies are multinomial and sum to a constant, so the all-ones direction
+  carries essentially zero variance, and `pinv(rcond = 1e-10)` inverted it,
+  dividing a tiny mean offset by a tinier variance. `sector_goodness_of_fit` now
+  DROPS ONE BIN, which removes the redundancy exactly and has no tuning
+  parameter (raising `rcond` to 1e-4 is equivalent but arbitrary). Same two
+  datasets: X^2 = 3.46 and 1.97.
+  Note what did NOT find it -- the pooled-tail rule was the obvious suspect and
+  made no difference at all (< 0.01 in X^2). **An independent seed found it. A
+  low-but-passing p-value is worth a second seed, not a footnote.**
+
+  **A CHARGE-CONJUGATION TEST WAS ADDED AND IS THE SHARPEST ONE HERE.** The
+  action is invariant under U -> U*, which sends Q -> -Q, so P(Q) is exactly even
+  and `mean(sign Q)` must vanish -- a test needing NO closed form, so it cannot
+  be blamed on the reference and it ports to any theory with a topological
+  charge. All seven couplings scatter within +-2 with mixed signs, so there is no
+  systematic C violation; it is what turned the beta = 56 goodness-of-fit flag
+  into a specific, checkable statement.
+
+  **AND THE CHARGE HISTORIES ARE NOW SAVED.** The statistics here changed twice
+  in one day and each change cost hours of HMC to regenerate verdicts, because
+  only summaries were ever written. `07` now writes the `[n_draws, n_chains]`
+  arrays and takes `--reanalyse`, which recomputes every verdict from them with
+  no HMC at all (verified to reproduce a live run exactly). A further change to
+  these statistics costs seconds. `chain_bootstrap` also grew an EXACT fast path
+  for the mean (resampling chain means is an algebraic identity at equal chain
+  length) -- bit-identical, 96x faster, and what makes calibrating this
+  affordable. Both are covered by `u2_2d/tests/test_pq_statistics.py`.
+
   **The ladder base is UNSEEDED, and the claim has to be stated in two halves
   (revised 2026-08-20).** `seed_exact_sectors` is off at L = 8 and at the L = 16
   base; the colder rungs stay seeded, which is safe because they are training data
@@ -279,6 +422,69 @@ closed and `su2_2d/` is set aside.
   beta_f = 44.0 (t_therm 0), 58.0 (4), 414.9 (3) -- are all within 15% of a rung,
   and 414.9 is 0.4% from one. The three worst (88.8, 127.6, 264.2) sit 16 / 21 /
   30% into gaps. **Do not report a bad point in that scan as a beta effect.**
+
+  **BUT THE gap ~ 0 END OF THAT CORRELATION IS IN-SAMPLE, and the Spearman is
+  anchored by it (found 2026-08-21, `scripts/36_transport_check.py` session).**
+  `default.yaml` trains on TWELVE FIXED RUNGS and the top three are
+  `L=32 beta=105.651`, `L=32 beta=416.524` and **`L=64 beta=416.524`**. The
+  scan's best point, `32->64 at beta_f = 415.61`, lifts an L=32 coarse ensemble
+  at beta = 105.423 to L=64 at beta = 415.61 -- so BOTH the coarse input and the
+  fine target are training rungs, at the SAME volumes, 0.2% off in beta. It is
+  the trained lift, not a 0.2% extrapolation of it. The L=32 analogue
+  (beta_f = 414.90) is fine-side in-sample the same way. Of 15 couplings across
+  both scans exactly ONE is fully in-sample and one more is fine-side; they must
+  be MARKED and excluded from the correlation, not quoted as the headline.
+  **The claim does not need them.** The seed thermalizes while BOTH classical
+  arms are `inf` at beta_f = 58.03, 87.04, 127.55, 183.59 and 264.24 -- all
+  out-of-sample, gaps +3.6% to +30% -- plus beta_f = 44.0 at t_therm 0 against a
+  cold start's 90. Six out-of-sample wins carry the result; lead with those.
+
+  **THE VOLUME SCAN IS DONE (2026-08-21) AND THERE IS A REAL VOLUME EFFECT AT
+  FIXED COVERAGE.** `--fine-size 64` from L_c = 32, four couplings, both rounds
+  (`out/u2_2d/crossover_L64/`). The coverage ORDERING transfers exactly -- best
+  point stays best, past-the-top-rung stays dead -- but everything degrades:
+
+  | model beta | gap | L=32 seed | L=64 seed |
+  |---|---|---|---|
+  | ~103.9 | -0.2% (IN-SAMPLE) | 3 | 6 |
+  | ~45 | -9.6% / -11.6% | **6** | **inf** |
+  | ~22 | -16% / -17.6% | 59 | 79 |
+  | ~200 | past top rung | inf | inf |
+
+  The model beta ~45 row is the one that matters: essentially the same coupling
+  and the same coverage gap, one volume apart, t_therm 6 -> never. Coverage is
+  NOT the only variable. Cold and hot are `inf` at all four L=64 couplings in
+  BOTH rounds despite 810-4152 parity flips from the fully ergodic dQ=1 move --
+  topological ergodicity does not buy local thermalization, now measured at two
+  volumes.
+
+  **TOPOLOGY TRANSPORT IS EXACT, MEASURED CONFIGURATION BY CONFIGURATION
+  (2026-08-21, `scripts/36_transport_check.py`).** 100% of fine charges equal
+  their coarse charge at coarse beta 23.62 and 105.244 -- not <Q^2> agreeing on
+  average, every single configuration. This was asserted throughout and checked
+  only on the BLOCKING map (`09_verify_identities.py`), never on the GENERATIVE
+  path. It is the identity the whole framing rests on, so it now has a test.
+
+  **THE BEST STATEMENT OF WHAT THE MODEL DOES, and it is not the t_therm one.**
+  The deployed ladder base is at beta = 3.5, L = 8 (model beta 0.62), where HMC
+  is fully ergodic in topology, and it is UNSEEDED. The ladder invariant makes
+  exact <Q^2> ~ V/(4 pi^2 beta) a FIXED POINT of beta_f = 4 beta_c, L_f = 2 L_c,
+  so the coarse P(Q) IS the fine theory's P(Q). Transport is exact. Therefore the
+  pipeline delivers configurations at beta = 416 carrying a topological charge
+  drawn from a distribution SAMPLED AT A COUPLING WHERE SAMPLING WORKS. HMC at
+  beta = 416 cannot do that at any cost -- it is frozen, so it keeps whatever Q
+  it started with. Lead with this; it is cleaner than any t_therm ratio and it
+  does not depend on the contaminated point above.
+
+  **`physics_blend_coef` IS A DEAD END -- do not reach for it again**
+  (`scripts/35_physics_blend_probe.py`, 2026-08-21). It looked like the free fix
+  for the coverage ceiling, since `det_sector_exact_score` is exact at ANY beta
+  and has no training range. Measured on the raw lift at L = 32: at the on-rung
+  control (beta_f = 414.9) the plaquette relative deviation goes +8.3e-05 at
+  blend 0 to -9.9e-02 at blend 0.5, and at blend 1.0 it CORRUPTS TOPOLOGY
+  outright, <Q^2> 0.219 -> 9.0 against an exact ~0.25. Every coupling degrades
+  monotonically in the blend. The analytic score is the psi MARGINAL; the lift
+  needs the CONDITIONAL p(psi_f | psi_c), and mixing the two does not survive.
   DENSITY and WIDTH fail differently and need different fixes: a density gap
   degrades the seed but leaves it finite and still far better than a cold start,
   and it is a CAPACITY problem (both coverage retrains regressed precision at
@@ -305,9 +511,9 @@ closed and `su2_2d/` is set aside.
   the conditional local structure at fixed sector, which heatbath/overrelaxation
   equilibrates whether or not the chain can tunnel. Freezing is a global
   pathology; the learned object is local. Two things this does NOT rescue:
-  (i) the exact-sector crutch exists because 2D U(2) is solvable, and closes in
-  4D SU(3) where there is no closed-form P(Q) to seed from -- a real limit on
-  transferring the method, and it belongs in the discussion; (ii) local
+  (i) the exact-sector crutch exists because 2D U(2) is solvable -- but see the
+  correction immediately below, which is much less pessimistic than the version
+  of this sentence that stood until 2026-08-21; (ii) local
   equilibration at high beta is not free either (cold starts fail to thermalize
   LOCALLY within 200 trajectories from beta_f = 537 up), so a rung at model
   beta 200 is expensive even with sectors installed. The natural escape is to
@@ -315,6 +521,27 @@ closed and `su2_2d/` is set aside.
   the pipeline does not do (the net trains once on fixed HMC rungs) and which
   risks compounding error up the ladder. Settle the capacity experiment first;
   bootstrapping onto a capacity-limited net compounds the wrong thing.
+
+  **THE EXACT-P(Q) DEPENDENCY IS WEAKER THAN THIS FILE CLAIMED (2026-08-21).**
+  Read `lgt/sector_seed.py`: the closed form enters at exactly ONE point, the
+  first of three steps --
+
+      Q ~ P(Q) exact  ->  set_topological_charge (deterministic)
+                      ->  conditional_su2_sweeps (exact sampler for p(q | psi))
+
+  -- and all it does there is choose the sector FREQUENCIES of the TRAINING data.
+  At deployment those frequencies are overridden: Q is imposed by
+  `enforce_coarse_charge` from the coarse ensemble, so what the net needs from
+  its training data is sector COVERAGE (has it seen configurations at Q != 0),
+  not correct sector weights. Coverage needs no closed form -- charges can be
+  imposed by any means. So the honest statement is that the exact P(Q) is a
+  CONVENIENCE for building training data and a REQUIREMENT for validation, not a
+  requirement of the method, and the "closes in 4D SU(3)" claim was too strong.
+  **This is testable and not yet tested:** retrain with a deliberately WRONG
+  sector distribution (uniform over the same range instead of exact P(Q)) and see
+  whether lift quality moves. If it does not, the exactly-solvable dependency is
+  gone from the method and survives only in the scoring. Queue it behind the
+  capacity experiment.
 
   **THE DIVISION OF LABOUR IS A REQUIREMENT, NOT AN OBSERVATION — measured in
   BOTH studies, 2026-08-21.** `u1_2d/scripts/59_pre_post_retherm.py` scores the
@@ -341,6 +568,23 @@ closed and `su2_2d/` is set aside.
   Do NOT state this as "rethermalization damages the infrared": that happens only
   at the much stiffer u2 coupling (beta = 416.5, W(8x8) 4x worse). In u1 the
   factor merely reaches 1.
+
+  **THE SAME SEM AUDIT APPLIED TO u1 (2026-08-21) -- u1 SURVIVES BETTER, BUT
+  NOT ENTIRELY.** `59_pre_post_retherm.py` already records `z`, `relative_sem`,
+  `relative_sigma_1config` and `n_star`, so unlike u2's `31` it can be checked
+  without re-running. At beta_f = 55.02, L = 32, 256 configurations the raw z is
+  29.33 / 8.07 / 3.64 / 2.04 / **1.17** at W(1x1) / W(2x2) / W(4x4) / W(6x6) /
+  W(8x8). So the monotone low-pass trend (repair factors 64x / 14x / 3.9x / 1.6x)
+  IS on resolved numbers -- **the u1 mechanism claim stands where the u2 one was
+  retracted** -- but the HEADLINE ENDPOINT does not: "ten sweeps do nothing at
+  all for the largest loop", factor 0.99x, rests on a raw z of 1.17, which is
+  not resolved at 256 configurations. Quote the trend, mark the W(8x8) entry as
+  unresolved, and do not use it as the punchline.
+  At beta_f = 218.58 every RAW value is resolved (z = -256 to -34) but every
+  POST-retherm z is <= 0.41, so those repair factors (up to 256094x) are LOWER
+  BOUNDS, not measurements -- the denominator is consistent with zero.
+  Test parity between the two studies is tracked in `docs/PARITY_U1_U2.md`,
+  which also lists the audit obligations that now apply to both.
 
   **AND A CAVEAT ON u1'S GENERALIZATION CLAIM, found the same way.** At
   beta_f = 218.58, one of u1's own "validated far outside the training range"
@@ -393,19 +637,331 @@ closed and `su2_2d/` is set aside.
     exceeds the user's own statistical error, is the N-independent practitioner's
     form. Seed PRE: 1 / 26 / 1221 / 2501. Frozen classical: 1 / 3 / 6 / 11. That
     ~200x is a statement about the method, not about the ensemble size.
+    **CAVEAT, 2026-08-21: only the first two entries of each row are resolved.**
+    N* SQUARES the bias, so where the bias is consistent with zero the N* is
+    unbounded and means nothing -- at 256 configurations that is W(4x4) and
+    everything larger (raw z = 0.6 / -0.3 / -0.8). Quote the W(1x1) and W(2x2)
+    ratio, which is real; treat 1221 and 2501 as lower bounds at best. This is
+    the same error that produced the retracted "actionable defect" below.
 
-  **ONE ACTIONABLE DEFECT falls out, and it is not cosmetic.** Rethermalization
-  is a low-pass repair: ten sweeps take W(1x1) from 62 -> 1.3 ppm and W(2x2) from
-  67 -> 1.9, leave W(4x4) unmoved at 69, and make W(8x8) FOUR TIMES WORSE,
-  378 -> 1581. So POST-retherm N* at W(8x8) is **137 while the delivered L = 64
-  ensemble carries 256 configurations** — it is already past the point where its
-  own W(8x8) systematic exceeds its statistical error. `n_retherm` is 10 and was
-  never tuned against this; this is the quantity that should set it. It is also
-  the mechanism behind u1's Fig. 38 (`54_seed_accuracy_figures.py`): that
-  figure's residual is infrared-dominated because rethermalization PUT it there.
-  u1 is not wrong — it measures post-retherm output and attributes the residual
-  correctly — but it never measured the PRE-retherm lift separately, so the
-  causal half of its story is asserted rather than shown.
+  **THE L=16 beta=28 <Q^2> DISCREPANCY DOES NOT REPRODUCE ON THE DEPLOYED
+  ARTIFACTS (2026-08-22).** The standing open item was `<Q^2> = 0.9485 +- 0.0164`
+  against exact 1.0012 (z = -3.22) from `07_pq_sampling.py`. Measured directly on
+  the ensembles the pipeline actually uses, with binned errors:
+
+  | artifact | n | <Q^2> | exact | z |
+  |---|---|---|---|---|
+  | base `data/u2_L16_beta28` | 4096 | 0.9668 +- 0.0253 | 1.0012 | **-1.36** |
+  | `ladder_L32_beta105.651` | 1024 | 1.0156 +- 0.0448 | 1.0012 | **+0.32** |
+  | `ladder_L64_beta416.524` | 1024 | 1.0156 +- 0.0448 | 1.0012 | **+0.32** |
+
+  So the deployed base is 1.4 sigma low and the rungs are half a sigma high --
+  nothing to explain. The stage-07 number came from a DIFFERENT, freshly
+  generated ensemble and carried a quadrature-summed bootstrap error, which
+  `34_marginal_move_bias.py` already established understates (multinomial cells
+  are negatively correlated). **Re-run stage 07 with a direct bootstrap before
+  treating this as open again**; do not quote z = -3.22.
+
+  **AND THE LADDER'S SUBSAMPLE IS OPTIMAL, not degraded.** `03_run_ladder` takes
+  the LAST 1024 of the base's 4096 -- verified by matching charges configuration
+  by configuration. With 1024 chains and chain-major ordering that is draw 3 of
+  4: every chain represented exactly once, and the most-thermalized draw. The
+  subsample guard being inactive (no `n_chains` in the old metadata) therefore
+  cost nothing here. Per-draw `<Q^2>` runs 0.891 (draw 0) to 1.016 (draw 3),
+  which is ordinary sampling at SEM 0.045 and not a thermalization trend.
+
+  **THE `mean |z|` ALARM WAS LARGELY AN ARTEFACT -- OBSERVABLES ARE NOT
+  INDEPENDENT, N_eff = 3.77 NOT 41 (2026-08-22,
+  `u2_2d.validate.stats.effective_observable_count`).** The correlation matrix
+  of the 41 scored observables at L = 32 has top eigenvalue **18.6** (one mode
+  carries 45% of the variance) and mean within-family |correlation| **0.62** --
+  2D Wilson loops of different sizes are near-deterministic functions of one
+  another. Participation ratio: **3.77 at L = 32, 3.25 at L = 64**. So
+  `SE(mean |z|) = sqrt(1 - 2/pi)/sqrt(N_eff)` is **0.31**, not 0.09, and three
+  claims made here were overstated by 3.3x:
+
+  | claim | as quoted (N = 41) | at N_eff | verdict |
+  |---|---|---|---|
+  | validation L=32 mean\|z\| 0.484 | 3.3 sigma below null | **1.0** | unremarkable |
+  | capacity ext loops 0.187 | 6.5 sigma | **2.0** | suggestive only |
+  | sector ablation, 0.096 apart | excludes > 0.27 | **excludes only > 0.88** | weak bound |
+
+  **So the earlier note here that a 0.187 scorecard "indicates overestimated
+  error bars -- not a good model" was too strong.** It is 2 sigma. Never quote a
+  `mean |z|` without `N_eff` beside it; `mean_abs_z_sigma(value, n_eff)` does it.
+
+  **AND ON THE EXTENDED-LOOP SUBSET IT IS WORSE THAN THAT: N_eff = 1.45 AT
+  L = 32, 1.27 AT L = 64** (measured 2026-08-22, `47_effective_observables.py`;
+  `validate.report.compare` now records `n_effective` and
+  `n_effective_extended` on every summary it writes, so this never has to be
+  recomputed by hand again). The thirteen area >= 16 Wilson loops that criterion
+  (c) of `25_challenger_report.py` averages are worth about ONE AND A HALF
+  independent observables, so `SE(mean |z|)` on that column is **~0.50**, and the
+  whole guard barely discriminates:
+
+  | comparison | move | in SE | verdict |
+  |---|---|---|---|
+  | v2, L=32 | 0.168 -> 0.292 | **0.2** | unresolved |
+  | v2, L=64 | 1.061 -> 1.225 | **0.3** | unresolved |
+  | capacity, L=32 | 0.168 -> 0.666 | **1.0** | unresolved |
+  | capacity, L=64 | 1.061 -> 0.319 | 1.4 | marginal |
+
+  The declared 5% gate is LEFT AS IT WAS -- moving a criterion once the numbers
+  are known is the failure that script exists to prevent -- but every row now
+  prints its resolution, so a "FAIL" worth a fifth of a sigma cannot be quoted as
+  a regression. **The capacity verdict is unaffected**: it never rested on this
+  column, it rests on the tuned sweep count (5 -> 15/35) and the density gap.
+
+  **tau_int-AWARE ERRORS ARE NOW IN u2, ARE THE VALIDATION OF RECORD, AND ARE
+  *NOT* THE EXPLANATION.** `u2_2d/validate/stats.py` ports u1's estimator;
+  `04_validate.py` takes `--generated-n-chains` and `03_run_ladder.py` now
+  records `n_chains` in ladder metadata. Measured on the ladder of record:
+  `mean |z|` 0.522 -> 0.484 (L = 32) and 0.789 -> 0.728 (L = 64) -- a 7-8%
+  correction, real and worth keeping, but an order of magnitude too small to
+  explain the sub-null scores.
+  **PROMOTED 2026-08-22:** `out/u2_2d/validation/` now HOLDS the tau_int-aware
+  numbers and the naive-SEM run is kept verbatim at
+  `out/u2_2d/validation_naive_superseded/`. Both directories carry a README
+  saying which is which; do not quote the superseded one. With `N_eff` applied
+  the promoted scorecard sits essentially ON the half-normal null -- `mean |z|`
+  vs reference 0.762 at L = 32 (+0.12 sigma) and 0.528 at L = 64 (+0.80 sigma) --
+  so the "sub-null" alarm is closed at both volumes. Two traps
+  found while wiring it: the estimator needs chain-major ordering
+  (`index = draw*n_chains + chain`, which u2's `sample` satisfies) and silently
+  returns a plausible ~0.5 otherwise; and **the deployed ensembles predate the
+  `n_chains` metadata field, so `03_run_ladder`'s subsample guard has been
+  inactive without saying so** -- it now warns instead.
+  NOTE `04_validate.py --config` defaults to **smoke.yaml**, not default.yaml.
+  Forgetting it silently validates the L = 16 smoke rung and reports it as if it
+  were the ladder of record.
+
+  **THE POST-RETHERM CREEP IN THE MULTI-LIFT RESULT WAS NOISE (2026-08-22).**
+  At 4x the statistics it went the diagnostic way: u2 in-coverage post |z| went
+  0.63 / 0.83 / **1.86** at n = 64 to 0.08 / 0.71 / **0.82** at n = 256, and u1
+  ceiling 0.19 / 0.01 / **2.69** at n = 128 to 0.15 / 0.32 / **0.63** at n = 256.
+  Since `z ~ sqrt(N)`, a real bias would have DOUBLED; it fell by half. So "no
+  compounding" now holds for the DELIVERED product, not only the raw lift.
+  Charge preservation reproduces at the higher statistics (u2 98.4 -> 97.7%,
+  u1 81.2 -> 82.0%), so that effect is real.
+
+  **u1's SAMPLER STEP COUNT IS *NOT* TOO HIGH -- 200 IS JUSTIFIED, AND THE
+  EARLIER "10-20x TOO HIGH" NOTE HERE IS WITHDRAWN (corrected 2026-08-22 the
+  same day it was written).** The first scan called
+  `generate_fine_from_coarse` with the FUNCTION DEFAULTS, and those are not the
+  deployed sampler: `v3_scale.yaml` runs `physics_blend_coef: 1.0`,
+  `physics_blend_beta_min: 5.0`, and `03_run_ladder.py` rebuilds the noise
+  schedule with `sigma_min_beta_coef: 0.1` before sampling, while the function
+  default blends OFF. The blend and the step count interact, so an unblended
+  scan cannot see the cost. `63_sampler_steps.py` now takes `--config` and
+  reads every knob from it. **General lesson: a measurement of a tunable is
+  only about the deployed system if it reads the deployed configuration.**
+
+  Re-measured with the deployed knobs (`out/u1_2d/sampler_steps_deployed/`),
+  worst-loop |z| against the closed form at beta_f = 55.02 / 218.58:
+
+  | steps | raw | post | cost |
+  |---|---|---|---|
+  | 12 | 32.9 / 36.9 | 0.50 / 0.58 | 17x cheaper |
+  | 18 | 16.0 / 19.7 | 0.44 / 0.52 | 11x cheaper |
+  | 100 | 3.4 / 17.4 | 0.44 / 0.50 | 3x cheaper |
+  | **200** | **1.0 / 4.3** | 0.43 / 0.50 | deployed |
+
+  **THE TWO PRODUCTS WANT DIFFERENT SETTINGS AND THAT IS THE RESULT.** The post
+  column is flat from 12 steps up, so the DELIVERED ensemble needs 18; the raw
+  column is still falling at 100, so the SEED needs 200 -- and every
+  seed-quality claim (t_therm, N*, the prolongator ablation) is measured on the
+  raw lift. The script now prints both knees and calls neither "the" knee.
+  Also note the raw column is now MONOTONE in step count, so the old claim that
+  it was unusable because the bias changes sign was itself an artefact of the
+  unblended sampler; at beta_f = 218.58 it still plateaus around 15-29 before
+  dropping to 4.3 at 200, which is the coverage limit (3.6x past beta_max = 60)
+  rather than a sampler effect.
+
+  Verified end to end rather than argued: `u1_2d/configs/v3_scale_s18.yaml` runs
+  the whole deployed ladder at 18 steps into `out/u1_2d/validation_s18/`. The
+  delivered ensemble is indistinguishable from the record (max |z| 2.07 -> 1.42,
+  1.74 -> 2.18, 1.28 -> 1.64 across the three rungs) while the raw lift degrades
+  3-4x at every rung (12.3 -> 53.1 at the top). Sixteen retherm sweeps hide in
+  the ensemble what the seed pays. That config is KEPT as the record of the
+  negative result; `v3_scale.yaml` stays at 200.
+  **u2's own 25-step finding was AUDITED for the same defect and is clean.**
+  `14_sampler_steps.py` calls the real `generate_ladder` and reads every knob
+  from `ladder_cfg` (including `physics_blend_coef`, which u2 deploys at 0.0
+  anyway), and its schedule comes from the checkpoint via `load_det_model`. It
+  also scales `charge_projection_interval` with the step count, which the u1
+  script does not need. Its guidance -- read the RUNG 0 PRE-retherm column, not
+  the top rung's plaquette -- is the same "score the raw product" rule this
+  correction arrives at from the other direction.
+
+  **SWEEPS BEAT TRAJECTORIES AS THE REPAIR MOVE, IN BOTH STUDIES (2026-08-22,
+  u2 `44_sweeps_vs_trajectories.py`, u1 `61_sweeps_vs_trajectories.py`).** One
+  lift, cloned, the same budget spent two ways, costs matched in LINK TOUCHES
+  (retherm sweep = 3, trajectory = `n_steps`). u1: 6 / 12 / 24 touches to
+  |z| <= 2 at beta_f = 55.02 / 98.47 / 218.58 against 380 / never-in-1500 /
+  never-in-2220 for trajectories. u2: 6 touches at every coupling including
+  +214% past the training ceiling, against never in 2560-4600. Cold-start
+  trajectories never converge in any cell of either study. **This is a METHOD
+  statement, not a u2 quirk** -- the repair for a raw lift is cheap exact local
+  sweeps, and any t_therm quoted in trajectories understates the seed by two
+  orders of magnitude as a practical cost.
+
+  **u1'S OBSERVABLE SCAN (fig 46, `62_observable_scan.py`, 2026-08-22) IS THE
+  CLEANEST COVERAGE FIGURE IN EITHER STUDY.** 14 couplings, beta 6 to 518,
+  L = 32 from L = 16, relative deviation AND z. u1's training coverage is DENSE
+  to beta = 60 (4 fixed rungs + 102 random, all beta_max 60) rather than isolated
+  rungs, so the ceiling is a step and the bias SIGN flips across it: raw z at
+  W(1x1) is -0.6 / +6.1 / +9.0 / +8.9 / +8.7 / +21.7 inside coverage and -63 /
+  -138 / -150 / -162 / -179 / -198 / -205 outside. Ten sweeps return nearly every
+  coupling to |z| < 2, far past the ceiling included.
+  **NOTE THE CONTRAST WITH u2, it is informative:** in u2's scan the ppm and z
+  columns point OPPOSITE ways (Spearman -0.82 against +0.80); in u1's they agree.
+  The reversal is a property of the RANGE -- u2 spans model beta 2.8 to 327,
+  across which the theory's own spread moves by orders of magnitude -- not of
+  either code. That is the argument for treating "report z, not just a ratio" as
+  a standing rule.
+
+  **MULTIPLE LIFTS: THE RUNG COUNT IS FREE, THE FINAL RUNG SETS THE ACCURACY,
+  AND ONLY THE TAIL MOVES TOPOLOGY (2026-08-22, `45_multi_lift_compounding.py`
+  + u1's `60_`, fig30, report in
+  `out/u2_2d/multi_lift_incov/MULTI_LIFT_REPORT.md`).** Eight cells: two
+  theories x two endpoints (in coverage / past the ceiling) x intermediate
+  retherm on/off, each reaching ONE fixed endpoint by 1, 2 and 3 lifts.
+  * **No compounding.** 3 lifts sits at 0.94-1.02x the 1-lift error with the
+    ladder's retherm, 0.84-1.00x without. A ladder can be as long as the base
+    coupling requires.
+  * **The error is injected by the LAST lift.** u2's 3-lift trace is z = +15.80
+    (L=16, model beta 4.4), +0.91 (L=32, 15.8), -157.44 (L=64, 61.7). So
+    accuracy is set by the FINAL rung's distance from training coverage, not by
+    the rung count. **Laddering therefore does NOT extend the coupling reach** --
+    every lift multiplies beta by ~4, so the last lift lands at the same model
+    beta whatever path reached it. The ladder buys VOLUME, not coupling.
+  * **The lift is exactly charge-preserving under COMPOSITION** -- 100% of
+    configurations keep their starting charge at 1, 2 and 3 lifts in all four
+    chains when nothing rethermalizes between rungs. This extends
+    `36_transport_check.py` from one lift to three.
+  * **The ladder's own retherm sweeps re-sample Q**, and the loss tracks how
+    weak the intermediate rung is: u1 keeps 33.6% (L=16 retherm at beta 3.87)
+    and 81.2% (beta 5.24); u2, whose intermediates are stiffer, keeps 98.4% and
+    100%. NOT corruption -- `<Q^2>` moves TOWARD exact (u1: 1.633 -> 1.539
+    against exact 1.386), because a rung weak enough for local moves to change Q
+    is one where they sample it correctly.
+    **So state the framing precisely: as deployed, the ladder RE-SAMPLES
+    topology at every rung where that is still valid and transports it unchanged
+    once the coupling is stiff enough that it is not.** "Drawn at the base and
+    carried unchanged to the top" is exact only with intermediate retherm off.
+  * Caveat: post-retherm endpoint |z| creeps with lift count (u2 in-coverage
+    0.63/0.83/1.86; u1 ceiling 0.19/0.01/2.69). All below 2, so unresolved at
+    64-128 configurations, but monotone in three of four chains.
+
+  **THE OBSERVABLE SCAN (fig29, `scripts/43_observable_scan.py`, 2026-08-21)
+  MEASURES THE COVERAGE STORY DIRECTLY, and it needed z to say anything.** 12
+  couplings, L = 32 lifted from L = 16, 64 configurations, raw lift and after 10
+  rethermalization sweeps, against the closed form. Read in RELATIVE DEVIATION
+  alone the figure says "agreement improves with beta" -- Spearman(model beta,
+  post-tail relative deviation) = -0.82, p = 0.001. That is the theory getting
+  quieter, not the model getting better. In z the sign REVERSES:
+  Spearman(model beta, |z| of the raw lift) = **+0.80, p = 0.002**, and the raw
+  |z| at W(1x1) climbs 3.8 -> 123 across the range.
+  * **The raw lift's error is resolved at 12/12 couplings** (W1x1), 10/12 at
+    W(2x2), 8/12 at W(4x4). This is a real, large, measurable systematic.
+  * **The two IN-SAMPLE couplings are the only points that break the trend**, by
+    4x in median |z| (10.9 against 48.1), and are the ONLY two with POSITIVE
+    bias -- off-rung the model is coherently negative, matching the note above
+    about a negative bias in all ~24 observables at an out-of-coverage rung.
+    They are marked IN-SAMPLE in the figure and must not be quoted as evidence
+    of generalization.
+  * **After 10 retherm sweeps, 34 of 36 (loop, coupling) cells are UNRESOLVED**,
+    median |z| 0.50, including at model beta 327 -- 214% past the top training
+    rung. Cheap EXACT local sweeps repair local observables at every coupling
+    tested.
+  Note the apparent tension with "past the top rung the seed does not thermalize
+  on ANY local observable" (the crossover scan). It is probably not a
+  contradiction: that statement is about HMC TRAJECTORIES under a strict
+  5-consecutive-record t_therm criterion, while this is 10 heatbath +
+  overrelaxation sweeps, which are a far stronger LOCAL move. If so the useful
+  form is: out of coverage, the fix for local observables is cheap local sweeps
+  rather than more HMC -- and it does not touch topology, which retherm leaves
+  invariant by construction and which the model supplies exactly by transport.
+  **TESTED 2026-08-21, `scripts/44_sweeps_vs_trajectories.py` -- one lift, one
+  set of configurations, cloned, the budget spent two ways, matched in LINK
+  TOUCHES (a retherm sweep is 3, an HMC trajectory is `n_steps` = 23-64).** The
+  sweep half is clean and is the result: **two sweeps, six link-touches, reach
+  |z| <= 2 at all three couplings** -- in coverage, +29% past the top rung, and
+  +214% past it -- while the trajectory arm spends 920-2560 link-touches without
+  getting there. Local exact sweeps repair the raw lift at any coupling tested,
+  cheaply, and they cannot touch topology (`topological_updates=False`), which is
+  transported.
+  **DO NOT yet quote the sweeps-vs-trajectories RATIO.** The trajectory arm fails
+  at the IN-COVERAGE coupling too (|z| 7.66 after 40 trajectories), where
+  `28_crossover_scan.py` reports a FINITE t_therm at a comparable coupling using
+  the identical criterion (same z, same five consecutive records; its `t_therm`
+  is in RECORDS, so 6 means 12 trajectories) on the same kind of raw-lift input
+  -- verified by reading its source, it does not retherm before the HMC arm
+  either. So the trajectory arm is UNVALIDATED: either 40 trajectories is simply
+  too short, or it differs from that scan in a way not yet identified. The 200-unit rerun at the
+  in-coverage coupling is DONE (`out/u2_2d/sweeps_vs_trajectories_long/`) and
+  says the arm is not broken, just slow: the seed's slowest |z| falls
+  monotonically 76.9 -> 11.2 -> 7.3 -> 6.5 -> 4.8 -> 3.9 -> 3.1 over 200
+  trajectories and then PLATEAUS at 3-4.5, dipping to 2.50 at unit 156 but never
+  holding <= 2. The cold arm tracks it (min 3.42) so both HMC arms behave the
+  same way. So the comparison at this coupling is **6 link-touches (2 sweeps,
+  |z| 1.1, stable) against 4600 (200 trajectories, |z| ~4, plateaued)** -- the
+  ratio is real and now measured, not a budget artefact.
+  **THE APPARENT DISAGREEMENT WITH `28_crossover_scan.py` IS RESOLVED and there
+  is no bug: t_therm IS GENUINELY RUGGED IN COUPLING, reproducibly.** The scan's
+  own seed t_therm reads 59 / 51 / **6** / 50 at model beta 22.2 / 31.9 / 45.9 /
+  66.1, and the fast point REPLICATES across its two independent rounds
+  (plaquette/W2x2/W4x4 = 6/3/0 in the plain round, 5/2/0 in the topological one),
+  as do its slow neighbours. An independent implementation
+  (`44_sweeps_vs_trajectories.py`) reproduces the same landscape: at beta_f =
+  183.59 (model beta 45.9) the seed reaches |z| <= 2 in **22 trajectories**,
+  while 4.5% away at beta_f = 175.66 (model beta 43.9) it never gets there in
+  200. So a single t_therm is a property of its coupling and NOT interpolatable
+  to a neighbour; the earlier note here that the two scripts disagreed was
+  comparing two different couplings.
+  **The consequence for fig21 and for the Spearman of +0.62 is real**: individual
+  t_therm points carry ~10x scatter between adjacent couplings, so no single
+  point should be quoted as evidence, and the correlation must be presented as a
+  trend across the whole scan rather than through named examples.
+
+  **THE "ACTIONABLE DEFECT" THAT USED TO SIT HERE IS RETRACTED (2026-08-21,
+  `scripts/42_retherm_reconcile.py`, write-up in
+  `out/u2_2d/retherm_reconcile/RECONCILIATION.md`).** It read: ten sweeps make
+  W(8x8) FOUR TIMES WORSE (378 -> 1581 ppm), so post-retherm `N*` at W(8x8) is
+  137 while the delivered L = 64 ensemble carries 256 configurations, and
+  `n_retherm` should be tuned against that. **Neither number was ever resolved.**
+  sigma at W(8x8) is 19500 ppm, so 256 configurations give a standard error of
+  1219 ppm and the two disputed values are z = 0.31 and z = 1.30. The competing
+  measurement (`33_retherm_scan.py`, "2.3x BETTER") is the same quantity
+  fluctuating the other way; measured on the SAME configurations in one pass the
+  sign flips with sweep count (-949, -2498, +424, +1.6, +723, -1614 ppm at
+  0/2/5/10/20/40 sweeps). `N* = (sigma/bias)^2` on a bias consistent with zero is
+  unbounded -- 1.4e8 at 10 sweeps here -- so the finding was a squared noise
+  fluctuation. There is no basis for retuning `n_retherm` and no evidence that
+  rethermalization damages the infrared in u2. The metric-artefact hypothesis is
+  refuted too: sigma moves only x0.93 across the tail, far too little to carry a
+  4x disagreement, so the disagreement was in the numerator.
+  **The claim about u1's Fig. 38 goes with it** -- "the residual is
+  infrared-dominated because rethermalization PUT it there" was resting on this
+  number and is now unsupported at the u2 coupling. u1's own measurement
+  (`59_pre_post_retherm.py`) is separate and unaffected; there the repair factor
+  merely reaches 1.0 at W(8x8), it does not go below it.
+
+  **WHAT THE SCALE DECOMPOSITION ACTUALLY ESTABLISHES, in z against a naive SEM
+  at 256 configurations.** Raw lift: W(1x1) 61.8 ppm / SEM 3.3 = **z 18.6**;
+  W(2x2) 64.9 / 20.1 = **z 3.2**; W(4x4) 87.6 / 143.9 = z 0.6; W(6x6) z -0.3;
+  W(8x8) z -0.8. So the model's residual is RESOLVABLE ONLY AT W(1x1) AND
+  W(2x2), and ten sweeps remove it at both (z -> -0.16 and 0.67). At W(4x4) and
+  larger the RAW lift is already statistically indistinguishable from exact, so
+  nothing can be said about what the tail does there without a much larger
+  ensemble. The flatness claim -- 62 / 67 / 69 ppm while the theory's own sigma
+  grows 374x -- stands on two resolved points plus a consistent 2-sigma bound of
+  ~290 ppm at the third; state it that way, not as three measurements.
+  `<Q^2>` is 0.8281 at every sweep count to all printed digits: retherm runs
+  `topological_updates=False`, so transport survives the tail exactly.
+  **The general lesson, which is the one worth carrying: an N* or a ratio built
+  from a large-loop bias needs its SEM checked first. Large loops have enormous
+  per-configuration spread and 256 configurations do not resolve them.**
 
   **BUT COVERAGE IS BOUGHT, NOT FREE — measured twice, 2026-08-20 and 2026-08-21,
   and this is the more useful half of the lesson.** Two independent attempts to
@@ -422,11 +978,54 @@ closed and `su2_2d/` is set aside.
   L=64 1.134 -> 1.225); density gap regressed in 3 of 4 cases, improving ONLY at
   the top-rung case (+0.019 / +0.014 / +0.003 / -0.006 as beta rises — a
   monotone trade, which is what capacity dilution looks like).
+  **CAVEAT ON EVERY `mean |z|` COMPARISON IN THIS FILE (2026-08-21).** A model
+  that is EXACTLY right, scored with CORRECT error bars, gives
+  `mean |z| = sqrt(2/pi) = 0.798`, because |z| is then half-normal. So an
+  extended-loop `mean |z|` of **0.187 is four times better than perfect** and is
+  not a good score -- it is evidence that those error bars are overestimated, or
+  that the observables entering the mean are strongly correlated so the z's are
+  not independent draws. Read the v2 move 0.187 -> 0.292 and the capacity move
+  0.187 -> 0.666 with that in mind: both go TOWARD 0.798, not away from it, and
+  calling them "regressions" assumes the 0.187 baseline was meaningful. The
+  L = 64 pair (1.134 -> 1.225, and capacity's 1.134 -> 0.319) brackets 0.798 from
+  the other side and is the more interpretable of the two volumes.
+  This does NOT overturn the capacity verdict -- that rests mainly on the tuned
+  sweep count and the density gap, neither of which is a z -- but the
+  extended-loop column should not be quoted as evidence on its own until the
+  error bars in `25_challenger_report.py` are checked against
+  `tau_int`-aware ones (u1 NARRATIVE 25.7 / M4 made exactly this correction).
+  Same class of error as the retracted W(8x8) finding above: a statistic quoted
+  without asking what value it would take if nothing were wrong.
+
   Diagnosis: at `hidden: 64, depth: 4` the net is CAPACITY-LIMITED, and 113 rungs
   share what 12 rungs used to own. Corroborating: `val_total` was still at its
   best at epoch 118 of 120 (no early stop) with the GPU at 30% — input-bound at
   `batch_size: 32`, i.e. it ran out of budget, not out of signal.
   **So do not widen coverage again without raising capacity and epochs first.**
+
+  **AND THE u1 COMPARISON SHOWS WHY -- u2 RAN u1'S DATA RECIPE UNDER-PROVISIONED
+  (2026-08-21).** u1 DOES train on randomly sampled beta; that was one of the
+  keys to its generalization, and any claim here that random-beta coverage is
+  itself harmful is wrong. Side by side:
+
+  | config | fixed rungs | random | beta max | hidden | depth | batch | epochs |
+  |---|---|---|---|---|---|---|---|
+  | u1 v3_scale | 4 | 102 | 60 | 80 | 5 | **16** | 80 |
+  | u1 v2 | 4 | 78 | 60 | 56 | 4 | 16 | 100 |
+  | u2 default (DEPLOYED) | 12 | -- | 430 | 64 | 4 | 32 | 120 |
+  | u2 v2 (regressed) | 12 | 102 | 430 | 64 | 4 | 32 | 120 |
+  | u2 capacity (running) | 12 | 102 | 430 | 96 | 5 | 64 | 260 |
+
+  u2's v2 copied u1's data strategy onto a SMALLER net (64/4 against u1's 80/5)
+  over a WIDER beta range (model beta to 104 against u1's 60). The right lesson
+  is not "random beta dilutes capacity" but "u2 under-provisioned relative to
+  u1's own recipe". Note also `batch_size`: u1 uses **16**, the capacity config
+  uses 64, which at a fixed epoch budget is 4x fewer gradient steps. **If the
+  capacity retrain disappoints, change the batch size before the width.**
+  NOTE the deployed `det_score_net.pt` has NO random rungs -- its history carries
+  10 val keys and the 9 unique model betas of the 12 fixed rungs. `default.yaml`
+  has since GROWN a `random_rungs` block, so the file no longer describes the
+  deployed checkpoint; do not read training coverage off it.
   `det_score_net.pt` stays deployed; `out/u2_2d/data_v2/` is KEPT because its
   improvement is in the data and is independent of the net, and is the right
   starting point for the capacity experiment.
@@ -697,6 +1296,34 @@ overrelaxation sweep); and stage 01 thermalizes with heatbath + overrelaxation
 before HMC (`thermalize_sweeps`), which replaced 2000 burn-in trajectories with
 60 sweeps + 300 trajectories at L = 32, ~7x cheaper. Both are exact updates of
 the same action, and the plaquette-vs-closed-form check is printed every run.
+
+**THIS 8 GiB CARD HOLDS THREE CUDA CONTEXTS OF THIS WORKLOAD, NOT FOUR --
+measured the hard way, 2026-08-21.** Running the capacity retrain (hidden 96,
+depth 5, batch 64) alongside two L=64 crossover scans and an L=16 P(Q) run killed
+the retrain with `CUDA error: out of memory` at epoch 36, and killed the P(Q) run
+the same way an hour later. Three contexts sit at ~4.2 GiB and are stable.
+`PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True`, the usual remedy for
+fragmentation-driven OOM, **is not supported on Windows** -- it warns and does
+nothing. So the only levers are context count and restartability:
+* Cap concurrent CUDA stages at three.
+* Make long trainings restartable. `configs/*.yaml` now accept `resume: true` and
+  `snapshot_every` (plumbed through `02_train.py`; the trainer default is 10).
+  With `snapshot_every: 2` an OOM costs two epochs, and `run_queue_resume.ps1`
+  wraps training in a retry loop that resumes automatically -- it fired
+  unattended on 2026-08-21 and recovered without intervention.
+* **Gate dependent stages on the trainer having EXITED 0.** The original parallel
+  queue did not, and would have built the ladder, validation, seed benchmark and
+  both prolongators on a quarter-trained checkpoint that happened to be on disk,
+  producing a capacity A/B with nothing in the output saying so.
+
+**PROCESSES LAUNCHED FROM THE EDITOR-ATTACHED SHELL DIE WITH THE SESSION.**
+Measured: that shell's job object reports `LimitFlags=0x3C00`, i.e.
+`KILL_ON_JOB_CLOSE=YES`, and every child inherits it -- closing VS Code or ending
+the agent session kills every run. A process launched through Task Scheduler gets
+`LimitFlags=0x0` and survives. `Register-ScheduledTask` works without elevation;
+use `-ExecutionTimeLimit ([TimeSpan]::Zero)` or the task is killed at 72 hours.
+Two tasks are registered and idle for this purpose: `u2_capacity_queue` and
+`u2_gpu_tail`. This is why the note below prescribes scheduled tasks.
 
 **Long runs: hold the machine awake with
 `powershell -ExecutionPolicy Bypass -File u2_2d/scripts/keep_awake.ps1`.** It

@@ -126,6 +126,12 @@ train:
   high_beta_sigma_bias: 0.5
   sym_augment: 0.5
   early_stop_patience: 40
+  # Restartable: the run shares an 8 GiB card with the GPU queue and was
+  # once killed by a CUDA OOM. resume picks up the optimizer, EMA, LR
+  # schedule and history from the snapshot, so a crash costs at most
+  # snapshot_every epochs rather than the whole run.
+  resume: true
+  snapshot_every: 2
   val_fraction: 0.1
 ladder:
   out_dir: out/u2_2d/ladder_cap

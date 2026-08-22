@@ -1,0 +1,56 @@
+[
+  {
+    "lattice_size": 64,
+    "beta": 87.0402014570074,
+    "base_beta": 23.3695,
+    "model_beta": 21.764805522682014,
+    "q_squared_exact": 4.88168566192785,
+    "build_seconds": 2.953078269958496,
+    "n_traj": 4,
+    "t_therm": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "q_changes": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 8
+    },
+    "parity_flips": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 3
+    },
+    "topological_updates": false,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "tau_int_plaquette": {
+      "diffusion seed": 1.0,
+      "cold start": 1.0,
+      "hot start": 1.0
+    },
+    "interval_source": "diffusion seed",
+    "interval": 2.0,
+    "q_frozen": true,
+    "parity_frozen": true,
+    "regime": "HMC dead",
+    "speedup": NaN,
+    "speedup_is_bound": true,
+    "seed": Infinity,
+    "cold": Infinity,
+    "hot": Infinity
+  }
+]

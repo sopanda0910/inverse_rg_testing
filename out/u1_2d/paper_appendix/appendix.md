@@ -1007,6 +1007,33 @@ That is the bridge to Figure 39 and to the design of the tail: local
 rethermalization relaxes exactly those modes slowest, so this panel is a
 measurement of what the HMC tail still has to do rather than a defect report.
 
+**How far out the supporting measurement is resolved.** The direct
+pre/post decomposition behind that reading is
+`u1_2d/scripts/59_pre_post_retherm.py`, at β_f = 55.02, L = 32, 256
+configurations. Its repair factor (|relative deviation raw| / |after 10 sweeps|)
+is monotone in loop size — **64× / 14× / 3.9× / 1.6× / 0.99×** at W(1×1) /
+W(2×2) / W(4×4) / W(6×6) / W(8×8) — which is the low-pass character this panel's
+trend reflects. But the *raw* z on the same rows is **29.33 / 8.07 / 3.64 /
+2.04 / 1.17**, so only the first three entries rest on a deviation that is
+resolved at this ensemble size. In particular the endpoint that reads best as a
+punchline — "ten sweeps do nothing at all for the largest loop", factor 0.99× —
+sits on a raw z of 1.17 and is **not resolved**: quote the trend, not that
+number. At β_f = 218.58 every raw value *is* resolved (z = −256 to −34) but
+every post-rethermalization z is ≤ 0.41, so the repair factors there (up to
+~2.6 × 10⁵) are **lower bounds**, not measurements — the denominator is
+consistent with zero.
+
+The u2 study reached the same conclusion the hard way. A claim that ten sweeps
+make W(8×8) four times *worse*, and that this was the mechanism putting u1's
+residual in the infrared, was **retracted** on 2026-08-22 once its SEM was
+checked: both disputed values sat at |z| ≤ 1.3 and the sign of the effect flips
+with sweep count (`out/u2_2d/retherm_reconcile/RECONCILIATION.md`). Nothing in
+this figure depended on that claim, and the u1 measurement above is independent
+of it — but the general rule it produced applies here: a repair factor or an N\*
+built from a large-loop bias needs its SEM checked before it is quoted, because
+large loops have enormous per-configuration spread and a few hundred
+configurations do not resolve them.
+
 **Number caution.** `PAPER_OUTLINE.md` §5.2 and `NARRATIVE.md` quote
 1.09 → 1.44 for this growth. Those predate the τ_int-aware re-scoring of §25.7,
 which widened the error bars and so shrank every z. The direction of the claim
@@ -2117,3 +2144,32 @@ is merely having been handed the coarse configuration — here, all of it is
 learning. And **state the budget in the cell**: write "> 2000", never "never".
 Three entries in Table S6b read as failures at a 640-trajectory budget and
 converged when it was raised.
+
+### Figure 46 — `figures/46_observable_scan.png`
+
+**Observable agreement across the coupling range, in relative deviation (top)
+and in units of the standard error (bottom).** Fourteen couplings from
+β = 6.1 to 518.5, L = 32 lifted from L = 16, 128 configurations, τ_int-aware
+errors. Green ticks mark the four fixed training rungs; the hatched region is
+past β = 60, the ceiling of the 102 randomly sampled rungs.
+
+The training ceiling is a **step**, not a gradual degradation, and the bias
+changes SIGN across it: raw z at W(1×1) runs −0.6, +6.1, +9.0, +8.9, +8.7,
++21.7 inside coverage and −63, −138, −150, −162, −179, −198, −205 outside. This
+is the cleanest coverage figure in either study because u1's coverage is *dense*
+to β = 60 rather than a set of isolated rungs, so nothing has to be inferred
+from gaps between them.
+
+Panel (d) is the practitioner's answer: ten rethermalization sweeps return
+almost every coupling to |z| < 2, far past the ceiling included. What the
+coverage limit costs is the quality of the *raw* lift, not of the delivered
+configuration.
+
+Both statistics are plotted deliberately. In the u2 companion scan the two point
+in **opposite** directions across the coupling axis (Spearman −0.82 against
++0.80), because the theory's own per-configuration spread moves by orders of
+magnitude over that wider range; here they agree. The reversal is a property of
+the range rather than of either code, which is why the reporting protocol
+requires z alongside any relative deviation.
+
+Source: `u1_2d/scripts/62_observable_scan.py`.

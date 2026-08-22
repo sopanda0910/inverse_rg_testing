@@ -119,6 +119,11 @@ def main() -> int:
         ema_decay=float(train_cfg.get("ema_decay", 0.999)),
         early_stop_patience=int(train_cfg.get("early_stop_patience", 0)),
         resume=bool(train_cfg.get("resume", False)),
+        # Plumbed so a contended run can snapshot more often than the
+        # default 10 epochs. The capacity retrain was killed by a CUDA OOM
+        # at epoch 36 while sharing an 8 GiB card with three other stages,
+        # and lost every epoch back to the last snapshot at 29.
+        snapshot_every=int(train_cfg.get("snapshot_every", 10)),
         high_beta_sigma_bias=float(train_cfg.get("high_beta_sigma_bias", 0.0)),
         sym_augment=float(train_cfg.get("sym_augment", 0.0)),
         norm_type=str(train_cfg.get("norm_type", "channel")),

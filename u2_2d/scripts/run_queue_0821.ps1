@@ -80,18 +80,29 @@ Invoke-Stage "04_retherm_scan" @(
     "--sampler-steps", "200", "--sweeps", "0,2,5,10,20,40,80")
 
 # ---- 5a. Volume scan: does the seed's advantage survive L = 32 -> 64? -------
-# data_v2 already holds 40 L=32 ensembles, so no base generation is needed. Four
-# couplings, both rounds, matching the L=32 scan's protocol so the two are
-# directly comparable.
+# data_v2 holds 40 L=32 ensembles, so no base generation is needed.
+#
+# The four bases are chosen by MODEL BETA, not by fine beta, so the comparison
+# isolates volume from training coverage -- which the L=32 scan showed is what
+# actually governs seed quality. Each matches an L=32-scan point closely:
+#     L32   8.376 -> L64 beta_f  25.3, model 6.35   (vs 6.18  at L_f=32)
+#     L32  23.370 -> L64 beta_f  87.0, model 21.76  (vs 22.19 -- the KNOWN BAD
+#                                       point, mid-gap between rungs 14 and 26)
+#     L32  46.447 -> L64 beta_f 179.6, model 44.90  (vs 45.90)
+#     L32 105.423 -> L64 beta_f 415.6, model 103.90 (vs 103.73 -- the BEST
+#                                       point, 0.2% from the top training rung)
+# If the good/bad pattern reproduces at twice the volume, coverage rather than
+# volume is confirmed as the controlling variable. If it does not, volume is a
+# separate effect and the L=32 conclusion does not transfer.
 Invoke-Stage "05a_volume_plain" @(
     "-u", "u2_2d/scripts/28_crossover_scan.py", "--device", "cuda",
     "--data-dir", "out/u2_2d/data_v2", "--fine-size", "64",
-    "--betas", "23.7962,47.4445,105.244,199.229",
+    "--betas", "8.376,23.3695,46.4473,105.423",
     "--tag", "volume_L64_plain", "--out-dir", "out/u2_2d/crossover_L64")
 Invoke-Stage "05b_volume_winding" @(
     "-u", "u2_2d/scripts/28_crossover_scan.py", "--device", "cuda",
     "--data-dir", "out/u2_2d/data_v2", "--fine-size", "64",
-    "--betas", "23.7962,47.4445,105.244,199.229",
+    "--betas", "8.376,23.3695,46.4473,105.423",
     "--topological-updates", "--winding-charge-step", "1",
     "--winding-interval", "5",
     "--tag", "volume_L64_wind", "--out-dir", "out/u2_2d/crossover_L64")

@@ -1,0 +1,38 @@
+[
+  {
+    "coarse_beta": 23.6203,
+    "fine_beta": 88.04938659201459,
+    "model_beta": 22.017041582487145,
+    "q_squared_coarse": 0.8125,
+    "q_squared_fine": 0.8125,
+    "match_fraction": 1.0,
+    "n_configs": 64
+  },
+  {
+    "coarse_beta": 105.244,
+    "fine_beta": 414.8972549121468,
+    "model_beta": 103.72523541118305,
+    "q_squared_coarse": 0.21875,
+    "q_squared_fine": 0.21875,
+    "match_fraction": 1.0,
+    "n_configs": 64
+  },
+  {
+    "coarse_beta": 135.861,
+    "fine_beta": 537.3830838638594,
+    "model_beta": 134.3464793714462,
+    "q_squared_coarse": 0.03125,
+    "q_squared_fine": 0.03125,
+    "match_fraction": 1.0,
+    "n_configs": 64
+  },
+  {
+    "coarse_beta": 199.229,
+    "fine_beta": 790.8722584028068,
+    "model_beta": 197.71854361645643,
+    "q_squared_coarse": 0.046875,
+    "q_squared_fine": 0.046875,
+    "match_fraction": 1.0,
+    "n_configs": 64
+  }
+]

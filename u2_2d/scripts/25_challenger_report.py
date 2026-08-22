@@ -157,8 +157,36 @@ def criterion_c(rows):
     "Extended" is area >= 16 (4x4 and up), because that is where U(1) found the
     residual model error concentrates -- std(z) grew 1.09 -> 1.44 from W(4x4) to
     W(12x12) -- and the plaquette agrees to parts in 10^4 whatever the model does.
+
+    A `mean |z|` IS NOT READ AGAINST ZERO, AND ITS RESOLUTION IS NOT sqrt(N_rows)
+    (added 2026-08-22). Two corrections, both of which changed how the numbers
+    this criterion has already produced should be read:
+
+      * The null is `sqrt(2/pi) = 0.798`, because |z| is half-normal when the
+        model is exactly right and the errors are correct. So an extended-loop
+        score of 0.187 is four times "better than perfect" and is evidence about
+        the error bars rather than about the model, and the v2 move 0.187 ->
+        0.292 goes TOWARD the null, not away from it.
+      * The standard error of that mean is `sqrt(1 - 2/pi) / sqrt(N_eff)`, and
+        `N_eff` is the participation ratio of the observables' correlation
+        matrix, NOT the row count. It is 3.77 at L = 32 against 41 rows, because
+        2D Wilson loops of different sizes are near-deterministic functions of
+        one another. Reading 0.187 as 6.5 sigma from the null was wrong by 3.3x;
+        it is 2.0 sigma.
+
+    The declared 5% verdict is left exactly as it was -- moving a gate after the
+    numbers are known is the failure this script exists to prevent -- but every
+    row now carries the resolution beside it, so a "FAIL" that is a fifth of a
+    sigma cannot be quoted as a regression.
     """
+    import math
+
     import numpy as np
+
+    # Measured participation ratios, used only when a summary predates
+    # `validate.report.compare` recording its own (see
+    # `47_effective_observables.py`, which back-fills them).
+    N_EFF_FALLBACK = {32: 3.77, 64: 3.25}
 
     def mean_ext_z(summary):
         out = {}
@@ -177,7 +205,10 @@ def criterion_c(rows):
                 if area >= 16 and z is not None:
                     vals.append(abs(float(z)))
             if vals:
-                out[r["lattice_size"]] = float(np.mean(vals))
+                size = r["lattice_size"]
+                n_eff = (r.get("n_effective_extended") or r.get("n_effective")
+                         or N_EFF_FALLBACK.get(size) or len(vals))
+                out[size] = (float(np.mean(vals)), float(n_eff), len(vals))
         return out
 
     inc = mean_ext_z(load(OUT / "validation" / "summary.json"))
@@ -185,11 +216,19 @@ def criterion_c(rows):
     if not (inc and cha):
         rows.append(("(c) extended loops", None, None, "MISSING", ""))
         return
+    null = math.sqrt(2.0 / math.pi)
     for size in sorted(set(inc) & set(cha)):
-        i, c = inc[size], cha[size]
+        (i, n_eff, n_rows), (c, _, _) = inc[size], cha[size]
+        se = math.sqrt(1.0 - 2.0 / math.pi) / math.sqrt(max(n_eff, 1e-9))
+        # The two scores share the observable set and much of the noise, so this
+        # is a resolution scale rather than a paired test; it is quoted as such.
+        moved = abs(c - i) / max(se, 1e-30)
         rows.append((f"(c) ext loops L={size}", i, c,
                      "PASS" if c <= i * 1.05 else "FAIL",
-                     "mean |z| vs exact, area >= 16 (5% tolerance)"))
+                     f"mean |z| vs exact, area >= 16 (5% tolerance); null "
+                     f"{null:.3f}, N_eff {n_eff:.2f} of {n_rows} rows, "
+                     f"SE {se:.2f} -- the move is {moved:.1f} SE"
+                     + ("" if moved >= 1.0 else ", i.e. UNRESOLVED")))
 
 
 def criterion_d(rows):
@@ -262,6 +301,21 @@ def main() -> None:
              f"| {'-'*26} | {'-'*12}:| {'-'*12}:| --- | --- |"]
     for name, inc, cha, verdict, note in rows:
         lines.append(f"| {name:<26} | {fmt(inc):>12} | {fmt(cha):>12} | {verdict} | {note} |")
+
+    lines += ["",
+              "**Reading criterion (c).** `mean |z|` is not read against zero. "
+              "|z| is half-normal when the model is exactly right and the error "
+              "bars are correct, so the null is `sqrt(2/pi) = 0.798`; a score "
+              "far BELOW it is evidence of overestimated errors or of correlated "
+              "observables, not of a good model. The resolution of the mean is "
+              "`sqrt(1 - 2/pi) / sqrt(N_eff)` with `N_eff` the participation "
+              "ratio of the observables' correlation matrix. Over the whole "
+              "scorecard that is 3.73 at L = 32 against 41 rows; over the "
+              "area >= 16 subset this criterion actually averages it is "
+              "**1.45**, so those thirteen loops are worth about one and a "
+              "half independent observables and the standard error of their "
+              "mean |z| is ~0.50. A move of a tenth is a fifth of a standard "
+              "error and is not a regression.", ""]
 
     gates = [r[3] for r in rows if r[3] in ("PASS", "FAIL")]
     failed = gates.count("FAIL")

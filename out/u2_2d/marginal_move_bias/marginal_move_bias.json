@@ -1,0 +1,40 @@
+[
+  {
+    "lattice_size": 8,
+    "beta": 10.0,
+    "winding_su2_sweeps": 5,
+    "n_chains": 32,
+    "n_draws": 40,
+    "odd_measured": 0.47421875,
+    "odd_err": 0.01202949258043683,
+    "odd_exact": 0.4854151197299518,
+    "odd_ratio": 0.9769344437886883,
+    "odd_z": -0.9307433090037476,
+    "q_squared": 0.84296875,
+    "q_squared_err": 0.048063565057852295,
+    "q_squared_exact": 0.8602812956183759,
+    "q_squared_z": -0.36020102956443933,
+    "sector_changes": 776,
+    "parity_flips": 644,
+    "seconds": 43.99201059341431
+  },
+  {
+    "lattice_size": 8,
+    "beta": 10.0,
+    "winding_su2_sweeps": 25,
+    "n_chains": 32,
+    "n_draws": 40,
+    "odd_measured": 0.496875,
+    "odd_err": 0.01189266555908476,
+    "odd_exact": 0.4854151197299518,
+    "odd_ratio": 1.0236084122728266,
+    "odd_z": 0.9636090591393136,
+    "q_squared": 0.903125,
+    "q_squared_err": 0.03354302853089602,
+    "q_squared_exact": 0.8602812956183759,
+    "q_squared_z": 1.2772759723279419,
+    "sector_changes": 760,
+    "parity_flips": 643,
+    "seconds": 82.00527238845825
+  }
+]

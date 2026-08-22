@@ -1,0 +1,193 @@
+==========================================================================
+[u1 multi-lift] A: endpoint beta 52.9 IN COVERAGE, ladder retherm  21:56:29
+chain:
+  L=  8  beta=    1.3000   exact <Q^2> =  2.0592
+  L= 16  beta=    3.8690   exact <Q^2> =  2.0176
+  L= 32  beta=   13.6049   exact <Q^2> =  1.9830
+  L= 64  beta=   52.8551   exact <Q^2> =  1.9819
+
+==========================================================================
+1 LIFT(S): start L=32 beta=13.6049  ->  L=64 beta=52.855
+  start: HMC [19s]
+  start: z(plaq)=  +0.23   <Q^2>=2.3203 (exact 1.9830)
+    rung 1: L= 64 beta=   52.855  z =   +46.12 /  +11.80 /   +4.23   <Q^2>=2.3203
+  FINAL raw  z =   +46.12 /  +11.80 /   +4.23
+  FINAL +10 z =    -0.19 /   +0.42 /   -1.02
+  charge preserved through 1 lift(s): 100.0%
+
+==========================================================================
+2 LIFT(S): start L=16 beta=3.8690  ->  L=64 beta=52.855
+  start: HMC [7s]
+  start: z(plaq)=  -1.32   <Q^2>=2.1875 (exact 2.0176)
+    rung 1: L= 32 beta=   13.605  z =    +5.44 /   -0.12 /   -1.36   <Q^2>=2.1875
+    rung 2: L= 64 beta=   52.855  z =   +43.36 /  +10.34 /   +2.05   <Q^2>=2.1875
+  FINAL raw  z =   +43.36 /  +10.34 /   +2.05
+  FINAL +10 z =    +2.09 /   +0.84 /   +0.60
+  charge preserved through 2 lift(s): 100.0%
+
+==========================================================================
+3 LIFT(S): start L=8 beta=1.3000  ->  L=64 beta=52.855
+  start: HMC [6s]
+  start: z(plaq)=  +0.55   <Q^2>=2.3047 (exact 2.0592)
+    rung 1: L= 16 beta=    3.869  z =    -5.33 /   -1.75 /   -0.57   <Q^2>=2.3047
+    rung 2: L= 32 beta=   13.605  z =    +6.59 /   +1.68 /   +0.58   <Q^2>=2.1328
+    rung 3: L= 64 beta=   52.855  z =   +45.18 /  +12.22 /   +2.41   <Q^2>=2.1328
+  FINAL raw  z =   +45.18 /  +12.22 /   +2.41
+  FINAL +10 z =    +0.21 /   +0.47 /   +0.90
+  charge preserved through 3 lift(s): 33.6%
+
+==========================================================================
+COMPOUNDING at L=64, beta=52.855, intermediate retherm = 10
+  lifts  |z| raw W1x1  |z| raw W2x2  |z| post W1x1  ppm raw W1x1   Q kept
+      1         46.12         11.80           0.19         866.0   100.0%
+      2         43.36         10.34           2.09         840.2   100.0%
+      3         45.18         12.22           0.21         895.7    33.6%
+
+  NO COMPOUNDING within resolution: 3 lifts sits at 0.98x the 1-lift error.
+
+wrote out\u1_2d\multi_lift_incov\multi_lift_r10.json
+==========================================================================
+[u1 multi-lift] A0: same, PURE model composition  23:40:48
+chain:
+  L=  8  beta=    1.3000   exact <Q^2> =  2.0592
+  L= 16  beta=    3.8690   exact <Q^2> =  2.0176
+  L= 32  beta=   13.6049   exact <Q^2> =  1.9830
+  L= 64  beta=   52.8551   exact <Q^2> =  1.9819
+
+==========================================================================
+1 LIFT(S): start L=32 beta=13.6049  ->  L=64 beta=52.855
+  start: cached hmc_L32_beta13.6049_topo.pt
+  start: z(plaq)=  +0.23   <Q^2>=2.3203 (exact 1.9830)
+    rung 1: L= 64 beta=   52.855  z =   +46.12 /  +11.80 /   +4.23   <Q^2>=2.3203
+  FINAL raw  z =   +46.12 /  +11.80 /   +4.23
+  FINAL +10 z =    -0.19 /   +0.42 /   -1.02
+  charge preserved through 1 lift(s): 100.0%
+
+==========================================================================
+2 LIFT(S): start L=16 beta=3.8690  ->  L=64 beta=52.855
+  start: cached hmc_L16_beta3.8690_topo.pt
+  start: z(plaq)=  -1.32   <Q^2>=2.1875 (exact 2.0176)
+    rung 1: L= 32 beta=   13.605  z =    +5.44 /   -0.12 /   -1.36   <Q^2>=2.1875
+    rung 2: L= 64 beta=   52.855  z =   +42.94 /  +12.13 /   +1.22   <Q^2>=2.1875
+  FINAL raw  z =   +42.94 /  +12.13 /   +1.22
+  FINAL +10 z =    -0.73 /   -1.03 /   -2.23
+  charge preserved through 2 lift(s): 100.0%
+
+==========================================================================
+3 LIFT(S): start L=8 beta=1.3000  ->  L=64 beta=52.855
+  start: cached hmc_L8_beta1.3000_topo.pt
+  start: z(plaq)=  +0.55   <Q^2>=2.3047 (exact 2.0592)
+    rung 1: L= 16 beta=    3.869  z =    -5.33 /   -1.75 /   -0.57   <Q^2>=2.3047
+    rung 2: L= 32 beta=   13.605  z =    +2.41 /   -3.63 /   -1.65   <Q^2>=2.3047
+    rung 3: L= 64 beta=   52.855  z =   +44.02 /   +9.42 /   -1.41   <Q^2>=2.3047
+  FINAL raw  z =   +44.02 /   +9.42 /   -1.41
+  FINAL +10 z =    -0.99 /   -0.69 /   -0.76
+  charge preserved through 3 lift(s): 100.0%
+
+==========================================================================
+COMPOUNDING at L=64, beta=52.855, intermediate retherm = 0
+  lifts  |z| raw W1x1  |z| raw W2x2  |z| post W1x1  ppm raw W1x1   Q kept
+      1         46.12         11.80           0.19         866.0   100.0%
+      2         42.94         12.13           0.73         954.3   100.0%
+      3         44.02          9.42           0.99         914.3   100.0%
+
+  NO COMPOUNDING within resolution: 3 lifts sits at 0.95x the 1-lift error.
+
+wrote out\u1_2d\multi_lift_incov\multi_lift_r0.json
+==========================================================================
+[u1 multi-lift] B: endpoint beta 75.4, +26% PAST the training ceiling  01:11:18
+chain:
+  L=  8  beta=    1.7500   exact <Q^2> =  1.4723
+  L= 16  beta=    5.2387   exact <Q^2> =  1.3953
+  L= 32  beta=   19.2255   exact <Q^2> =  1.3864
+  L= 64  beta=   75.3578   exact <Q^2> =  1.3861
+
+==========================================================================
+1 LIFT(S): start L=32 beta=19.2255  ->  L=64 beta=75.358
+  start: HMC [18s]
+  start: z(plaq)=  +2.69   <Q^2>=1.7578 (exact 1.3864)
+    rung 1: L= 64 beta=   75.358  z =  -182.45 /  -92.84 /  -36.66   <Q^2>=1.7578
+  FINAL raw  z =  -182.45 /  -92.84 /  -36.66
+  FINAL +10 z =    -0.19 /   +0.34 /   -1.17
+  charge preserved through 1 lift(s): 100.0%
+
+==========================================================================
+2 LIFT(S): start L=16 beta=5.2387  ->  L=64 beta=75.358
+  start: HMC [6s]
+  start: z(plaq)=  -1.08   <Q^2>=1.5234 (exact 1.3953)
+    rung 1: L= 32 beta=   19.225  z =   +10.39 /   +0.59 /   -1.32   <Q^2>=1.5234
+    rung 2: L= 64 beta=   75.358  z =  -190.42 /  -92.31 /  -36.19   <Q^2>=1.5234
+  FINAL raw  z =  -190.42 /  -92.31 /  -36.19
+  FINAL +10 z =    -0.01 /   +0.27 /   +0.52
+  charge preserved through 2 lift(s): 100.0%
+
+==========================================================================
+3 LIFT(S): start L=8 beta=1.7500  ->  L=64 beta=75.358
+  start: HMC [4s]
+  start: z(plaq)=  +0.43   <Q^2>=1.6328 (exact 1.4723)
+    rung 1: L= 16 beta=    5.239  z =    -1.42 /   -0.48 /   -1.30   <Q^2>=1.6328
+    rung 2: L= 32 beta=   19.225  z =    +9.74 /   +3.84 /   +1.15   <Q^2>=1.5391
+    rung 3: L= 64 beta=   75.358  z =  -178.81 / -111.19 /  -42.22   <Q^2>=1.5391
+  FINAL raw  z =  -178.81 / -111.19 /  -42.22
+  FINAL +10 z =    +2.69 /   +1.51 /   +0.77
+  charge preserved through 3 lift(s): 81.2%
+
+==========================================================================
+COMPOUNDING at L=64, beta=75.358, intermediate retherm = 10
+  lifts  |z| raw W1x1  |z| raw W2x2  |z| post W1x1  ppm raw W1x1   Q kept
+      1        182.45         92.84           0.19       -4713.6   100.0%
+      2        190.42         92.31           0.01       -4796.8   100.0%
+      3        178.81        111.19           2.69       -4754.5    81.2%
+
+  NO COMPOUNDING within resolution: 3 lifts sits at 0.98x the 1-lift error.
+
+wrote out\u1_2d\multi_lift_ceiling\multi_lift_r10.json
+==========================================================================
+[u1 multi-lift] B0: same, PURE model composition  02:41:43
+chain:
+  L=  8  beta=    1.7500   exact <Q^2> =  1.4723
+  L= 16  beta=    5.2387   exact <Q^2> =  1.3953
+  L= 32  beta=   19.2255   exact <Q^2> =  1.3864
+  L= 64  beta=   75.3578   exact <Q^2> =  1.3861
+
+==========================================================================
+1 LIFT(S): start L=32 beta=19.2255  ->  L=64 beta=75.358
+  start: cached hmc_L32_beta19.2255_topo.pt
+  start: z(plaq)=  +2.69   <Q^2>=1.7578 (exact 1.3864)
+    rung 1: L= 64 beta=   75.358  z =  -182.45 /  -92.84 /  -36.66   <Q^2>=1.7578
+  FINAL raw  z =  -182.45 /  -92.84 /  -36.66
+  FINAL +10 z =    -0.19 /   +0.34 /   -1.17
+  charge preserved through 1 lift(s): 100.0%
+
+==========================================================================
+2 LIFT(S): start L=16 beta=5.2387  ->  L=64 beta=75.358
+  start: cached hmc_L16_beta5.2387_topo.pt
+  start: z(plaq)=  -1.08   <Q^2>=1.5234 (exact 1.3953)
+    rung 1: L= 32 beta=   19.225  z =   +10.39 /   +0.59 /   -1.32   <Q^2>=1.5234
+    rung 2: L= 64 beta=   75.358  z =  -178.78 /  -86.45 /  -34.83   <Q^2>=1.5234
+  FINAL raw  z =  -178.78 /  -86.45 /  -34.83
+  FINAL +10 z =    -0.72 /   -1.06 /   -2.18
+  charge preserved through 2 lift(s): 100.0%
+
+==========================================================================
+3 LIFT(S): start L=8 beta=1.7500  ->  L=64 beta=75.358
+  start: cached hmc_L8_beta1.7500_topo.pt
+  start: z(plaq)=  +0.43   <Q^2>=1.6328 (exact 1.4723)
+    rung 1: L= 16 beta=    5.239  z =    -1.42 /   -0.48 /   -1.30   <Q^2>=1.6328
+    rung 2: L= 32 beta=   19.225  z =    +8.40 /   +0.56 /   -0.58   <Q^2>=1.6328
+    rung 3: L= 64 beta=   75.358  z =  -182.29 /  -89.80 /  -31.63   <Q^2>=1.6328
+  FINAL raw  z =  -182.29 /  -89.80 /  -31.63
+  FINAL +10 z =    -0.95 /   -0.73 /   -0.96
+  charge preserved through 3 lift(s): 100.0%
+
+==========================================================================
+COMPOUNDING at L=64, beta=75.358, intermediate retherm = 0
+  lifts  |z| raw W1x1  |z| raw W2x2  |z| post W1x1  ppm raw W1x1   Q kept
+      1        182.45         92.84           0.19       -4713.6   100.0%
+      2        178.78         86.45           0.72       -4633.6   100.0%
+      3        182.29         89.80           0.95       -4631.6   100.0%
+
+  NO COMPOUNDING within resolution: 3 lifts sits at 1.00x the 1-lift error.
+
+wrote out\u1_2d\multi_lift_ceiling\multi_lift_r0.json
+[u1 multi-lift] all done 04:11:51

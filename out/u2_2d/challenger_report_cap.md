@@ -6,13 +6,22 @@ Challenger: `out/u2_2d/checkpoints/det_score_net_cap.pt` (hidden 96, depth 5, ba
 | criterion                  |    incumbent |   challenger | verdict | note |
 | -------------------------- | ------------:| ------------:| --- | --- |
 | (a) <Q^2> ladder base      |       0.9668 |       0.9822 | PASS | exact 1.0012, SEM 0.044; z -0.78 -> -0.43 |
-| (b) seed quality L32       |         --   |         --   | MISSING |  |
-| (b) seed quality L64       |         --   |         --   | MISSING |  |
-| (c) extended loops         |         --   |         --   | MISSING |  |
-| (d) density gap            |         --   |         --   | MISSING |  |
+|     <Q^2> top rung         |       1.1406 |       0.9375 | info | transported identity: subsample draw, NOT a model test |
+| (b) t_therm L32            |       0.0000 |       6.0000 | FAIL | tuned sweeps 5 -> 15 |
+| (b) t_therm L64            |       1.0000 |       5.0000 | FAIL | tuned sweeps 5 -> 10 |
+| (c) ext loops L=32         |       0.1682 |       0.6656 | FAIL | mean |z| vs exact, area >= 16 (5% tolerance); null 0.798, N_eff 1.45 of 13 rows, SE 0.50 -- the move is 1.0 SE, i.e. UNRESOLVED |
+| (c) ext loops L=64         |       1.0606 |       0.3190 | PASS | mean |z| vs exact, area >= 16 (5% tolerance); null 0.798, N_eff 1.27 of 13 rows, SE 0.54 -- the move is 1.4 SE |
+| (d) KL/site 8:3.5:14       |       1.1099 |       1.1358 | FAIL |  |
+| (d) KL/site 8:7:28         |       1.1172 |       1.1349 | FAIL |  |
+| (d) KL/site 16:28:105.651  |       1.1362 |       1.1367 | FAIL |  |
+| (d) KL/site 32:105.651:416.524 |       1.1467 |       1.1386 | PASS |  |
+| (d) density gap overall    |         --   |         --   | FAIL | 3 of 4 cases worse |
+
+**Reading criterion (c).** `mean |z|` is not read against zero. |z| is half-normal when the model is exactly right and the error bars are correct, so the null is `sqrt(2/pi) = 0.798`; a score far BELOW it is evidence of overestimated errors or of correlated observables, not of a good model. The resolution of the mean is `sqrt(1 - 2/pi) / sqrt(N_eff)` with `N_eff` the participation ratio of the observables' correlation matrix. Over the whole scorecard that is 3.73 at L = 32 against 41 rows; over the area >= 16 subset this criterion actually averages it is **1.45**, so those thirteen loops are worth about one and a half independent observables and the standard error of their mean |z| is ~0.50. A move of a tenth is a fifth of a standard error and is not a regression.
+
 
 ## Verdict
 
-**INCOMPLETE** -- 4 criterion/criteria not yet measured: (b) seed quality L32, (b) seed quality L64, (c) extended loops, (d) density gap. No verdict until all four are in; a missing guard is not a passed guard.
+**TRADE, NOT AN IMPROVEMENT** -- target met, 7 guard(s) regressed. Incumbent stays deployed unless the regressions are argued case by case.
 
 Promotion is a separate deliberate act: copy `det_score_net_cap.pt` over `det_score_net.pt` and re-run the downstream stages against `default.yaml`.

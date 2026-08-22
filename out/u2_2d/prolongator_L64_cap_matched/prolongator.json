@@ -1,0 +1,162 @@
+[
+  {
+    "arm": "ape",
+    "lattice_size": 64,
+    "beta": 416.524,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 16.200409173965454,
+    "tuned_sweeps": null,
+    "hmc_seconds": 599.003479719162,
+    "t_therm": {
+      "plaquette": 1.0,
+      "wilson_2x2": null,
+      "wilson_4x4": null,
+      "wilson_8x8": null
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": null,
+    "rel_err_initial": {
+      "plaquette": -9.546602072273024e-05,
+      "wilson_2x2": -0.01390877073742717,
+      "wilson_4x4": -0.17415487330996451,
+      "wilson_8x8": -0.6533742512727194
+    },
+    "rel_err_final": {
+      "plaquette": -4.425801782172762e-05,
+      "wilson_2x2": -0.0011327684177726434,
+      "wilson_4x4": -0.015116453750420353,
+      "wilson_8x8": -0.11633620638691647
+    },
+    "plaquette_pre_retherm": 0.9951004385948181,
+    "rel_err_pre_retherm": -9.546602072273024e-05,
+    "exact": {
+      "plaquette": 0.9951954459438838,
+      "wilson_2x2": 0.9809198431824809,
+      "wilson_4x4": 0.9258360348628291,
+      "wilson_8x8": 0.7347444606633602
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "smear",
+    "lattice_size": 64,
+    "beta": 416.524,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 29.52211284637451,
+    "tuned_sweeps": 15,
+    "hmc_seconds": 511.4079735279083,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 0.0,
+    "rel_err_initial": {
+      "plaquette": -2.969954482353272e-07,
+      "wilson_2x2": -1.6290093152502962e-05,
+      "wilson_4x4": -0.0001861293099826928,
+      "wilson_8x8": -0.0011518260658940358
+    },
+    "rel_err_final": {
+      "plaquette": -9.520425210521177e-06,
+      "wilson_2x2": 3.3974532269966317e-06,
+      "wilson_4x4": 1.795296465677125e-05,
+      "wilson_8x8": -0.0017318552229145252
+    },
+    "plaquette_pre_retherm": 0.9003751873970032,
+    "rel_err_pre_retherm": -0.0952780269778558,
+    "exact": {
+      "plaquette": 0.9951954459438838,
+      "wilson_2x2": 0.9809198431824809,
+      "wilson_4x4": 0.9258360348628291,
+      "wilson_8x8": 0.7347444606633602
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "diffusion_raw",
+    "lattice_size": 64,
+    "beta": 416.524,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 112.503671169281,
+    "tuned_sweeps": null,
+    "hmc_seconds": 375.03774213790894,
+    "t_therm": {
+      "plaquette": 32.0,
+      "wilson_2x2": 4.0,
+      "wilson_4x4": 0.0,
+      "wilson_8x8": 0.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 32.0,
+    "rel_err_initial": {
+      "plaquette": 8.38518280323596e-05,
+      "wilson_2x2": 6.306773268585034e-05,
+      "wilson_4x4": -0.00014286644292978433,
+      "wilson_8x8": -0.003133822200764609
+    },
+    "rel_err_final": {
+      "plaquette": -2.2135522819570624e-06,
+      "wilson_2x2": -2.564775408596882e-05,
+      "wilson_4x4": 8.735381388747857e-05,
+      "wilson_8x8": 0.0011752671366639727
+    },
+    "plaquette_pre_retherm": 0.9952788949012756,
+    "rel_err_pre_retherm": 8.38518280323596e-05,
+    "exact": {
+      "plaquette": 0.9951954459438838,
+      "wilson_2x2": 0.9809198431824809,
+      "wilson_4x4": 0.9258360348628291,
+      "wilson_8x8": 0.7347444606633602
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  },
+  {
+    "arm": "diffusion_tuned",
+    "lattice_size": 64,
+    "beta": 416.524,
+    "n_chains": 64,
+    "n_traj": 400,
+    "build_seconds": 15.425783395767212,
+    "tuned_sweeps": 10,
+    "hmc_seconds": 524.5904438495636,
+    "t_therm": {
+      "plaquette": 0.0,
+      "wilson_2x2": 5.0,
+      "wilson_4x4": 3.0,
+      "wilson_8x8": 3.0
+    },
+    "t_therm_budget": 400,
+    "t_therm_slowest": 5.0,
+    "rel_err_initial": {
+      "plaquette": -3.4114003030331465e-06,
+      "wilson_2x2": -8.574338176907098e-05,
+      "wilson_4x4": -0.0006608620207686259,
+      "wilson_8x8": -0.00524934672618843
+    },
+    "rel_err_final": {
+      "plaquette": -1.341343127901845e-05,
+      "wilson_2x2": -2.4310945381187982e-05,
+      "wilson_4x4": -6.2536395275942026e-06,
+      "wilson_8x8": -0.0011951457260127687
+    },
+    "plaquette_pre_retherm": 0.9952788949012756,
+    "rel_err_pre_retherm": 8.38518280323596e-05,
+    "exact": {
+      "plaquette": 0.9951954459438838,
+      "wilson_2x2": 0.9809198431824809,
+      "wilson_4x4": 0.9258360348628291,
+      "wilson_8x8": 0.7347444606633602
+    },
+    "q_squared_initial": 0.9375,
+    "q_squared_final": 0.9375
+  }
+]

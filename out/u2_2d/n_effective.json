@@ -1,0 +1,18 @@
+[
+  {
+    "ensemble": "out\\u2_2d\\ladder\\ladder_L32_beta105.651.pt",
+    "lattice_size": 32,
+    "beta": 105.651,
+    "n_configs": 1024,
+    "n_effective": 3.734397390538206,
+    "n_effective_extended": 1.4515016391197084
+  },
+  {
+    "ensemble": "out\\u2_2d\\ladder\\ladder_L64_beta416.524.pt",
+    "lattice_size": 64,
+    "beta": 416.524,
+    "n_configs": 1024,
+    "n_effective": 3.2422672520640456,
+    "n_effective_extended": 1.267992595671038
+  }
+]

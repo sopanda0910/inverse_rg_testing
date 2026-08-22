@@ -163,6 +163,158 @@ identity and the model is not asked for it.
   during reverse sampling, σ_freeze ≈ 0.304 / 0.312 / 0.307 flat across a 16×
   range in volume.
 
+### 3.5 Climbing more than one rung (NEW, measured 2026-08-22)
+
+The ladder is a multi-lift construction and the paper should say what the rung
+count costs, because until now every controlled measurement in BOTH studies used
+a single lift from an HMC coarse ensemble. `60_multi_lift_compounding.py` (u1)
+and `45_multi_lift_compounding.py` (u2) fix the ENDPOINT and vary the number of
+lifts, so the arms differ only in how many times the model was applied:
+
+    3 lifts   L=8  ->  L=16  ->  L=32  ->  L=64
+    2 lifts            L=16  ->  L=32  ->  L=64
+    1 lift                      L=32  ->  L=64
+
+Eight cells: two theories x two endpoints (in coverage, past the training
+ceiling) x rethermalization between rungs on/off. Every arm's start is generated
+by HMC at exactly the chain's coupling, with topological updates on -- reading
+the nearest ensemble off disk, or starting from a sector-frozen configuration,
+both confound the comparison and both were caught doing so.
+
+Three results, and the third is the one that changes a sentence elsewhere in the
+paper.
+
+* **The rung count is free.** Three lifts land at 0.94-1.02x the one-lift error
+  with the ladder's rethermalization, 0.84-1.00x without. No trend in any cell.
+* **The error is injected by the FINAL lift.** u2's 3-lift trace is z = +15.80
+  at L = 16 (model beta 4.4), +0.91 at L = 32 (15.8), -157.44 at L = 64 (61.7).
+  The intermediate rungs sit inside training coverage; the endpoint does not.
+  **So laddering does not extend the COUPLING reach** -- every lift multiplies
+  beta by about four, so the final lift lands at the same model beta whatever
+  path reached it, and that rung's coverage binds. The ladder buys VOLUME at
+  fixed coupling coverage, which is what it was for. State this as a negative
+  result; it forecloses an obvious reader question.
+* **The lift transports topology exactly under composition, and the tail does
+  not.** With no rethermalization between rungs, 100% of configurations keep
+  their starting charge at 1, 2 and 3 lifts in all four chains -- extending
+  `36_transport_check.py` from one lift to three. Switch the ladder's own ten
+  sweeps back on and the 3-lift arm loses charge wherever an intermediate rung
+  is weakly coupled: u1 keeps 33.6% (rethermalizing at L = 16, beta = 3.87) and
+  81.2% (beta = 5.24); u2, whose intermediate rungs are far stiffer, keeps 98.4%
+  and 100%.
+
+  This is re-sampling, not corruption, and the direction proves it: `<Q^2>` moves
+  TOWARD the exact value (u1 ceiling chain 1.633 -> 1.539 against exact 1.386),
+  because a rung weak enough for local moves to change Q is a rung where they
+  sample Q correctly. **The framing sentence must therefore be stated as: the
+  ladder re-samples topology at every rung where that is still valid, and
+  transports it unchanged once the coupling is stiff enough that it is not.**
+  "Drawn at the base and carried unchanged to the top" is exactly true only with
+  intermediate rethermalization off.
+
+### 3.6 What repairs the raw lift: sweeps, not trajectories (NEW 2026-08-22)
+
+A practical point that changes how the tail should be described, and it is a
+METHOD statement because both studies give the same answer.
+`61_sweeps_vs_trajectories.py` (u1) and `44_sweeps_vs_trajectories.py` (u2) take
+one lift, clone the configurations, and spend the same budget two ways --
+heatbath + overrelaxation sweeps against HMC trajectories -- with costs matched
+in LINK TOUCHES (a retherm sweep with two overrelaxation passes touches every
+link 3 times; a trajectory touches it `n_steps` times).
+
+| study | coupling | sweeps to \|z\| <= 2 | trajectories | ratio |
+|---|---|---|---|---|
+| u1 | beta_f = 55.02 | **6 touches** | 380 | 63x |
+| u1 | beta_f = 98.47 | **12 touches** | never in 1500 | >125x |
+| u1 | beta_f = 218.58 | **24 touches** | never in 2220 | >92x |
+| u2 | model beta 43.9 | **6 touches** | never in 4600 | >767x |
+| u2 | model beta 134 (+29% past coverage) | **6 touches** | never in 2560 | >427x |
+| u2 | model beta 327 (+214% past coverage) | **6 touches** | never in 2560 | >427x |
+
+Cold-start trajectories never converge in any cell of either study. Two
+consequences worth stating in the paper:
+
+* **The repair for a raw lift is cheap exact local sweeps, not more HMC** --
+  including at couplings far past the training ceiling, where the raw lift is
+  150-250 sigma out and two sweeps still fix it.
+* **Any `t_therm` quoted in trajectories understates the seed by two orders of
+  magnitude** as a practical cost. That does not invalidate the t_therm tables,
+  which compare like with like against classical arms, but the paper should say
+  which currency it is using and why.
+
+This also settles what "the seed does not thermalize past the top training rung"
+means: it is a statement about the MOVE, not about the model. The lift's local
+error is repairable at any coupling tested; what is NOT repairable by local
+sweeps is topology, which is why Q is transported rather than generated.
+
+- `[EXISTS] Fig 30` — `fig30_multi_lift.png` (`46_multi_lift_figure.py`), three
+  panels: no compounding, error injected by the final lift, and the
+  charge-preservation bar chart across all eight cells. Reads both studies'
+  output; it is the natural place to show u1 and u2 side by side.
+
+A caveat that WAS carried here is now discharged. Post-rethermalization
+endpoint |z| appeared to creep with lift count (u2 in-coverage 0.63 / 0.83 /
+1.86; u1 ceiling 0.19 / 0.01 / 2.69), monotone in three of four chains. At 4x
+the statistics it went the diagnostic way: u2 reads 0.08 / 0.71 / 0.82 and u1
+0.15 / 0.32 / 0.63 at n = 256. Since `z ~ sqrt(N)` a real bias would have
+DOUBLED and it fell by half, so "no compounding" holds for the DELIVERED
+product, not only for the raw lift. Charge preservation reproduces at the higher
+statistics (u2 98.4 -> 97.7%, u1 81.2 -> 82.0%), so that effect is real.
+
+### 3.7 The reverse-diffusion step count, and why 200 is justified (NEW 2026-08-22)
+
+Both studies fix the sampler at 200 reverse-diffusion steps and neither had
+measured what that buys. u2's dial (`14_sampler_steps.py`) found 25 steps was
+~3x cheaper at ~2.7x the extended-loop error. u1's (`63_sampler_steps.py`) at
+first appeared to find far more -- a flat post-rethermalization score from 18
+steps to 200, i.e. a free factor of 10-14.
+
+**That was wrong, and the way it was wrong is the useful part.** The scan called
+`generate_fine_from_coarse` with the function's bare defaults, and those are not
+the deployed sampler: `v3_scale.yaml` runs `physics_blend_coef: 1.0`,
+`physics_blend_beta_min: 5.0`, and `03_run_ladder.py` rebuilds the noise
+schedule with `sigma_min_beta_coef: 0.1` before sampling, while the function
+defaults blend off. The blend and the step count interact, so an unblended scan
+cannot see the cost of cutting steps. **A measurement of a tunable is only about
+the deployed system if it reads the deployed configuration**; the script now
+takes `--config` and reads every knob from it.
+
+Re-run with the deployed knobs, worst-loop |z| against the closed form:
+
+| steps | raw, beta_f = 55.02 | raw, 218.58 | post, 55.02 | post, 218.58 | cost |
+|---|---|---|---|---|---|
+| 12 | 32.9 | 36.9 | 0.50 | 0.58 | 17x cheaper |
+| 18 | 16.0 | 19.7 | 0.44 | 0.52 | 11x cheaper |
+| 25 | 11.4 | 15.5 | 0.44 | 0.51 | 8x cheaper |
+| 100 | 3.4 | 17.4 | 0.44 | 0.50 | 3x cheaper |
+| **200** | **1.0** | **4.3** | 0.43 | 0.50 | deployed |
+
+**The two products want different settings, and that is the finding.** The post
+column is flat from 12 steps up, so the DELIVERED ensemble needs only 18 steps.
+The raw column is still falling at 100, so the SEED needs 200 -- and the seed is
+what every seed-quality claim in section 4 is measured on (`t_therm`, `N*`, the
+prolongator ablation). **`v3_scale.yaml` stays at 200 and the "factor of 10 on
+the table" is withdrawn.**
+
+Verified end to end rather than argued: `u1_2d/configs/v3_scale_s18.yaml` runs
+the whole deployed ladder at 18 steps into `out/u1_2d/validation_s18/`. The
+delivered ensemble is indistinguishable from the record (max |z| 2.07 -> 1.42,
+1.74 -> 2.18, 1.28 -> 1.64 across the three rungs) while the raw lift degrades
+3-4x at every rung (12.3 -> 53.1 at the top). Sixteen rethermalization sweeps
+hide the difference in the ensemble, which is exactly why the post column alone
+must not set the deployed value.
+
+Two things worth a sentence in the paper:
+
+* **A cheap sampler IS available for a consumer that only wants the
+  rethermalized ensemble** -- 11x, at both couplings. It is not available for
+  anyone using the output as an HMC seed. Whichever a run does, it should say so.
+* **At beta_f = 218.58 the raw lift never really converges in step count**
+  (19.7 / 15.5 / 26.0 / 28.9 / 17.4 / 4.3 at 18-200, non-monotone and large).
+  That coupling is 3.6x past u1's dense training ceiling of beta = 60, so this is
+  the coverage limit of section 3.5 showing up in a different measurement, not a
+  sampler effect. Consistent with Fig 46.
+
 ---
 
 ## 4. The result: seed quality
@@ -433,9 +585,295 @@ never quote a saturated ESS; report KL where an exact free energy exists;
 charge the generative arm its entry cost; report raw pre-enforcement topology;
 say which mode the correctness claim attaches to.
 
+**Six statistical items added 2026-08-22.** Each was found by an error made in
+one of the two studies and then checked for in the other, so they are stated as
+protocol rather than as anecdote. `docs/PARITY_U1_U2.md` §5 holds the full
+record; the paper should carry them compressed.
+
+0. **A note on how these were found.** Each is a correction to a claim this
+   project had already made, and two of them are corrections to *earlier
+   versions of this list* -- item 3 was itself wrong by a factor of 3.3 until
+   the observable correlations were measured rather than assumed. The general
+   lesson is the cheap one: before quoting any statistic, compute what value it
+   would take if nothing were wrong.
+
+1. **Never quote a bias without its standard error.** A u2 finding --
+   rethermalization making W(8x8) "four times worse" -- was retracted when both
+   disputed numbers turned out to sit at z = 0.31 and z = 1.30 against a SEM of
+   1219 ppm. Large Wilson loops have enormous per-configuration spread and are
+   frequently unresolved at the ensemble sizes in use.
+2. **`N* = (sigma/bias)^2` squares the bias**, so it is unbounded wherever the
+   bias is unresolved. Quote N* only at scales that pass item 1.
+3. **`mean |z|` has a null value of sqrt(2/pi) = 0.798**, not zero, because |z|
+   is half-normal for a correct model with correct errors -- **and its standard
+   error must use the EFFECTIVE number of observables.** Measured: the 41
+   observables scored at L = 32 have a correlation matrix with top eigenvalue
+   18.6 and mean within-family |correlation| 0.62 (2D Wilson loops of different
+   sizes are near-deterministic functions of one another), giving a
+   participation-ratio `N_eff` of **3.77**, so `SE(mean |z|) = 0.31`, not 0.09.
+   Using the raw count overstated three claims in this project by 3.3x: a
+   validation 0.484 is 1.0 sigma from null and not 3.3; a capacity 0.187 is 2.0
+   and not 6.5; and a sector-ablation null excludes only effects above 0.88, not
+   0.27. Quote `N_eff` beside every `mean |z|`.
+4. **A relative deviation is not comparable across beta.** The theory's own
+   spread falls by orders of magnitude as beta rises, so an unnormalized ratio
+   drifts downward whether or not the model improves: Spearman -0.82 against
+   model beta in u2's fig29, which REVERSES to +0.80 in z.
+5. **A single `t_therm` is not interpolatable to a neighbouring coupling.**
+   Measured: 59 / 51 / 6 / 50 records at adjacent couplings, reproduced across
+   two independent rounds and two independent implementations. Report
+   correlations across a scan; never name an example point.
+6. **State the resolution of every null result** -- computed at `N_eff`, per
+   item 3. u2's sector-distribution ablation agrees to 0.012 and 0.096 in
+   mean |z|; at `N_eff = 3.77` the SE of that difference is 0.44, so it excludes
+   nothing smaller than **0.88**. The claim is a weak bound, not a demonstration
+   of zero, and the strong form of the transfer argument should rest on u1's
+   `sector_augment` construction instead (section 8.6).
+
 ---
 
-## 8. Related work
+## 8. Carrying the method to a non-abelian group: 2D U(2)
+
+**Status: publishable as written. Added 2026-08-21.** Everything below is
+measured and every script is tracked; the two open items are named in 8.6 and
+neither is load-bearing for the section's claim.
+
+**Why this section exists.** Sections 1-7 establish the prolongator result on a
+theory that is *abelian* and *exactly solvable*, and both properties do real
+work: the abelian telescope makes topology transport an identity, and the
+character expansion supplies the reference every z-score is computed against. A
+referee is entitled to ask which of the two the method actually needs. 2D U(2)
+separates them. It is genuinely non-abelian, it is still exactly solvable, and --
+the reason it is the right next step rather than SU(2) -- its topology lives
+entirely in the determinant, which is an honest compact U(1) field. So the U(1)
+machinery is *reused* rather than rewritten, and what changes is the physics.
+
+### 8.1 What carries over unchanged, and why
+
+Links use the NTHMC-compatible split representation `U = e^{i phi} q`,
+`[..., 5] = (phi, q0, q1, q2, q3)`. Three facts carry the section:
+
+* `psi = wrap(2 phi) = arg det U` is a compact U(1) gauge field and **Q is a
+  functional of `psi` alone**. Because `det` is a homomorphism, the plaquette
+  determinant phase is the plain SUM of link phases, so the abelian telescope of
+  section 3.1 survives *verbatim*: the coarse determinant plaquette is the
+  wrapped sum of its four fine children, exactly, non-abelian group
+  notwithstanding. **Sector transport is therefore still an identity.**
+* One inverse-RG step factorizes as `p(psi, q) = p(psi) p(q | psi)`. The model
+  generates `psi` only. The SU(2) sector needs no model at all: at frozen `phi`
+  the local weight is exactly `exp(beta k . q)`, so a conditional heatbath is an
+  EXACT sampler for `p(q | psi)` and leaves `psi` and `Q` bit-for-bit unchanged.
+* **The joint does not factorize** -- `(1/2) ReTr P = cos(omega_p) cos(phi_p)` is
+  a product. Generating the sectors independently is wrong at
+  `O(phi^2 omega^2)`. Two consequences, both handled: SU(2) is generated
+  conditionally, and `psi`'s marginal is NOT Wilson at `beta/4` but carries the
+  exact SU(2)-integrated weight `w_det(alpha) = 2 I_1(z)/z`,
+  `z = beta cos(alpha/2)`. Anything analytic must use the minimum-KL projection
+  `matched_u1_beta`, which differs from `beta/4` by 23% at `beta = 4`.
+
+- `[NEW] Fig 26` -- **transport exactness**, `36_transport_check.py`. Fraction of
+  configurations whose fine `Q` equals their coarse `Q`, against coupling, at
+  both `L_c = 16 -> 32` and `L_c = 32 -> 64`. It is 100% everywhere, config by
+  config -- not `<Q^2>` agreeing on average. This is the identity the whole
+  section rests on and it had never been tested on the *generative* path, only
+  on the blocking map in `09_verify_identities.py`. Small figure; a table would
+  also do.
+
+### 8.2 The U(2)-specific physics: two freezing mechanisms, not one
+
+This is the section's original contribution and it has no U(1) analogue.
+`U(2) = (U(1) x SU(2)) / Z_2`, so `Q` even <=> the ordered product of SU(2)
+plaquettes is `+1`, and `Q` odd <=> it is `-1`. The two winding moves are
+governed by different parameters, and **only one is protected by the ladder**:
+
+* **Even `dQ`** is a central U(1) instanton, cost `2 pi^2 beta / V`, governed by
+  `beta / V` -- which the matched ladder holds nearly constant (0.219 -> 0.202 ->
+  0.198 -> 0.197 across `L = 8..64`). Even-charge mobility is a ladder invariant
+  and never degrades.
+* **Odd `dQ`** must cross the `Z_2` monodromy. No fixed shift field does it
+  cheaply: halving the instanton leaves a spurious `-1` on one plaquette at cost
+  `2 beta` (`dS = 37` at `beta = 20, L = 8`); the `U(1)_T` construction costs
+  `O(beta L)`. Gauge fixing does not help.
+
+The fix is to change the *acceptance*, not the proposal: propose the winding-1
+shift on `psi`, accept on the EXACT SU(2)-integrated marginal, then resample
+SU(2) from its exact conditional -- which is where the flipped plaquette is
+absorbed for free. Head-to-head at matched protocol (L = 16, hot start, 256
+chains, 2000 trajectories, same script and seed, only `--charge-step` differing):
+
+| beta | joint flips | marginal flips | joint tau(Q^2) | marginal tau(Q^2) |
+|---|---|---|---|---|
+| 14 | 4919 | 72522 | 0.55 | 2.73 |
+| 21 | 13 | 67298 | 0.53 | 2.37 |
+| 28 | 0 | 61403 | 0.55 | 1.98 |
+
+Odd fraction is correct at every point (z = -0.50 / +0.41 / -1.65 against exact
+0.5000 / 0.4989 / 0.4928), and the move is separately verified unbiased at its
+deployed setting (`34_marginal_move_bias.py`: odd-weight z = +0.26 and +1.46 at
+10x the statistics of the first pass).
+
+- `[EXISTS] Fig 9` -- `fig09_parity_mobility.png`, the two-move comparison.
+- `[EXISTS] Fig 10` -- `fig10_winding_economics.png`, the cost of each move.
+
+### 8.3 Two standard diagnostics report HEALTHY on a parity-frozen chain
+
+The most transferable warning in the section, and it generalizes to any theory
+with a discrete topological obstruction:
+
+* **Sector-change counts.** Even moves keep firing while the odd/even balance is
+  stuck, so the chain "changes sector" thousands of times while `P(Q)` is 20%
+  wrong. Do not conclude a coupling is ergodic from sector-change counts.
+* **`tau_int(Q^2)`.** The *broken* sampler looks 4x better -- 0.55 against the
+  marginal move's 1.98-2.73 -- because the joint move shuffles `Q` by `+-2`
+  quickly *inside one parity class* while never crossing the monodromy. The
+  marginal move's larger value is the honest cost of sampling the parity degree
+  of freedom too.
+
+Neither is an ergodicity test. **Count parity flips.**
+
+- `[EXISTS] Fig 19` -- `fig19_freezing.png`, `Q` traces in the frozen regime.
+
+### 8.4 The result: a generated configuration as an HMC seed
+
+`L = 64`, `beta = 416.524`, 64 chains, 400 trajectories per arm, eight arms
+(`08_hmc_seed_benchmark.py`). The classical baseline is the honest one -- HMC
+plus the *marginal* odd move -- not plain HMC.
+
+| arm | plaq err t=0 | plaq err final | `<Q^2>` | P(Q) covered | odd sectors |
+|---|---|---|---|---|---|
+| diffusion seed | **5.33e-06** | 6.29e-06 | 0.938 | 0.991 | **2** |
+| cold start | 4.83e-03 | 4.65e-05 | **0.000** | 0.399 | 0 |
+| cold + even winding | 4.83e-03 | 5.94e-05 | 0.870 | 0.507 | **0** |
+| diffusion + even winding | 5.33e-06 | -5.93e-06 | 0.984 | 1.000 | 4 |
+| cold + odd winding | 4.83e-03 | 4.22e-05 | 0.985 | 1.000 | 4 |
+| hot start | -1.00e+00 | -6.25e-02 | **91.5** | 1.000 | 30 |
+
+Exact `<Q^2> = 1.001`. Three things to say, in this order:
+
+1. **Plain HMC is not slow here, it is stationary.** One sector, `<Q^2> = 0.000`,
+   0.399 of exact `P(Q)`, after 400 trajectories.
+2. **The cheap classical move does not fix it.** Adding even winding raises
+   `<Q^2>` to 0.870 but the chain still occupies **zero odd sectors**. That is
+   8.2 made visible: the accessible move cannot change parity.
+3. **The seed arrives with odd sectors it never had to manufacture.** 0.991
+   coverage and 2 odd sectors *before any winding move at all*, inherited by
+   transport from a base at `beta = 3.5` where HMC is fully ergodic. Its
+   plaquette starts three orders of magnitude closer to exact than a cold start
+   and does not move; the cold arms plateau at ~4.7e-05, still ~8x further from
+   exact than the seed was at `t = 0`.
+
+Read coverage WITH `<Q^2>`: the hot arm "covers" 1.000 while carrying
+`<Q^2> = 91.5`.
+
+- `[EXISTS] Fig 6` -- `fig06_seed_quality.png`, relative error vs trajectory, all
+  arms. **Section lead figure.**
+- `[EXISTS] Fig 7` -- `fig07_topological_reach.png`, distinct sectors occupied and
+  `<Q^2>` vs trajectory, all arms. The strongest single panel in the section.
+
+### 8.5 Cost, stated as a cost claim rather than an impossibility one
+
+An earlier version of this work claimed the classical arm *could not* reach odd
+charge. That was false -- it was a property of the retired joint proposal, not of
+the theory. What survives is better, because it is falsifiable and still
+decisive:
+
+* `cold + odd winding` reaches the same endpoint as the seed and takes
+  **1025 s** to do it, against **334 s** for `diffusion + even winding`. The
+  classical route must *manufacture* the sectors the seed *arrives with*, using
+  the expensive move, at ~3x the cost.
+* The ladder itself is not a speed-up at the accuracy setting of record: 200
+  reverse-diffusion steps make the top rung 3.87x slower than HMC + winding per
+  independent configuration. At 25 steps it is **1.38x faster** at ~2.7x the
+  extended-loop error, and below 18 steps the lift collapses. The ~90 s fixed
+  overhead per ladder pass (30 SU(2) + 10 retherm sweeps) is the next knob, not
+  the sampler.
+
+- `[EXISTS] Fig 13` -- `fig13_cost.png`, seconds per independent configuration.
+- `[EXISTS] Fig 14` -- `fig14_sampler_steps.png` (appendix), the accuracy/cost dial.
+
+### 8.6 What does not carry, stated rather than papered over
+
+* **Seed quality tracks distance to training coverage, not beta.** Across 15
+  couplings at two volumes the seed is excellent within ~10% of a training rung
+  in model beta, degraded at 16-30%, and *fails entirely* past the top rung
+  (model beta 104). **Two of those couplings are IN-SAMPLE** -- at
+  `beta_f = 415.61` both the coarse input and the fine target are training rungs
+  at the same volumes, 0.2% off in beta -- and must be marked as such in any
+  figure and excluded from any correlation. The claim does not need them: the
+  seed thermalizes where *both* classical arms never do at `beta_f = 58.03,
+  87.04, 127.55, 183.59, 264.24`, all out-of-sample.
+* **Volume degrades the seed at fixed coverage.** At model beta ~45 and the same
+  gap, `t_therm` is 6 at `L = 32` and `inf` at `L = 64`. The four L = 64 bases
+  were chosen by MODEL BETA precisely so each pairs with an L = 32 scan point and
+  differs in volume and almost nothing else, which makes the paired comparison
+  legitimate. `[EXISTS] Fig 27` -- `fig27_volume_scan.png`, `38_volume_figure.py`.
+* **The high-beta training rungs install their topology rather than sampling
+  it** (`seed_exact_sectors`, on every rung above model beta 12.9). This is sound
+  *here* -- Q is transported and the learned object is local, so what the data
+  must be right about is conditional local structure at fixed sector, which
+  heatbath equilibrates whether or not the chain tunnels. But note precisely what
+  the closed form is used for: it sets the sector FREQUENCIES of the training
+  data, and those are overridden at deployment by transport. What the training
+  data must supply is sector COVERAGE, which needs no closed form. The
+  exactly-solvable dependency therefore sits in the *training-data recipe* and in
+  the *scoring*, not in the method. **RUN 2026-08-22, and the answer is that it
+  does not move.** `39_sector_distribution_data.py` rebuilt the training set with
+  the installed charges drawn from UNIFORM over the same support instead of the
+  closed form -- 106 ensembles, `<Q^2>` differing by a median factor of **5.6**
+  (range 3.2-88) -- and trained an identical second network. Observable agreement
+  after the ladder differs by 0.012 (L = 32) and 0.096 (L = 64) in mean |z|.
+  **State the resolution with it:** with 41 observables the SE of that difference
+  is 0.133, so the test excludes no effect smaller than **0.27**. It is a bound,
+  not a demonstration of zero, and one diagnostic runs the other way (the
+  prolongator's `t_therm` favours the exact arm 0 vs 8 and 2 vs 5 -- single
+  t_therm values, which §7.3 item 5 says not to lean on).
+* **And u1 makes the stronger version of that point by construction.** u1's
+  `sector_augment` builds charged-sector coverage by applying FIXED instanton
+  shifts of +-1, +-2 to a random half of the configurations at a rung. It never
+  draws from P(Q) and never consults a closed form, and it is active on all four
+  high-beta anchors of the deployed config -- so every u1 result of record was
+  produced with sector coverage built without an exact P(Q). Together: u2 shows a
+  WRONG sector distribution costs nothing measurable, and u1 shows NO sector
+  distribution is needed at all. What the data must supply is a way to CHANGE the
+  charge, not a way to WEIGHT it, and a topological shift is available in any
+  theory with a topological charge. This is the transfer argument for 4D SU(3),
+  and it no longer rests on solvability.
+* **The density gap is the same as u1's and does not shrink here.** ~1.14
+  nats/site, flat to 3% across a 30x range in beta, drifting slightly upward.
+  Section 5's dissociation argument carries over unchanged.
+* **The exact P(Q) is a training-data convenience, not a requirement of the
+  method** -- tested directly rather than argued. `39_sector_distribution_data.py`
+  builds two training sets from the same source ensembles through the same code
+  path, drawing the installed charges from the closed form in one arm and from
+  UNIFORM over the same support in the other (median `<Q^2>` ratio 5.6x, so the
+  arms genuinely differ). Two identical networks are trained on them and scored
+  by `40_sector_experiment_report.py`. Because the fine charge is imposed from
+  the coarse ensemble at deployment and transport is exact, the training data
+  should only need to COVER the sectors, not weight them correctly -- and
+  coverage needs no closed form. **This is the experiment that decides whether
+  the construction can be claimed for 4D SU(3).** Result goes here.
+
+- `[EXISTS] Fig 21` -- `fig21_seed_quality.png`, `t_therm` vs beta, six arms.
+  **Requires an edit before use: the two in-sample couplings must be marked.**
+- `[EXISTS] Fig 24` -- `fig24_kl_per_site.png` (appendix), the flat density gap.
+
+### 8.7 What the section claims
+
+Not "the method is faster in 2D U(2)". The claim is:
+
+> The prolongator construction transfers to a non-abelian group without
+> modification, because what it needs is a blocking map that transports topology
+> exactly -- which the determinant supplies. In transferring, it exposes a
+> freezing mechanism with no abelian analogue, defeats the two diagnostics
+> normally used to detect freezing, and delivers starting configurations
+> carrying a topological charge sampled at a coupling where sampling works,
+> which no amount of HMC at the target coupling can produce.
+
+---
+
+---
+
+## 9. Related work
 
 ### 8.1 Classical multiscale thermalization — the direct ancestor
 Endres et al. and Detmold–Endres, front and centre. The structural
@@ -473,7 +911,7 @@ architecture, the diffusion machinery, the winding update (Albandea et al.).
 
 ---
 
-## 9. Conclusions and outlook
+## 10. Conclusions and outlook
 
 - A learned prolongator produces starting configurations that thermalize in
   O(1) trajectories at every coupling tested, where the best classical
@@ -549,3 +987,77 @@ Held for the appendix, in decreasing order of how likely a referee is to ask
 for one of them in the main text: `45_architecture.png`, `37_z_distribution.png`,
 `41_breakeven.png`, `42_mala_locality.png`, `43_zhu_pq.png`,
 `35_sector_freeze_sigma.png`.
+
+### Section 8 (2D U(2)) -- five main-text figures
+
+All in `out/u2_2d/figures/`. Section 8 should not exceed five; it is a
+demonstration of transfer, not a second paper.
+
+| # | file | carries | state |
+|---|---|---|---|
+| 8a | `fig07_topological_reach.png` | sectors occupied and `<Q^2>` vs trajectory, eight arms -- plain HMC flat at one sector, even-winding at zero odd sectors, the seed arriving with them | **strongest panel in the section** |
+| 8b | `fig06_seed_quality.png` | relative error vs trajectory, all arms | section lead |
+| 8c | `fig09_parity_mobility.png` | joint vs marginal odd move, parity flips vs beta | ready |
+| 8d | `fig13_cost.png` | seconds per independent configuration | ready |
+| 8e | **`fig26_transport_exactness.png`** | fine `Q` = coarse `Q`, 100%, both volumes | **NEW -- `36_transport_check.py`, data 2026-08-21** |
+
+**`fig30_multi_lift.png` is a MAIN-TEXT figure for section 3.5, not section 8**
+(`46_multi_lift_figure.py`). It reads both studies' output and shows u1 and u2
+side by side in all three panels, so it belongs with the method rather than with
+the transfer demonstration -- and it keeps section 8 at its five-figure budget.
+
+**And `fig28_pipeline.png` replaces u1's figure 1** (`41_pipeline_schematic.py`). It is
+drawn for BOTH studies -- the SU(2) box is dashed and labelled `u2 only`, absent in U(1) --
+so the paper carries one schematic rather than two. It is the natural place to make the
+section-8 claim visible: the charge branch is drawn running AROUND the network.
+
+Appendix, u1: **`46_observable_scan.png`** (`62_observable_scan.py`, NEW
+2026-08-22) -- observable agreement across 14 couplings from beta 6 to 518, in
+relative deviation AND in z, with the training ceiling at beta = 60 hatched. It
+is the cleanest coverage figure in either study because u1's coverage is DENSE
+to 60 rather than a set of isolated rungs, so the ceiling shows as a step and
+the bias SIGN flips across it: raw z at W(1x1) runs -0.6, +6.1, +9.0, +8.9,
++8.7, +21.7 inside coverage and -63, -138, -150, -162, -179, -198, -205 outside.
+Panel (d) shows ten sweeps returning almost every coupling to |z| < 2, including
+far past the ceiling -- the same point section 3.6 makes on cost.
+
+Appendix, u2: **`fig27_volume_scan`** (the volume answer, section 8.6),
+**`fig29_observable_scan`** (observable agreement across 12 couplings, raw and
+post-tail -- the coverage story shown on observables rather than on a
+thermalization count; supports 8.6's first bullet),
+`fig10_winding_economics`, `fig19_freezing`, `fig11_ladder_accuracy`,
+`fig12_area_law`, `fig14_sampler_steps`, `fig18_z_vs_loop_area_*`,
+`fig20_honest_distributions_*`, `fig24_kl_per_site`, `fig21_seed_quality` (after
+the in-sample couplings are marked), and `fig1`-`fig5` (exact-solvability checks:
+determinant density, sector weights, area law, beta matching, the ladder).
+
+**Two figures must not go in without an edit.** `fig21_seed_quality` needs its
+two in-sample couplings marked -- DONE 2026-08-21, `30_seed_quality_figure.py`
+now carries `TRAIN_RUNGS` and draws the marking itself.
+
+`fig22_division_of_labour` was held out until the rethermalization discrepancy
+was resolved. **It is resolved and the resolution is a RETRACTION**
+(`42_retherm_reconcile.py`; write-up
+`out/u2_2d/retherm_reconcile/RECONCILIATION.md`). Neither side of the dispute
+was ever resolved statistically: at W(8x8) the per-configuration spread is
+19500 ppm, so 256 configurations give a standard error of 1219 ppm, and the two
+contested numbers -- 378 ppm "before" and 1581 ppm "after" -- sit at z = 0.31
+and z = 1.30. Measured fresh on the same configurations the sign flips with
+sweep count. **There is no infrared damage to report, and the `N* = 137`
+claim that followed from it is withdrawn**, since `N* = (sigma/bias)^2` on a
+bias consistent with zero is unbounded.
+
+`fig22` MAY therefore go in, but only over the scales that are resolved: the
+raw lift is z = 18.6 at W(1x1) and z = 3.2 at W(2x2), and ten sweeps remove
+both; W(4x4) and larger are already indistinguishable from exact in the RAW
+lift at 256 configurations, so the figure must label them as unresolved rather
+than draw a trend through them. The paper text should make the same
+distinction: the model's residual is measured at two scales and bounded at the
+rest.
+
+**This is a general obligation for the paper, not a one-off correction.** Any
+statement of the form "the deviation grows/shrinks with loop size" needs its
+standard error quoted alongside it. Large Wilson loops have enormous
+per-configuration spread, and at the ensemble sizes used here (64-256
+configurations) they are frequently not resolved at all. `43_observable_scan.py`
+now reports both the physical systematic and z for exactly this reason.

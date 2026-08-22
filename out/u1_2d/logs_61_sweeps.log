@@ -1,0 +1,33 @@
+
+========================================================================
+coarse beta=14.1464 -> fine beta=55.024, L=32, 128 configs [585s]
+  HMC: n_steps=19, step_size=0.0539   cost/unit: sweep 3, traj 19 link-touches
+  arm                  units to |z|<=2  link-touches  |z| at end
+  seed_sweeps                        2             6        1.20
+  seed_trajectories                 20           380        2.00
+  cold_trajectories              never           nan       16.63
+
+========================================================================
+coarse beta=25 -> fine beta=98.467, L=32, 128 configs [632s]
+  HMC: n_steps=25, step_size=0.0403   cost/unit: sweep 3, traj 25 link-touches
+  arm                  units to |z|<=2  link-touches  |z| at end
+  seed_sweeps                        4            12        1.22
+  seed_trajectories              never           nan       25.67
+  cold_trajectories              never           nan       18.81
+
+========================================================================
+coarse beta=55.0237 -> fine beta=218.580, L=32, 128 configs [528s]
+  HMC: n_steps=37, step_size=0.0271   cost/unit: sweep 3, traj 37 link-touches
+  arm                  units to |z|<=2  link-touches  |z| at end
+  seed_sweeps                        8            24        0.88
+  seed_trajectories              never           nan       33.02
+  cold_trajectories              never           nan       16.32
+
+========================================================================
+VERDICT
+  local sweeps cheaper than trajectories at 3/3 couplings
+  Compare u2 (`44_sweeps_vs_trajectories.py`): 6 link-touches against
+  4600. If u1 agrees, the statement is about the MOVE and belongs in
+  the method section; if not, it is a difference between the theories.
+
+wrote out\u1_2d\sweeps_vs_trajectories\sweeps_vs_trajectories.json

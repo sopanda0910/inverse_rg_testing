@@ -1,0 +1,12 @@
+device: cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+simulating base rung L=8 beta=1.3472 ...
+  acceptance 0.991
+rung 0: L=16 beta=4.0 plaq=0.8642 (pre-retherm 0.8266) <Q^2>=1.839  [9s]
+rung 1: L=32 beta=14.1464 plaq=0.9639 (pre-retherm 0.9571) <Q^2>=1.901  [20s]
+rung 2: L=64 beta=55.0237 plaq=0.9909 (pre-retherm 0.9892) <Q^2>=1.958  [88s]
+saved out\u1_2d\generated_s18\ladder_rung0_wilson_L16_beta4.pt
+saved out\u1_2d\generated_s18\ladder_rung0_raw_wilson_L16_beta4.pt
+saved out\u1_2d\generated_s18\ladder_rung1_wilson_L32_beta14.1464.pt
+saved out\u1_2d\generated_s18\ladder_rung1_raw_wilson_L32_beta14.1464.pt
+saved out\u1_2d\generated_s18\ladder_rung2_wilson_L64_beta55.0237.pt
+saved out\u1_2d\generated_s18\ladder_rung2_raw_wilson_L64_beta55.0237.pt

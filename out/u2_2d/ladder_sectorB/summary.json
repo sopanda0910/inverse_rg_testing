@@ -1,0 +1,26 @@
+[
+  {
+    "plaquette": 0.9810160994529724,
+    "det_plaquette": 0.9809042811393738,
+    "q_mean": -0.03125,
+    "q_squared": 0.912109375,
+    "plaquette_pre_retherm": 0.9811235666275024,
+    "q_squared_pre_retherm": 0.912109375,
+    "beta": 105.651,
+    "lattice_size": 32,
+    "plaquette_exact": 0.9810231809265313,
+    "q_squared_exact": 1.001189460037426
+  },
+  {
+    "plaquette": 0.9951949119567871,
+    "det_plaquette": 0.9951846599578857,
+    "q_mean": -0.03125,
+    "q_squared": 0.912109375,
+    "plaquette_pre_retherm": 0.9952731728553772,
+    "q_squared_pre_retherm": 0.912109375,
+    "beta": 416.524,
+    "lattice_size": 64,
+    "plaquette_exact": 0.9951954459438838,
+    "q_squared_exact": 1.0011887008808318
+  }
+]

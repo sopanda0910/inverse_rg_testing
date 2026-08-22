@@ -1,0 +1,21 @@
+[
+  {
+    "lattice_size": 8,
+    "beta": 10.0,
+    "winding_su2_sweeps": 100,
+    "n_chains": 128,
+    "n_draws": 1280,
+    "odd_measured": 0.484228515625,
+    "odd_err": 0.001113881509142992,
+    "odd_exact": 0.4854151197299518,
+    "odd_ratio": 0.9975554858991373,
+    "odd_z": -1.0652875509754758,
+    "q_squared": 0.8671630859375,
+    "q_squared_err": 0.003534829268089594,
+    "q_squared_exact": 0.8602812956183759,
+    "q_squared_z": 1.9468522514648772,
+    "sector_changes": 100674,
+    "parity_flips": 85284,
+    "seconds": 19038.69273543358
+  }
+]

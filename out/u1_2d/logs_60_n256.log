@@ -1,0 +1,46 @@
+chain:
+  L=  8  beta=    1.7500   exact <Q^2> =  1.4723
+  L= 16  beta=    5.2387   exact <Q^2> =  1.3953
+  L= 32  beta=   19.2255   exact <Q^2> =  1.3864
+  L= 64  beta=   75.3578   exact <Q^2> =  1.3861
+
+==========================================================================
+1 LIFT(S): start L=32 beta=19.2255  ->  L=64 beta=75.358
+  start: HMC [63s]
+  start: z(plaq)=  +1.11   <Q^2>=1.5781 (exact 1.3864)
+    rung 1: L= 64 beta=   75.358  z =  -245.20 / -160.58 /  -59.60   <Q^2>=1.5781
+  FINAL raw  z =  -245.20 / -160.58 /  -59.60
+  FINAL +10 z =    +0.15 /   -0.64 /   -1.64
+  charge preserved through 1 lift(s): 100.0%
+
+==========================================================================
+2 LIFT(S): start L=16 beta=5.2387  ->  L=64 beta=75.358
+  start: HMC [48s]
+  start: z(plaq)=  -0.29   <Q^2>=1.4180 (exact 1.3953)
+    rung 1: L= 32 beta=   19.225  z =   +13.29 /   +2.55 /   +0.28   <Q^2>=1.4180
+    rung 2: L= 64 beta=   75.358  z =  -249.06 / -147.30 /  -52.69   <Q^2>=1.4180
+  FINAL raw  z =  -249.06 / -147.30 /  -52.69
+  FINAL +10 z =    -0.32 /   -0.36 /   -0.39
+  charge preserved through 2 lift(s): 100.0%
+
+==========================================================================
+3 LIFT(S): start L=8 beta=1.7500  ->  L=64 beta=75.358
+  start: HMC [44s]
+  start: z(plaq)=  +0.79   <Q^2>=1.6367 (exact 1.4723)
+    rung 1: L= 16 beta=    5.239  z =    -3.37 /   -1.40 /   -0.43   <Q^2>=1.6367
+    rung 2: L= 32 beta=   19.225  z =   +12.95 /   +3.05 /   +0.38   <Q^2>=1.6914
+    rung 3: L= 64 beta=   75.358  z =  -253.26 / -140.92 /  -48.55   <Q^2>=1.6914
+  FINAL raw  z =  -253.26 / -140.92 /  -48.55
+  FINAL +10 z =    +0.63 /   -0.80 /   -1.29
+  charge preserved through 3 lift(s): 82.0%
+
+==========================================================================
+COMPOUNDING at L=64, beta=75.358, intermediate retherm = 10
+  lifts  |z| raw W1x1  |z| raw W2x2  |z| post W1x1  ppm raw W1x1   Q kept
+      1        245.20        160.58           0.15       -4733.2   100.0%
+      2        249.06        147.30           0.32       -4727.3   100.0%
+      3        253.26        140.92           0.63       -4742.1    82.0%
+
+  NO COMPOUNDING within resolution: 3 lifts sits at 1.03x the 1-lift error.
+
+wrote out\u1_2d\multi_lift_n256\multi_lift_r10.json

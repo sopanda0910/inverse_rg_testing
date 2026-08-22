@@ -85,6 +85,7 @@ class BatchedHMCU2:
         topological_updates: bool = False,
         winding_charge_step: int = 2,
         winding_interval: int = 1,
+        winding_su2_sweeps: int = 25,
     ) -> None:
         self.lattice_size = lattice_size
         self.action = action
@@ -96,6 +97,13 @@ class BatchedHMCU2:
         self.topological_updates = topological_updates
         self.winding_charge_step = winding_charge_step
         self.winding_interval = max(1, int(winding_interval))
+        # The ONE approximation in the marginal odd move: after an accepted
+        # winding the SU(2) sector is resampled from its exact conditional,
+        # but only for finitely many sweeps, and only on ACCEPTED
+        # configurations. Rejected ones keep an equilibrium sample, so an
+        # under-converged resample penalises exactly the moves that flip
+        # parity. Exposed so it can be scanned rather than assumed.
+        self.winding_su2_sweeps = int(winding_su2_sweeps)
         self._step_counter = 0
         self.last_winding_accept: torch.Tensor | None = None
 
@@ -133,7 +141,9 @@ class BatchedHMCU2:
         if self.topological_updates and self._step_counter % self.winding_interval == 0:
             from .local_updates import winding_update
 
-            links, winding_accept = winding_update(links, self.action, charge_step=self.winding_charge_step)
+            links, winding_accept = winding_update(
+                links, self.action, charge_step=self.winding_charge_step,
+                n_su2_sweeps=self.winding_su2_sweeps)
             self.last_winding_accept = winding_accept
         return links, accept
 
@@ -194,6 +204,7 @@ def run_hmc_ensemble(
     hot_start: bool = False,
     winding_charge_step: int = 2,
     winding_interval: int = 1,
+    winding_su2_sweeps: int = 25,
     initial_state: torch.Tensor | None = None,
 ) -> tuple[torch.Tensor, HMCStats]:
     """Convenience wrapper. NOTE (device convention, inherited from `u1_2d`): this
@@ -211,6 +222,7 @@ def run_hmc_ensemble(
         topological_updates=topological_updates,
         winding_charge_step=winding_charge_step,
         winding_interval=winding_interval,
+        winding_su2_sweeps=winding_su2_sweeps,
     )
     configs, stats = sampler.sample(
         n_per_chain, burn_in=burn_in, thin=thin, record_history=record_history,

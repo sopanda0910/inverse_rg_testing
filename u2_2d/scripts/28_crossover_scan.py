@@ -173,10 +173,11 @@ def main() -> int:
     # Available coarse bases. The retrain's random-beta training set left 65
     # L = 16 ensembles on disk, so the scan needs NO new base generation -- which
     # is the single reason this costs ~1 h instead of ~4.
+    coarse_size = args.fine_size // 2
     bases = sorted(float(re.search(r"beta([0-9.]+)\.pt", f).group(1))
-                   for f in glob.glob(f"{args.data_dir}/u2_L16_*.pt"))
+                   for f in glob.glob(f"{args.data_dir}/u2_L{coarse_size}_*.pt"))
     if not bases:
-        print(f"no L=16 ensembles under {args.data_dir}")
+        print(f"no L={coarse_size} ensembles under {args.data_dir}")
         return 1
     # Log-uniform selection across the available range, so the scan spans the
     # crossover instead of clustering where the draws happened to be dense.
@@ -188,7 +189,8 @@ def main() -> int:
                                      args.n_couplings))
         chosen = sorted({min(bases, key=lambda b: abs(math.log(b) - math.log(t)))
                          for t in targets})
-    print(f"{len(chosen)} couplings: " + ", ".join(f"{b:g}" for b in chosen))
+    print(f"L_c = {coarse_size} -> L_f = {args.fine_size}; "
+          f"{len(chosen)} couplings: " + ", ".join(f"{b:g}" for b in chosen))
     if args.topological_updates:
         print(f"WINDING round: charge_step={args.winding_charge_step}, "
               f"interval={args.winding_interval}")
@@ -208,7 +210,7 @@ def main() -> int:
             schedule.append((float(cut), int(n)))
 
     for base_beta in chosen:
-        beta = topology_matched_fine_beta(base_beta, 16)
+        beta = topology_matched_fine_beta(base_beta, coarse_size)
         n_traj = args.n_traj
         for cut, n in schedule:
             if beta <= cut:
@@ -224,7 +226,8 @@ def main() -> int:
             fine, _ = load_ensemble(cache)
             build_s = 0.0
         else:
-            coarse, _ = load_ensemble(Path(args.data_dir) / f"u2_L16_beta{base_beta:g}.pt")
+            coarse, _ = load_ensemble(
+                Path(args.data_dir) / f"u2_L{coarse_size}_beta{base_beta:g}.pt")
             coarse = coarse[:args.n_chains]
             # Only n_chains configurations are needed -- the arms run that many
             # chains -- so the lift is 16x cheaper here than stage 03's 1024.

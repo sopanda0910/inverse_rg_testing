@@ -85,6 +85,7 @@ SOURCES: dict[str, str | None] = {
     "43_zhu_pq.png": None,
     "44_pipeline.png": None,
     "45_architecture.png": None,
+    "46_observable_scan.png": None,
 }
 
 SCRIPT_FOR = {
@@ -113,6 +114,7 @@ SCRIPT_FOR = {
     "43": "u1_2d/scripts/56_positioning_figures.py",
     "44": "u1_2d/scripts/57_schematics.py",
     "45": "u1_2d/scripts/57_schematics.py",
+    "46": "u1_2d/scripts/62_observable_scan.py",
 }
 
 RUNG_HEADING = re.compile(r"^## rung(\d+)_L(\d+)_beta([0-9.]+)\s*$")

@@ -97,6 +97,31 @@ def split(points):
 TRAIN_MODEL_BETA = [0.622, 1.705, 3.560, 7.020, 12.946, 14.008, 26.417,
                     50.789, 104.132]
 
+# The TWELVE FIXED TRAINING RUNGS as (lattice_size, beta) -- needed because a
+# green tick in model beta is NOT the same statement as "this exact test is
+# in-sample". A scan point whose FINE (L, beta) coincides with a training rung
+# at the SAME volume is measuring the trained lift, not a generalization of it,
+# and at beta_f = 415.61 the COARSE side coincides too (L=32 beta=105.651 is a
+# rung, and the scan lifts L=32 beta=105.423). Found 2026-08-21; before that the
+# point was reported as "0.2% from a rung and the best point in the scan", which
+# reads as extrapolation when it is nothing of the kind. Anything marked here
+# must be excluded from a coverage-vs-quality correlation.
+TRAIN_RUNGS = [(8, 3.5), (8, 7.0), (8, 14.0), (16, 14.0), (16, 28.0),
+               (16, 56.0), (16, 51.75), (32, 56.0), (32, 203.15),
+               (32, 105.651), (32, 416.524), (64, 416.524)]
+
+
+def in_sample(fine_size, fine_beta, coarse_beta, tol=0.01):
+    """'fine', 'both' or None -- whether this scan point is a training rung."""
+    hit_f = any(L == fine_size and abs(b - fine_beta) / fine_beta < tol
+                for L, b in TRAIN_RUNGS)
+    hit_c = coarse_beta is not None and any(
+        L == fine_size // 2 and abs(b - coarse_beta) / coarse_beta < tol
+        for L, b in TRAIN_RUNGS)
+    if hit_f and hit_c:
+        return "both"
+    return "fine" if hit_f else None
+
 
 def draw_round(ax, rows, budget, title):
     betas = [r["beta"] for r in rows]
@@ -128,6 +153,25 @@ def draw_round(ax, rows, budget, title):
                 ax.plot([b0 * (b1 / b0) ** f], [0], marker="|", ms=9,
                         color="#2e7d32", mew=1.6, clip_on=False, zorder=7)
                 break
+
+    # IN-SAMPLE points, drawn before the data so the ring sits underneath the
+    # marker rather than hiding it.
+    flagged = []
+    for r in rows:
+        kind = in_sample(r.get("lattice_size"), r["beta"], r.get("base_beta"))
+        if not kind:
+            continue
+        flagged.append((r["beta"], kind))
+        ax.axvline(r["beta"], color="#b3261e", lw=1.1, ls=(0, (2, 2)), zorder=6)
+    if flagged:
+        b0 = flagged[0][0]
+        both = any(k == "both" for _, k in flagged)
+        ax.annotate(
+            "IN-SAMPLE" + chr(10)
+            + ("coarse AND fine are" if both else "fine side is")
+            + chr(10) + "a training rung",
+            xy=(b0, 0.965), xycoords=("data", "axes fraction"), fontsize=7,
+            color="#b3261e", ha="right", va="top", style="italic", zorder=8)
 
     # Regime bands first, so everything else sits on top of them.
     for i, r in enumerate(rows):

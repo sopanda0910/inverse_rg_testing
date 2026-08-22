@@ -165,6 +165,14 @@ def main() -> int:
             "plaquette_exact": plaquette_exact(result.beta, result.lattice_size),
             "q_squared_exact": det_topological_susceptibility(result.beta, result.lattice_size)
             * result.lattice_size * result.lattice_size,
+            # Carried so downstream scoring can use tau_int-AWARE error bars.
+            # Every rung inherits the BASE ensemble's chain structure: the lift
+            # is per-configuration and order-preserving, so configuration i of a
+            # rung descends from configuration i of the base, and the base's
+            # chain-major ordering (index = draw * n_chains + chain) survives.
+            # Without this, `04_validate` falls back to a naive SEM, which is
+            # too small and inflates every |z| built on it.
+            "n_chains": base_chains or None,
         })
         return record
 

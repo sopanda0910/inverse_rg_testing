@@ -36,6 +36,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--config", default="u2_2d/configs/smoke.yaml")
     parser.add_argument("--device", default=None)
+    parser.add_argument(
+        "--generated-n-chains", type=int, default=None,
+        help="chain count of the ladder base, for tau_int-aware error bars on "
+             "the generated ensemble. Ensembles written before 2026-08 do not "
+             "carry n_chains in their metadata; supply it here rather than "
+             "letting the naive SEM stand, which is too small and inflates "
+             "every |z| built on it.")
     parser.add_argument("--ladder-dir", default=None)
     parser.add_argument("--data-dir", default=None)
     parser.add_argument("--out-dir", default=None)
@@ -109,7 +116,22 @@ def main() -> int:
             # anyway, so a "reference" built from it would be worse than none.
             reference, source = None, "exact only (no HMC reference)"
 
-        summary = compare(generated, reference, beta, size)
+        # tau_int-AWARE ERRORS (2026-08-22). The reference's chain count is
+        # known exactly here. The generated ensemble's comes from the ladder
+        # base and is recorded in its metadata by 03_run_ladder; when absent we
+        # pass None and fall back to the naive SEM rather than guess, because a
+        # wrong chain count silently returns tau ~ 0.5 and looks like a result.
+        # NOTE the ordering contract is satisfied: u2's `sample` concatenates
+        # per-draw blocks of all chains, so index = draw * n_chains + chain.
+        gen_chains = args.generated_n_chains
+        if gen_chains is None and isinstance(metadata, dict):
+            gen_chains = metadata.get("n_chains")
+        if gen_chains is None:
+            print("    (no n_chains in metadata: naive SEM, |z| will be "
+                  "optimistic -- pass --generated-n-chains)")
+        summary = compare(generated, reference, beta, size,
+                          n_chains=gen_chains,
+                          reference_n_chains=int(validate_cfg.get("n_chains", 16)))
         summary["reference_source"] = source
         summaries.append(summary)
         name = f"L{size}_beta{beta:g}"

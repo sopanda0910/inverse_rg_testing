@@ -40,15 +40,32 @@ against cold-start UNSEEDED classical arms:
     W(8x8), against 6 and 11 for a frozen classical chain -- a ~200x advantage
     in usable statistics, and an N-independent statement about the method.
 
-  * ONE ACTIONABLE DEFECT. Rethermalization is a low-pass repair: ten local
-    sweeps take W(1x1) from 62 to 1.3 ppm and W(2x2) from 67 to 1.9, leave
-    W(4x4) unmoved at 69, and make W(8x8) FOUR TIMES WORSE, 378 -> 1581. So
-    POST-retherm W(8x8) has N* = 137 while the delivered L = 64 ensemble carries
-    256 configurations -- it is already past the point where its own W(8x8)
-    systematic exceeds its statistical error. `n_retherm` is set to 10 untuned,
-    and this is the quantity that should set it. This is also the mechanism
-    behind u1's Fig. 38: the residual is infrared-dominated because
-    rethermalization put it there, not because the model left it there.
+    BUT ONLY THE FIRST TWO COLUMNS OF THAT ROW ARE MEASUREMENTS (2026-08-22).
+    N* SQUARES the bias, so wherever the bias is consistent with zero the N* is
+    unbounded and carries no information. At 256 configurations the seed's raw
+    |z| is 18.6 / 3.2 / 0.6 / 0.8 at W(1x1) / W(2x2) / W(4x4) / W(8x8) -- so
+    W(4x4) and W(8x8) are already statistically indistinguishable from exact
+    BEFORE anything is done to them, and 1221 and 2501 are lower bounds at best.
+    The ~200x advantage is quoted from W(1x1) and W(2x2), where both arms are
+    resolved. Panel (b) now draws unresolved points as HOLLOW markers and
+    suppresses their N* label rather than printing a number for them.
+
+  * NO ACTIONABLE DEFECT AT W(8x8) -- a claim that stood here until 2026-08-22
+    is RETRACTED. It read: ten sweeps make W(8x8) four times worse (378 -> 1581
+    ppm), so post-retherm N* = 137 against a delivered 256 configurations, and
+    `n_retherm` should be tuned against that. Neither number was ever resolved.
+    sigma at W(8x8) is 19500 ppm, so 256 configurations give a standard error of
+    1219 ppm and the two disputed values are z = 0.31 and z = 1.30; measured on
+    the SAME configurations in one pass the sign flips with sweep count (-949,
+    -2498, +424, +1.6, +723, -1614 ppm at 0/2/5/10/20/40 sweeps). See
+    `out/u2_2d/retherm_reconcile/RECONCILIATION.md`. What survives is the part
+    that IS resolved: ten sweeps take W(1x1) from 62 to 1.3 ppm (z 18.6 ->
+    -0.16) and W(2x2) from 67 to 1.9 (z 3.2 -> 0.67). Rethermalization repairs
+    the ultraviolet, and what it does further out is not measurable here.
+    The claim that this was also the mechanism behind u1's Fig. 38 goes with it;
+    u1's own `59_pre_post_retherm.py` is a separate measurement, and there the
+    repair factor merely reaches 1.0 at the largest loop rather than going below
+    it -- on a raw z of 1.17, which is itself unresolved.
 
   * TOPOLOGY IS THE ONE PLACE THE STRONG CLAIM HOLDS UNCONDITIONALLY. Q is
     transported exactly rather than modelled, so the seed carries <Q^2> at
@@ -138,10 +155,20 @@ def panel_fixed_time(ax, report):
 
 
 def panel_significance(ax, report):
-    """bias / sigma of ONE configuration: panel (a) with the sample size out."""
+    """bias / sigma of ONE configuration: panel (a) with the sample size out.
+
+    RESOLUTION IS DRAWN, NOT ASSUMED. `N* = (sigma/bias)^2` squares the bias, so
+    on a scale where the bias is consistent with zero the N* is unbounded and
+    means nothing -- it is a squared noise fluctuation, and reading one as a
+    measurement is what produced the retracted W(8x8) finding in the docstring.
+    A point whose own |z| is below 2 is therefore drawn HOLLOW and its N* label
+    suppressed, so the figure cannot be read as four measurements when it carries
+    two.
+    """
     arms = report["arms"]
     n = float(report.get("n_configs") or 1)
     x = np.arange(len(SCALES))
+    unresolved_from = None
     for name in ORDER:
         arm = arms.get(name)
         if not arm or "relative_deviation" not in arm:
@@ -150,14 +177,36 @@ def panel_significance(ax, report):
         ratio = [abs(arm["relative_deviation"][k])
                  / max(arm["relative_sem"][k] * math.sqrt(n), 1e-18)
                  for k, _ in SCALES]
-        ax.plot(x, ratio, ls=ls, color=colour, lw=lw, marker=marker, ms=6,
-                markeredgecolor="white", markeredgewidth=0.6, label=label,
-                zorder=4 if name in ("pre", "post") else 3)
+        resolved = [abs(arm["z"].get(k, 0.0)) >= 2.0 for k, _ in SCALES]
+        ax.plot(x, ratio, ls=ls, color=colour, lw=lw, zorder=4
+                if name in ("pre", "post") else 3, label=label)
+        for i, (v, ok) in enumerate(zip(ratio, resolved)):
+            ax.plot([x[i]], [v], marker=marker, ms=6, color=colour,
+                    markerfacecolor=colour if ok else "white",
+                    markeredgecolor=colour if not ok else "white",
+                    markeredgewidth=1.3 if not ok else 0.6,
+                    zorder=5 if name in ("pre", "post") else 3)
+        if name == "pre":
+            below = [i for i, ok in enumerate(resolved) if not ok]
+            unresolved_from = min(below) if below else None
         if name in ("pre", "post"):
-            for i, v in enumerate(ratio):
+            for i, (v, ok) in enumerate(zip(ratio, resolved)):
+                if not ok:
+                    continue
                 ax.annotate("$N^*$=%.0f" % (1.0 / v ** 2), (i, v), fontsize=6.8,
                             color=colour, ha="center", va="bottom",
                             textcoords="offset points", xytext=(0, 7))
+
+    # Shade the region where the RAW lift's own deviation is already unresolved:
+    # nothing measured to the right of this line constrains the model.
+    if unresolved_from is not None:
+        ax.axvspan(unresolved_from - 0.5, len(SCALES) - 0.5, color="#5c5c5c",
+                   alpha=0.08, lw=0, zorder=0)
+        ax.annotate("raw lift already consistent with exact here" + chr(10)
+                    + r"($|z| < 2$): $N^*$ unbounded, not measured",
+                    xy=((unresolved_from + len(SCALES) - 1) / 2.0, 0.93),
+                    xycoords=("data", "axes fraction"), fontsize=6.8,
+                    color=MUTED, ha="center", va="top", style="italic")
 
     ax.set_yscale("log")
     ax.set_xticks(x)
@@ -166,12 +215,8 @@ def panel_significance(ax, report):
                   color=INK)
     ax.set_title("(b) the same content, sample size divided out",
                  fontsize=10.5, loc="left", color=INK)
-    ax.annotate("the classical arm falls 2.9x across this axis with no model in "
-                "it;" + chr(10) + "the seed falls 55x -- the EXCESS is the "
-                "signal." + chr(10)
-                + "$N^*$ = configurations usable before bias > statistical error",
-                xy=(0.5, 0.03), xycoords="axes fraction", fontsize=7,
-                color=MUTED, ha="center", style="italic")
+    lo, hi = ax.get_ylim()
+    ax.set_ylim(lo, hi * 2.2)
 
 
 def main():
@@ -210,8 +255,16 @@ def main():
              f"L = {report.get('lattice_size')}, beta = {report.get('beta')}, "
              f"{report.get('n_configs', '?')} configurations per arm, cold-start "
              "and UNSEEDED classical arms.  (a) is the statistic of record; "
-             "(b) divides out N and is reported as discussion, not as a revision.",
-             fontsize=6.8, color=MUTED, ha="center")
+             "(b) divides out N and is reported as discussion, not as a "
+             "revision." + chr(10)
+             + "In (b) the classical arm falls 2.9x across this axis with no "
+               "model in it and the seed falls 55x -- the EXCESS is the signal. "
+               "$N^*$ = configurations usable before the model's bias exceeds "
+               "the user's statistical error." + chr(10)
+             + "HOLLOW markers and the shaded band mark scales where that arm's "
+               "own deviation is below $|z| = 2$: the bias is consistent with "
+               "zero there, so $N^*$ is unbounded and no number is printed.",
+             fontsize=6.8, color=MUTED, ha="center", linespacing=1.6)
 
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -231,7 +284,8 @@ def main():
             ("bias / sigma_1config  (N-independent)",
              lambda a, k: abs(a["relative_deviation"][k])
              / (a["relative_sem"][k] * math.sqrt(n))),
-            ("N* = configs before bias > stat error",
+            ("N* = configs before bias > stat error  (-- where |z| < 2: the "
+             "bias is consistent with zero and N* is unbounded)",
              lambda a, k: (a["relative_sem"][k] * math.sqrt(n)
                            / abs(a["relative_deviation"][k])) ** 2)):
         print(f"\n{title}")
@@ -240,7 +294,13 @@ def main():
             arm = report["arms"].get(name)
             if not arm or "relative_deviation" not in arm:
                 continue
-            print(f"  {name:22s}" + "".join("%11.4g" % fn(arm, k) for k in keys))
+            cells = []
+            for k in keys:
+                if title.startswith("N*") and abs(arm["z"].get(k, 0.0)) < 2.0:
+                    cells.append("%11s" % "--")
+                else:
+                    cells.append("%11.4g" % fn(arm, k))
+            print(f"  {name:22s}" + "".join(cells))
     return 0
 
 
