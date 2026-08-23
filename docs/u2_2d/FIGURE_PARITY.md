@@ -181,3 +181,34 @@ Consequences:
 transfers -- best point stays best, past-the-rung stays dead -- while quality
 degrades with volume at fixed coverage, catastrophically at model beta ~45
 (t_therm 6 at L=32, never at L=64).
+
+---
+
+## The figure directory now has a gate (2026-08-22)
+
+This file tracks which CLAIMS have a figure. It says nothing about whether the
+file on disk is current, and until 2026-08-22 nothing did: 39 figures written in
+place by sixteen scripts, no manifest, no captions, no staleness detection.
+
+`u2_2d/scripts/49_assemble_appendix_figures.py` closes that. It records, per
+figure, the script that draws it and the inputs it reads; flags any figure older
+than its newest input; assembles `out/u2_2d/paper_appendix/figures/`; and
+generates `appendix.md` from captions held in the script itself, so a caption
+cannot drift between the manifest and the appendix.
+
+    python u2_2d/scripts/49_assemble_appendix_figures.py --check
+
+**It caught three on its first run**, all of them drawn from the naive-SEM
+validation before `out/u2_2d/validation/` was promoted to the tau_int-aware
+numbers: `fig08_wilson_spread`, `fig12_area_law`, `fig23_dissociation`. All
+three were regenerated the same day.
+
+36 figures are tracked. The three `L16_beta56` variants of `fig1`-`fig3` are
+listed as deliberately EXCLUDED (they come from `smoke.yaml`, not a ladder
+rung), so an "untracked" report means "unexamined" rather than "known and
+skipped".
+
+The paper bundle is a separate step: `u1_2d/scripts/64_export_paper_bundle.py`
+writes `paper/main.tex` plus `paper/figures/{u1_2d,u2_2d}/` from both studies'
+assembled appendices, and checks that every tracked figure is placed exactly
+once across the section plan.

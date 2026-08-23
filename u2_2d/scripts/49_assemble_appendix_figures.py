@@ -1,0 +1,512 @@
+"""Assemble out/u2_2d/paper_appendix/figures/ and gate it against staleness.
+
+WHY THIS EXISTS. u1 has `30_assemble_appendix_figures.py --check`, which is run
+before submitting and which caught a real drift once (figures 01-03 were copies
+taken before an audit chain re-ran `04_validate.py`, so they showed a stale
+reference ensemble while every other figure had moved on). u2 had **no
+equivalent**: 39 figures written straight into `out/u2_2d/figures/` by sixteen
+different scripts, with no caption file, no manifest, and no way to tell whether
+a figure predates the data it claims to draw. `docs/u2_2d/FIGURE_PARITY.md`
+tracks which CLAIMS have a figure; it says nothing about whether the file on
+disk is current.
+
+THE STALENESS TEST IS DIFFERENT FROM u1'S, AND IT HAS TO BE. In u1 most appendix
+figures are COPIES of files produced elsewhere, so staleness is a hash mismatch
+between source and copy. In u2 every figure is written in place by its own
+script, so there is no second copy to compare against. What can be compared is
+TIME: a figure is stale when it is older than the newest input it was drawn
+from. That is a weaker test than a hash (it cannot see a source edited without
+changing mtime, and it fires on a harmless re-save) but it is the test that
+catches the failure this project actually has -- an upstream run regenerated
+while the figure downstream of it was not.
+
+It is not hypothetical. The tau_int-aware validation was promoted into
+`out/u2_2d/validation/` on 2026-08-22 and the naive-SEM run moved to
+`validation_naive_superseded/`; every figure drawn from `validation/summary.json`
+or `validation/wilson_distributions.json` before that promotion is drawing the
+superseded numbers. This script's first run reports exactly those.
+
+WHAT IT DOES
+
+  * records, for every tracked figure, the script that draws it and the inputs
+    it reads -- the mapping was previously only in sixteen argparse defaults;
+  * flags any figure older than its newest input (`--check` exits non-zero);
+  * copies the tracked set into `out/u2_2d/paper_appendix/figures/`, which is
+    what the paper references, so the figure directory of record is assembled
+    rather than curated by hand;
+  * checks every tracked figure is referenced by `paper_appendix/appendix.md`
+    and that the appendix references nothing untracked;
+  * writes `figures/MANIFEST.md` with source, sha256, mtime and drawing script.
+
+    python u2_2d/scripts/49_assemble_appendix_figures.py [--check]
+
+BASENAMES ARE KEPT. u1 renumbers into `NN_name.png`; u2 does not, because its
+`figNN_` names are already stable and are quoted throughout `CLAUDE.md`,
+`FIGURE_PARITY.md` and `PAPER_OUTLINE.md`. A second numbering scheme would be
+one more thing to keep in sync for no gain.
+"""
+from __future__ import annotations
+
+import argparse
+import glob
+import hashlib
+import re
+import shutil
+from datetime import datetime, timezone
+from pathlib import Path
+
+OUT = Path("out/u2_2d")
+FIG_SRC = OUT / "figures"
+FIG_DIR = OUT / "paper_appendix" / "figures"
+APPENDIX_MD = OUT / "paper_appendix" / "appendix.md"
+
+LADDER = ["ladder/summary.json", "ladder/*.pt", "data/*.pt"]
+SEED_BENCH = ["seed_benchmark/seed_benchmark.json"]
+
+# figure -> (drawing script, [input globs relative to out/u2_2d], caption).
+# Inputs are what the script READS, so "figure older than its newest input"
+# is a meaningful question. An empty input list means the figure is analytic
+# or a schematic and cannot go stale.
+FIGURES: dict[str, tuple[str, list[str], str]] = {
+    "fig1_det_density_L32_beta105.651.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml", LADDER,
+        "Determinant-sector plaquette density at the L=32 rung against the "
+        "exact marginal weight w_det(alpha) = 2 I_1(z)/z."),
+    "fig1_det_density_L64_beta416.524.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml", LADDER,
+        "The same at the top rung, L=64, beta=416.524."),
+    "fig2_sectors_L32_beta105.651.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml", LADDER,
+        "Topological sector weights at L=32 against the closed-form P(Q). The "
+        "reference ensemble is labelled seeded or sampled, since a seeded "
+        "reference cannot corroborate a sector weight it was handed."),
+    "fig2_sectors_L64_beta416.524.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml", LADDER,
+        "Sector weights at the top rung."),
+    "fig3_area_law_L32_beta105.651.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml", LADDER,
+        "Wilson loop expectation against the exact area law "
+        "<(1/2)ReTr W(A)> = r_fund^A at L=32."),
+    "fig3_area_law_L64_beta416.524.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml", LADDER,
+        "Area law at the top rung."),
+    "fig4_beta_matching.png": (
+        "06_figures.py", [],
+        "The minimum-KL U(1) projection `matched_u1_beta` against the naive "
+        "beta/4. They differ by 23% at beta=4 and 0.003% at beta=220, which is "
+        "why anything analytic must call the projection."),
+    "fig5_ladder.png": (
+        "06_figures.py --config u2_2d/configs/default.yaml",
+        ["ladder/summary.json"],
+        "The matched ladder: (L, beta) rungs and the topology-matched fine "
+        "beta that preserves exact <Q^2> rather than the plaquette."),
+    "fig06_seed_quality.png": (
+        "10_paper_figures.py", SEED_BENCH,
+        "SECTION LEAD. Relative plaquette error against trajectory number at "
+        "L=64, beta=416.524, for the diffusion seed and the cold, hot and "
+        "winding baselines. The seed starts at equilibrium to within the "
+        "resolution 64 configurations can offer; a cold start is three orders "
+        "of magnitude away and plateaus 5x short after 300 trajectories."),
+    "fig07_topological_reach.png": (
+        "10_paper_figures.py", SEED_BENCH,
+        "STRONGEST PANEL IN THE SECTION. Sectors occupied and <Q^2> against "
+        "trajectory, eight arms. Plain HMC sits flat at one sector; the "
+        "even-winding arm reaches zero odd sectors; the seed arrives carrying "
+        "them, because Q is transported from a coupling where it is sampled."),
+    "fig08_wilson_spread.png": (
+        "10_paper_figures.py", ["validation/wilson_distributions.json"],
+        "Per-configuration Wilson-loop distributions, generated against "
+        "reference, at both validated volumes."),
+    "fig09_parity_mobility.png": (
+        "10_paper_figures.py",
+        ["base_parity*/base_parity.json"],
+        "Parity flips against beta for the retired JOINT winding proposal and "
+        "the marginal odd move, at matched protocol. The joint rate falls to "
+        "zero over a range in which the marginal rate falls 15%: there is no "
+        "odd-charge mobility edge at L=16 below beta=28, only a badly priced "
+        "proposal."),
+    "fig10_winding_economics.png": (
+        "10_paper_figures.py", ["topology/topology_study.json"],
+        "The cost of the two winding moves. An even dQ is O(beta/V), which the "
+        "matched ladder holds nearly constant; an odd dQ must cross the Z_2 "
+        "monodromy and no fixed shift field does it cheaply."),
+    "fig11_ladder_accuracy.png": (
+        "10_paper_figures.py", ["ladder/summary.json"],
+        "Exact <Q^2> as a fixed point of the ladder, and the generated value "
+        "at each rung."),
+    "fig12_area_law.png": (
+        "10_paper_figures.py", ["validation/summary.json"],
+        "Validated area law across the ladder, generated against the closed "
+        "form."),
+    "fig13_cost.png": (
+        "16_cost_figures.py", ["seed_benchmark/cost.json"],
+        "Seconds per independent configuration by arm. Read as a cost claim, "
+        "not a speed-up: at 200 sampler steps the ladder is 3.87x SLOWER than "
+        "HMC + winding, and the point is which configurations each arm can "
+        "reach at all."),
+    "fig14_sampler_steps.png": (
+        "16_cost_figures.py",
+        ["sampler_steps/sampler_steps.json", "sampler_steps_low/sampler_steps.json"],
+        "Cost and accuracy against the number of reverse-diffusion steps. Read "
+        "the RUNG 0 pre-retherm column: the top rung's plaquette compounds two "
+        "lifts and crosses zero near 18 steps, so tuning on it picks a bad "
+        "setting."),
+    "fig15_prolongator.png": (
+        "20_prolongator_figure.py", ["prolongator_L64/*.json"],
+        "The learned prolongator against naive inverse blocking, matched on "
+        "cost."),
+    "fig16_distributions_L32_beta105.651.png": (
+        "22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0",
+        LADDER + ["checkpoints/det_score_net.pt"],
+        "Wilson loops at four areas plus P(Q) and |Q| at L=32, as "
+        "distributions rather than as a single scalar per rung."),
+    "fig16_distributions_L64_beta416.524.png": (
+        "22_distribution_figures.py --config u2_2d/configs/default.yaml",
+        LADDER + ["checkpoints/det_score_net.pt"],
+        "The same at the top rung."),
+    "fig17_z_distribution_L32_beta105.651.png": (
+        "22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0",
+        LADDER + ["checkpoints/det_score_net.pt"],
+        "z against the closed form over all observables at L=32."),
+    "fig17_z_distribution_L64_beta416.524.png": (
+        "22_distribution_figures.py --config u2_2d/configs/default.yaml",
+        LADDER + ["checkpoints/det_score_net.pt"],
+        "z against the closed form at the top rung."),
+    "fig18_z_vs_loop_area_L32_beta105.651.png": (
+        "22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0",
+        LADDER + ["checkpoints/det_score_net.pt"],
+        "std(z) against loop area at L=32 -- the u1 fig38 analogue. Residual "
+        "model error concentrates in extended observables."),
+    "fig18_z_vs_loop_area_L64_beta416.524.png": (
+        "22_distribution_figures.py --config u2_2d/configs/default.yaml",
+        LADDER + ["checkpoints/det_score_net.pt"],
+        "std(z) against loop area at the top rung."),
+    "fig19_freezing.png": (
+        "27_freezing_figure.py", SEED_BENCH,
+        "Q traces showing HMC frozen at the target coupling, the failure the "
+        "method exists to address."),
+    "fig20_honest_distributions_L64_beta416.524.png": (
+        "29_honest_distributions.py --config u2_2d/configs/default.yaml",
+        ["freezing_arms/*"],
+        "Sector-tail recovery with UNSEEDED classical arms and the "
+        "pre/post-rethermalization split shown separately, so the tail's "
+        "contribution is not folded into the model's."),
+    "fig21_seed_quality.png": (
+        "30_seed_quality_figure.py", ["crossover/*.json"],
+        "Seed t_therm against coupling over a 148x range, six arms (plain HMC "
+        "and HMC + marginal winding, each with cold, hot and seeded starts). "
+        "The two IN-SAMPLE couplings are marked and must not be quoted as "
+        "evidence of generalization. Read as a trend: adjacent couplings carry "
+        "~10x scatter in t_therm, so no single point is evidence."),
+    "fig22_division_of_labour.png": (
+        "31_division_of_labour.py", ["figures/honest_distributions_*.json"],
+        "Which scales the model has right, and what the rethermalization tail "
+        "repairs. Panel (a), z, is the statistic of record; scales whose raw "
+        "|z| < 2 are drawn hollow and shaded, because at 256 configurations "
+        "W(4x4) and larger are indistinguishable from exact in the RAW lift "
+        "and no trend may be drawn through them."),
+    "fig23_dissociation.png": (
+        "32_dissociation.py",
+        ["density_gap/density_gap.json", "validation/summary.json"],
+        "Observable-level agreement is sharp while the density is not -- the "
+        "u1 dissociation result reproduced in U(2)."),
+    "fig24_kl_per_site.png": (
+        "32_dissociation.py", ["density_gap/density_gap.json"],
+        "KL per site across cases."),
+    "fig25_retherm_scan.png": (
+        "33_retherm_scan.py", ["retherm_scan/*.json"],
+        "Observable error against rethermalization sweep count. Note the "
+        "retraction recorded in `retherm_reconcile/RECONCILIATION.md`: the "
+        "large-loop sign flips with sweep count and is consistent with zero, "
+        "so this figure supports no infrared-damage claim."),
+    "fig26_transport_exactness.png": (
+        "37_transport_figure.py", ["transport_check/*/transport_check.json"],
+        "Fine Q equals coarse Q for 100% of configurations, measured "
+        "configuration by configuration at both volumes and ten couplings. "
+        "This is the identity the whole framing rests on, checked on the "
+        "GENERATIVE path rather than on the blocking map."),
+    "fig27_volume_scan.png": (
+        "38_volume_figure.py", ["crossover/*.json", "crossover_L64/*.json"],
+        "Does the advantage survive volume. The coverage ORDERING transfers "
+        "exactly, but at essentially the same coupling and the same coverage "
+        "gap t_therm is 6 at L=32 and never at L=64: coverage is not the only "
+        "variable."),
+    "fig28_pipeline.png": (
+        "41_pipeline_schematic.py", [],
+        "Pipeline schematic, drawn once for BOTH studies -- the SU(2) "
+        "conditional-sampler box is dashed and labelled u2 only. Makes three "
+        "things visual: where P(Q) is sampled, that the charge branch runs "
+        "AROUND the network, and that exactness lives in the HMC tail."),
+    "fig29_observable_scan.png": (
+        "43_observable_scan.py", ["observable_scan/*.json"],
+        "Observable agreement across 12 couplings, raw lift and after 10 "
+        "rethermalization sweeps, against the closed form. Reported in "
+        "relative deviation AND in z, which point OPPOSITE ways here "
+        "(Spearman -0.82 against +0.80) because the theory's own spread moves "
+        "by orders of magnitude across the range."),
+    "fig30_multi_lift.png": (
+        "46_multi_lift_figure.py",
+        ["multi_lift_incov/*.json", "multi_lift_ceiling/*.json"],
+        "MAIN TEXT, method section, not the transfer section. Reaching one "
+        "fixed endpoint by 1, 2 and 3 lifts, u1 and u2 side by side: the rung "
+        "count is free, the error is injected by the LAST lift, and only the "
+        "intermediate rethermalization moves Q."),
+}
+
+# Where each figure sits in the paper. The order here is the order of
+# `appendix.md` and of `paper/main.tex`, and it is the reason `--write-appendix`
+# exists: the captions above are the single source, so a caption cannot drift
+# between the manifest and the appendix the way it would if both were hand-kept.
+# Section keys follow `docs/u1_2d/PAPER_OUTLINE.md`.
+SECTIONS: list[tuple[str, str, list[str]]] = [
+    ("Main text, section 3 (method)",
+     "The multi-lift result and the pipeline schematic are shared between the "
+     "two studies and belong with the method rather than with the transfer "
+     "demonstration.",
+     ["fig28_pipeline.png", "fig30_multi_lift.png"]),
+    ("Main text, section 8 (2D U(2)) -- the five-figure budget",
+     "Section 8 is a demonstration of transfer, not a second paper, and is "
+     "held to five figures.",
+     ["fig07_topological_reach.png", "fig06_seed_quality.png",
+      "fig09_parity_mobility.png", "fig13_cost.png",
+      "fig26_transport_exactness.png"]),
+    ("Appendix U2-A. Exact solvability and the matched ladder",
+     "2D U(2) was chosen because it is exactly solvable. These are the checks "
+     "that the implementation reproduces the closed form, and the ladder the "
+     "rest of the section runs on.",
+     ["fig4_beta_matching.png", "fig5_ladder.png",
+      "fig1_det_density_L32_beta105.651.png",
+      "fig1_det_density_L64_beta416.524.png",
+      "fig2_sectors_L32_beta105.651.png", "fig2_sectors_L64_beta416.524.png",
+      "fig3_area_law_L32_beta105.651.png", "fig3_area_law_L64_beta416.524.png",
+      "fig11_ladder_accuracy.png", "fig12_area_law.png"]),
+    ("Appendix U2-B. Topological freezing and the two winding moves",
+     "The failure being targeted, and the U(2)-specific fact that there are "
+     "two freezing mechanisms with different controlling parameters.",
+     ["fig19_freezing.png", "fig10_winding_economics.png",
+      "fig20_honest_distributions_L64_beta416.524.png"]),
+    ("Appendix U2-C. Coverage, volume, and where the seed stops working",
+     "Seed quality tracks distance to the nearest training rung, not beta. "
+     "These are the limits, stated rather than papered over.",
+     ["fig21_seed_quality.png", "fig29_observable_scan.png",
+      "fig27_volume_scan.png"]),
+    ("Appendix U2-D. How far from equilibrium the seed is",
+     "Observable-level agreement is sharp while the density is not. Read the "
+     "resolution notes: large Wilson loops are frequently not resolved at all "
+     "at 64-256 configurations.",
+     ["fig08_wilson_spread.png",
+      "fig16_distributions_L32_beta105.651.png",
+      "fig16_distributions_L64_beta416.524.png",
+      "fig17_z_distribution_L32_beta105.651.png",
+      "fig17_z_distribution_L64_beta416.524.png",
+      "fig18_z_vs_loop_area_L32_beta105.651.png",
+      "fig18_z_vs_loop_area_L64_beta416.524.png",
+      "fig22_division_of_labour.png", "fig23_dissociation.png",
+      "fig24_kl_per_site.png"]),
+    ("Appendix U2-E. Cost and tuning",
+     "Cost claims, and the two knobs that were measured rather than assumed.",
+     ["fig14_sampler_steps.png", "fig25_retherm_scan.png",
+      "fig15_prolongator.png"]),
+]
+
+APPENDIX_HEADER = """# 2D U(2) figure appendix
+
+Assembled by `u2_2d/scripts/49_assemble_appendix_figures.py`; captions are
+single-sourced from that script's `FIGURES` table, so this file is generated,
+not hand-kept. Regenerate with `--write-appendix`.
+
+Every figure below is in `figures/`, copied from `out/u2_2d/figures/` and
+checked against the data it was drawn from. `--check` fails if any figure is
+older than its newest input.
+
+**Two reporting rules apply throughout and are the reason several captions
+carry a resolution note.** (i) Any statement of the form "the deviation
+grows/shrinks with loop size" needs its standard error quoted alongside it:
+large Wilson loops have enormous per-configuration spread and at 64-256
+configurations are frequently not resolved. (ii) A `mean |z|` must be read
+against the half-normal null `sqrt(2/pi) = 0.798` at the EFFECTIVE observable
+count, which is 3.77 at L=32 and 3.25 at L=64 -- not at the raw count of 41.
+"""
+
+
+# Present in out/u2_2d/figures/ and deliberately NOT tracked, with the reason.
+# Recorded so "untracked" means "unexamined" rather than "known and excluded".
+EXCLUDED = {
+    "fig1_det_density_L16_beta56.png": "smoke config (smoke.yaml), not a ladder rung",
+    "fig2_sectors_L16_beta56.png": "smoke config, not a ladder rung",
+    "fig3_area_law_L16_beta56.png": "smoke config, not a ladder rung",
+}
+
+
+def sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def newest_input(patterns: list[str]) -> tuple[float, str | None]:
+    """mtime of the newest file matching any pattern, and which file it was."""
+    best, which = 0.0, None
+    for pattern in patterns:
+        for hit in glob.glob(str(OUT / pattern)):
+            mtime = Path(hit).stat().st_mtime
+            if mtime > best:
+                best, which = mtime, str(Path(hit).relative_to(OUT))
+    return best, which
+
+
+def write_appendix() -> list[str]:
+    """Generate appendix.md from FIGURES + SECTIONS. Returns any complaints.
+
+    Generated rather than hand-kept so a caption cannot say one thing in the
+    manifest and another in the appendix, which is the drift this whole script
+    exists to prevent one level up.
+    """
+    placed = [name for _, _, names in SECTIONS for name in names]
+    problems = []
+    duplicated = sorted({n for n in placed if placed.count(n) > 1})
+    if duplicated:
+        problems.append(f"figures placed in more than one section: {duplicated}")
+    unplaced = sorted(set(FIGURES) - set(placed))
+    if unplaced:
+        problems.append(f"tracked but in no section: {unplaced}")
+    unknown = sorted(set(placed) - set(FIGURES))
+    if unknown:
+        problems.append(f"placed in a section but not tracked: {unknown}")
+
+    lines = [APPENDIX_HEADER]
+    number = 0
+    for title, blurb, names in SECTIONS:
+        lines += [f"## {title}", "", blurb, ""]
+        for name in names:
+            if name not in FIGURES:
+                continue
+            number += 1
+            script, _inputs, caption = FIGURES[name]
+            lines += [
+                f"### Figure U2-{number}: `{name}`",
+                "",
+                f"![{name}](figures/{name})",
+                "",
+                caption,
+                "",
+                f"*Drawn by `u2_2d/scripts/{script}`.*",
+                "",
+            ]
+    APPENDIX_MD.parent.mkdir(parents=True, exist_ok=True)
+    APPENDIX_MD.write_text("\n".join(lines), encoding="utf-8")
+    return problems
+
+
+def referenced_in_appendix() -> set[str]:
+    if not APPENDIX_MD.exists():
+        return set()
+    text = APPENDIX_MD.read_text(encoding="utf-8")
+    return set(re.findall(r"figures/(\S+?\.png)", text))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--check", action="store_true",
+                        help="report without writing anything; non-zero exit "
+                             "if any figure is stale or missing")
+    parser.add_argument("--write-appendix", action="store_true",
+                        help="regenerate paper_appendix/appendix.md from the "
+                             "captions in this file")
+    args = parser.parse_args()
+
+    FIG_DIR.mkdir(parents=True, exist_ok=True)
+    if args.write_appendix:
+        for problem in write_appendix():
+            print(f"[appendix] {problem}")
+        print(f"wrote {APPENDIX_MD}")
+    stale, missing, not_copied, rows = [], [], [], []
+
+    for name, (script, inputs, _caption) in FIGURES.items():
+        src = FIG_SRC / name
+        if not src.exists():
+            missing.append(f"{name}: not drawn; run u2_2d/scripts/{script}")
+            rows.append((name, script, None))
+            continue
+
+        fig_mtime = src.stat().st_mtime
+        input_mtime, culprit = newest_input(inputs)
+        if input_mtime > fig_mtime:
+            stale.append(name)
+            age = (input_mtime - fig_mtime) / 3600.0
+            print(f"[STALE  ] {name}")
+            print(f"           {culprit} is {age:.1f} h newer; "
+                  f"rerun u2_2d/scripts/{script}")
+        elif not inputs:
+            print(f"[static ] {name}  <- {script} (analytic, cannot go stale)")
+        else:
+            print(f"[ok     ] {name}  <- {script}")
+
+        target = FIG_DIR / name
+        differs = (not target.exists()) or sha256(src) != sha256(target)
+        if differs:
+            if args.check:
+                not_copied.append(name)
+            else:
+                shutil.copy2(src, target)
+        rows.append((name, script, src))
+
+    referenced = referenced_in_appendix()
+    unreferenced = sorted(set(FIGURES) - referenced)
+    orphans = sorted(referenced - set(FIGURES))
+    on_disk = {p.name for p in FIG_SRC.glob("*.png")}
+    untracked = sorted(on_disk - set(FIGURES) - set(EXCLUDED))
+
+    if not args.check:
+        lines = [
+            "# u2 appendix figure manifest",
+            "",
+            f"Assembled {datetime.now(timezone.utc):%Y-%m-%d %H:%M UTC} by "
+            "`u2_2d/scripts/49_assemble_appendix_figures.py`.",
+            "",
+            "`source mtime` is the figure's own; `newest input` is the most "
+            "recently modified file it was drawn from. A figure whose input is "
+            "newer than itself is stale, which is what `--check` gates on.",
+            "",
+            "| figure | drawn by | sha256 (12) | figure mtime | newest input |",
+            "|---|---|---|---|---|",
+        ]
+        for name, script, src in rows:
+            if src is None:
+                lines.append(f"| {name} | `{script}` | MISSING | - | - |")
+                continue
+            digest = sha256(src)[:12]
+            mtime = datetime.fromtimestamp(
+                src.stat().st_mtime, timezone.utc).strftime("%Y-%m-%d %H:%M")
+            _, culprit = newest_input(FIGURES[name][1])
+            lines.append(f"| {name} | `{script}` | `{digest}` | {mtime} | "
+                         f"`{culprit or 'none (analytic)'}` |")
+        if EXCLUDED:
+            lines += ["", "## Present but deliberately not tracked", "",
+                      "| figure | why |", "|---|---|"]
+            lines += [f"| {k} | {v} |" for k, v in sorted(EXCLUDED.items())]
+        (FIG_DIR / "MANIFEST.md").write_text("\n".join(lines) + "\n",
+                                             encoding="utf-8")
+        print(f"\nwrote {FIG_DIR / 'MANIFEST.md'}")
+
+    print(f"\n{len(FIGURES)} figures tracked; {len(stale)} stale, "
+          f"{len(missing)} missing, {len(untracked)} untracked on disk")
+    for label, items in (("missing", missing),
+                         ("untracked in out/u2_2d/figures", untracked),
+                         ("not copied (--check)", not_copied),
+                         ("referenced by appendix.md but not tracked", orphans),
+                         ("tracked but never referenced in appendix.md",
+                          unreferenced)):
+        if items:
+            print(f"  {label}: {items}")
+
+    if stale or missing:
+        print("\nFAIL: figure directory is not up to date")
+        return 1
+    if args.check and (not_copied or orphans or unreferenced):
+        print("\nFAIL: paper_appendix/figures is not in sync with out/u2_2d/figures")
+        return 1
+    print("\nfigure directory is consistent")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

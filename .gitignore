@@ -24,3 +24,9 @@ out/**/*.pt.resume
 # history operation. u1_2d logs stay tracked; that study is closed.
 out/u2_2d/logs/
 out/u2_2d/keep_awake.log
+
+# Overleaf export bundle -- 14 MB of figures duplicated out of both studies'
+# paper_appendix/figures/, regenerated in seconds by
+# u1_2d/scripts/64_export_paper_bundle.py. The appendix directories themselves
+# ARE tracked; this is the copy made for upload.
+paper/

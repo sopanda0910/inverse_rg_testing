@@ -1200,7 +1200,74 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
   (Q integrality, gauge invariance, blocking telescope, curl-head completeness,
   <Q^2> ladder fixed point, area law, instanton cost). Seconds; must pass.
 - `python u1_2d/scripts/30_assemble_appendix_figures.py --check` — verifies the
-  27 appendix figures match their canonical sources. Run before submitting.
+  **46** (not 27) u1 appendix figures match their canonical sources. Run before
+  submitting.
+- `python u2_2d/scripts/49_assemble_appendix_figures.py --check` — the u2
+  equivalent, added 2026-08-22, and its **staleness test is different by
+  necessity**. u1's appendix figures are COPIES, so staleness is a hash mismatch
+  against the source. Every u2 figure is written in place by its own script, so
+  there is no second copy to compare — what can be compared is TIME, and a
+  figure is stale when it is older than the newest input it was drawn from.
+  Weaker than a hash (blind to a source edited without touching mtime, fires on
+  a harmless re-save) but it catches the failure this project actually has: an
+  upstream run regenerated while the figure below it was not. On its first run
+  it caught three — `fig08`, `fig12`, `fig23` were drawn from the naive-SEM
+  validation before `out/u2_2d/validation/` was promoted to the tau_int-aware
+  numbers. 36 figures tracked; the three L16/beta56 smoke-config variants of
+  fig1-3 are listed as deliberately EXCLUDED so "untracked" means "unexamined".
+  `--write-appendix` regenerates `out/u2_2d/paper_appendix/appendix.md` from
+  the captions in the script, so a caption cannot say one thing in the manifest
+  and another in the appendix.
+- `python u1_2d/scripts/64_export_paper_bundle.py` — assembles
+  `paper/main.tex` + `paper/figures/{u1_2d,u2_2d}/` for Overleaf (gitignored;
+  regenerable). It is a section-by-section OUTLINE with real figures, captions
+  and cross-references and no prose. Three things it does that a manual copy
+  gets wrong: rewrites dots out of filenames (`beta105.651` defeats graphicx
+  extension detection); checks every tracked figure is placed EXACTLY once
+  across the plan, so a figure in no section is an error rather than a silent
+  omission; and converts u2's plain-markdown captions to LaTeX (they contain
+  `<Q^2>`, `w_det(alpha)`, `Z_2` — a blanket escape is unreadable and no escape
+  is a hard error). There is no TeX toolchain in this environment, so it lints
+  for unescaped specials rather than compiling; build once in Overleaf before
+  trusting it.
+  **TWO-COLUMN (`\documentclass[twocolumn,10pt]{article}`), and the span of each
+  figure is MEASURED, not guessed.** A single column here is ~3.2 in, and these
+  are mostly multi-panel plots — median aspect 1.89 — so 72 of the 82 get
+  `figure*` and span both columns. The rule is `aspect >= 1.5` OR
+  `native width >= 2000 px`, and the second clause exists because aspect alone
+  got it wrong: `46_observable_scan.png` is a four-panel figure 2459 px wide at
+  aspect 1.48, just under the threshold, and would have been squeezed to 1.6 in
+  per panel. Editorial exceptions live in `FORCE_SPAN` (currently u1's lead
+  figure) rather than being smuggled in by tuning the threshold. Figures past
+  `aspect 6` get a `% WARNING` comment — `16_autocorrelation_modes.png` is
+  16588x1326 and is a 0.5 in strip even at full text width; it needs splitting
+  or rotating. `\linewidth` is used for every width so one spec serves both
+  environments. Title and abstract span via the standard
+  `\twocolumn[\begin{@twocolumnfalse}...]` idiom. Switching to APS styling is
+  one line (`revtex4-2`), noted in the file's own header.
+  **THE OVERLEAF COMPILE TIMEOUT WAS AN RGBA PROBLEM, NOT A FIGURE-COUNT ONE
+  (2026-08-22).** Matplotlib writes colour type 6 (RGBA), and all 82 figures
+  were. pdfTeX copies a PNG's compressed stream straight into the PDF ONLY for
+  colour types 0/2/3 at 8 or 16 bits, non-interlaced, with no transparency;
+  RGBA misses that path, so it decodes with libpng, splits the alpha into a
+  separate SOFT-MASK image and re-encodes both -- over 145 megapixels here.
+  That is what exhausts a free-plan budget, and dropping figures would not have
+  fixed it. The exporter now flattens onto white, which is **exactly lossless
+  in this bundle** (every alpha channel measured fully opaque, extrema
+  (255,255); output verified pixel-identical, worst difference 0 across all 82)
+  and yields RGB 8-bit non-interlaced -- the pass-through case.
+  **Do NOT "fix" this by downsampling:** resampling anti-aliased line art
+  creates more distinct colours than the crisp original, so a 300 dpi cap
+  measured **112%** of the original bytes -- it costs quality and saves
+  nothing -- and pixel count stops mattering once decoding is skipped.
+  Escalation if it is still too heavy: `--palette` (256 colours, 14.0 -> 5.6 MB,
+  still pass-through, but LOSSY: worst case measured 0.33% of pixels off by more
+  than 8/255, all on anti-aliased edges), and `--draft`, which emits
+  `\includegraphics[draft]` so no image file is read at all -- the way to
+  iterate on structure and float placement.
+  **The main-text pipeline schematic is u2's `fig28_pipeline`, not
+  u1's `44_pipeline`** — `41_pipeline_schematic.py` draws one schematic for both
+  studies — and `fig30_multi_lift` sits in the METHOD section, not section 8.
 
 ## File Layout
 

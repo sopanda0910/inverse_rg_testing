@@ -26,6 +26,7 @@ Last updated 2026-08-22.
 | density gap / KL per site | `18_density_gap.py` | `15_model_ess.py`, `19_ode_reweighting.py` | both |
 | **multi-lift compounding** | **`45_multi_lift_compounding.py`** | **`60_multi_lift_compounding.py`** | **both (NEW 2026-08-21)** |
 | **verdict calibration against a synthetic null** | **`48_verdict_calibration.py`** | **gap -- see section 5 item 10** | **u2 only, NEW 2026-08-22** |
+| **appendix figure gate** | **`49_assemble_appendix_figures.py --check`** | `30_assemble_appendix_figures.py --check` | **both as of 2026-08-22** -- different staleness tests by necessity, see section 5 item 14 |
 
 ## 2. Gaps being closed
 
@@ -258,7 +259,7 @@ study that the other then had to be checked for.
       Where a verdict is close to its threshold, the right response is another
       seed, not a hedge in the write-up.
 
-11. **Save the expensive intermediate, not just the summary.** The u2 statistics
+12. **Save the expensive intermediate, not just the summary.** The u2 statistics
     above were rebuilt twice in one day, and each rebuild cost hours of HMC to
     regenerate verdicts because `07_pq_sampling.py` wrote only its summary. It
     now saves the `[n_draws, n_chains]` charge histories and takes
@@ -268,13 +269,38 @@ study that the other then had to be checked for.
     of a re-run. u1 audit obligation, OPEN: check which u1 stages discard their
     per-configuration series.
 
-9. **Superseded artefacts get a README, not a deletion.** When u2's validation
+13. **Superseded artefacts get a README, not a deletion.** When u2's validation
    moved to tau_int-aware errors on 2026-08-22, the naive-SEM run was kept at
    `out/u2_2d/validation_naive_superseded/` with a README saying what is wrong
    with it, and the promoted directory got one saying what changed and how to
    read `mean |z|` against the null. Same for `configs/v3_scale_s18.yaml`, which
    is kept as the record of a negative result. A deleted artefact cannot be
    audited and a silently promoted one cannot be trusted.
+
+14. **A FIGURE DIRECTORY NEEDS A GATE, AND THE GATE MUST MATCH HOW THE
+    FIGURES ARE PRODUCED.** u1 had `30_assemble_appendix_figures.py --check`
+    from the start; u2 had 39 figures written in place by sixteen scripts with
+    no manifest, no captions and no way to tell whether a figure predated its
+    data. `docs/u2_2d/FIGURE_PARITY.md` tracks which CLAIMS have a figure and
+    says nothing about whether the file on disk is current.
+    `u2_2d/scripts/49_assemble_appendix_figures.py` (2026-08-22) closes it, but
+    NOT by copying u1's test: u1's figures are copies, so staleness is a hash
+    mismatch against the source; u2's are written in place, so there is no
+    second copy and the comparable quantity is TIME -- a figure is stale when
+    it is older than the newest input it was drawn from. **The port would have
+    been vacuous done literally.** It caught three figures on its first run
+    (`fig08`, `fig12`, `fig23`, all drawn from the naive-SEM validation before
+    the tau_int-aware promotion). Captions are single-sourced in the script and
+    `--write-appendix` generates the markdown appendix from them, so a caption
+    cannot drift between manifest and appendix.
+    **u1 audit obligation, OPEN, and state it precisely.** For the 20 u1
+    figures that are COPIES the hash test already covers this: a regenerated
+    source changes the hash and reports STALE. But **26 of u1's 46 are written
+    directly into the figure directory by their own script** (`SOURCES[name] is
+    None`), exactly like every u2 figure, and for those u1 records no inputs and
+    performs no staleness test whatsoever -- it only checks the file exists. So
+    the gap is confined to those 26, and closing it means giving u1 the input
+    table u2 now has.
 
 ## 6. Results where the two studies AGREE (added 2026-08-22)
 

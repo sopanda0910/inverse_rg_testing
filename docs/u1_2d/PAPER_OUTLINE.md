@@ -875,19 +875,19 @@ Not "the method is faster in 2D U(2)". The claim is:
 
 ## 9. Related work
 
-### 8.1 Classical multiscale thermalization — the direct ancestor
+### 9.1 Classical multiscale thermalization — the direct ancestor
 Endres et al. and Detmold–Endres, front and centre. The structural
 correspondence: matched-β ladder ↔ their r₀ matching; the HMC tail ↔ their
 step 4; sector transport ↔ their Q-preserving prolongation. **This paper is
 their algorithm with a learned prolongator, and §4.2 is the comparison.**
 
-### 8.2 The learned coarse-to-fine line
+### 9.2 The learned coarse-to-fine line
 Inverse-RG upscaling (Ron–Swendsen–Brandt; Efthymiou et al.; Bachtis et al.),
 RG-inspired flows (Bauer et al.), diffusion for gauge theory (Wang et al.; Zhu
 et al.). All validate on critical exponents or observables; none measures
 thermalization cost or asks whether the generated ensemble is Boltzmann.
 
-### 8.3 Width is not correctness
+### 9.3 Width is not correctness
 The Zhu et al. case at L = 16, β = 7 (exact ⟨Q²⟩ = 1.0064): their HMC arm
 0.06×, their diffusion arm 2.36×, ours 1.08× with χ² p = 0.41. Both of their
 arms reject the exact distribution overwhelmingly, in opposite directions.
@@ -903,7 +903,7 @@ digitization and our row as an out-of-range checkpoint use.
   overlaid, the digitization and the out-of-range checkpoint use both labelled
   on the panel itself.
 
-### 8.4 Positioning
+### 9.4 Positioning
 Novel: the learned prolongator, the `t_therm` comparison against a tuned
 classical arm, the density-gap measurement, the ladder invariant, and the
 reporting protocol. Not novel: the ladder concept, the equivariant
