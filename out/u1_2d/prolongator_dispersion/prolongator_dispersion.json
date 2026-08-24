@@ -1,0 +1,149 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 14.1464,
+    "n_configs": 64,
+    "exact_plaquette": 0.9639807778019461,
+    "exact_sigma_1config": 0.0015927925862906484,
+    "arms": {
+      "tile": {
+        "mean": 0.8581491112709045,
+        "rel_err": -0.1097860755816701,
+        "std_across_configs": 0.013454746454954147,
+        "std_ratio_to_exact": 8.447268383065516,
+        "z_from_measured_sem": -62.925996791012594,
+        "z_from_exact_sem": -531.5527831656028
+      },
+      "halve": {
+        "mean": 0.4027419686317444,
+        "rel_err": -0.5822095441051529,
+        "std_across_configs": 0.02363615483045578,
+        "std_ratio_to_exact": 14.839443022208242,
+        "z_from_measured_sem": -189.95942891591872,
+        "z_from_exact_sem": -2818.8921219289928
+      },
+      "flux": {
+        "mean": 0.6606444120407104,
+        "rel_err": -0.31467055437858266,
+        "std_across_configs": 0.03099657967686653,
+        "std_ratio_to_exact": 19.46052483145496,
+        "z_from_measured_sem": -78.28899031401782,
+        "z_from_exact_sem": -1523.5448400354808
+      },
+      "ape": {
+        "mean": 0.9686366319656372,
+        "rel_err": 0.004829820543006346,
+        "std_across_configs": 0.002822567243129015,
+        "std_ratio_to_exact": 1.7720871301280408,
+        "z_from_measured_sem": 13.196083600912855,
+        "z_from_exact_sem": 23.384609917271366
+      },
+      "smear": {
+        "mean": 0.9640259742736816,
+        "rel_err": 4.688524167314352e-05,
+        "std_across_configs": 0.0014562783762812614,
+        "std_ratio_to_exact": 0.9142925380339031,
+        "z_from_measured_sem": 0.24828479209268983,
+        "z_from_exact_sem": 0.22700493271764532
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "n_configs": 64,
+    "exact_plaquette": 0.9908709754324568,
+    "exact_sigma_1config": 0.00040346896490523447,
+    "arms": {
+      "tile": {
+        "mean": 0.9636237621307373,
+        "rel_err": -0.027498245460089017,
+        "std_across_configs": 0.003343705553561449,
+        "std_ratio_to_exact": 8.287392202140772,
+        "z_from_measured_sem": -65.19046097871379,
+        "z_from_exact_sem": -540.258917968955
+      },
+      "halve": {
+        "mean": 0.40621519088745117,
+        "rel_err": -0.5900422951533502,
+        "std_across_configs": 0.028140369802713394,
+        "std_ratio_to_exact": 69.74605793861473,
+        "z_from_measured_sem": -166.21125838612997,
+        "z_from_exact_sem": -11592.580057449084
+      },
+      "flux": {
+        "mean": 0.6659637689590454,
+        "rel_err": -0.3279006192825545,
+        "std_across_configs": 0.03386469557881355,
+        "std_ratio_to_exact": 83.93383016898855,
+        "z_from_measured_sem": -76.75420101556857,
+        "z_from_exact_sem": -6442.27407279714
+      },
+      "ape": {
+        "mean": 0.9898208975791931,
+        "rel_err": -0.0010597523585807152,
+        "std_across_configs": 0.0017112648347392678,
+        "std_ratio_to_exact": 4.241379098739861,
+        "z_from_measured_sem": -4.9090138800109795,
+        "z_from_exact_sem": -20.820988866102432
+      },
+      "smear": {
+        "mean": 0.9908170700073242,
+        "rel_err": -5.4402062901368154e-05,
+        "std_across_configs": 0.00045440264511853456,
+        "std_ratio_to_exact": 1.1262394004090581,
+        "z_from_measured_sem": -0.9490336504278909,
+        "z_from_exact_sem": -1.0688390894259274
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 218.58,
+    "n_configs": 64,
+    "exact_plaquette": 0.9977115725410537,
+    "exact_sigma_1config": 0.00010121001355144937,
+    "arms": {
+      "tile": {
+        "mean": 0.9907509088516235,
+        "rel_err": -0.006976629199260632,
+        "std_across_configs": 0.0008688613306730986,
+        "std_ratio_to_exact": 8.584736827758839,
+        "z_from_measured_sem": -64.0899848452254,
+        "z_from_exact_sem": -550.1956531913124
+      },
+      "halve": {
+        "mean": 0.41055428981781006,
+        "rel_err": -0.5885040315086486,
+        "std_across_configs": 0.023868484422564507,
+        "std_ratio_to_exact": 235.83125409257195,
+        "z_from_measured_sem": -196.7975083221166,
+        "z_from_exact_sem": -46411.003189898125
+      },
+      "flux": {
+        "mean": 0.6741546392440796,
+        "rel_err": -0.32429906818952975,
+        "std_across_configs": 0.031352974474430084,
+        "std_ratio_to_exact": 309.7813484482149,
+        "z_from_measured_sem": -82.55852944628292,
+        "z_from_exact_sem": -25575.092577771175
+      },
+      "ape": {
+        "mean": 0.9977251291275024,
+        "rel_err": 1.3587680870756615e-05,
+        "std_across_configs": 0.0005140315624885261,
+        "std_ratio_to_exact": 5.0788607218911395,
+        "z_from_measured_sem": 0.2109844988213334,
+        "z_from_exact_sem": 1.0715608839915576
+      },
+      "smear": {
+        "mean": 0.9975930452346802,
+        "rel_err": -0.00011879916965545662,
+        "std_across_configs": 0.00022818378056399524,
+        "std_ratio_to_exact": 2.254557356105873,
+        "z_from_measured_sem": -4.155503290568911,
+        "z_from_exact_sem": -9.368820512074297
+      }
+    }
+  }
+]

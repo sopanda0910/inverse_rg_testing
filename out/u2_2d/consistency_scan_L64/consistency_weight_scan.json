@@ -1,0 +1,184 @@
+{
+  "lattice_size": 64,
+  "beta": 416.524,
+  "n_configs": 256,
+  "exact_plaquette": 0.9951954459438838,
+  "exact_sigma_1config": 5.308349518543948e-05,
+  "exact_q_squared": 1.0011887008808318,
+  "rows": [
+    {
+      "consistency_weight": 0.0,
+      "seconds": 282.6624894142151,
+      "telescope_abs_mean": 0.07217720150947571,
+      "telescope_frac_gt_half": 0.0,
+      "raw_residual_abs_mean": 0.07217720150947571,
+      "defects_per_config": 0.0,
+      "resid_coherent_mean": 0.01768871769309044,
+      "resid_incoherent_std": 0.08769869804382324,
+      "sum_resid_over_2pi_std": 3.3746368885040283,
+      "dq_std": 3.3680393354062463,
+      "dq_mean": -1.4921875,
+      "sector_match": 0.125,
+      "q_squared": 16.0625,
+      "q_squared_over_exact": 16.043429161624015,
+      "plaq_mean": 0.9950664043426514,
+      "plaq_rel_err": -0.00012966458172445245,
+      "plaq_sigma_over_exact": 1.0925939620613605,
+      "loops": {
+        "wilson_2x2": {
+          "value": 0.9805310368537903,
+          "rel_err": -0.00039636911353450904
+        },
+        "wilson_4x4": {
+          "value": 0.9241549968719482,
+          "rel_err": -0.0018156973023089116
+        }
+      }
+    },
+    {
+      "consistency_weight": 1.0,
+      "seconds": 263.2540121078491,
+      "telescope_abs_mean": 0.039337702095508575,
+      "telescope_frac_gt_half": 0.0,
+      "raw_residual_abs_mean": 0.039337702095508575,
+      "defects_per_config": 0.0,
+      "resid_coherent_mean": 0.017736652866005898,
+      "resid_incoherent_std": 0.04403958469629288,
+      "sum_resid_over_2pi_std": 3.4787521362304688,
+      "dq_std": 3.471950944263902,
+      "dq_mean": -0.984375,
+      "sector_match": 0.109375,
+      "q_squared": 14.75,
+      "q_squared_over_exact": 14.732487479156683,
+      "plaq_mean": 0.9952555894851685,
+      "plaq_rel_err": 6.0433899220322155e-05,
+      "plaq_sigma_over_exact": 1.0946245305779734,
+      "loops": {
+        "wilson_2x2": {
+          "value": 0.9809718132019043,
+          "rel_err": 5.2980903367958574e-05
+        },
+        "wilson_4x4": {
+          "value": 0.9249931573867798,
+          "rel_err": -0.0009103960575202229
+        }
+      }
+    },
+    {
+      "consistency_weight": 2.0,
+      "seconds": 412.8397424221039,
+      "telescope_abs_mean": 0.054247528314590454,
+      "telescope_frac_gt_half": 0.0,
+      "raw_residual_abs_mean": 0.054247528314590454,
+      "defects_per_config": 0.0,
+      "resid_coherent_mean": 0.019294600933790207,
+      "resid_incoherent_std": 0.06360237300395966,
+      "sum_resid_over_2pi_std": 3.873155117034912,
+      "dq_std": 3.8655832373198793,
+      "dq_mean": -0.44921875,
+      "sector_match": 0.09375,
+      "q_squared": 16.24609375,
+      "q_squared_over_exact": 16.226804932683432,
+      "plaq_mean": 0.995250940322876,
+      "plaq_rel_err": 5.576229193812542e-05,
+      "plaq_sigma_over_exact": 1.067767556599919,
+      "loops": {
+        "wilson_2x2": {
+          "value": 0.9808603525161743,
+          "rel_err": -6.064783653841254e-05
+        },
+        "wilson_4x4": {
+          "value": 0.9245984554290771,
+          "rel_err": -0.001336715559937425
+        }
+      }
+    },
+    {
+      "consistency_weight": 5.0,
+      "seconds": 428.7950155735016,
+      "telescope_abs_mean": 0.1025293618440628,
+      "telescope_frac_gt_half": 0.000110626220703125,
+      "raw_residual_abs_mean": 0.1025293618440628,
+      "defects_per_config": 0.0,
+      "resid_coherent_mean": 0.021523669362068176,
+      "resid_incoherent_std": 0.12566860020160675,
+      "sum_resid_over_2pi_std": 4.378170967102051,
+      "dq_std": 4.369611637133786,
+      "dq_mean": 0.015625,
+      "sector_match": 0.11328125,
+      "q_squared": 19.0234375,
+      "q_squared_over_exact": 19.00085117147591,
+      "plaq_mean": 0.9951254725456238,
+      "plaq_rel_err": -7.031121228013246e-05,
+      "plaq_sigma_over_exact": 1.1916075641815442,
+      "loops": {
+        "wilson_2x2": {
+          "value": 0.9804065227508545,
+          "rel_err": -0.0005233051764566531
+        },
+        "wilson_4x4": {
+          "value": 0.9239251017570496,
+          "rel_err": -0.0020640081329980006
+        }
+      }
+    },
+    {
+      "consistency_weight": 10.0,
+      "seconds": 420.64706110954285,
+      "telescope_abs_mean": 0.1579616814851761,
+      "telescope_frac_gt_half": 0.01153564453125,
+      "raw_residual_abs_mean": 0.1579616814851761,
+      "defects_per_config": 0.0,
+      "resid_coherent_mean": 0.025981800630688667,
+      "resid_incoherent_std": 0.19539283215999603,
+      "sum_resid_over_2pi_std": 5.206231117248535,
+      "dq_std": 5.19605257886636,
+      "dq_mean": 0.3203125,
+      "sector_match": 0.05078125,
+      "q_squared": 27.515625,
+      "q_squared_over_exact": 27.482955986011568,
+      "plaq_mean": 0.9948627948760986,
+      "plaq_rel_err": -0.0003342570237242477,
+      "plaq_sigma_over_exact": 1.745103163833583,
+      "loops": {
+        "wilson_2x2": {
+          "value": 0.9794743061065674,
+          "rel_err": -0.0014736546374917569
+        },
+        "wilson_4x4": {
+          "value": 0.9221729040145874,
+          "rel_err": -0.003956565428763403
+        }
+      }
+    },
+    {
+      "consistency_weight": 30.0,
+      "seconds": 419.7749240398407,
+      "telescope_abs_mean": 1.5729070901870728,
+      "telescope_frac_gt_half": 0.8421211242675781,
+      "raw_residual_abs_mean": 2.9359500408172607,
+      "defects_per_config": 411.67578125,
+      "resid_coherent_mean": 0.09330916404724121,
+      "resid_incoherent_std": 3.6261496543884277,
+      "sum_resid_over_2pi_std": 19.01752281188965,
+      "dq_std": 18.98034253405246,
+      "dq_mean": -0.56640625,
+      "sector_match": 0.0234375,
+      "q_squared": 360.41015625,
+      "q_squared_over_exact": 359.9822450382392,
+      "plaq_mean": 0.6333962678909302,
+      "plaq_rel_err": -0.36354585375921666,
+      "plaq_sigma_over_exact": 89.7477330282109,
+      "loops": {
+        "wilson_2x2": {
+          "value": 0.18300944566726685,
+          "rel_err": -0.813430784442576
+        },
+        "wilson_4x4": {
+          "value": 0.0013331532245501876,
+          "rel_err": -0.9985600547242173
+        }
+      }
+    }
+  ]
+}

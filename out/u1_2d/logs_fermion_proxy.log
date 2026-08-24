@@ -1,0 +1,23 @@
+  base: wilson_L16_beta4.pt
+
+=== 32:14.1464 (coarse 16:4.0000), 64 configs ===
+  smear  t_therm(slowest Wilson) = 19      blocking |err| = 3.14e+00  acc = 0.986  rel err at t=0 = -2.96e-04  build = 45.6s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 0       blocking |err| = 3.14e+00  acc = 0.986  rel err at t=0 = +8.31e-05  build = 4.2s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=14.1464
+
+=== 32:55.0237 (coarse 16:14.1464), 64 configs ===
+  smear  t_therm(slowest Wilson) = > 640   blocking |err| = 3.14e+00  acc = 0.977  rel err at t=0 = -2.02e-04  build = 45.5s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 24      blocking |err| = 3.14e+00  acc = 0.978  rel err at t=0 = +4.13e-06  build = 3.7s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=55.0236
+
+=== 32:218.58 (coarse 16:55.0236), 64 configs ===
+  smear  t_therm(slowest Wilson) = > 640   blocking |err| = 3.14e+00  acc = 0.976  rel err at t=0 = -1.10e-04  build = 41.6s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 0       blocking |err| = 3.14e+00  acc = 0.975  rel err at t=0 = +1.35e-05  build = 4.2s  sweeps = 200
+
+| case | smear | smear_mh | diffusion seed (Fig. 12) |
+|---|---|---|---|
+| 32:14.1464 | 19 | 0 | 0 |
+| 32:55.0237 | > 640 | 24 | 0 |
+| 32:218.58 | > 640 | 0 | 6 |
+
+wrote out\u1_2d\fermion_proxy\tiling_baseline.json

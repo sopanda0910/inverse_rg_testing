@@ -1,0 +1,4 @@
+rung 1: L=64 beta=416.524  n_traj=400  chains=64  winding=True  n_su2=30  n_retherm=0
+  smear: 15 tuned sweeps (9s)
+  diffusion_raw    t_therm(plaq)=20      tau_int(plaq)=  3.27  sigma(t0)/exact=   0.88  sigma(tail)/exact= 0.98  tau_int(Q^2)=  4.92  flips=3142
+  smear            t_therm(plaq)=0       tau_int(plaq)=  3.90  sigma(t0)/exact=   1.03  sigma(tail)/exact= 1.02  tau_int(Q^2)=  5.21  flips=3046

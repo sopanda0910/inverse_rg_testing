@@ -1,0 +1,129 @@
+{
+  "config": {
+    "config": "u2_2d/configs/default.yaml",
+    "device": null,
+    "out_dir": "out/u2_2d/ta_L64_topo_tuned",
+    "n_traj": 300,
+    "n_chains": 64,
+    "rung": -1,
+    "checkpoint": null,
+    "n_su2": null,
+    "n_retherm": null,
+    "arms": [
+      "diffusion_tuned",
+      "smear"
+    ],
+    "winding": true,
+    "charge_step": 1,
+    "winding_interval": 5,
+    "tail": 0.5
+  },
+  "lattice_size": 64,
+  "beta": 416.524,
+  "exact": {
+    "plaquette": 0.9951954459438838,
+    "wilson_2x2": 0.9809198431824809,
+    "wilson_4x4": 0.9258360348628291,
+    "wilson_8x8": 0.7347444606633602
+  },
+  "exact_sigma_1config_plaquette": 5.308349518543948e-05,
+  "t_therm_floor_p90": 4.0,
+  "rows": [
+    {
+      "arm": "diffusion_tuned",
+      "tuned_sweeps": 15,
+      "seconds": 684.9364848136902,
+      "parity_flips": 2296,
+      "tau_int_q_squared": 3.9002936889121975,
+      "mean_q_squared_tail": 0.9996895695364238,
+      "observables": {
+        "plaquette": {
+          "t_therm": 0.0,
+          "tau_int": 3.348935660851584,
+          "sigma_t0": 5.200157829676755e-05,
+          "sigma_tail": 5.128020711708814e-05,
+          "dispersion_ratio_t0_over_tail": 1.014067243878955,
+          "rel_err_t0": 6.612829686255403e-07,
+          "rel_err_tail": 3.618209633565192e-07,
+          "sigma_tail_over_exact": 0.966029213749927,
+          "sigma_t0_over_exact": 0.9796185822939425
+        },
+        "wilson_2x2": {
+          "t_therm": 0.0,
+          "tau_int": 2.723543012215394,
+          "sigma_t0": 0.000333479285473004,
+          "sigma_tail": 0.000315213343128562,
+          "dispersion_ratio_t0_over_tail": 1.0579478716324269,
+          "rel_err_t0": -4.866455129830358e-06,
+          "rel_err_tail": -4.927219161865851e-06
+        },
+        "wilson_4x4": {
+          "t_therm": 0.0,
+          "tau_int": 2.4936568445969067,
+          "sigma_t0": 0.0022096652537584305,
+          "sigma_tail": 0.0022198904771357775,
+          "dispersion_ratio_t0_over_tail": 0.9953938162793778,
+          "rel_err_t0": 2.1429445044951393e-05,
+          "rel_err_tail": -2.8206969386287337e-05
+        },
+        "wilson_8x8": {
+          "t_therm": 0.0,
+          "tau_int": 2.300893421723147,
+          "sigma_t0": 0.014850610867142677,
+          "sigma_tail": 0.013969252817332745,
+          "dispersion_ratio_t0_over_tail": 1.0630927123544047,
+          "rel_err_t0": -0.0013346772155337816,
+          "rel_err_tail": -0.0007966697512876437
+        }
+      }
+    },
+    {
+      "arm": "smear",
+      "tuned_sweeps": 15,
+      "seconds": 615.0810871124268,
+      "parity_flips": 2294,
+      "tau_int_q_squared": 3.9563929107806315,
+      "mean_q_squared_tail": 0.9550910596026491,
+      "observables": {
+        "plaquette": {
+          "t_therm": 0.0,
+          "tau_int": 2.9510853970599626,
+          "sigma_t0": 4.67916252091527e-05,
+          "sigma_tail": 5.2857136324746534e-05,
+          "dispersion_ratio_t0_over_tail": 0.8852470728204377,
+          "rel_err_t0": 3.01928562302715e-07,
+          "rel_err_tail": -5.742584402011035e-08,
+          "sigma_tail_over_exact": 0.9957357958457296,
+          "sigma_t0_over_exact": 0.8814721985749611
+        },
+        "wilson_2x2": {
+          "t_therm": 0.0,
+          "tau_int": 2.9257136243075097,
+          "sigma_t0": 0.00032285955967381597,
+          "sigma_tail": 0.0003137467138003558,
+          "dispersion_ratio_t0_over_tail": 1.0290452313048253,
+          "rel_err_t0": -3.202797744969554e-05,
+          "rel_err_tail": 6.071070636558306e-06
+        },
+        "wilson_4x4": {
+          "t_therm": 0.0,
+          "tau_int": 2.5375972370776263,
+          "sigma_t0": 0.002553866244852543,
+          "sigma_tail": 0.002147041028365493,
+          "dispersion_ratio_t0_over_tail": 1.1894818082711534,
+          "rel_err_t0": -7.269304250170363e-05,
+          "rel_err_tail": 9.48218087954211e-05
+        },
+        "wilson_8x8": {
+          "t_therm": 0.0,
+          "tau_int": 2.2821647236855895,
+          "sigma_t0": 0.0144655741751194,
+          "sigma_tail": 0.013607332482933998,
+          "dispersion_ratio_t0_over_tail": 1.0630720013097195,
+          "rel_err_t0": -0.0002435734166630707,
+          "rel_err_tail": -0.00014728046430176708
+        }
+      }
+    }
+  ]
+}

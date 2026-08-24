@@ -1,0 +1,30 @@
+﻿rung 1: L=64 beta=416.524  n_traj=300  chains=64  winding=True  n_su2=30  n_retherm=0
+  diffusion_tuned: 15 tuned sweeps (9s)
+  smear: 15 tuned sweeps (7s)
+  diffusion_tuned  t_therm(plaq)=0       tau_int(plaq)=  3.35  sigma(t0)/exact=   0.98  sigma(tail)/exact= 0.97  tau_int(Q^2)=  3.90  flips=2296
+  smear            t_therm(plaq)=0       tau_int(plaq)=  2.95  sigma(t0)/exact=   0.88  sigma(tail)/exact= 1.00  tau_int(Q^2)=  3.96  flips=2294
+
+## tau_int by observable (trajectories), tail 50%
+
+| arm | plaquette | wilson_2x2 | wilson_4x4 | wilson_8x8 | Q^2 | parity flips |
+|---|---|---|---|---|---|---|
+| diffusion_tuned | 3.35 | 2.72 | 2.49 | 2.30 | 3.90 | 2296 |
+| smear | 2.95 | 2.93 | 2.54 | 2.28 | 3.96 | 2294 |
+
+## t_therm (floor: differences below ~4 are not resolved)
+
+| arm | plaquette | wilson_2x2 | wilson_4x4 | wilson_8x8 | tuned sweeps |
+|---|---|---|---|---|---|
+| diffusion_tuned | 0 | 0 | 0 | 0 | 15 |
+| smear | 0 | 0 | 0 | 0 | 15 |
+
+## dispersion: sigma(t=0) / sigma(equilibrated tail) -- 1.0 is correct
+
+| arm | plaquette | wilson_2x2 | wilson_4x4 | wilson_8x8 |
+|---|---|---|---|---|
+| diffusion_tuned | 1.01 | 1.06 | 1.00 | 1.06 |
+| smear | 0.89 | 1.03 | 1.19 | 1.06 |
+
+A ratio far from 1 means the arm's starting ensemble has the wrong width, so the SEM that `t_therm` divides by is wrong and its score is not comparable to an arm with the right width.
+
+wrote out\u2_2d\ta_L64_topo_tuned\therm_autocorr.json

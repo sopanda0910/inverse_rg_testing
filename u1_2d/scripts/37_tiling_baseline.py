@@ -42,6 +42,7 @@ import argparse
 import importlib.util
 import json
 import math
+import time
 from pathlib import Path
 
 import numpy as np
@@ -50,7 +51,8 @@ import torch
 from u1_2d.lgt import make_action
 from u1_2d.lgt.blocking import block_links
 from u1_2d.lgt.hmc import adapted_hmc_params
-from u1_2d.lgt.lattice import wrap
+from u1_2d.lgt.lattice import plaquette_angles, wrap
+from u1_2d.lgt.local_updates import retherm_sweeps
 from u1_2d.utils import load_config, load_ensemble, resolve_device, save_json
 
 REPO = Path(__file__).resolve().parents[2]
@@ -188,7 +190,118 @@ def ape(coarse: torch.Tensor, target_plaquette: float | None = None) -> torch.Te
     return best
 
 
+def local_repair(fine: torch.Tensor, beta: float, action_type: str,
+                 n_sweeps: int, device, mode: str = "heatbath",
+                 n_overrelax: int = 2) -> tuple[torch.Tensor, int, float]:
+    """N sweeps of local updating, with the ERGODIC move selectable.
+
+    THE DYNAMICAL-FERMION PROXY. `smear` is strong because compact U(1) admits
+    an exact local heatbath: the local link weight is von Mises, so it can be
+    sampled directly and equilibrates short distances in a few sweeps. That is a
+    luxury of pure gauge theory. With dynamical fermions the determinant is
+    non-local and NO local heatbath exists, so the classical prolongator loses
+    exactly the tool that makes it competitive.
+
+    Simulating fermions to test that is a separate project. This is the cheap
+    proxy: keep the theory, the action and the exact references untouched, and
+    change ONLY the ergodic move --
+
+      mode="heatbath"    the exact local sampler (what `smear` uses)
+      mode="metropolis"  the generic fallback available for ANY action
+
+    Everything else is identical, including the two overrelaxation sweeps, so
+    the pair isolates one variable: whether an exact local sampler is available.
+    If the classical arm's advantage evaporates under Metropolis, that advantage
+    was a property of pure gauge theory rather than of prolongation.
+    """
+    from u1_2d.lgt.local_updates import (heatbath_sweep, metropolis_sweep,
+                                         overrelaxation_sweep)
+    action = make_action(action_type, beta)
+    cur = fine.to(device)
+    t0 = time.time()
+    with torch.no_grad():
+        for _ in range(n_sweeps):
+            if mode == "heatbath":
+                cur = heatbath_sweep(cur, beta)
+            elif mode == "metropolis":
+                cur = metropolis_sweep(cur, action)
+            else:
+                raise ValueError(f"unknown mode {mode}")
+            for _ in range(n_overrelax):
+                cur = overrelaxation_sweep(cur)
+    return cur.cpu(), n_sweeps, time.time() - t0
+
+
+def fixed_smear(fine: torch.Tensor, beta: float, action_type: str,
+                n_sweeps: int, device) -> tuple[torch.Tensor, int, float]:
+    """`flux`, then a FIXED number of heatbath + overrelaxation sweeps.
+
+    The tuned variant below stops when the PLAQUETTE crosses its exact value,
+    which is the right protocol for `ape` -- APE smearing is monotone in
+    <cos p> and overshoots if left alone, so it has to be stopped. Heatbath is
+    an EXACT local sampler and cannot overshoot: it converges to the Boltzmann
+    distribution and more sweeps are never worse, only costlier. Stopping it on
+    the plaquette therefore under-runs the long-wavelength modes the plaquette
+    cannot see, and hands the classical arm a worse configuration than it is
+    capable of. Measured at beta_f = 55.02: the tuner stops at 10 sweeps with
+    the plaquette at 2e-05 and the slowest Wilson loop still unconverged.
+
+    Charging a fixed, generous count is the honest way to run this arm; the
+    count is the arm's cost and is reported as such.
+    """
+    action = make_action(action_type, beta)
+    cur = fine.to(device)
+    t0 = time.time()
+    with torch.no_grad():
+        cur = retherm_sweeps(cur, action, n_sweeps, topological_updates=False)
+    return cur.cpu(), n_sweeps, time.time() - t0
+
+
+def tune_smear(fine: torch.Tensor, beta: float, action_type: str,
+               target_plaquette: float, device, max_sweeps: int = 400,
+               check_every: int = 5) -> tuple[torch.Tensor, int, float]:
+    """`flux`, then heatbath + overrelaxation sweeps until the plaquette crosses exact.
+
+    The arm `u2_2d/scripts/17_prolongator_baseline.py` has and this script did
+    not, which is why the two studies appeared to disagree about whether a
+    learned prolongator beats a classical one. `ape` smooths DETERMINISTICALLY;
+    this samples the correct local Boltzmann weight at fixed topology, so
+    wherever an exact local update exists it is the strictly stronger classical
+    prolongator and it is the arm a lattice referee will ask for.
+
+    `topological_updates=False`, so the arm cannot manufacture topology and
+    inherits the coarse sector exactly as the geometric arms do -- the same
+    condition every other arm here is held to.
+
+    Stopping on the exact plaquette rather than a fixed count is what makes this
+    a competitor rather than a strawman; the count and the seconds it needs are
+    returned so the arm is charged for its own tuning.
+    """
+    action = make_action(action_type, beta)
+    cur = fine.to(device)
+    t0 = time.time()
+    best, best_n = cur.clone(), 0
+    best_err = abs(plaquette_angles(cur).cos().mean().item() - target_plaquette)
+    with torch.no_grad():
+        for n in range(1, max_sweeps + 1):
+            cur = retherm_sweeps(cur, action, 1, topological_updates=False)
+            if n % check_every:
+                continue
+            err = abs(plaquette_angles(cur).cos().mean().item() - target_plaquette)
+            if err < best_err:
+                best, best_n, best_err = cur.clone(), n, err
+            elif err > 3.0 * best_err and best_n:
+                break
+    return best.cpu(), best_n, time.time() - t0
+
+
 PROLONGATORS = {"tile": tile, "halve": halve, "flux": flux, "ape": ape}
+
+# `smear`/`smear_mh` are not in PROLONGATORS because they need the coupling and
+# the device, not just the coarse configuration. Order is the table's column order.
+# `smear_mh` is `smear` with the exact heatbath replaced by Metropolis -- the
+# dynamical-fermion proxy; see local_repair().
+ARM_NAMES = ["tile", "halve", "flux", "ape", "smear", "smear_mh"]
 
 
 def main() -> None:
@@ -199,6 +312,14 @@ def main() -> None:
     ap.add_argument("--n-configs", type=int, default=64)
     ap.add_argument("--n-traj", type=int, default=640)
     ap.add_argument("--device", default=None)
+    ap.add_argument("--arms", nargs="+", default=ARM_NAMES,
+                    help="subset of %s; run one arm without re-running the rest"
+                         % ARM_NAMES)
+    ap.add_argument("--smear-sweeps", type=int, default=0,
+                    help="fixed heatbath+overrelaxation sweep count for the "
+                         "`smear` arm; 0 tunes against the exact plaquette. "
+                         "Heatbath cannot overshoot, so a fixed generous count "
+                         "is the arm's honest best shot -- see fixed_smear().")
     ap.add_argument("--out", default="out/u1_2d/tiling_baseline")
     args = ap.parse_args()
 
@@ -242,11 +363,20 @@ def main() -> None:
                                         int(config["data"]["hmc_steps"]))
             print(f"  no cached base; simulating coarse L={coarse_L} "
                   f"beta={coarse_beta:g}", flush=True)
-            coarse = run_hmc_ensemble(
+            # run_hmc_ensemble returns (configs, stats); the old call unpacked
+            # neither and had never fired, because every case had a cached base
+            # until the 2026-08-18 prune removed them.
+            # `topological_updates=True`: the coarse coupling is precisely where
+            # topology still mixes, and the whole point of the ladder is that
+            # the seed inherits P(Q) from there. t_therm below is a local
+            # observable so this cannot flatter any arm.
+            coarse, _ = run_hmc_ensemble(
                 coarse_L, make_action(action_type, coarse_beta),
                 n_configs=args.n_configs, n_chains=16, burn_in=600, thin=5,
                 step_size=ss, n_steps=ns, device=device, hot_start=True,
-            ).cpu()
+                topological_updates=True,
+            )
+            coarse = coarse.cpu()
         coarse = coarse[: args.n_configs]
 
         action = make_action(action_type, fine_beta)
@@ -261,14 +391,41 @@ def main() -> None:
         row = {"fine_L": fine_L, "fine_beta": fine_beta,
                "coarse_L": coarse_L, "coarse_beta": coarse_beta,
                "n_configs": int(coarse.shape[0]), "arms": {}}
-        for name, fn in PROLONGATORS.items():
-            # Only the smearing arm uses the target; the others are purely
-            # geometric maps and take the coarse configuration alone.
-            fine0 = (fn(coarse, targets["plaquette"]) if name == "ape"
-                     else fn(coarse))
+        for name in [a for a in ARM_NAMES if a in args.arms]:
+            # Only the smoothing arms use the target; the purely geometric maps
+            # take the coarse configuration alone.
+            sweeps = None
+            if name == "ape":
+                t0 = time.time()
+                fine0 = ape(coarse, targets["plaquette"])
+                build_s = time.time() - t0
+            elif name in ("smear", "smear_mh"):
+                mode = "heatbath" if name == "smear" else "metropolis"
+                if args.smear_sweeps > 0:
+                    fine0, sweeps, build_s = local_repair(
+                        flux(coarse), fine_beta, action_type,
+                        args.smear_sweeps, device, mode=mode)
+                elif mode == "heatbath":
+                    fine0, sweeps, build_s = tune_smear(
+                        flux(coarse), fine_beta, action_type,
+                        targets["plaquette"], device)
+                else:
+                    raise SystemExit(
+                        "smear_mh needs an explicit --smear-sweeps: tuning to "
+                        "the exact plaquette can never terminate for an arm "
+                        "that does not reach it.")
+            else:
+                t0 = time.time()
+                fine0 = PROLONGATORS[name](coarse)
+                build_s = time.time() - t0
             # Blocking consistency is the property that separates these arms,
             # so measure it rather than asserting it.
             err = (wrap(block_links(fine0) - wrap(coarse))).abs().max().item()
+            # How far from exact the arm STARTS, before a single trajectory.
+            # t_therm alone hides this: an arm can sit at t_therm = 0 while
+            # being an order of magnitude further from exact than another.
+            pre = (plaquette_angles(fine0).cos().mean().item()
+                   - targets["plaquette"]) / abs(targets["plaquette"])
             series, _, acc, _ = m5.run_relaxation(
                 fine_L, action, fine0, args.n_traj, step_size, n_steps, device)
             t_therm = {n: m5.thermalization_time(series[n], targets[n]) for n in wilson}
@@ -278,15 +435,21 @@ def main() -> None:
                 "t_therm_slowest": None if math.isinf(slowest) else slowest,
                 "blocking_error": err,
                 "acceptance": acc,
+                "rel_err_at_t0": pre,
+                "build_seconds": build_s,
+                "smear_sweeps": sweeps,
             }
-            shown = "never" if math.isinf(slowest) else f"{slowest:.0f}"
-            print(f"  {name:<6} t_therm(slowest Wilson) = {shown:<6} "
-                  f"blocking |err| = {err:.2e}  acc = {acc:.3f}", flush=True)
+            shown = f"> {args.n_traj}" if math.isinf(slowest) else f"{slowest:.0f}"
+            extra = "" if sweeps is None else f"  sweeps = {sweeps}"
+            print(f"  {name:<6} t_therm(slowest Wilson) = {shown:<7} "
+                  f"blocking |err| = {err:.2e}  acc = {acc:.3f}  "
+                  f"rel err at t=0 = {pre:+.2e}  build = {build_s:.1f}s{extra}",
+                  flush=True)
         results.append(row)
 
     save_json(out_dir / "tiling_baseline.json", results)
 
-    names = list(PROLONGATORS)
+    names = [a for a in ARM_NAMES if a in args.arms]
     print("\n| case | " + " | ".join(names) + " | diffusion seed (Fig. 12) |")
     print("|---|" + "---|" * (len(names) + 1))
     therm_dir = REPO / "out" / "u1_2d" / "thermalization"
@@ -303,7 +466,9 @@ def main() -> None:
         cells = []
         for name in names:
             v = r["arms"][name]["t_therm_slowest"]
-            cells.append("never" if v is None else f"{v:.0f}")
+            # Budget-limited, never "never" -- the 640-trajectory convention
+            # already misreported three converging arms as failures once.
+            cells.append(f"> {args.n_traj}" if v is None else f"{v:.0f}")
         print(f"| {r['fine_L']}:{r['fine_beta']:g} | " + " | ".join(cells)
               + f" | {seed} |")
     print(f"\nwrote {(out_dir / 'tiling_baseline.json').relative_to(REPO)}")

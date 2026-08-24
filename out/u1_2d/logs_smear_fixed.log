@@ -1,0 +1,15 @@
+  no cached base; simulating coarse L=16 beta=14.1464
+
+=== 32:55.0237 (coarse 16:14.1464), 64 configs ===
+  smear  t_therm(slowest Wilson) = > 640   blocking |err| = 3.14e+00  acc = 0.977  rel err at t=0 = -1.96e-04  build = 48.2s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=55.0236
+
+=== 32:218.58 (coarse 16:55.0236), 64 configs ===
+  smear  t_therm(slowest Wilson) = > 640   blocking |err| = 3.14e+00  acc = 0.975  rel err at t=0 = -1.19e-04  build = 41.1s  sweeps = 200
+
+| case | smear | diffusion seed (Fig. 12) |
+|---|---|---|
+| 32:55.0237 | > 640 | 0 |
+| 32:218.58 | > 640 | 6 |
+
+wrote out\u1_2d\smear_fixed200\tiling_baseline.json

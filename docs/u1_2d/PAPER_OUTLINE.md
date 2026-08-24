@@ -61,25 +61,48 @@ trajectories."*
   Endres conjecture the rethermalization cost *vanishes* toward the continuum.
 - **The gap this paper addresses:** the prolongator has never been learned, and
   the learned coarse→fine literature (inverse-RG upscaling, RG-inspired flows,
-  diffusion for gauge theory) has never been scored on the quantity that
-  actually matters for this use — trajectories to equilibrium.
+  diffusion for gauge theory) has never been scored on **both** quantities that
+  matter for this use — trajectories to equilibrium **and topology**. Scoring
+  only the first is what makes classical prolongation look sufficient.
+
+> **REFRAMED 2026-08-24, and contribution 1 is now a different claim.** A
+> properly constructed classical baseline — `flux` prolongation plus 200 local
+> sweeps — **beats** the diffusion seed on `t_therm` (0 against 6 at
+> β_f = 218.58), sits 0.07 σ from the exact plaquette with correct
+> per-configuration dispersion, and is 10× cheaper to build. Scored on
+> topology, that same arm produces **identically zero topological charge**, and
+> every classical arm tested is wrong by a factor between 0 and 217
+> (`67_prolongator_topology.py`, Table S6c). `t_therm`'s observable set is
+> plaquette / W(2×2) / W(4×4) — all local — so none of this ever entered the
+> comparison. **The paper must lead with topology, not with thermalization
+> speed.** Two earlier drafts of this outline led with speed; both were scoring
+> the half of the problem the classical method already solves.
+
 - Contributions, three:
-  1. **A learned prolongator whose output thermalizes in 0–25 HMC trajectories**
-     (median 4) across 35 couplings spanning β = 1.49 → 872.8 at L = 32 — a
-     cost **flat in β** — against 49–321 for the best classical prolongator
-     (Endres-style APE smearing, per-β tuned), 11 → 575 → never for a fresh
-     cold start, and never above β ≈ 9.6 for a hot start. Across volume the
-     advantage persists but narrows (168× → 17.6× over a 16× volume range,
-     §4.4), and the paper should say so.
+  1. **Sector transport as an identity, and the only route to correct topology.**
+     Every classical prolongator tested — `tile`, `halve`, `flux`, Endres-style
+     APE, and `flux` plus 200 heatbath or Metropolis sweeps — reproduces the
+     exact plaquette to 10⁻⁴–10⁻⁷ while getting ⟨Q²⟩ wrong by 0×–217×
+     (Table S6c). The best of them on local observables is **topologically
+     trivial** at β ≥ 55: it reintroduces exactly the freezing the method exists
+     to remove. The learned pipeline is exact by construction because Q is
+     *transported* rather than produced by the map, and that transport is
+     verified configuration-by-configuration.
+     **Local thermalization is NOT a differentiator, and the paper should say so
+     plainly**: the seed thermalizes in 0–25 trajectories (median 4) across 35
+     couplings spanning β = 1.49 → 872.8, flat in β, which is competitive with —
+     not better than — classical prolongation plus cheap local repair.
   2. **A direct measurement of how far the seed is from equilibrium** — KL in
      nats/site via the exact free energy — which specifies what the tail must
      fix and shows the seed is emphatically *not* the Boltzmann distribution
      despite four-significant-figure agreement on observables.
-  3. **Sector transport as an identity, not an approximation.** The ladder
-     fixed point ⟨Q²⟩ ≈ V/(4π²β) under (V, β) → (4V, 4β) means the seed
-     inherits its P(Q) from a coupling where HMC still mixes, so the tail never
-     has to tunnel. Measured: the sector tail is ≤ 150 trajectories and *falls*
-     with volume.
+  3. **The ladder fixed point that makes transport legitimate.** ⟨Q²⟩ ≈
+     V/(4π²β) is invariant under (V, β) → (4V, 4β), so the coarse ensemble's
+     P(Q) *is* the fine theory's P(Q) and the seed inherits its sector from a
+     coupling where HMC still mixes — the tail never has to tunnel. Measured:
+     the sector tail is ≤ 150 trajectories and *falls* with volume. This is what
+     contribution 1 rests on; without the fixed point, transporting Q would
+     impose the wrong distribution.
 - One paragraph, up front, stating what the correctness claim attaches to:
   **the HMC chain started from the seed, not the model's output.** The model is
   an initializer with no accept/reject and no exactness claim of its own.
@@ -578,7 +601,10 @@ proposal cannot move.
 
 ### 7.3 A reporting protocol
 Compressed to a boxed checklist. Strongest items under this framing: report
-`t_therm` against a tuned classical prolongator, not against a cold start;
+`t_therm` against a tuned classical prolongator, not against a cold start,
+**and never `t_therm` alone** — score topology in the same table, because every
+classical prolongator tested passes the local criterion while being 0×–217×
+wrong on ⟨Q²⟩ (Table S6c);
 state the budget in the cell rather than writing "never"; report the
 z-distribution not a pass count; report dispersion against observable extent;
 never quote a saturated ESS; report KL where an exact free energy exists;

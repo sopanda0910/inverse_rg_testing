@@ -1,0 +1,23 @@
+﻿=== L=64 pair start 16:59:54 ===
+=== L=32 pair start 17:48:24 ===
+=== tuned-sweep stability 18:08:16 ===
+rung 1: L=64 beta=416.524, 64 configs, check_every=5, seeds=[0, 1, 2, 3, 4]
+  seed 0: diffusion_tuned = 15   smear = 35   ratio = 2.33
+  seed 1: diffusion_tuned = 35   smear = 15   ratio = 0.43
+  seed 2: diffusion_tuned = 10   smear = 20   ratio = 2.0
+  seed 3: diffusion_tuned = 5    smear = 15   ratio = 3.0
+  seed 4: diffusion_tuned = 10   smear = 15   ratio = 1.5
+
+## 5 seeds, L = 64, beta = 416.524
+
+| arm | counts | median | min-max |
+|---|---|---|---|
+| diffusion_tuned | [15, 35, 10, 5, 10] | 10 | 5-35 |
+| smear | [35, 15, 20, 15, 15] | 15 | 15-35 |
+
+ratio smear/diffusion_tuned: median 2.00, range 0.43-3.00
+
+If the ranges overlap, the '3-7x less repair' claim does not survive seed variation and must be restated as a spread or dropped.
+
+wrote out\u2_2d\tuned_sweep_stability\tuned_sweep_stability.json
+=== ALL DONE 18:15:06 ===

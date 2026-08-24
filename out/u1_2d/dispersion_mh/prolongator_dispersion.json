@@ -1,0 +1,116 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "n_configs": 64,
+    "exact_plaquette": 0.9908709754324568,
+    "exact_sigma_1config": 0.00040346896490523447,
+    "arms": {
+      "tile": {
+        "mean": 0.9639753699302673,
+        "rel_err": -0.027143398251675655,
+        "std_across_configs": 0.0034360233694314957,
+        "std_ratio_to_exact": 8.516202405403197,
+        "z_from_measured_sem": -62.62030867767815,
+        "z_from_exact_sem": -533.2872233879333
+      },
+      "halve": {
+        "mean": 0.4048417806625366,
+        "rel_err": -0.5914283587872305,
+        "std_across_configs": 0.02112593874335289,
+        "std_ratio_to_exact": 52.36075282349135,
+        "z_from_measured_sem": -221.91835426174742,
+        "z_from_exact_sem": -11619.812094495346
+      },
+      "flux": {
+        "mean": 0.6657356023788452,
+        "rel_err": -0.32813088799145534,
+        "std_across_configs": 0.027223020792007446,
+        "std_ratio_to_exact": 67.4724034806531,
+        "z_from_measured_sem": -95.54718428575565,
+        "z_from_exact_sem": -6446.798169568822
+      },
+      "ape": {
+        "mean": 0.9918839335441589,
+        "rel_err": 0.0010222906279599155,
+        "std_across_configs": 0.0011619393480941653,
+        "std_ratio_to_exact": 2.8798729249648187,
+        "z_from_measured_sem": 6.9742580857672,
+        "z_from_exact_sem": 20.084977032917923
+      },
+      "smear": {
+        "mean": 0.9908130168914795,
+        "rel_err": -5.849252063523973e-05,
+        "std_across_configs": 0.00042317851330153644,
+        "std_ratio_to_exact": 1.0488502217287798,
+        "z_from_measured_sem": -1.0956802229898597,
+        "z_from_exact_sem": -1.1492044448267533
+      },
+      "smear_mh": {
+        "mean": 0.9908393025398254,
+        "rel_err": -3.196469915527849e-05,
+        "std_across_configs": 0.0004517969209700823,
+        "std_ratio_to_exact": 1.1197810990894899,
+        "z_from_measured_sem": -0.5608341475792075,
+        "z_from_exact_sem": -0.6280114781831622
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 218.58,
+    "n_configs": 64,
+    "exact_plaquette": 0.9977115725410537,
+    "exact_sigma_1config": 0.00010121001355144937,
+    "arms": {
+      "tile": {
+        "mean": 0.9910253286361694,
+        "rel_err": -0.006701579984539204,
+        "std_across_configs": 0.0008689851965755224,
+        "std_ratio_to_exact": 8.58596067802896,
+        "z_from_measured_sem": -61.554502251437754,
+        "z_from_exact_sem": -528.5045358864896
+      },
+      "halve": {
+        "mean": 0.4029674232006073,
+        "rel_err": -0.5961082999425407,
+        "std_across_configs": 0.02687717229127884,
+        "std_ratio_to_exact": 265.5584299236955,
+        "z_from_measured_sem": -177.02580997583,
+        "z_from_exact_sem": -47010.69615315189
+      },
+      "flux": {
+        "mean": 0.6614521741867065,
+        "rel_err": -0.3370306685908575,
+        "std_across_configs": 0.031194530427455902,
+        "std_ratio_to_exact": 308.2158507132142,
+        "z_from_measured_sem": -86.23547621884073,
+        "z_from_exact_sem": -26579.140664449147
+      },
+      "ape": {
+        "mean": 0.997675895690918,
+        "rel_err": -3.57586812838698e-05,
+        "std_across_configs": 0.0005455002537928522,
+        "std_ratio_to_exact": 5.389785404144336,
+        "z_from_measured_sem": -0.523216623826129,
+        "z_from_exact_sem": -2.8200253223037475
+      },
+      "smear": {
+        "mean": 0.99757981300354,
+        "rel_err": -0.00013206175125149422,
+        "std_across_configs": 0.00021083364845253527,
+        "std_ratio_to_exact": 2.083130325294933,
+        "z_from_measured_sem": -4.999563911386437,
+        "z_from_exact_sem": -10.414743197059234
+      },
+      "smear_mh": {
+        "mean": 0.9977107048034668,
+        "rel_err": -8.697278960951917e-07,
+        "std_across_configs": 9.305537969339639e-05,
+        "std_ratio_to_exact": 0.919428586442115,
+        "z_from_measured_sem": -0.0745996708416018,
+        "z_from_exact_sem": -0.068589069910941
+      }
+    }
+  }
+]

@@ -25,8 +25,54 @@ Last updated 2026-08-22.
 | cost against the classical baseline | `13_cost_comparison.py` | `55_cost_figures.py` | both |
 | density gap / KL per site | `18_density_gap.py` | `15_model_ess.py`, `19_ode_reweighting.py` | both |
 | **multi-lift compounding** | **`45_multi_lift_compounding.py`** | **`60_multi_lift_compounding.py`** | **both (NEW 2026-08-21)** |
-| **verdict calibration against a synthetic null** | **`48_verdict_calibration.py`** | **gap -- see section 5 item 10** | **u2 only, NEW 2026-08-22** |
+| **verdict calibration against a synthetic null** | **`48_verdict_calibration.py`** | **`65_therm_criterion_calibration.py`** | **both as of 2026-08-24** -- u1's half calibrates the `t_therm` rule, not the P(Q) verdict; see section 5 item 10 |
 | **appendix figure gate** | **`49_assemble_appendix_figures.py --check`** | `30_assemble_appendix_figures.py --check` | **both as of 2026-08-22** -- different staleness tests by necessity, see section 5 item 14 |
+
+## 1b. The prolongator ablation -- AN UNTRACKED GAP, found 2026-08-24
+
+This row was missing from section 1 entirely, and because it was missing the two
+studies drifted to **different rigor** on the experiment that decides whether the
+learned lift is necessary at all.
+
+| | u2 (`17_`, `21_`) | u1 (`37_tiling_baseline.py`) |
+|---|---|---|
+| `tile` / `halve` / `flux` | yes | yes |
+| `ape` (deterministic smearing, tuned) | yes | yes |
+| **`smear` (heatbath + overrelaxation, exact local sampler)** | **yes** | **NO -- added 2026-08-24** |
+| **`diffusion_tuned` (the seed put through the SAME tuning)** | **yes** | **STILL MISSING** |
+| retherm masking controlled (`--n-retherm 0`) | yes | n/a (arms go straight into HMC) |
+
+**Why it matters.** u2's narrative calls `smear` *"the strongest thing
+available"*, and compact U(1) has the identical exact local updates
+(`u1_2d.lgt.local_updates.heatbath_sweep`, `overrelaxation_sweep`). u1's Table
+S6b therefore concluded *"the learned map wins by an order of magnitude"*
+against `ape`, which is **not** the strongest classical arm. Measured after
+adding it (L = 32, 64 configs, same coarse ensemble):
+
+| beta_f | `ape` | **`smear`** | diffusion seed |
+|---|---|---|---|
+| 4.44 | 49 (S6b) | **0** (5 sweeps) | 8 |
+| 14.15 | 136 | **10** (10 sweeps) | 0 |
+| 55.02 | 252 | **> 640** (10 sweeps, under-tuned) | 0 |
+| 218.58 | 148 | see `out/u1_2d/smear_baseline/` | 7 |
+
+At beta_f = 4.44 the classical arm **beats** the seed; at 14.15 the baseline was
+understated 13.6x. The beta_f = 55.02 cell is a protocol artefact, not a result:
+`tune_smear` stops when the PLAQUETTE crosses exact, which is right for APE
+(monotone, overshoots) and wrong for heatbath (an exact sampler cannot
+overshoot, so more sweeps are never worse). `--smear-sweeps` now runs a fixed
+count instead.
+
+**The obligation this creates.** A margin measured against a weaker arm is not a
+margin. The comparison that survives is u2's **matched-budget** one -- both
+starts through the identical tuning procedure, compared on sweeps of local
+repair needed (u2: `diffusion_tuned` 5 against `smear`'s 35 and 15). **u1 has no
+matched-budget arm and needs one before submission.**
+
+General rule, and the reason this row now exists: **an ablation is only as
+strong as its strongest arm, so the arm list itself is a parity obligation.**
+Tracking only script names would not have caught this -- both studies had "a
+prolongator ablation".
 
 ## 2. Gaps being closed
 
@@ -224,12 +270,21 @@ study that the other then had to be checked for.
       synthetic-null harness beside it.** Cheap -- this one runs no simulation
       at all, it only needs a generator for the null and the script's own
       `analyse`/`verdict` functions imported by path.
-    * u1 audit obligation, OPEN: u1 emits categorical labels too -- the
-      `t_therm` criterion (first record where |z| <= 2 for five consecutive
-      records), the campaign verdicts in `12_campaign_verdict.py`, and the
-      chi-squared sector gate behind Table S3. The `t_therm` rule in particular
-      is a run-of-five on a correlated series and its false-positive rate has
-      never been measured. Same harness shape applies.
+    * u1 audit obligation, **PARTLY CLOSED 2026-08-24**:
+      `65_therm_criterion_calibration.py` calibrates the `t_therm` rule against
+      synthetic series drawn under the null (correct mean, correct errors, AR(1)
+      autocorrelation), 1500 replicas at the deployed 64-chain shape. **A
+      PERFECTLY THERMALIZED ENSEMBLE REPORTS t_therm = 0 ONLY 79-85% OF THE
+      TIME, with a 90th percentile of 3-4.** So `t_therm <= 3` is the resolution
+      floor of the metric and differences inside it are not measurements. Two
+      consequences: PAPER_OUTLINE contribution 1's "median 4 across 35
+      couplings" sits AT the floor, and the honest claim is "the seed arrives
+      already at equilibrium, within the resolution of the metric" -- stronger
+      than the number it replaces; and the seed's t_therm = 7 at
+      beta_f = 218.58 is only weakly resolved. Power is fine where it matters:
+      a 2-SEM offset gives median 41, a 4-SEM offset never converges.
+      Still OPEN: `12_campaign_verdict.py` and the chi-squared sector gate
+      behind Table S3.
     * Corollary that came out of it: **significance is not effect size.** A
       z-threshold gets arbitrarily strict as statistics grow, so a gate meant to
       catch a gross structural failure will eventually fire on a 0.8% deviation.

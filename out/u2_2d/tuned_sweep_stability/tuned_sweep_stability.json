@@ -1,0 +1,42 @@
+{
+  "lattice_size": 64,
+  "beta": 416.524,
+  "check_every": 5,
+  "rows": [
+    {
+      "seed": 0,
+      "diffusion_tuned": 15,
+      "smear": 35,
+      "ratio": 2.3333333333333335,
+      "seconds": 91.27506613731384
+    },
+    {
+      "seed": 1,
+      "diffusion_tuned": 35,
+      "smear": 15,
+      "ratio": 0.42857142857142855,
+      "seconds": 88.95848298072815
+    },
+    {
+      "seed": 2,
+      "diffusion_tuned": 10,
+      "smear": 20,
+      "ratio": 2.0,
+      "seconds": 88.68262672424316
+    },
+    {
+      "seed": 3,
+      "diffusion_tuned": 5,
+      "smear": 15,
+      "ratio": 3.0,
+      "seconds": 83.63279438018799
+    },
+    {
+      "seed": 4,
+      "diffusion_tuned": 10,
+      "smear": 15,
+      "ratio": 1.5,
+      "seconds": 49.42764186859131
+    }
+  ]
+}

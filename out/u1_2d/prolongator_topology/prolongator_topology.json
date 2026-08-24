@@ -1,0 +1,158 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 14.1464,
+    "coarse_beta": 3.9999887248909847,
+    "n_configs": 64,
+    "exact_q_squared": 1.9039978031709028,
+    "coarse_q_squared_measured": 1.71875,
+    "arms": {
+      "tile": {
+        "q_squared": 27.5,
+        "ratio_to_exact": 14.443293975550665,
+        "sector_match": 0.234375,
+        "frac_nonzero": 0.765625,
+        "blocking_error": 3.1415441036224365
+      },
+      "halve": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.234375,
+        "frac_nonzero": 0.0,
+        "blocking_error": 1.1920928955078125e-07
+      },
+      "flux": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.234375,
+        "frac_nonzero": 0.0,
+        "blocking_error": 2.384185791015625e-07
+      },
+      "ape": {
+        "q_squared": 0.125,
+        "ratio_to_exact": 0.06565133625250302,
+        "sector_match": 0.265625,
+        "frac_nonzero": 0.078125,
+        "blocking_error": 3.141566514968872
+      },
+      "smear (heatbath)": {
+        "q_squared": 5.984375,
+        "ratio_to_exact": 3.143057723088582,
+        "sector_match": 0.109375,
+        "frac_nonzero": 0.8125,
+        "blocking_error": 3.141591787338257
+      },
+      "smear_mh (metropolis)": {
+        "q_squared": 0.171875,
+        "ratio_to_exact": 0.09027058734719165,
+        "sector_match": 0.25,
+        "frac_nonzero": 0.078125,
+        "blocking_error": 3.141545057296753
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "coarse_beta": 14.146404977472109,
+    "n_configs": 64,
+    "exact_q_squared": 0.47428012714608453,
+    "coarse_q_squared_measured": 0.34375,
+    "arms": {
+      "tile": {
+        "q_squared": 5.5,
+        "ratio_to_exact": 11.596522150517869,
+        "sector_match": 0.65625,
+        "frac_nonzero": 0.34375,
+        "blocking_error": 3.1415884494781494
+      },
+      "halve": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.65625,
+        "frac_nonzero": 0.0,
+        "blocking_error": 1.1920928955078125e-07
+      },
+      "flux": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.65625,
+        "frac_nonzero": 0.0,
+        "blocking_error": 2.384185791015625e-07
+      },
+      "ape": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.65625,
+        "frac_nonzero": 0.0,
+        "blocking_error": 3.1412079334259033
+      },
+      "smear (heatbath)": {
+        "q_squared": 4.28125,
+        "ratio_to_exact": 9.02683826489175,
+        "sector_match": 0.1875,
+        "frac_nonzero": 0.78125,
+        "blocking_error": 3.1415648460388184
+      },
+      "smear_mh (metropolis)": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.65625,
+        "frac_nonzero": 0.0,
+        "blocking_error": 3.141491174697876
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 218.58,
+    "coarse_beta": 55.02364659738549,
+    "n_configs": 64,
+    "exact_q_squared": 0.029010886623391463,
+    "coarse_q_squared_measured": 0.046875,
+    "arms": {
+      "tile": {
+        "q_squared": 0.75,
+        "ratio_to_exact": 25.85236396723137,
+        "sector_match": 0.953125,
+        "frac_nonzero": 0.046875,
+        "blocking_error": 3.14156174659729
+      },
+      "halve": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.953125,
+        "frac_nonzero": 0.0,
+        "blocking_error": 1.1920928955078125e-07
+      },
+      "flux": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.953125,
+        "frac_nonzero": 0.0,
+        "blocking_error": 2.384185791015625e-07
+      },
+      "ape": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.953125,
+        "frac_nonzero": 0.0,
+        "blocking_error": 3.141084909439087
+      },
+      "smear (heatbath)": {
+        "q_squared": 6.296875,
+        "ratio_to_exact": 217.05213914154672,
+        "sector_match": 0.21875,
+        "frac_nonzero": 0.765625,
+        "blocking_error": 3.141568422317505
+      },
+      "smear_mh (metropolis)": {
+        "q_squared": 0.0,
+        "ratio_to_exact": 0.0,
+        "sector_match": 0.953125,
+        "frac_nonzero": 0.0,
+        "blocking_error": 3.141529083251953
+      }
+    }
+  }
+]

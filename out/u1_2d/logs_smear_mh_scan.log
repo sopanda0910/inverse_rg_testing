@@ -1,0 +1,19 @@
+  no cached base; simulating coarse L=16 beta=20
+
+=== 32:78.4578 (coarse 16:20.0000), 64 configs ===
+  smear_mh t_therm(slowest Wilson) = 0       blocking |err| = 3.14e+00  acc = 0.979  rel err at t=0 = -4.33e-05  build = 3.9s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=30
+
+=== 32:118.473 (coarse 16:30.0000), 64 configs ===
+  smear_mh t_therm(slowest Wilson) = 0       blocking |err| = 3.14e+00  acc = 0.975  rel err at t=0 = +3.30e-05  build = 4.2s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=45
+
+=== 32:178.482 (coarse 16:45.0000), 64 configs ===
+  smear_mh t_therm(slowest Wilson) = 1       blocking |err| = 3.14e+00  acc = 0.975  rel err at t=0 = +1.74e-05  build = 6.8s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=55.0236
+
+=== 32:218.58 (coarse 16:55.0236), 64 configs ===
+  smear_mh t_therm(slowest Wilson) = 0       blocking |err| = 3.14e+00  acc = 0.977  rel err at t=0 = -8.70e-07  build = 3.4s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=100
+
+=== 32:398.492 (coarse 16:100.0000), 64 configs ===
