@@ -412,7 +412,7 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
     grid = np.linspace(-math.pi, math.pi, 601)
     density = exact.plaquette_angle_density(grid, beta, action_type)
 
-    fig, axes = plt.subplots(2, 2, figsize=(11, 8.5))
+    fig, axes = plt.subplots(2, 2, figsize=(6.9, 5.33))
 
     ax = axes[0, 0]
     ax.hist(meas["plaq_angles"], bins=80, density=True, alpha=0.55, label="generated")
@@ -514,7 +514,7 @@ def _make_plots(meas, ref, beta, action_type, lattice_size, q_values, q_probs, l
 
     fig.suptitle(f"{label}: L={lattice_size}, beta={beta}, {action_type}")
     fig.tight_layout()
-    fig.savefig(Path(output_dir) / f"{label}.png", dpi=130)
+    fig.savefig(Path(output_dir) / f"{label}.png", dpi=207)
     plt.close(fig)
 
 
@@ -537,7 +537,7 @@ def plot_ladder_drift(drift, output_dir) -> Path:
     """
     output_dir = Path(output_dir)
     x = [d["rung"] for d in drift]
-    fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    fig, ax = plt.subplots(figsize=(6.9, 4.53))
     ax.axhspan(-2.0, 2.0, color=GRID_COLOR, alpha=0.55, zorder=0,
                label=r"$|z| \leq 2$")
     ax.axhline(0.0, color=INK, lw=0.9, zorder=1)
@@ -562,7 +562,7 @@ def plot_ladder_drift(drift, output_dir) -> Path:
         spine.set_color(GRID_COLOR)
     fig.tight_layout()
     path = output_dir / "ladder_drift.png"
-    fig.savefig(path, dpi=130)
+    fig.savefig(path, dpi=121)
     plt.close(fig)
     return path
 
@@ -649,7 +649,7 @@ def plot_ladder_topology(rungs, output_dir):
 
     x = np.arange(len(rungs))
     tick_labels = [f"L={r['L']}\n" + rf"$\beta$={r['beta']:g}" for r in rungs]
-    fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.2))
+    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.32))
     for ax, name, title in zip(axes, names, titles):
         vals = np.array([r[name]["value"] for r in per_rung], dtype=float)
         errs = np.array([r[name]["error"] for r in per_rung], dtype=float)
@@ -696,7 +696,7 @@ def plot_ladder_topology(rungs, output_dir):
     axes[0].legend(fontsize=8, frameon=False)
     fig.suptitle("Topological observables along the ladder", fontsize=12)
     fig.tight_layout(rect=(0, 0, 1, 0.95))
-    fig.savefig(Path(output_dir) / "ladder_topology.png", dpi=130)
+    fig.savefig(Path(output_dir) / "ladder_topology.png", dpi=236)
     plt.close(fig)
 
 

@@ -1,0 +1,33 @@
+wrote out\u2_2d\figures\fig22_division_of_labour.png
+
+|z|  (statistic of record)
+  arm                          W1x1       W2x2       W4x4       W8x8
+  hmc_frozen                  13.53      9.358      6.448      4.743
+  hmc_winding                 14.19      9.868       7.52      5.762
+  hmc_winding_odd             15.58      11.65        5.8       3.13
+  pre                         18.58      2.724      1.145      2.859
+  post                        0.404     0.1023     0.4865      1.367
+
+relative deviation, ppm
+  arm                          W1x1       W2x2       W4x4       W8x8
+  hmc_frozen                  41.96      183.5      935.3       5507
+  hmc_winding                 46.25      200.4       1094       6938
+  hmc_winding_odd             50.54      224.7      881.9       3919
+  pre                          62.7      53.64      170.6       3419
+  post                        1.311      1.907      68.66       1581
+
+bias / sigma_1config  (N-independent)
+  arm                          W1x1       W2x2       W4x4       W8x8
+  hmc_frozen                 0.8467     0.5849      0.403     0.2965
+  hmc_winding                 0.886     0.6169       0.47     0.3601
+  hmc_winding_odd            0.9738     0.7283     0.3625     0.1956
+  pre                         1.161     0.1702    0.07152     0.1787
+  post                      0.02633   0.006473     0.0304    0.08545
+
+N* = configs before bias > stat error  (-- where |z| < 2: the bias is consistent with zero and N* is unbounded)
+  arm                          W1x1       W2x2       W4x4       W8x8
+  hmc_frozen                  1.395      2.923      6.158      11.38
+  hmc_winding                 1.274      2.628      4.527      7.711
+  hmc_winding_odd             1.054      1.885      7.611      26.13
+  pre                        0.7419      34.51         --      31.33
+  post                           --         --         --         --

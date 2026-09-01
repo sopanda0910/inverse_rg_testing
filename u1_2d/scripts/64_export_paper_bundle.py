@@ -120,7 +120,10 @@ U1_CAPTIONS: dict[str, str] = {
         "hot starts. The seed begins at equilibrium; the classical starts do "
         "not arrive within the budget.",
     "16_autocorrelation_modes.png":
-        "Autocorrelation by observable and by starting condition.",
+        "Autocorrelation by observable and by starting condition, at the same "
+        "four representative couplings as Figures~\\ref{fig:u1_2d:08_case_low}"
+        "--\\ref{fig:u1_2d:11_case_L64} (the full per-coupling sweep is kept "
+        "unrestricted in \\texttt{out/u1\\_2d/thermalization/}).",
     "17_headtohead_cost.png":
         "Head-to-head cost against the classical baseline of record, HMC + "
         "winding update.",

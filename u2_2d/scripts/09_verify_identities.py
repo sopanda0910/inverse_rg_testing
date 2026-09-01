@@ -198,10 +198,19 @@ def main() -> int:
         weyl = 0.5 * ive(1, x) * (ive(0, x) - ive(2, x)) / (ive(0, x) ** 2 - ive(1, x) ** 2)
         check(f"character expansion = Weyl integration, beta={b:g}",
               abs(exact.plaquette_exact(b) - weyl), 1e-9)
-        check(f"r_fund = <(1/2)ReTr P>, beta={b:g}",
-              abs(exact.wilson_loop_exact(b, 1) - exact.plaquette_exact(b)), 1e-9)
-        check(f"area law <W(A)> = r^A, beta={b:g}",
-              abs(exact.wilson_loop_exact(b, 5) - exact.plaquette_exact(b) ** 5), 1e-9)
+        # Finite volume, which is what every measurement is scored against. The
+        # A = 1 loop comes from the torus character sum and plaquette_exact from
+        # d log Z / d beta -- independent routes to the same number.
+        check(f"finite-V W(A=1) = dlogZ/dbeta, beta={b:g}",
+              abs(exact.wilson_loop_exact(b, 1, lattice_size=24)
+                  - exact.plaquette_exact(b, 24)), 1e-8)
+        check(f"finite-V W(A=0) = 1, beta={b:g}",
+              abs(exact.wilson_loop_exact(b, 0, lattice_size=24) - 1.0), 1e-9)
+        # The area law is the V -> inf LIMIT of the torus sum, not a reference for
+        # a finite lattice: the torus-wrapping terms die like exp(-sigma (V - A)).
+        check(f"finite-V W(A=5) -> r^A as V grows, beta={b:g}",
+              abs(exact.wilson_loop_exact(b, 5, lattice_size=48)
+                  / exact.wilson_loop_exact(b, 5) - 1.0), 1e-6)
         check(f"finite-volume logZ derivative -> infinite volume, beta={b:g}",
               abs(exact.plaquette_exact(b, 24) - exact.plaquette_exact(b)), 1e-5)
     for b in (4.0, 20.0):

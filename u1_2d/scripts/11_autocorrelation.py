@@ -191,10 +191,36 @@ def plot_by_start(rungs: list[dict], obs: str, out_path: Path) -> None:
     plt.close(fig)
 
 
+# The full sweep (~30 couplings) rendered at one column per coupling produces
+# an unreadably wide strip (16588x1326px at the full set -- 0.5in tall across
+# a two-column text block even spanning the whole page). Restricted to the
+# same four representative points already used for the "case" figures
+# (08_case_low/09_case_high/10_case_extrapolation/11_case_L64, see
+# 30_assemble_appendix_figures.py) so this figure reads as the autocorrelation
+# detail behind those four cases rather than a fifth, unrelated data dump. The
+# full per-coupling sweep remains on disk as
+# {obs}_autocorrelation_by_beta.png / _by_start.png, unrestricted.
+MODES_SUBSET = [
+    "A_bc1_L32_beta3.10399",
+    "D_bc55.0237_L32_beta218.58",
+    "F_L32_bc218.58_L32_beta872.816",
+    "F_L64_bc55.0237_L64_beta218.58",
+]
+
+
 def plot_modes(rungs: list[dict], obs_list: list[str], out_path: Path) -> None:
     """Slow vs fast modes: rows = starts, cols = rungs, curves = observables."""
+    subset = [r for r in rungs if r["label"] in MODES_SUBSET]
+    rungs = subset if subset else rungs[:4]
+    # Per-panel size held at the same figsize this script uses elsewhere
+    # (4.4x3.4in per panel) rescaled to fit the paper's ~6.9in text width
+    # across len(rungs) columns, dpi raised to match so pixel resolution is
+    # unchanged.
+    per_panel_w = 6.9 / len(rungs)
+    scale = per_panel_w / 4.4
+    per_panel_h = 3.4 * scale
     fig, axes = plt.subplots(len(STARTS), len(rungs),
-                             figsize=(4.4 * len(rungs), 3.4 * len(STARTS)),
+                             figsize=(per_panel_w * len(rungs), per_panel_h * len(STARTS)),
                              sharex=True, sharey=True, squeeze=False)
     for i, start in enumerate(STARTS):
         for j, rung in enumerate(rungs):
@@ -222,7 +248,7 @@ def plot_modes(rungs: list[dict], obs_list: list[str], out_path: Path) -> None:
     fig.suptitle("Fast modes (Wilson loops) vs slow modes (topology): "
                  "autocorrelation on the equilibrated window", fontsize=12)
     fig.tight_layout(rect=(0, 0.05, 1, 0.95))
-    fig.savefig(out_path, dpi=130)
+    fig.savefig(out_path, dpi=round(130 / scale))
     plt.close(fig)
 
 

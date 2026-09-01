@@ -63,7 +63,7 @@ def load():
         ser = np.load(f.replace("_summary.json", "_series.npz"), allow_pickle=True)
         sub = s["t_therm_subsample_size"]
         p = ser["diffusion seed|plaquette"][:, :sub]
-        tgt = exact.plaquette_exact(beta)
+        tgt = exact.plaquette_exact(beta, "wilson", L)
         rows.append({
             "L": L, "V": 2 * L * L, "beta": beta, "B": sub,
             "seed": max(s["t_therm"]["diffusion seed"][n] for n in WILSON),
@@ -78,7 +78,7 @@ def load():
 def main() -> int:
     rows = load()
     V = [r["V"] for r in rows]
-    fig, (ax, bx) = plt.subplots(1, 2, figsize=(11.0, 4.5))
+    fig, (ax, bx) = plt.subplots(1, 2, figsize=(6.9, 2.82))
 
     # ---- panel (a): the raw t_therm answer -------------------------------
     for key, color, marker, label in (("seed", SEED, "o", "diffusion seed"),
@@ -168,7 +168,7 @@ def main() -> int:
 
     fig.tight_layout(rect=(0, 0.035, 1, 0.95))
     FIG.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG, dpi=200)
+    fig.savefig(FIG, dpi=319)
     print(f"wrote {FIG}")
     for r in rows:
         print(f"  L={r['L']:4d} V={r['V']:6d} B={r['B']:3d}  seed={r['seed']:6.0f} "

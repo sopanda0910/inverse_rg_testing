@@ -79,7 +79,7 @@ def main() -> int:
     labels = [STYLE.get(r["arm"], (MUTED, r["arm"]))[1] for r in rows]
     x = np.arange(len(rows))
 
-    fig, axes = plt.subplots(1, 2, figsize=(11.4, 5.0))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.03))
 
     ax = axes[0]
     width = 0.8 / len(obs)
@@ -151,7 +151,7 @@ def main() -> int:
     fig.tight_layout(rect=(0, 0.085, 1, 0.935))
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, dpi=150)
+    fig.savefig(out, dpi=248)
     plt.close(fig)
     print(f"wrote {out}")
     return 0

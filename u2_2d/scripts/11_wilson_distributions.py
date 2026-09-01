@@ -81,7 +81,7 @@ def main() -> int:
         a, b = LOOPS[name]
         g = per_config(generated, a, b)
         out["generated"][name] = g.tolist()
-        out["exact"][name] = wilson_loop_exact(beta, a * b)
+        out["exact"][name] = wilson_loop_exact(beta, a * b, lattice_size=size)
         entry = {"generated": float(g.std())}
         if reference is not None:
             r = per_config(reference, a, b)

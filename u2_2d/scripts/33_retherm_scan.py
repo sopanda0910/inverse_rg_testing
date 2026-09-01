@@ -70,7 +70,7 @@ def measure(links: torch.Tensor, beta: float, size: int) -> dict:
                  else half_retr(wilson_loop(links, nx, ny)))
             v = v.mean(dim=(1, 2)).cpu().numpy().astype(float)
             exact = (plaquette_exact(beta, size) if (nx, ny) == (1, 1)
-                     else wilson_loop_exact(beta, nx * ny))
+                     else wilson_loop_exact(beta, nx * ny, lattice_size=size))
             sigma = v.std(ddof=1)
             bias = v.mean() - exact
             key = f"wilson_{nx}x{ny}"
@@ -176,10 +176,21 @@ def main() -> int:
         print("no cases ran")
         return 1
 
-    # Figure: repair by scale against sweep count, one panel per case.
-    fig, axes = plt.subplots(1, len(records), figsize=(6.4 * len(records), 4.8),
+    # Figure: repair by scale against sweep count, one panel per case. The
+    # case count is set by --cases and can in principle exceed a single row,
+    # so wrap into a grid capped at 4 columns and rescale to full text width.
+    n_cases = len(records)
+    cols = min(n_cases, 4)
+    rows = math.ceil(n_cases / cols)
+    _per_panel_w = 6.9 / cols
+    _scale = _per_panel_w / 6.4
+    _per_panel_h = round(4.8 * _scale, 2)
+    fig, axes = plt.subplots(rows, cols,
+                             figsize=(round(cols * _per_panel_w, 2),
+                                      round(rows * _per_panel_h, 2)),
                              squeeze=False)
-    for ax, rec in zip(axes[0], records):
+    axes_flat = axes.ravel()
+    for ax, rec in zip(axes_flat, records):
         for (a, b), colour in zip(LOOPS, ["#0072B2", "#009E73", "#E69F00",
                                           "#D55E00", "#CC79A7"]):
             key = f"wilson_{a}x{b}"
@@ -202,14 +213,17 @@ def main() -> int:
                      + f"{rec['beta']:.1f}", fontsize=10.5, loc="left")
         ax.grid(alpha=0.25, which="both", color=GRID)
         ax.legend(frameon=False, fontsize=8)
-    axes[0][0].set_ylabel(r"|bias| / $\sigma$ of one configuration", fontsize=10,
-                          color=INK)
+    for ax in axes_flat[len(records):]:
+        ax.set_visible(False)
+    axes_flat[0].set_ylabel(r"|bias| / $\sigma$ of one configuration", fontsize=10,
+                            color=INK)
     fig.suptitle("Choosing n_retherm on the WORST scale, not the plaquette",
                  fontsize=12, color=INK, x=0.02, ha="left")
     fig.tight_layout(rect=(0, 0, 1, 0.95))
     dest = Path("out/u2_2d/figures/fig25_retherm_scan.png")
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    _dpi = max(150, min(450, round(200 / _scale)))
+    fig.savefig(dest, dpi=_dpi, bbox_inches="tight")
     plt.close(fig)
     print(f"\nwrote {dest}")
     print(f"wrote {out / 'retherm_scan.json'}")

@@ -24,7 +24,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 
-from u1_2d.lgt.exact import plaquette_exact, string_tension_exact
+from u1_2d.lgt.exact import plaquette_exact, wilson_loop_exact
 from u1_2d.validate.report import GEN_COLOR, REF_COLOR, INK, MUTED, GRID_COLOR
 
 OUT = Path("out/u1_2d/demo/generalization")
@@ -162,8 +162,15 @@ def fig_coupling(recs: dict) -> None:
     style(ax)
 
     ax = axes[1]
-    sig_curve = [string_tension_exact(b) for b in grid]
-    ax.plot(grid, sig_curve, "--", color=INK, lw=1.2, label="exact")
+    # The measured points are finite-volume Creutz ratios at L = 32, so the
+    # reference must be too: chi(R,T) equals the infinite-volume string tension
+    # only as V -> inf, and the gap is O(exp(-sigma (V - A))).
+    def _creutz2(b):
+        w = lambda a: wilson_loop_exact(b, a, "wilson", 32)
+        return -math.log(w(4) * w(1) / w(2) ** 2)
+    sig_curve = [_creutz2(b) for b in grid]
+    ax.plot(grid, sig_curve, "--", color=INK, lw=1.2,
+            label=r"exact $\chi(2,2)$, $L=32$")
     pts = [(r["target_beta"], row(r, "creutz_2")) for r in matched if row(r, "creutz_2")]
     ax.errorbar([b for b, d in pts], [d["value"] for _, d in pts],
                 yerr=[d["error"] for _, d in pts],

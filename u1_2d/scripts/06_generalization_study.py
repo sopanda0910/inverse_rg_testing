@@ -445,7 +445,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
     )
     if matched:
         x = [r["base_beta"] for r in matched]
-        fig, axes = plt.subplots(2, 2, figsize=(10, 7))
+        fig, axes = plt.subplots(2, 2, figsize=(6.9, 4.83))
         panels = [("plaquette", "Plaquette"), ("wilson_2x2", r"$W(2\times2)$"),
                   ("wilson_4x4", r"$W(4\times4)$"), ("Q^2", r"$\langle Q^2 \rangle$")]
         for ax, (obs, title) in zip(axes.flat, panels):
@@ -463,7 +463,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
         fig.suptitle("Matched-pair beta scan (L=16 base -> L=32 generated): z-scores vs exact",
                      fontsize=12)
         fig.tight_layout(rect=(0, 0, 1, 0.95))
-        fig.savefig(out / "fig_matched_scan.png", dpi=130)
+        fig.savefig(out / "fig_matched_scan.png", dpi=188)
         plt.close(fig)
 
     mism = sorted(
@@ -473,7 +473,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
     b2 = [r for r in records.values() if r["run_id"] == "B_bc2_bt8"]
     if mism:
         x = [r["target_beta"] for r in mism]
-        fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.0))
+        fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.21))
         panels = [("plaquette", "Plaquette"), ("wilson_2x2", r"$W(2\times2)$"),
                   ("Q^2", r"$\langle Q^2 \rangle$")]
         ticks = [v for v in x if abs(v - MATCHED_PAIR[1]) > 1.5] + [8.0]
@@ -492,7 +492,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
         fig.suptitle("Target-coupling mismatch scan: bias vs how far the target sits from the matched coupling",
                      fontsize=11)
         fig.tight_layout(rect=(0, 0, 1, 0.93))
-        fig.savefig(out / "fig_mismatch_scan.png", dpi=130)
+        fig.savefig(out / "fig_mismatch_scan.png", dpi=236)
         plt.close(fig)
 
     raw = sorted(
@@ -502,7 +502,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
     )
     if raw:
         x = [r["base_beta"] for r in raw]
-        fig, axes = plt.subplots(1, 2, figsize=(9.5, 4.0))
+        fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.91))
         axes[0].plot(x, [r["q_match_rate_raw"] for r in raw], "o-", color=GEN_COLOR, ms=6, lw=1.6)
         axes[0].set_ylim(0, 1)
         axes[0].set_title("P(Q_fine = Q_base) before enforcement", fontsize=10, color=INK)
@@ -523,7 +523,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
             _style_axis(ax)
         fig.suptitle("Model-level topology transport (pre-enforcement, pre-retherm)", fontsize=11)
         fig.tight_layout(rect=(0, 0, 1, 0.92))
-        fig.savefig(out / "fig_raw_topology.png", dpi=130)
+        fig.savefig(out / "fig_raw_topology.png", dpi=179)
         plt.close(fig)
 
     size = sorted(
@@ -535,7 +535,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
     )
     if len(size) > 1:
         x = [2 * r["base_size"] for r in size]
-        fig, axes = plt.subplots(1, 3, figsize=(12.5, 4.0))
+        fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.21))
         panels = [("plaquette", "Plaquette"), ("wilson_4x4", r"$W(4\times4)$"),
                   ("Q^2", r"$\langle Q^2 \rangle$")]
         for ax, (obs, title) in zip(axes, panels):
@@ -546,7 +546,7 @@ def make_summary_figures(records: dict, out: Path) -> None:
         fig.suptitle(r"Lattice-size scan at fixed coupling pair $\beta_c=4 \to \beta_f=14.1464$"
                      " (training saw only L=16)", fontsize=11)
         fig.tight_layout(rect=(0, 0, 1, 0.93))
-        fig.savefig(out / "fig_size_scan.png", dpi=130)
+        fig.savefig(out / "fig_size_scan.png", dpi=236)
         plt.close(fig)
 
 

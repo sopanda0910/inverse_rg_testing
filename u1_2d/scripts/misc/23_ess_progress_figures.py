@@ -30,7 +30,7 @@ plt.rcParams.update({
     "font.size": 10, "axes.edgecolor": INK, "axes.labelcolor": INK,
     "text.color": INK, "xtick.color": INK, "ytick.color": INK,
     "axes.grid": True, "grid.color": GRID_COLOR, "grid.linewidth": 0.8,
-    "axes.axisbelow": True, "figure.dpi": 150,
+    "axes.axisbelow": True, "figure.dpi": 228,
 })
 
 CASES = [(16, 14.1464), (16, 55.0237), (32, 55.0237), (32, 218.58)]
@@ -66,7 +66,7 @@ def fig_progress():
     knob_only = _load(OUT / "ode_reweighting_sweep" / "sigmin0.03" /
                       "reweighting_results.json")[0]
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(10.5, 4.2))
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.76))
     xs = range(len(CASES))
     for label, color, rows in variants:
         stds = [rows[c]["log_weight_std_fiber"] for c in CASES]
@@ -111,7 +111,7 @@ def fig_sweep():
             rows.append((d.name, _load(f)[0]))
     rows.sort(key=lambda t: t[1]["log_weight_std_fiber"])
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.6))
+    fig, ax = plt.subplots(figsize=(6.9, 4.53))
     for i, (label, r) in enumerate(rows):
         if label == "sigmin0.03":
             color = GOOD_GREEN
@@ -140,7 +140,7 @@ def fig_sweep():
     ax.set_title("Proposal-family sweep: the spread is model density gap, not "
                  "estimator noise", fontsize=10)
     fig.tight_layout()
-    fig.savefig(FIG_DIR / "24_proposal_sweep.png", bbox_inches="tight")
+    fig.savefig(FIG_DIR / "24_proposal_sweep.png", dpi=152, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -152,7 +152,7 @@ def fig_dynamics():
     mlft = _load(OUT / "checkpoints" / "score_net_mlft.history.json")
     rkl2 = _load(OUT / "checkpoints" / "score_net_rkl2.history.json")
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(10.5, 4.0))
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.63))
 
     ml_pts = [(r["step"], r["val_logq_per_dof"]) for r in mlft if "val_logq_per_dof" in r]
     if not any(s == 0 for s, _ in ml_pts):

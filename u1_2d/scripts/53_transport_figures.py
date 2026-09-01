@@ -58,7 +58,7 @@ VILLAIN_LADDER = [(8, BASE_BETA), (16, 4 * BASE_BETA), (32, 16 * BASE_BETA),
 
 def fig_ladder_fixed_point() -> None:
     """Exact <Q^2> under (V, beta) -> (4V, 4beta), five rungs, both actions."""
-    fig, ax = plt.subplots(figsize=(7.8, 4.8))
+    fig, ax = plt.subplots(figsize=(6.9, 4.25))
 
     for action, ladder, color, marker, dy in (
             ("villain", VILLAIN_LADDER, ARM["seed"][0], "o", -18),
@@ -93,7 +93,7 @@ def fig_ladder_fixed_point() -> None:
              r"The coarse ensemble's $P(Q)$ is therefore the fine theory's $P(Q)$.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 1))
-    fig.savefig(FIG / "33_ladder_fixed_point.png", dpi=200)
+    fig.savefig(FIG / "33_ladder_fixed_point.png", dpi=226)
     plt.close(fig)
     print("wrote 33_ladder_fixed_point.png")
 
@@ -109,7 +109,7 @@ def fig_match_rate_volume() -> None:
     V = [2 * L * L for L in Ls]
     rate = [r["match_rate_without_projection"] for r in rows]
 
-    fig, ax = plt.subplots(figsize=(7.0, 4.6))
+    fig, ax = plt.subplots(figsize=(6.9, 4.53))
     color = ARM["cold"][0]
     ax.plot(V, rate, color=color, marker="o", ms=8, lw=2.0,
             markeredgecolor="white", markeredgewidth=0.7, zorder=4)
@@ -139,14 +139,14 @@ def fig_match_rate_volume() -> None:
              "the pre-enforcement number; the deployed pipeline imposes the sector.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 1))
-    fig.savefig(FIG / "34_match_rate_volume.png", dpi=200)
+    fig.savefig(FIG / "34_match_rate_volume.png", dpi=203)
     plt.close(fig)
     print("wrote 34_match_rate_volume.png  rates=" + ", ".join(f"{r:.3f}" for r in rate))
 
 
 def fig_sector_freeze_sigma() -> None:
     rows = _freezing_rows()
-    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    fig, ax = plt.subplots(figsize=(6.9, 4.29))
     styles = [(ARM["seed"][0], "o"), (ARM["cold"][0], "s"), (ARM["hmc+inst"][0], "D")]
 
     for r, (color, marker) in zip(rows, styles):
@@ -180,7 +180,7 @@ def fig_sector_freeze_sigma() -> None:
              "move Q,\nso the remaining sampling cannot repair a wrong sector.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.075, 1, 1))
-    fig.savefig(FIG / "35_sector_freeze_sigma.png", dpi=200)
+    fig.savefig(FIG / "35_sector_freeze_sigma.png", dpi=214)
     plt.close(fig)
     print("wrote 35_sector_freeze_sigma.png")
 
@@ -191,7 +191,7 @@ def fig_sector_tail() -> None:
     labels = [rf"$L={r['L']}$" + "\n" + rf"$\beta={r['beta']:.4g}$" for r in rows]
     x = np.arange(len(rows))
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.7))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.06))
 
     ax = axes[0]
     for r, xi in zip(rows, x):
@@ -259,7 +259,7 @@ def fig_sector_tail() -> None:
              "Wall-clock annotated in (a).",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.075, 1, 0.935))
-    fig.savefig(FIG / "36_sector_tail.png", dpi=200)
+    fig.savefig(FIG / "36_sector_tail.png", dpi=307)
     plt.close(fig)
     print("wrote 36_sector_tail.png")
 

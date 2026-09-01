@@ -73,7 +73,7 @@ def fig_z_distribution() -> None:
     matched, mismatched = load_cases()
     zm, zx = z_values(matched), z_values(mismatched)
 
-    fig, ax = plt.subplots(figsize=(7.8, 4.8))
+    fig, ax = plt.subplots(figsize=(6.9, 4.25))
     bins = np.linspace(-6, 6, 49)
     ax.hist(np.clip(zm, -6, 6), bins=bins, density=True, color=ARM["seed"][0],
             alpha=0.82, zorder=3, label=f"matched rungs  ({len(matched)} cases, "
@@ -109,7 +109,7 @@ def fig_z_distribution() -> None:
              "it carries every $|z| > 3$ in the study.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 1))
-    fig.savefig(FIG / "37_z_distribution.png", dpi=200)
+    fig.savefig(FIG / "37_z_distribution.png", dpi=226)
     plt.close(fig)
     print(f"wrote 37_z_distribution.png  matched mean|z|={np.abs(zm).mean():.3f} "
           f"mismatch mean|z|={np.abs(zx).mean():.3f}")
@@ -137,7 +137,7 @@ def fig_z_vs_loop_area() -> None:
     mx = [float(np.max(np.abs(per_obs[n]))) for n in names]
     n_obs = [len(per_obs[n]) for n in names]
 
-    fig, ax = plt.subplots(figsize=(7.8, 4.8))
+    fig, ax = plt.subplots(figsize=(6.9, 4.25))
     ax.plot(areas, std, color=ARM["seed"][0], marker="o", ms=7, lw=2.0,
             markeredgecolor="white", markeredgewidth=0.7, zorder=4,
             label=r"std($z$) across matched cases")
@@ -167,7 +167,7 @@ def fig_z_vs_loop_area() -> None:
              "measurement of what the HMC tail is left to do.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 1))
-    fig.savefig(FIG / "38_z_vs_loop_area.png", dpi=200)
+    fig.savefig(FIG / "38_z_vs_loop_area.png", dpi=226)
     plt.close(fig)
     print("wrote 38_z_vs_loop_area.png  std(z) " +
           " -> ".join(f"{s:.2f}" for s in (std[0], std[len(std) // 2], std[-1])))
@@ -190,7 +190,7 @@ def fig_kl_per_site() -> None:
         vol.append(V)
 
     x = np.arange(len(rows))
-    fig, ax = plt.subplots(figsize=(8.0, 4.9))
+    fig, ax = plt.subplots(figsize=(6.9, 4.23))
     ax.bar(x, kl, width=0.56, color=ARM["seed"][0], zorder=3, alpha=0.9)
     ax.errorbar(x, kl, yerr=sem, fmt="none", ecolor=INK, elinewidth=1.1,
                 capsize=4, zorder=5)
@@ -223,7 +223,7 @@ def fig_kl_per_site() -> None:
              r"$10^4$ (figures 37, 28). Error bars are the certificate SEM divided by $V$.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 1))
-    fig.savefig(FIG / "39_kl_per_site.png", dpi=200)
+    fig.savefig(FIG / "39_kl_per_site.png", dpi=232)
     plt.close(fig)
     print("wrote 39_kl_per_site.png  kl/site=" + ", ".join(f"{k:.2f}" for k in kl))
 

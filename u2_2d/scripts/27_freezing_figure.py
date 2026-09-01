@@ -81,7 +81,7 @@ def main() -> int:
     beta, size = bench["beta"], bench["lattice_size"]
     q2_exact = arms[ORDER[0]]["topology"]["q_squared_exact"]
 
-    fig, axes = plt.subplots(1, 3, figsize=(14.4, 4.4))
+    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.11))
 
     # (a) Q of a few individual chains -- the trace that shows freezing directly.
     ax = axes[0]
@@ -161,7 +161,7 @@ def main() -> int:
     fig.tight_layout()
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=150, bbox_inches="tight")
+    fig.savefig(dest, dpi=313, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
 

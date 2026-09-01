@@ -1,0 +1,16 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net.pt
+
+L=32, beta=414.897, 128 configs [lift 15s]
+    0 sweeps  bias/sigma:  0.7514  0.1189  0.0372  0.0330  0.0450   worst 0.7514  <Q^2> 0.211
+    2 sweeps  bias/sigma:  0.0327  0.0585  0.0862  0.0705  0.0743   worst 0.0862  <Q^2> 0.211
+    5 sweeps  bias/sigma:  0.0271  0.0823  0.1114  0.1072  0.0577   worst 0.1114  <Q^2> 0.211
+   10 sweeps  bias/sigma:  0.1362  0.1617  0.0118  0.0204  0.0331   worst 0.1617  <Q^2> 0.211
+   20 sweeps  bias/sigma:  0.0646  0.0496  0.0398  0.0310  0.0798   worst 0.0798  <Q^2> 0.211
+   40 sweeps  bias/sigma:  0.1167  0.1057  0.0120  0.0613  0.0439   worst 0.1167  <Q^2> 0.211
+   80 sweeps  bias/sigma:  0.0685  0.0749  0.1095  0.0529  0.0457   worst 0.1095  <Q^2> 0.211
+  -> best n_retherm = 20 (worst-scale bias/sigma 0.0798, N* ceiling 157 configurations)
+  (skip) missing out\u2_2d\data_v2\u2_L32_beta105.244.pt
+
+wrote out\u2_2d\figures\fig25_retherm_scan.png
+wrote out\u2_2d\retherm_scan\retherm_scan.json

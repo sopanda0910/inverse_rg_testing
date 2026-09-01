@@ -13,7 +13,6 @@ Key formulas (A = loop area in plaquettes, V = L^2):
     <W(A)>   = sum_q r_q^(V-A) r_(q+1)^A / sum_q r_q^V     (finite volume)
              -> r_1^A                                        (infinite volume)
     <cos p>  = <W(1)>;  infinite volume Wilson: I_1(beta)/I_0(beta)
-    sigma    = -log r_1  (exact string tension; all Creutz ratios equal sigma)
     P(Q)     from the constrained-sum representation: plaquette angles are i.i.d.
               with density f, constrained so that sum_p theta_p = 2 pi Q. Hence
               P(Q) proportional to  integral dk  exp(-2 pi i k Q) psi(k)^V,
@@ -123,15 +122,6 @@ def blocked_plaquette_angle_density(
     coeffs = np.exp(n_plaquettes * _log_r_q(beta, qs, action_type))
     series = np.tensordot(coeffs, np.cos(np.multiply.outer(qs, theta)), axes=1)
     return np.clip((1.0 + 2.0 * series) / TWO_PI, 0.0, None)
-
-
-def string_tension_exact(beta: float, action_type: str = "wilson") -> float:
-    return -float(_log_r_q(beta, np.array([1]), action_type)[0])
-
-
-def creutz_ratio_exact(beta: float, action_type: str = "wilson") -> float:
-    """In infinite volume the area law is exact, so every Creutz ratio equals sigma."""
-    return string_tension_exact(beta, action_type)
 
 
 def plaquette_weight(theta: np.ndarray, beta: float, action_type: str) -> np.ndarray:

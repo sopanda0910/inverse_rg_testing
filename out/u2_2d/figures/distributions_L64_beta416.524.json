@@ -4,20 +4,20 @@
   "n_configs": 256,
   "arms": {
     "hmc": {
-      "mean_abs_z": 0.7505740715276756,
-      "max_abs_z": 4.028237755935181,
+      "mean_abs_z": 0.7505740284362686,
+      "max_abs_z": 4.028237297352107,
       "q_squared": 1.015625,
       "n_observables": 20
     },
     "pre": {
-      "mean_abs_z": 4.915023142305751,
-      "max_abs_z": 21.789178026094593,
+      "mean_abs_z": 3.2387337216811245,
+      "max_abs_z": 20.405987713844038,
       "q_squared": 1.0546875,
       "n_observables": 20
     },
     "post": {
-      "mean_abs_z": 0.8559393034184429,
-      "max_abs_z": 1.784488518380017,
+      "mean_abs_z": 0.855939567702638,
+      "max_abs_z": 1.784489270389681,
       "q_squared": 1.0546875,
       "n_observables": 20
     }

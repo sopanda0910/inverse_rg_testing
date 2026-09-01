@@ -53,7 +53,8 @@ def test_area_law_is_exact(beta):
     ratio = exact.plaquette_exact(beta)
     for area in (2, 3, 7):
         assert exact.wilson_loop_exact(beta, area) == pytest.approx(ratio**area, rel=1e-9)
-    assert exact.string_tension_exact(beta) == pytest.approx(-math.log(ratio), abs=1e-10)
+    assert -math.log(exact.wilson_loop_exact(beta, 1)) == pytest.approx(
+        -math.log(ratio), abs=1e-10)
 
 
 def test_parity_constraint_rejects_forbidden_irreps():
@@ -237,8 +238,32 @@ def test_measure_ensemble_reports_both_families():
 def test_exact_reference_covers_what_is_measured():
     reference = exact_reference(20.0, 8, loops=((1, 1), (2, 2)))
     assert reference["plaquette"] == pytest.approx(exact.plaquette_exact(20.0, 8))
-    assert reference["wilson_2x2"] == pytest.approx(exact.plaquette_exact(20.0) ** 4, rel=1e-9)
-    assert reference["creutz_2"] == pytest.approx(reference["string_tension"])
+    assert reference["wilson_1x1"] == pytest.approx(reference["plaquette"], rel=1e-8)
+    assert "creutz_2" in reference and "det_wilson_2x2" in reference
+
+
+def test_finite_volume_wilson_loop_matches_the_free_energy():
+    """A = 1 by the torus character sum must equal dlogZ/dbeta -- independent routes."""
+    for beta, size in ((3.5, 8), (26.4128, 16), (105.651, 32), (416.524, 64)):
+        assert exact.wilson_loop_exact(beta, 1, lattice_size=size) == pytest.approx(
+            exact.plaquette_exact(beta, size), rel=1e-8)
+    assert exact.wilson_loop_exact(105.651, 0, lattice_size=32) == pytest.approx(1.0, abs=1e-9)
+
+
+def test_finite_volume_corrections_vanish_with_volume():
+    """The torus-wrapping correction is O(exp(-sigma (V - A))), not a perimeter term."""
+    beta, area = 105.651, 16
+    infinite = exact.wilson_loop_exact(beta, area)
+    errors = [abs(exact.wilson_loop_exact(beta, area, lattice_size=L) / infinite - 1.0)
+              for L in (16, 32, 64)]
+    assert errors[0] > 1e-4                      # resolved at small volume
+    assert errors[1] < errors[0] / 100.0         # and dies fast
+    assert errors[2] < 1e-9
+    # Creutz ratios are built from the same finite-volume loops, so a small
+    # lattice and a large one disagree by a resolvable amount at fixed beta.
+    near = exact_reference(beta, 64)["creutz_4"]
+    far = exact_reference(beta, 16)["creutz_4"]
+    assert abs(far / near - 1.0) > 1e-4
 
 
 def test_compare_and_render_run_end_to_end():

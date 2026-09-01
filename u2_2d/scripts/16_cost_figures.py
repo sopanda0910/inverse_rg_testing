@@ -88,7 +88,7 @@ def figure_cost(cost: dict, path: Path) -> None:
     colors.append(SEED_C)
 
     x = np.arange(len(labels))
-    fig, axes = plt.subplots(1, 2, figsize=(10.8, 4.9))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.13))
 
     ax = axes[0]
     finite = [s if (s is not None and math.isfinite(s)) else 0.0 for s in secs]
@@ -141,7 +141,7 @@ def figure_cost(cost: dict, path: Path) -> None:
              "and the wrong ones.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.075, 1, 0.935))
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=235)
     plt.close(fig)
     print(f"wrote {path}")
 
@@ -155,7 +155,7 @@ def figure_sampler_steps(records: list, path: Path) -> None:
     w8 = np.array([abs(r["rungs"][-1]["wilson"]["wilson_8x8"]["rel_err"])
                    for r in records])
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.8, 4.8))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.07))
 
     ax = axes[0]
     ax.plot(steps, ratio, color=SEED_C, marker="o", ms=7, lw=2.0,
@@ -211,7 +211,7 @@ def figure_sampler_steps(records: list, path: Path) -> None:
              "accuracy axis and is not plotted.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.075, 1, 0.935))
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=235)
     plt.close(fig)
     print(f"wrote {path}  ({len(records)} settings, {steps[0]:.0f}-{steps[-1]:.0f} steps)")
 

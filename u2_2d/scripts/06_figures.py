@@ -45,7 +45,7 @@ from u2_2d.validate.observables import measure_ensemble
 def figure_density(measured, beta, size, path):
     grid = np.linspace(-np.pi, np.pi, 601)
     matched = matched_u1_beta(beta)
-    fig, ax = plt.subplots(figsize=(6.2, 4.0))
+    fig, ax = plt.subplots(figsize=(6.9, 4.45))
     ax.hist(measured["det_plaq_angles"], bins=120, density=True, alpha=0.35,
             color="tab:blue", label="generated")
     ax.plot(grid, det_plaquette_angle_density(grid, beta), "k-", lw=2,
@@ -77,7 +77,7 @@ def figure_sectors(measured, reference, beta, size, path, reference_seeded=False
     keep = probs > 1e-4
     q_values, probs = q_values[keep], probs[keep]
     width = 0.35
-    fig, ax = plt.subplots(figsize=(6.2, 4.0))
+    fig, ax = plt.subplots(figsize=(6.9, 4.45))
     counts = np.array([np.mean(measured["topological_charge"] == q) for q in q_values])
     ax.bar(q_values - width / 2, counts, width, label="generated", color="tab:blue", alpha=0.8)
     if reference is not None:
@@ -112,12 +112,12 @@ def figure_area_law(measured, beta, size, path):
     order = np.argsort(areas)
     areas = np.array(areas)[order]
     grid = np.arange(1, areas.max() + 1)
-    fig, ax = plt.subplots(figsize=(6.2, 4.0))
+    fig, ax = plt.subplots(figsize=(6.9, 4.45))
     ax.semilogy(areas, np.array(full)[order], "o", color="tab:blue",
                 label=r"generated $\frac{1}{2}\mathrm{ReTr}\,W$")
     ax.semilogy(areas, np.array(det)[order], "s", color="tab:green",
                 label=r"generated $\cos(\arg\det W)$")
-    ax.semilogy(grid, [wilson_loop_exact(beta, int(a)) for a in grid], "k-", lw=1.6,
+    ax.semilogy(grid, [wilson_loop_exact(beta, int(a), lattice_size=size) for a in grid], "k-", lw=1.6,
                 label=r"exact $r_{\rm fund}^A$")
     ax.set_xlabel("loop area A (plaquettes)")
     ax.set_ylabel("Wilson loop")
@@ -131,7 +131,7 @@ def figure_area_law(measured, beta, size, path):
 def figure_matching(path):
     betas = np.geomspace(1.0, 400.0, 60)
     matched = np.array([matched_u1_beta(float(b)) for b in betas])
-    fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.8))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.76))
     axes[0].loglog(betas, matched, "k-", lw=1.8, label=r"$\beta_1$ (min-KL projection)")
     axes[0].loglog(betas, betas / 4, "r--", lw=1.4, label=r"$\beta/4$ (tree level)")
     axes[0].set_xlabel(r"$\beta_{U(2)}$")
@@ -150,14 +150,14 @@ def figure_matching(path):
     axes[1].set_title("what one U(1) coupling cannot reproduce")
     axes[1].legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=207)
     plt.close(fig)
 
 
 def figure_ladder(summary, path):
     betas = [row["beta"] for row in summary]
     sizes = [row["lattice_size"] for row in summary]
-    fig, axes = plt.subplots(1, 2, figsize=(9.5, 3.8))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.76))
     axes[0].plot(sizes, [row["plaquette"] for row in summary], "o-", label="generated")
     axes[0].plot(sizes, [row["plaquette_exact"] for row in summary], "k--", label="exact")
     axes[0].set_xlabel("L"), axes[0].set_ylabel(r"$\frac{1}{2}\mathrm{ReTr}\,P$")
@@ -174,7 +174,7 @@ def figure_ladder(summary, path):
     for ax, beta_list in zip(axes, (betas, betas)):
         ax.set_title(r"$\beta$: " + ", ".join(f"{b:g}" for b in beta_list), fontsize=8)
     fig.tight_layout()
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=207)
     plt.close(fig)
 
 

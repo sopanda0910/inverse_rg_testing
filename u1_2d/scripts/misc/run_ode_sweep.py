@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-SCRIPT = REPO / "u1_2d" / "scripts" / "19_ode_reweighting.py"
+SCRIPT = REPO / "u1_2d" / "scripts" / "misc" / "19_ode_reweighting.py"
 OUT = REPO / "out" / "u1_2d" / "ode_reweighting_sweep"
 CASE = "16:55.0237"
 

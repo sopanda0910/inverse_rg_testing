@@ -101,7 +101,7 @@ def main() -> None:
     if not rungs or not cases:
         raise SystemExit("need out/u1_2d/validation/report.md and an ess_results.json")
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(11.4, 4.5))
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.72))
 
     # (a) observables
     labels, allz = [], []
@@ -177,7 +177,7 @@ def main() -> None:
     fig.tight_layout(rect=(0, 0.06, 1, 0.95))
     dest = OUT / "paper_appendix" / "dissociation.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=140, bbox_inches="tight")
+    fig.savefig(dest, dpi=231, bbox_inches="tight")
     plt.close(fig)
     print(f"observables: mean |z| = {statistics.fmean(flat):.3f} "
           f"(ideal {IDEAL:.3f}), {n_out}/{len(flat)} past |z|=3")

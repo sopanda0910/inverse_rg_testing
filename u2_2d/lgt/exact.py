@@ -135,25 +135,80 @@ def plaquette_exact(beta: float, lattice_size: int | None = None) -> float:
 
 
 def wilson_loop_exact(beta: float, area: int, two_j: int = 1, charge: int = 1,
-                      two_j_max: int = 12) -> float:
-    """Infinite-volume <chi_r(W(A))> / d_r for the irrep r = (j, k = charge).
+                      two_j_max: int = 12, lattice_size: int | None = None) -> float:
+    """<chi_r(W(A))> / d_r for the irrep r = (j, k = charge).
 
-    In 2D the plaquettes inside the loop are independent, so each contributes one
-    factor of the normalized character ratio r_r = c_r / (d_r c_0). Defaults give
-    the fundamental (j = 1/2, k = 1), for which this is <(1/2) ReTr W(A)>; at
-    A = 1 it reproduces `plaquette_exact`.
+    `lattice_size=None` gives the INFINITE-VOLUME area law: in 2D the plaquettes
+    inside the loop are independent, so each contributes one factor of the
+    normalized character ratio r_r = c_r / (d_r c_0), and <W(A)> = r_r^A exactly
+    for every A -- no perimeter term, no large-A limit.
+
+    With `lattice_size` set, the FINITE-VOLUME result on the torus. A contractible
+    loop cuts the torus into a disc of area A and a genus-1 surface with one
+    boundary of area V - A. Using the standard 2D amplitude for a surface of genus
+    g with b boundaries,
+
+        Z_(g,b)(U_i) = sum_r d_r^(2-2g-b) (c_r/d_r)^Area prod_i chi_r(U_i),
+
+    and int dU chi_R(U) chi_r(U) chi_r'(U^-1) = N_(R r)^(r'),
+
+        <chi_R(W(A))> = (1/Z) sum_(r,r') N_(R r)^(r') (d_r/d_r')
+                        (c_r/d_r)^A (c_r'/d_r')^(V-A),      Z = sum_r (c_r/d_r)^V.
+
+    For the fundamental R = (1/2, 1) the fusion is multiplicity-free,
+    (1/2,1) x (j,k) = (j+1/2,k+1) + (j-1/2,k+1), so the double sum collapses to
+    two terms per irrep. Only the fundamental is implemented at finite volume.
+
+    The finite-volume corrections are of relative order exp(-sigma (V - A)) -- they
+    come from loops wrapping the torus, NOT from a perimeter term. They are
+    negligible on the matched ladder, where sigma V is an invariant (~20 at every
+    deployed rung), and reach 7e-3 at W(8x8) at the top of the off-ladder coupling
+    scan, where sigma V falls to ~1.6.
+
+    Cite: Rusakov, Mod. Phys. Lett. A5 (1990) 693; Witten, Commun. Math. Phys. 141
+    (1991) 153. The lattice version replaces the heat-kernel weight by c_r.
     """
     js, ks, coeffs = character_coefficients(beta, two_j_max)
-    ref = float(coeffs[(js == 0) & (ks == 0)][0])
     sel = (js == two_j) & (ks == charge)
     if not sel.any():
         raise ValueError(f"irrep (2j={two_j}, k={charge}) violates the U(2) parity constraint")
-    return float((coeffs[sel][0] / ((two_j + 1.0) * ref)) ** area)
+    if lattice_size is None:
+        ref = float(coeffs[(js == 0) & (ks == 0)][0])
+        return float((coeffs[sel][0] / ((two_j + 1.0) * ref)) ** area)
 
+    volume = lattice_size * lattice_size
+    if area >= volume:
+        raise ValueError("Loop area must be smaller than the lattice volume")
+    if (two_j, charge) != (1, 1):
+        raise NotImplementedError(
+            "finite-volume Wilson loops are implemented for the fundamental only")
 
-def string_tension_exact(beta: float) -> float:
-    """sigma = -log r_fund; the 2D area law <W(A)> = e^{-sigma A} is exact."""
-    return -math.log(wilson_loop_exact(beta, 1))
+    dims = js + 1.0
+    rho = coeffs / dims                      # c_r / d_r, carrying a common e^{-beta}
+    keep = rho != 0.0
+    log_rho = np.full(rho.shape, -np.inf)
+    log_rho[keep] = np.log(np.abs(rho[keep]))
+    sign = np.sign(rho)
+    index = {(int(a), int(b)): i for i, (a, b) in enumerate(zip(js, ks))}
+
+    log_terms, signs = [], []
+    for i, (two_j_r, k_r) in enumerate(zip(js, ks)):
+        if not keep[i]:
+            continue
+        for two_j_p in (int(two_j_r) + 1, int(two_j_r) - 1):
+            j = index.get((two_j_p, int(k_r) + 1))
+            if j is None or not keep[j]:
+                continue
+            log_terms.append(math.log(dims[i] / dims[j])
+                             + area * log_rho[i] + (volume - area) * log_rho[j])
+            signs.append((sign[i] ** area) * (sign[j] ** (volume - area)))
+
+    log_den = volume * log_rho[keep]
+    sign_den = sign[keep] ** volume
+    peak = max(max(log_terms), float(log_den.max()))
+    numerator = float(np.sum(np.array(signs) * np.exp(np.array(log_terms) - peak)))
+    denominator = float(np.sum(sign_den * np.exp(log_den - peak)))
+    return numerator / (denominator * (two_j + 1.0))
 
 
 # --------------------------------------------------------------------------
@@ -188,6 +243,31 @@ def det_character_exact(beta: float, q: int = 1) -> float:
     grid = np.linspace(-math.pi, math.pi, 8001)
     w = det_plaquette_weight(grid, beta)
     return float(np.trapezoid(w * np.cos(q * grid), grid) / np.trapezoid(w, grid))
+
+
+def det_wilson_loop_exact(beta: float, area: int, charge: int = 1,
+                          lattice_size: int | None = None, q_max: int = 24) -> float:
+    """<cos(charge * determinant winding)> for a loop of `area` plaquettes.
+
+    The determinant sector is a compact U(1) theory with single-plaquette weight
+    w_det, so this is `u1_2d.lgt.exact.wilson_loop_exact` with r_q taken from
+    `det_character_exact`. Infinite volume gives the exact area law r_q^A; at
+    finite volume the torus-wrapping corrections are included, exactly as in the
+    full-group case.
+    """
+    if lattice_size is None:
+        return float(det_character_exact(beta, charge) ** area)
+    volume = lattice_size * lattice_size
+    if area >= volume:
+        raise ValueError("Loop area must be smaller than the lattice volume")
+    qs = np.arange(-q_max, q_max + 1)
+    r = np.array([det_character_exact(beta, int(q)) for q in qs])
+    r_shift = np.array([det_character_exact(beta, int(q) + charge) for q in qs])
+    keep = (r > 0) & (r_shift > 0)
+    log_num = ((volume - area) * np.log(r[keep]) + area * np.log(r_shift[keep]))
+    log_den = volume * np.log(r[keep])
+    peak = max(float(log_num.max()), float(log_den.max()))
+    return float(np.exp(log_num - peak).sum() / np.exp(log_den - peak).sum())
 
 
 def _det_psi(k_values: np.ndarray, beta: float) -> np.ndarray:

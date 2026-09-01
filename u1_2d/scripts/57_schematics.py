@@ -68,7 +68,7 @@ def arrow(ax, xy_from, xy_to, color, *, dashed=False, label=None, rad=0.0,
 
 
 def fig_pipeline() -> None:
-    fig, ax = plt.subplots(figsize=(11.0, 4.9))
+    fig, ax = plt.subplots(figsize=(6.9, 3.07))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
@@ -119,7 +119,7 @@ def fig_pipeline() -> None:
     fig.suptitle("Learned prolongation: what is exact, and what is not",
                  fontsize=12.5, color=INK, x=0.008, ha="left", y=0.985)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
-    fig.savefig(FIG / "44_pipeline.png", dpi=200)
+    fig.savefig(FIG / "44_pipeline.png", dpi=319)
     plt.close(fig)
     print("wrote 44_pipeline.png")
 
@@ -132,7 +132,7 @@ def fig_architecture() -> None:
     hidden, depth = kw["hidden"], kw["depth"]
     cond_ch, k = kw["cond_channels"], kw["kernel_size"]
 
-    fig, ax = plt.subplots(figsize=(11.0, 5.1))
+    fig, ax = plt.subplots(figsize=(6.9, 3.2))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
@@ -189,7 +189,7 @@ def fig_architecture() -> None:
                  f"depth {depth}, width {hidden})",
                  fontsize=12.5, color=INK, x=0.008, ha="left", y=0.985)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
-    fig.savefig(FIG / "45_architecture.png", dpi=200)
+    fig.savefig(FIG / "45_architecture.png", dpi=319)
     plt.close(fig)
     print(f"wrote 45_architecture.png  ({n_params:,} parameters)")
 

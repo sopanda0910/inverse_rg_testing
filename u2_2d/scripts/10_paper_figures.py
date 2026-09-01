@@ -106,7 +106,11 @@ def figure_seed_quality(bench: dict, path: Path) -> None:
     """
     columns = _columns(bench)
     exact = bench["plaquette_exact"]
-    fig, axes = plt.subplots(1, len(columns), figsize=(4.6 * len(columns), 4.2),
+    n = len(columns)
+    orig_w, orig_h = 4.6 * n, 4.2
+    target_w = 3.3 if (n == 1 and orig_w / orig_h < 1.5) else 6.9
+    scale = target_w / orig_w
+    fig, axes = plt.subplots(1, n, figsize=(round(orig_w * scale, 2), round(orig_h * scale, 2)),
                              sharey=True, squeeze=False)
     interval = bench.get("independent_interval_trajectories")
     for ax, (title, arms) in zip(axes[0], columns):
@@ -126,7 +130,7 @@ def figure_seed_quality(bench: dict, path: Path) -> None:
     fig.suptitle(f"Seed quality, read ACROSS each panel: L = {bench['lattice_size']}, "
                  r"$\beta$ = " + f"{bench['beta']:g}", y=1.02)
     fig.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=max(150, min(450, round(150 / scale))), bbox_inches="tight")
     plt.close(fig)
 
 
@@ -142,7 +146,10 @@ def figure_topological_reach(bench: dict, path: Path) -> None:
     """
     columns = _columns(bench)
     q2_exact = bench["arms"][0]["topology"]["q_squared_exact"]
-    fig, axes = plt.subplots(2, len(columns), figsize=(4.6 * len(columns), 7.2),
+    n = len(columns)
+    orig_w, orig_h = 4.6 * n, 7.2
+    scale = 6.9 / orig_w
+    fig, axes = plt.subplots(2, n, figsize=(round(orig_w * scale, 2), round(orig_h * scale, 2)),
                              sharey="row", squeeze=False)
     for col, (title, arms) in enumerate(columns):
         top, bot = axes[0][col], axes[1][col]
@@ -171,15 +178,21 @@ def figure_topological_reach(bench: dict, path: Path) -> None:
                  r"$\beta$ = " + f"{bench['beta']:g}"
                  + "  --  compare WITHIN a panel, not across", y=1.0)
     fig.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=max(150, min(450, round(150 / scale))), bbox_inches="tight")
     plt.close(fig)
 
 def figure_wilson_spread(dists: dict, path: Path) -> None:
     """Per-configuration Wilson-loop distributions, generated vs reference."""
     names = dists["loops"]
-    fig, axes = plt.subplots(1, len(names), figsize=(3.3 * len(names), 3.6))
-    axes = np.atleast_1d(axes)
-    for ax, name in zip(axes, names):
+    n = len(names)
+    cols = min(n, 4)
+    rows = -(-n // cols)  # ceil
+    per_w = 6.9 / cols
+    scale = per_w / 3.3
+    per_h = 3.6 * scale
+    fig, axes = plt.subplots(rows, cols, figsize=(round(cols * per_w, 2), round(rows * per_h, 2)))
+    axes = np.atleast_2d(axes)
+    for ax, name in zip(axes.flat, names):
         gen = np.asarray(dists["generated"][name])
         ref = dists["reference"].get(name) if dists.get("reference") else None
         lo = min(gen.min(), np.min(ref) if ref is not None else gen.min())
@@ -199,12 +212,12 @@ def figure_wilson_spread(dists: dict, path: Path) -> None:
         # Small loops span a range narrow enough that default ticks collide.
         ax.xaxis.set_major_locator(plt.MaxNLocator(4))
         ax.tick_params(axis="x", labelrotation=30, labelsize=8)
-    axes[0].set_ylabel("density")
+    axes.flat[0].set_ylabel("density")
     fig.suptitle(f"Wilson-loop distributions (std in legend): L = "
                  f"{dists['lattice_size']}, " r"$\beta$ = " + f"{dists['beta']:g}",
                  y=1.02)
     fig.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=max(150, min(450, round(150 / scale))), bbox_inches="tight")
     plt.close(fig)
 
 
@@ -226,7 +239,7 @@ def figure_area_law(validation, path: Path) -> None:
     0.035, which is about 2 sigma on the largest loop and currently uncontrolled,
     since no same-size HMC reference exists at that coupling.
     """
-    fig, ax = plt.subplots(figsize=(7.0, 4.5))
+    fig, ax = plt.subplots(figsize=(6.9, 4.44))
     colours = ["#1b6ca8", "#c2571a", "#2e7d32"]
     for k, rec in enumerate(validation):
         rows = {x["observable"]: x for x in rec.get("rows", [])}
@@ -256,7 +269,7 @@ def figure_area_law(validation, path: Path) -> None:
     ax.legend(frameon=False, fontsize=8)
     ax.grid(alpha=0.25)
     fig.tight_layout()
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=152)
     plt.close(fig)
 
 
@@ -291,7 +304,7 @@ def figure_sampling_regimes(records: list, path: Path) -> None:
     hot = [r for r in records if r.get("start") in (None, "hot")]
     if not hot:
         return
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(9.8, 4.3), sharex=True)
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(6.9, 3.03), sharex=True)
     colour = {8: "#2e7d32", 16: "#1f4e9c"}
     marker = {8: "o", 16: "s"}
     # Solid = the marginal move, dashed = the joint proposal. Line style carries
@@ -351,7 +364,7 @@ def figure_sampling_regimes(records: list, path: Path) -> None:
     fig.suptitle("Do not read odd-charge mobility off a sector-change count",
                  fontsize=10.5)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(path, dpi=150)
+    fig.savefig(path, dpi=213)
     plt.close(fig)
 
 
@@ -382,7 +395,7 @@ def figure_winding_economics(topo: dict, path: Path) -> None:
     acc_even = [r["charge_step_2"].get("acceptance", float("nan")) for r in rows]
     acc_odd = [r["charge_step_1"].get("acceptance", float("nan")) for r in rows]
 
-    fig, axes = plt.subplots(1, 2, figsize=(12.4, 4.5))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.50))
     ax = axes[0]
     w = 0.26
     groups = [
@@ -428,13 +441,13 @@ def figure_winding_economics(topo: dict, path: Path) -> None:
     fig.suptitle(r"Winding economics: the obstruction is in the PROPOSAL, "
                  r"not in the theory", y=1.02)
     fig.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=270, bbox_inches="tight")
     plt.close(fig)
 
 
 def figure_ladder_accuracy(summary: list, path: Path) -> None:
     """Observables against the closed form at every rung."""
-    fig, axes = plt.subplots(1, 2, figsize=(10.0, 3.9))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.69))
     sizes = [r["lattice_size"] for r in summary]
     x = np.arange(len(summary))
     post = [abs(r["plaquette"] / r["plaquette_exact"] - 1) for r in summary]
@@ -456,7 +469,7 @@ def figure_ladder_accuracy(summary: list, path: Path) -> None:
         ax.grid(alpha=0.25)
     fig.suptitle("Ladder accuracy against the closed form", y=1.02)
     fig.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=217, bbox_inches="tight")
     plt.close(fig)
 
 

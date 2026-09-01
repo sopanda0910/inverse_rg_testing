@@ -100,8 +100,20 @@ def main() -> int:
     per_config_amortized = sum(rung_seconds) / args.rung_configs
     top_rung_only = rung_seconds[-1] / args.rung_configs
 
+    # TWO different classical arms answer two different questions, and neither
+    # substitutes for the other (docs/u2_2d/FOLLOWUPS.md item 6):
+    #   D (winding_charge_step=2) is the CHEAPEST classical baseline for LOCAL
+    #   observables, but its own stationary distribution has zero probability
+    #   on odd sectors -- no amount of runtime raises its P(Q) coverage.
+    #   G (winding_charge_step=1, the marginal odd move) is the classical arm
+    #   that CAN reach full coverage, at the cost of the expensive odd move.
+    # A topology cost/reachability claim must use G, not D.
     classical = next((r for r in rows if r["arm"] == "D_cold_plus_winding"), None)
+    classical_topo = next((r for r in rows if r["arm"] == "G_cold_plus_odd_winding"), None)
     plain = next((r for r in rows if r["arm"] == "B_cold_start"), None)
+    diffusion_even = next((r for r in rows if r["arm"] == "E_diffusion_plus_winding"), None)
+    seconds_by_arm = {a["arm"]: a["seconds"] for a in bench["arms"]}
+    topo_by_arm = {a["arm"]: a["topology"] for a in bench["arms"]}
 
     summary = {
         "lattice_size": bench["lattice_size"],
@@ -121,6 +133,38 @@ def main() -> int:
     if classical and np.isfinite(classical["seconds_per_independent_config_local"]):
         summary["speedup_local_vs_hmc_winding"] = (
             classical["seconds_per_independent_config_local"] / per_config_full)
+
+    # Topology reachability/cost, reported explicitly rather than left to be
+    # reconstructed by hand from seed_benchmark.json.
+    topo = {
+        "classical_even_only": {
+            "arm": "D_cold_plus_winding",
+            "exact_probability_covered": topo_by_arm["D_cold_plus_winding"]["exact_probability_covered"],
+            "reachable_at_any_cost": False,
+            "reason": "winding_charge_step=2 has zero stationary probability on odd sectors",
+        },
+    }
+    if classical_topo is not None:
+        cov_g = topo_by_arm["G_cold_plus_odd_winding"]["exact_probability_covered"]
+        topo["classical_odd_capable"] = {
+            "arm": "G_cold_plus_odd_winding",
+            "exact_probability_covered": cov_g,
+            "seconds": seconds_by_arm["G_cold_plus_odd_winding"],
+            "reachable_at_any_cost": bool(cov_g >= 0.99),
+        }
+    if diffusion_even is not None:
+        cov_e = topo_by_arm["E_diffusion_plus_winding"]["exact_probability_covered"]
+        topo["diffusion_even_only"] = {
+            "arm": "E_diffusion_plus_winding",
+            "exact_probability_covered": cov_e,
+            "seconds": seconds_by_arm["E_diffusion_plus_winding"],
+            "parity_flips_needed": False,
+        }
+        if classical_topo is not None and cov_e >= 0.99 and cov_g >= 0.99:
+            topo["same_endpoint_cost_ratio"] = (
+                seconds_by_arm["G_cold_plus_odd_winding"]
+                / seconds_by_arm["E_diffusion_plus_winding"])
+    summary["topology_reachability"] = topo
     Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     Path(args.out).write_text(json.dumps(summary, indent=2), encoding="utf-8")
 
@@ -142,13 +186,31 @@ def main() -> int:
     if "speedup_local_vs_hmc_winding" in summary:
         s = summary["speedup_local_vs_hmc_winding"]
         verdict = f"{s:.2f}x FASTER" if s > 1 else f"{1/s:.2f}x SLOWER"
-        print(f"\nLOCAL observables vs hmc+winding: ladder is {verdict}")
-    print("\nTOPOLOGY is not a speed-up, it is a reachability statement: the "
-          "classical arm\ncovers "
-          f"{classical['exact_probability_covered']:.3f} of the exact P(Q) with "
-          f"{classical['odd_sectors_visited']} odd sectors and cannot improve on "
-          "that at any\ncost, because odd charge has probability zero in its "
-          "stationary distribution.")
+        print(f"\nLOCAL observables vs hmc+winding (cheapest classical arm, D): "
+              f"ladder is {verdict}")
+
+    topo = summary["topology_reachability"]
+    d = topo["classical_even_only"]
+    print(f"\nTOPOLOGY, arm D (winding_charge_step=2, the cheap classical move): "
+          f"covers {d['exact_probability_covered']:.3f} of exact P(Q) and CANNOT "
+          f"improve on that at any cost -- odd charge has probability zero in its "
+          f"stationary distribution.")
+    if "classical_odd_capable" in topo:
+        g = topo["classical_odd_capable"]
+        print(f"TOPOLOGY, arm G (winding_charge_step=1, the marginal odd move): "
+              f"covers {g['exact_probability_covered']:.3f} in {g['seconds']:.0f}s "
+              f"-- {'reaches full coverage, at a cost' if g['reachable_at_any_cost'] else 'still short'}.")
+    if "diffusion_even_only" in topo:
+        e = topo["diffusion_even_only"]
+        print(f"TOPOLOGY, arm E (diffusion seed + cheap even move): covers "
+              f"{e['exact_probability_covered']:.3f} in {e['seconds']:.0f}s, with "
+              f"zero parity flips -- every odd sector it occupies was inherited "
+              f"from the seed, not manufactured by the sampler.")
+    if "same_endpoint_cost_ratio" in topo:
+        r = topo["same_endpoint_cost_ratio"]
+        print(f"SAME ENDPOINT (both cover the full P(Q)): the classical arm "
+              f"needing the expensive odd move costs {r:.2f}x what the "
+              f"diffusion seed + cheap even move costs.")
     print(f"\nwrote {args.out}")
     return 0
 

@@ -95,14 +95,31 @@ def main() -> int:
         check(f"Villain match == beta_f/4 at beta_f={fine}",
               abs(villain / villain_blocked_beta(fine) - 1.0), tol=1e-9)
 
-    print("\n7. Exact area law <W(A)> = r_1^A in infinite volume (sec A5)")
+    print("\n7. Finite-volume Wilson loop on the torus (sec A5)")
     for coupling in (4.0, 55.0237):
+        for size in (16, 32):
+            check(
+                f"beta={coupling:.4f} L={size}: W(A=0) = 1",
+                abs(wilson_loop_exact(coupling, 0, "wilson", size) - 1.0),
+                tol=1e-9,
+            )
+            check(
+                f"beta={coupling:.4f} L={size}: W(A=1) = <cos theta_p>",
+                abs(wilson_loop_exact(coupling, 1, "wilson", size)
+                    - plaquette_exact(coupling, "wilson", size)),
+                tol=1e-12,
+            )
+        # r_1^A is the V -> inf LIMIT of the torus sum, not a reference for a
+        # finite lattice: the wrapping terms fall like exp(-sigma (V - A)), so
+        # the finite-volume result must converge to it as the volume grows.
         r1 = plaquette_exact(coupling, "wilson")
         for area in (4, 16):
+            near = abs(wilson_loop_exact(coupling, area, "wilson", 16) / r1**area - 1.0)
+            far = abs(wilson_loop_exact(coupling, area, "wilson", 64) / r1**area - 1.0)
             check(
-                f"beta={coupling:.4f} A={area:2d}: |W/r_1^A - 1|",
-                abs(wilson_loop_exact(coupling, area, "wilson") / r1**area - 1.0),
-                tol=1e-9,
+                f"beta={coupling:.4f} A={area:2d}: finite-V -> r_1^A as V grows",
+                far,
+                tol=max(1e-12, near / 100.0),
             )
 
     print("\n8. Instanton hop carries Q = 1 at cost dS ~ 2 pi^2 beta / V (sec C5)")

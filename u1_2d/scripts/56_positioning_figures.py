@@ -50,7 +50,7 @@ def fig_mala_locality() -> None:
     palette = [ARM["seed"][0], ARM["cold"][0]]
     markers = ["o", "s"]
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.6, 4.6))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.99))
 
     ax = axes[0]
     for case, color, marker in zip(cases, palette, markers):
@@ -108,7 +108,7 @@ def fig_mala_locality() -> None:
              "and does not bound mixing on the modes the proposal cannot move.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 0.935))
-    fig.savefig(FIG / "42_mala_locality.png", dpi=200)
+    fig.savefig(FIG / "42_mala_locality.png", dpi=307)
     plt.close(fig)
     print(f"wrote 42_mala_locality.png  ({len(rows) - n_moved}/{len(rows)} settings "
           "left Q^2 bit-identical)")
@@ -136,7 +136,7 @@ def fig_zhu_pq() -> None:
         panels.append((name, p, a["q2_over_exact"], a["chi2_p"]))
 
     order = [1, 3, 0, 2]
-    fig, axes = plt.subplots(2, 2, figsize=(10.4, 7.0), sharex=True, sharey=True)
+    fig, axes = plt.subplots(2, 2, figsize=(6.9, 4.64), sharex=True, sharey=True)
     for ax, idx in zip(axes.ravel(), order):
         name, p, ratio, chi2 = panels[idx]
         good = chi2 > 0.05
@@ -171,7 +171,7 @@ def fig_zhu_pq() -> None:
              "rather than a defect of one implementation.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.055, 1, 0.955))
-    fig.savefig(FIG / "43_zhu_pq.png", dpi=200)
+    fig.savefig(FIG / "43_zhu_pq.png", dpi=301)
     plt.close(fig)
     print("wrote 43_zhu_pq.png  " +
           ", ".join(f"{n.splitlines()[0]}: {r:.2f}x" for n, _, r, _ in panels))

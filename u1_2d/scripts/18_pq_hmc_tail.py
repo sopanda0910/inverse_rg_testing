@@ -40,7 +40,7 @@ plt.rcParams.update({
     "font.size": 10, "axes.edgecolor": INK, "axes.labelcolor": INK,
     "text.color": INK, "xtick.color": INK, "ytick.color": INK,
     "axes.grid": True, "grid.color": GRID_COLOR, "grid.linewidth": 0.8,
-    "axes.axisbelow": True, "figure.dpi": 150,
+    "axes.axisbelow": True, "figure.dpi": 222,
 })
 
 DEFAULT_CASES = "B_bt6,A_bc1.5,E_bc11.8,D_bc55.0237,C_L64"
@@ -132,7 +132,7 @@ def run_case(run_id, gen_dir, action_type, args, device, seed, out_dir):
     qv = q_values[mask]
     exact_q2 = float((q_values.astype(float) ** 2 * probs).sum())
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10.2, 4.0))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.9, 2.71))
     width = 0.27
     ax1.bar(qv - width, q_hist(q_before, q_values)[mask], width,
             color=GEN_COLOR, label="transported (before tail)")

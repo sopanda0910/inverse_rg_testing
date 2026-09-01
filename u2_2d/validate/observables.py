@@ -15,6 +15,8 @@ observable-level agreement on small loops does not constrain the density, so
 large-loop dispersion is reported, not just the plaquette.
 """
 
+import math
+
 import numpy as np
 import torch
 
@@ -110,16 +112,30 @@ def _add_creutz_ratios(out: dict) -> None:
 def exact_reference(beta: float, lattice_size: int, loops=DEFAULT_LOOPS) -> dict:
     """Closed-form targets for everything `measure_ensemble` can be compared against.
 
-    Wilson loops use the infinite-volume area law <(1/2)ReTr W(A)> = r_fund^A,
-    which is exact in 2D; the plaquette is additionally given at finite volume
-    from d log Z / d beta, and the determinant sector at finite volume from its
-    exact P(Q).
+    Every entry is FINITE VOLUME. In 2D the Wilson loop average depends on the loop
+    only through the enclosed area, exactly and for all areas -- there is no
+    perimeter contribution -- but on a torus a loop of area A is also a loop of
+    area V - A traversed backwards, which contributes corrections of relative order
+    exp(-sigma (V - A)). Those are negligible on the matched ladder, where sigma V
+    is an invariant (~20 at every deployed rung, giving ~3e-8 at L = 32), and reach
+    7e-3 at W(8x8) at the top of the off-ladder coupling scan, where sigma V falls
+    to ~1.6. Using the infinite-volume area law there would put a systematic in the
+    REFERENCE and score it against the model.
+
+    For the same reason Creutz ratios are built from the finite-volume loops rather
+    than set to the infinite-volume string tension: at finite V, chi(R,T) != sigma.
+    (`u1_2d` has always done this; u2 did not until 2026-09-01.)
+
+    Note that the Creutz ratios are exact algebraic functions of the Wilson loops
+    above them and carry no information the loops do not -- they are a physics
+    summary, not an independent test, and should not be counted as separate
+    observables in any `mean |z|`.
     """
     from ..lgt.exact import (
         det_character_exact,
         det_topological_charge_distribution,
+        det_wilson_loop_exact,
         plaquette_exact,
-        string_tension_exact,
         wilson_loop_exact,
     )
 
@@ -129,12 +145,21 @@ def exact_reference(beta: float, lattice_size: int, loops=DEFAULT_LOOPS) -> dict
         "plaquette_infinite_volume": plaquette_exact(beta),
         "det_plaquette": det_character_exact(beta, 1),
         "topological_charge_squared": float((q_values.astype(float) ** 2 * probs).sum()),
-        "string_tension": string_tension_exact(beta),
     }
+    half = lattice_size // 2
     for r, t in loops:
-        if r <= lattice_size // 2 and t <= lattice_size // 2:
-            reference[f"wilson_{r}x{t}"] = wilson_loop_exact(beta, r * t)
-            reference[f"det_wilson_{r}x{t}"] = det_character_exact(beta, 1) ** (r * t)
-    for r in range(2, lattice_size // 2 + 1):
-        reference[f"creutz_{r}"] = reference["string_tension"]
+        if r <= half and t <= half:
+            reference[f"wilson_{r}x{t}"] = wilson_loop_exact(
+                beta, r * t, lattice_size=lattice_size)
+            reference[f"det_wilson_{r}x{t}"] = det_wilson_loop_exact(
+                beta, r * t, lattice_size=lattice_size)
+
+    def _w(area):
+        return wilson_loop_exact(beta, area, lattice_size=lattice_size)
+
+    for r in range(2, half + 1):
+        if r * r >= lattice_size * lattice_size:
+            continue
+        reference[f"creutz_{r}"] = -math.log(
+            _w(r * r) * _w((r - 1) * (r - 1)) / _w(r * (r - 1)) ** 2)
     return reference

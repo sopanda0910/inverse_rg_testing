@@ -84,7 +84,7 @@ def split(points, budget):
 
 def main() -> int:
     scan, ape, geom = load()
-    fig, ax = plt.subplots(figsize=(8.2, 5.6))
+    fig, ax = plt.subplots(figsize=(6.9, 4.71))
 
     # linscale compresses the 0..1 linear band so it does not eat a whole decade
     ax.set_yscale("symlog", linthresh=1.0, linscale=0.38)
@@ -167,7 +167,7 @@ def main() -> int:
 
     fig.tight_layout(rect=(0, 0.085, 1, 1))
     FIG.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(FIG, dpi=200)
+    fig.savefig(FIG, dpi=238)
     print(f"wrote {FIG}")
 
     n_seed = len(scan["seed"])

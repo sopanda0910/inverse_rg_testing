@@ -59,7 +59,7 @@ def main() -> int:
     ap.add_argument("--out", default="out/u2_2d/figures/fig28_pipeline.png")
     args = ap.parse_args()
 
-    fig, ax = plt.subplots(figsize=(12.6, 4.9))
+    fig, ax = plt.subplots(figsize=(6.9, 2.68))
     ax.set_xlim(0, 100)
     ax.set_ylim(-2, 40)
     ax.axis("off")
@@ -151,7 +151,7 @@ def main() -> int:
     fig.tight_layout()
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=365, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
     return 0

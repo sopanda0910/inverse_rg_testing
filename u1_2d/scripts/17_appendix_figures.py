@@ -45,7 +45,7 @@ plt.rcParams.update({
     "font.size": 10, "axes.edgecolor": INK, "axes.labelcolor": INK,
     "text.color": INK, "xtick.color": INK, "ytick.color": INK,
     "axes.grid": True, "grid.color": GRID_COLOR, "grid.linewidth": 0.8,
-    "axes.axisbelow": True, "figure.dpi": 150,
+    "axes.axisbelow": True, "figure.dpi": 139,
 })
 
 
@@ -68,7 +68,7 @@ def fig_headtohead_cost():
     # the diffusion cost look beta-dependent when the change is batch size.
     rows = {rec["beta"]: rec for rec in _load(OUT / "diffusion_vs_instanton" / "summary.json")}
     betas = sorted(rows)
-    fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    fig, ax = plt.subplots(figsize=(6.9, 4.53))
     for arm_key, color, label in (("instanton_hmc", HMC_COLOR, "instanton HMC (marginal, 2$\\tau_{int}$)"),
                                   ("diffusion", GEN_COLOR, "diffusion (batch-amortized)")):
         xs, ys, oks = [], [], []
@@ -111,7 +111,7 @@ def fig_entry_cost():
     for rec in scan:
         points.setdefault(rec["beta"], []).append(
             (rec["burn_in"], rec["burn_seconds"], rec["max_wilson_abs_z"]))
-    fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    fig, ax = plt.subplots(figsize=(6.9, 4.53))
     pass_x, pass_y, fail_last = [], [], None
     for beta in sorted(points):
         trials = sorted(points[beta])
@@ -180,7 +180,7 @@ def fig_ess_weights():
     labels = [f"L={L}\n$\\beta$={b:g}" for L, b in cases]
     xs = range(len(cases))
     width = 0.38
-    fig, ax = plt.subplots(figsize=(6.4, 4.0))
+    fig, ax = plt.subplots(figsize=(6.9, 4.31))
     ax.bar([x - width / 2 for x in xs], [on[c] for c in cases], width,
            color=GEN_COLOR, label="guidance on (production sampler)")
     ax.bar([x + width / 2 for x in xs], [off[c] for c in cases], width,

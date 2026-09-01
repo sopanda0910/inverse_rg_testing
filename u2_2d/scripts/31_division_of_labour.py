@@ -236,7 +236,7 @@ def main():
         path = found[-1]
     report = json.loads(Path(path).read_text(encoding="utf-8"))
 
-    fig, axes = plt.subplots(1, 2, figsize=(12.6, 5.2))
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.85))
     panel_fixed_time(axes[0], report)
     panel_significance(axes[1], report)
     for ax in axes:
@@ -269,7 +269,7 @@ def main():
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
     fig.tight_layout(rect=(0, 0.02, 1, 0.95))
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=365, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
 

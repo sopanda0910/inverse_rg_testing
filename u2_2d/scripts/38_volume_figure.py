@@ -75,7 +75,7 @@ def main() -> int:
         print("missing scan data")
         return 1
 
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(11.8, 4.6))
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(6.9, 2.69))
 
     # ---- panel (a): seed t_therm vs model beta, both volumes ----------------
     for rows, label, colour, marker in ((a, "L = 32 (from L = 16)", "#0072B2", "o"),
@@ -163,7 +163,7 @@ def main() -> int:
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=342, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
     for ra, rb in pairs:

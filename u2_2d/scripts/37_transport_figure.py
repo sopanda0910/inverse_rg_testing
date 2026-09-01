@@ -56,7 +56,7 @@ def main() -> int:
         print("no transport_check.json found -- run 36_transport_check.py first")
         return 1
 
-    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(11.6, 4.4))
+    fig, (ax, ax2) = plt.subplots(1, 2, figsize=(6.9, 2.62))
 
     # ---- panel (a): match fraction vs model beta -----------------------------
     for label, rows, colour, marker in series:
@@ -128,7 +128,7 @@ def main() -> int:
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=336, bbox_inches="tight")
     plt.close(fig)
 
     n = sum(len(rows) for _, rows, _, _ in series)

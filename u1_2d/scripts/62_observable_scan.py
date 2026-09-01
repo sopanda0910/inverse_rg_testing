@@ -143,7 +143,7 @@ def main() -> int:
 
 
 def draw(rows, args) -> int:
-    fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.4))
+    fig, axes = plt.subplots(2, 2, figsize=(6.9, 4.67))
     top = max(r["beta"] for r in rows) * 1.5
     panels = ((axes[0][0], "raw", None, "(a) raw lift, before the tail"),
               (axes[0][1], "post", None,
@@ -195,7 +195,7 @@ def draw(rows, args) -> int:
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     dest = Path(args.fig)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=359, bbox_inches="tight")
     plt.close(fig)
     print(f"\nwrote {dest}")
     return 0

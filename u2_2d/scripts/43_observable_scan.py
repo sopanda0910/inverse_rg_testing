@@ -78,8 +78,13 @@ def rel_dev(links, beta, size):
             v = (half_retr(plaquette(links)) if (nx, ny) == (1, 1)
                  else half_retr(wilson_loop(links, nx, ny)))
             v = v.mean(dim=(1, 2)).cpu().numpy().astype(float)
+            # FINITE volume, matching the plaquette on the line above. This scan
+            # runs far off the matched ladder, where sigma V falls to ~1.6 and the
+            # infinite-volume area law carries a reference bias of up to 1.7e-4 at
+            # W(4x4) -- worth |dz| = 0.74, on a figure whose post-retherm z values
+            # are ~0.5. On the ladder itself sigma V ~ 20 and it would not matter.
             exact = (plaquette_exact(beta, size) if (nx, ny) == (1, 1)
-                     else wilson_loop_exact(beta, nx * ny))
+                     else wilson_loop_exact(beta, nx * ny, lattice_size=size))
             bias = float(v.mean() - exact)
             sigma = float(v.std(ddof=1))
             sem = sigma / math.sqrt(len(v))
@@ -169,7 +174,7 @@ def main() -> int:
 
 
 def draw(rows, args) -> int:
-    fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.4))
+    fig, axes = plt.subplots(2, 2, figsize=(6.9, 4.67))
     panels = ((axes[0][0], "raw", None, "(a) raw lift, before the tail"),
               (axes[0][1], "post", None,
                f"(b) after {args.retherm} rethermalization sweeps"),
@@ -232,7 +237,7 @@ def draw(rows, args) -> int:
     fig.tight_layout(rect=(0, 0, 1, 0.94))
     dest = Path(args.fig)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=359, bbox_inches="tight")
     plt.close(fig)
     print(f"\nwrote {dest}")
     print(f"wrote {Path(args.out_dir) / 'observable_scan.json'}")

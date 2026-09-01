@@ -1,0 +1,8 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+rung 1: L=64 beta=416.524, 256 configs per arm
+  HMC reference u2_L64_beta416.524.pt (256 configs)
+  regenerating pre-retherm ensemble from det_score_net.pt
+wrote fig16/fig17/fig18 for L64_beta416.524
+  hmc   mean|z|  0.75  max  4.03  <Q^2> 1.016
+  pre   mean|z|  3.24  max 20.41  <Q^2> 1.055
+  post  mean|z|  0.86  max  1.78  <Q^2> 1.055

@@ -323,7 +323,11 @@ def main():
         return 1
 
     n = len(rounds)
-    fig = plt.figure(figsize=(7.4 * n, 6.4))
+    # Full text width (6.9in) regardless of n -- this is always a >=2-panel
+    # figure (each round contributes a top + bottom axes), so the target
+    # width is fixed and only the height/dpi rescale with n.
+    _scale = 6.9 / (7.4 * n)
+    fig = plt.figure(figsize=(6.9, round(6.4 * _scale, 2)))
     gs = fig.add_gridspec(2, n, height_ratios=(3.2, 1.0), hspace=0.38, wspace=0.22)
     for i, (_, title, rows) in enumerate(rounds):
         ax = fig.add_subplot(gs[0, i])
@@ -358,7 +362,8 @@ def main():
 
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    _dpi = max(150, min(450, round(200 / _scale)))
+    fig.savefig(dest, dpi=_dpi, bbox_inches="tight")
     plt.close(fig)
     print("wrote " + str(dest))
 

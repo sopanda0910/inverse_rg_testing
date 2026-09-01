@@ -72,7 +72,7 @@ def main() -> int:
     ap.add_argument("--out", default="out/u2_2d/figures/fig30_multi_lift.png")
     args = ap.parse_args()
 
-    fig, axes = plt.subplots(1, 3, figsize=(15.2, 4.7))
+    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.13))
 
     # ---- (a) no compounding ------------------------------------------------
     ax = axes[0]
@@ -168,7 +168,7 @@ def main() -> int:
     fig.tight_layout(rect=(0, 0, 1, 0.93))
     dest = Path(args.out)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=441, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
     return 0

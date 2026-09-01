@@ -75,7 +75,7 @@ def fig_cost_per_config() -> None:
     by_arm = load_arms()
     diff = diffusion_cost()
 
-    fig, ax = plt.subplots(figsize=(8.0, 5.2))
+    fig, ax = plt.subplots(figsize=(6.9, 4.49))
     ax.set_xscale("log")
     ax.set_yscale("log")
 
@@ -130,7 +130,7 @@ def fig_cost_per_config() -> None:
              "entry cost; figure 41 charges it.",
              fontsize=6.8, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.115, 1, 1))
-    fig.savefig(FIG / "40_cost_per_config.png", dpi=200)
+    fig.savefig(FIG / "40_cost_per_config.png", dpi=232)
     plt.close(fig)
     print("wrote 40_cost_per_config.png")
     for arm in ARM_ORDER:
@@ -150,7 +150,7 @@ def fig_breakeven() -> None:
     gen_marginal = diff[min(diff, key=lambda b: abs(b - beta))]
 
     n = np.logspace(0, 5, 400)
-    fig, ax = plt.subplots(figsize=(8.0, 5.0))
+    fig, ax = plt.subplots(figsize=(6.9, 4.31))
 
     lines = [
         ("diffusion prolongator", ARM["seed"][0], "-",
@@ -205,7 +205,7 @@ def fig_breakeven() -> None:
              "and about scaling in beta -- not about being cheaper outright.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 1))
-    fig.savefig(FIG / "41_breakeven.png", dpi=200)
+    fig.savefig(FIG / "41_breakeven.png", dpi=232)
     plt.close(fig)
     print(f"wrote 41_breakeven.png  (hmc+inst {inst:.3f} s, ptbc {ptbc:.3f} s, "
           f"diffusion {gen_marginal:.3f} s marginal)")

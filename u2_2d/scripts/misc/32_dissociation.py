@@ -90,7 +90,7 @@ def load_observables(path: Path):
 
 
 def fig_dissociation(dens, obs, dest: Path):
-    fig, ax = plt.subplots(figsize=(8.4, 5.0))
+    fig, ax = plt.subplots(figsize=(6.9, 4.11))
     ax2 = ax.twinx()
 
     b_o = [r["beta"] for r in obs]
@@ -135,13 +135,13 @@ def fig_dissociation(dens, obs, dest: Path):
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout()
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=243, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
 
 
 def fig_kl_per_site(dens, dest: Path):
-    fig, ax = plt.subplots(figsize=(8.0, 4.8))
+    fig, ax = plt.subplots(figsize=(6.9, 4.14))
     b = [r["fine_beta"] for r in dens]
     kl = [r["kl_per_site"] for r in dens]
     err = [r["kl_sem_per_site"] for r in dens]
@@ -171,7 +171,7 @@ def fig_kl_per_site(dens, dest: Path):
     for side in ("top", "right"):
         ax.spines[side].set_visible(False)
     fig.tight_layout()
-    fig.savefig(dest, dpi=200, bbox_inches="tight")
+    fig.savefig(dest, dpi=232, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
 

@@ -232,7 +232,7 @@ def plot_relaxation(
             for start, series in all_series.items()}
     budget = max(all_series[s][names[0]].shape[0] for s in starts) - 1
 
-    fig, axes = plt.subplots(len(names), 2, figsize=(12.5, 2.9 * len(names) + 1.9),
+    fig, axes = plt.subplots(len(names), 2, figsize=(6.9, 1.60 * len(names) + 1.05),
                              gridspec_kw={"width_ratios": [1.15, 1.0]}, squeeze=False)
     for i, name in enumerate(names):
         ax_zoom, ax_z = axes[i]
@@ -327,7 +327,7 @@ def plot_relaxation(
         fontsize=7.5, color="#6b6963", va="bottom",
     )
     fig.tight_layout(rect=(0, 0.045, 1, 0.94))
-    fig.savefig(out_path, dpi=130)
+    fig.savefig(out_path, dpi=236)
     plt.close(fig)
 
 
@@ -389,8 +389,11 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     n_cols = 2 if len(summaries) > 12 else 1
     per_col = math.ceil(len(summaries) / n_cols)
     chunks = [summaries[c * per_col:(c + 1) * per_col] for c in range(n_cols)]
-    fig, axes = plt.subplots(1, n_cols, figsize=(6.4 * n_cols, 1.8 + 0.68 * per_col),
-                             squeeze=False)
+    _fig12_scale = 6.9 / (6.4 * n_cols)
+    fig, axes = plt.subplots(
+        1, n_cols,
+        figsize=(6.4 * n_cols * _fig12_scale, (1.8 + 0.68 * per_col) * _fig12_scale),
+        squeeze=False)
     for ax, chunk in zip(axes[0], chunks):
         for i, s in enumerate(chunk):
             status = interval_status(s)
@@ -467,7 +470,7 @@ def plot_timescales(summaries: list[dict], out_path: Path) -> None:
     fig.suptitle("Cost of one new config: diffusion seed vs standard HMC",
                  fontsize=12, color=INK)
     fig.tight_layout(rect=(0, 0.055, 1, 0.97))
-    fig.savefig(out_path, dpi=130, bbox_inches="tight")
+    fig.savefig(out_path, dpi=round(130 / _fig12_scale), bbox_inches="tight")
     plt.close(fig)
 
 
@@ -494,7 +497,7 @@ def plot_beta_scan(summaries: list[dict], out_path: Path) -> None:
     betas = np.array([s["beta"] for s in summaries], dtype=float)
     budget = max(s["n_traj_baseline"] for s in summaries)
 
-    fig = plt.figure(figsize=(10.0, 6.6))
+    fig = plt.figure(figsize=(6.9, 4.55))
     gs = fig.add_gridspec(2, 1, height_ratios=[1.0, 3.6], hspace=0.07)
     ax_top = fig.add_subplot(gs[0])
     ax = fig.add_subplot(gs[1], sharex=ax_top)
@@ -553,7 +556,7 @@ def plot_beta_scan(summaries: list[dict], out_path: Path) -> None:
     ax_top.set_zorder(1)
     fig.suptitle("Diffusion seed vs standard HMC across the matched beta scan",
                  fontsize=12, color=INK, y=0.97)
-    fig.savefig(out_path, dpi=130, bbox_inches="tight")
+    fig.savefig(out_path, dpi=188, bbox_inches="tight")
     plt.close(fig)
 
 

@@ -130,10 +130,10 @@ def main() -> int:
     qs, ps = np.asarray(qs), np.asarray(ps)
     q2_exact = float((qs ** 2 * ps).sum())
     exact_loop = {name: (plaquette_exact(beta, size) if nx * ny == 1
-                         else wilson_loop_exact(beta, nx * ny))
+                         else wilson_loop_exact(beta, nx * ny, lattice_size=size))
                   for name, nx, ny in LOOPS}
 
-    fig, axes = plt.subplots(2, 3, figsize=(16.5, 8.4))
+    fig, axes = plt.subplots(2, 3, figsize=(6.9, 3.51))
     flat = axes.ravel()
 
     for ax, (name, nx, ny) in zip(flat, LOOPS):
@@ -196,7 +196,7 @@ def main() -> int:
     fig.tight_layout()
     dest = Path(args.out_dir) / f"fig20_honest_distributions_L{size}_beta{beta:g}.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=150, bbox_inches="tight")
+    fig.savefig(dest, dpi=359, bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {dest}")
 

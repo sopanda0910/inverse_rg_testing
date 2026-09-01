@@ -29,7 +29,7 @@ plt.rcParams.update({
     "font.size": 10, "axes.edgecolor": INK, "axes.labelcolor": INK,
     "text.color": INK, "xtick.color": INK, "ytick.color": INK,
     "axes.grid": True, "grid.color": GRID_COLOR, "grid.linewidth": 0.8,
-    "axes.axisbelow": True, "figure.dpi": 150,
+    "axes.axisbelow": True, "figure.dpi": 239,
 })
 
 
@@ -62,7 +62,7 @@ def fig_three_way():
     betas = [r["beta"] for r in rows]
     frozen_from = min(r["beta"] for r in rows if r["frozen"])
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(11.0, 4.3))
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.70))
 
     top = 3000.0
     ax_a.axvspan(frozen_from, max(betas) * 1.3, color=HMC_COLOR, alpha=0.06)
@@ -140,7 +140,7 @@ def fig_program_optimum():
         ("multi-case rev-KL\n(rkl2)", OUT / "ess_chain" / "verify_rkl2" / "reweighting_results.json", GOOD_GREEN, "KEPT (final)"),
         ("big net + data", OUT / "ess_chain" / "verify_big_base" / "reweighting_results.json", HMC_COLOR, "discarded"),
     ]
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(11.0, 4.3))
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.70))
     for i, (label, path, color, note) in enumerate(interventions):
         std = _std_at(path, 16, 55.0237)
         ax_a.bar(i, std, color=color, width=0.7)

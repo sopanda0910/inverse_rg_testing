@@ -126,7 +126,7 @@ def main() -> int:
     eq, ep = det_topological_charge_distribution(beta, size)
     exact_q2 = float((ep * eq.astype(float) ** 2).sum())
     loops = {"wilson_2x2": 4, "wilson_4x4": 16}
-    exact_loops = {k: wilson_loop_exact(beta, a) for k, a in loops.items()}
+    exact_loops = {k: wilson_loop_exact(beta, a, lattice_size=size) for k, a in loops.items()}
     n_su2 = int(lc.get("n_su2_sweeps", 30))
 
     print(f"rung {rung}: L={size} beta={beta:g}, {coarse.shape[0]} configs")

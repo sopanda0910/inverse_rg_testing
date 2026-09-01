@@ -1,0 +1,4 @@
+wrote out\u1_2d\paper_appendix\figures\30_volume_scan.png
+  L=  32 V=  2048 B= 32  seed=     1 cold=   168 hot=inf  bias=+0.000967 sem=0.000310 z= 3.11
+  L=  64 V=  8192 B= 16  seed=     3 cold=   400 hot=inf  bias=+0.000846 sem=0.000261 z= 3.24
+  L= 128 V= 32768 B=  8  seed=    30 cold=   528 hot=inf  bias=+0.000970 sem=0.000160 z= 6.06

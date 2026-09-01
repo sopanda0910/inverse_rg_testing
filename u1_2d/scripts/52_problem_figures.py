@@ -60,7 +60,7 @@ def fig_frozen_traces() -> None:
     changes = {(r["arm"], round(r["beta"], 4)): r["n_sector_changes"] for r in rows}
 
     window = 600          # 3000 trajectories overplot into a solid block
-    fig, axes = plt.subplots(1, 3, figsize=(11.6, 4.2), sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.5), sharey=False)
     for ax, beta in zip(axes, BETAS):
         for arm, key, lw, alpha in (("hmc+inst", "hmc_inst", 0.7, 0.85),
                                     ("hmc", "hmc", 1.8, 1.0)):
@@ -95,14 +95,14 @@ def fig_frozen_traces() -> None:
              r"$\tau_{\mathrm{int}}$.",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.085, 1, 0.90))
-    fig.savefig(FIG / "31_frozen_traces.png", dpi=200)
+    fig.savefig(FIG / "31_frozen_traces.png", dpi=336)
     plt.close(fig)
     print("wrote 31_frozen_traces.png  " +
           ", ".join(f"beta={b:g}: {changes[('hmc', round(b, 4))]}" for b in BETAS))
 
 
 def fig_burnin_wall() -> None:
-    fig, axes = plt.subplots(1, 3, figsize=(11.8, 4.4))
+    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.57))
 
     for ax, beta in zip(axes, BETAS):
         stem = THERM[beta]
@@ -163,7 +163,7 @@ def fig_burnin_wall() -> None:
              "own budget, never as \"never\".",
              fontsize=7, color=MUTED, ha="center")
     fig.tight_layout(rect=(0, 0.075, 1, 0.90))
-    fig.savefig(FIG / "32_burnin_wall.png", dpi=200)
+    fig.savefig(FIG / "32_burnin_wall.png", dpi=342)
     plt.close(fig)
     print("wrote 32_burnin_wall.png")
 

@@ -77,7 +77,7 @@ def _loop_area(name: str) -> int | None:
 def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
                          path: Path) -> None:
     """Wilson loops at four areas, plus P(Q) and |Q|, four arms each."""
-    fig, axes = plt.subplots(2, 3, figsize=(14.5, 7.4))
+    fig, axes = plt.subplots(2, 3, figsize=(6.9, 3.52))
     flat = axes.ravel()
 
     for ax, name in zip(flat[:4], PANEL_LOOPS):
@@ -159,7 +159,7 @@ def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
         "  —  rethermalization repairs the lift, so `pre` is the model",
         y=1.01)
     fig.tight_layout()
-    fig.savefig(path, dpi=150, bbox_inches="tight")
+    fig.savefig(path, dpi=315, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -186,7 +186,7 @@ def figure_z(meas: dict, exact: dict, beta: float, size: int, path_hist: Path,
     zr = {k: _z_rows(v, exact) for k, v in meas.items()
           if k in ("hmc", "pre", "post")}
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    fig, ax = plt.subplots(figsize=(6.9, 4.03))
     bins = np.linspace(-6, 6, 33)
     for key, col in (("hmc", C_HMC), ("pre", C_PRE), ("post", C_POST)):
         if not zr.get(key):
@@ -204,10 +204,10 @@ def figure_z(meas: dict, exact: dict, beta: float, size: int, path_hist: Path,
     ax.legend(frameon=False, fontsize=8)
     ax.grid(alpha=0.2)
     fig.tight_layout()
-    fig.savefig(path_hist, dpi=150, bbox_inches="tight")
+    fig.savefig(path_hist, dpi=157, bbox_inches="tight")
     plt.close(fig)
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.2))
+    fig, ax = plt.subplots(figsize=(6.9, 4.03))
     for key, col in (("hmc", C_HMC), ("pre", C_PRE), ("post", C_POST)):
         if not zr.get(key):
             continue
@@ -225,7 +225,7 @@ def figure_z(meas: dict, exact: dict, beta: float, size: int, path_hist: Path,
     ax.legend(frameon=False, fontsize=8)
     ax.grid(alpha=0.25, which="both")
     fig.tight_layout()
-    fig.savefig(path_area, dpi=150, bbox_inches="tight")
+    fig.savefig(path_area, dpi=157, bbox_inches="tight")
     plt.close(fig)
 
 
