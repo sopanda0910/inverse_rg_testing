@@ -180,12 +180,26 @@ place in the pipeline where nothing downstream can fix an error.
 ### (d) The cost claim, stated honestly
 
 Do **not** lead with speed. `13_cost_comparison.py` measures the ladder at
-3.87x SLOWER than HMC+winding at L = 64 (1.38x faster at 25 sampler steps). The
-honest cost statement is the one that survives: the diffusion seed plus the
-*cheap even* move reaches full P(Q) coverage in 379 s with zero parity flips,
-where the classical arm needs the expensive odd move and 1100 s -- same
-endpoint, 2.9x less cost, and every odd sector the seed occupies was inherited
-rather than manufactured.
+**2.39x SLOWER** than HMC+winding at L = 64 (1.38x faster at 25 sampler
+steps). This number was originally measured at 3.87x, then re-measured twice
+more at 3.30x/4.78x, before a real bug was found and fixed 2026-09-01: the
+script's `--rung-configs` default (512) predated `default.yaml`'s
+`ladder.n_configs` being raised to 1024 and was never updated, so every prior
+measurement charged the full ladder wall-clock against half the
+configurations actually delivered. 2.39x is the corrected number, but the
+`--base-seconds`/`--rung-seconds` timing inputs feeding it have not
+themselves been re-timed against the 1024-config pipeline and could still be
+off by up to 2x -- treat 2.39x as good to one significant figure, not as
+fully resolved. The honest cost statement is the one that survives: the diffusion seed plus the
+*cheap even* move reaches full P(Q) coverage in 310 s with zero parity flips,
+where the classical arm needs the expensive odd move and 913 s -- same
+endpoint, 2.94x less cost (computed by the script itself now, not by hand),
+and every odd sector the seed occupies was inherited rather than manufactured.
+As of 2026-09-01 this comparison also carries calibrated significance (chain-
+bootstrapped z-scores and sector goodness-of-fit, plus Wilson-loop-mean
+z-scores from a new per-chain series in `measure()`) rather than bare point
+estimates -- see `docs/u2_2d/NARRATIVE.md`'s seed-quality section and
+`out/u2_2d/seed_benchmark/{topology,observable}_stats.json`.
 
 ---
 

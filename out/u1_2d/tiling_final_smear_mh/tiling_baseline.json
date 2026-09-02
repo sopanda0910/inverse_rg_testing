@@ -1,0 +1,242 @@
+[
+  {
+    "fine_L": 32,
+    "fine_beta": 4.44,
+    "coarse_L": 16,
+    "coarse_beta": 1.4983623958318264,
+    "n_configs": 64,
+    "arms": {
+      "ape": {
+        "t_therm": {
+          "plaquette": 31.0,
+          "wilson_2x2": 28.0,
+          "wilson_4x4": 25.0
+        },
+        "t_therm_slowest": 31.0,
+        "blocking_error": 2.1982691287994385,
+        "acceptance": 0.965625,
+        "rel_err_at_t0": 0.01571399244804175,
+        "build_seconds": 0.05854058265686035,
+        "smear_sweeps": null
+      },
+      "smear": {
+        "t_therm": {
+          "plaquette": 3.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 0.0
+        },
+        "t_therm_slowest": 3.0,
+        "blocking_error": 3.141477108001709,
+        "acceptance": 0.964892578125,
+        "rel_err_at_t0": 1.8993383380572568e-05,
+        "build_seconds": 11.661104917526245,
+        "smear_sweeps": 200
+      },
+      "smear_mh": {
+        "t_therm": {
+          "plaquette": 5.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 3.0
+        },
+        "t_therm_slowest": 5.0,
+        "blocking_error": 3.141413688659668,
+        "acceptance": 0.96640625,
+        "rel_err_at_t0": 0.0007243103693932018,
+        "build_seconds": 1.6757011413574219,
+        "smear_sweeps": 200
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 6.11,
+    "coarse_L": 16,
+    "coarse_beta": 2.0013426513946837,
+    "n_configs": 64,
+    "arms": {
+      "ape": {
+        "t_therm": {
+          "plaquette": 108.0,
+          "wilson_2x2": 130.0,
+          "wilson_4x4": 25.0
+        },
+        "t_therm_slowest": 130.0,
+        "blocking_error": 2.080338954925537,
+        "acceptance": 0.9756103515625,
+        "rel_err_at_t0": -0.025715514279803328,
+        "build_seconds": 0.032271385192871094,
+        "smear_sweeps": null
+      },
+      "smear": {
+        "t_therm": {
+          "plaquette": 6.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 0.0
+        },
+        "t_therm_slowest": 6.0,
+        "blocking_error": 3.141521692276001,
+        "acceptance": 0.9724365234375,
+        "rel_err_at_t0": -0.00027405875857711354,
+        "build_seconds": 21.788872241973877,
+        "smear_sweeps": 200
+      },
+      "smear_mh": {
+        "t_therm": {
+          "plaquette": 0.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 0.0
+        },
+        "t_therm_slowest": 0.0,
+        "blocking_error": 3.141555070877075,
+        "acceptance": 0.97470703125,
+        "rel_err_at_t0": -0.00024334464904192258,
+        "build_seconds": 3.6677989959716797,
+        "smear_sweeps": 200
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 14.1464,
+    "coarse_L": 16,
+    "coarse_beta": 3.9999887248909847,
+    "n_configs": 64,
+    "arms": {
+      "ape": {
+        "t_therm": {
+          "plaquette": 4.0,
+          "wilson_2x2": 112.0,
+          "wilson_4x4": 153.0
+        },
+        "t_therm_slowest": 153.0,
+        "blocking_error": 3.0933420658111572,
+        "acceptance": 0.9851318359375,
+        "rel_err_at_t0": 0.004829944206560948,
+        "build_seconds": 0.12380480766296387,
+        "smear_sweeps": null
+      },
+      "smear": {
+        "t_therm": {
+          "plaquette": 0.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 3.0
+        },
+        "t_therm_slowest": 3.0,
+        "blocking_error": 3.141566753387451,
+        "acceptance": 0.9842529296875,
+        "rel_err_at_t0": 0.00026855216329684146,
+        "build_seconds": 18.546576499938965,
+        "smear_sweeps": 200
+      },
+      "smear_mh": {
+        "t_therm": {
+          "plaquette": 0.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 6.0
+        },
+        "t_therm_slowest": 6.0,
+        "blocking_error": 3.1415855884552,
+        "acceptance": 0.9841552734375,
+        "rel_err_at_t0": -0.00023667528902874735,
+        "build_seconds": 1.7782649993896484,
+        "smear_sweeps": 200
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 55.0237,
+    "coarse_L": 16,
+    "coarse_beta": 14.146404977472109,
+    "n_configs": 64,
+    "arms": {
+      "ape": {
+        "t_therm": {
+          "plaquette": 76.0,
+          "wilson_2x2": 250.0,
+          "wilson_4x4": 351.0
+        },
+        "t_therm_slowest": 351.0,
+        "blocking_error": 3.1383216381073,
+        "acceptance": 0.9773193359375,
+        "rel_err_at_t0": -0.001185473780107062,
+        "build_seconds": 0.06320619583129883,
+        "smear_sweeps": null
+      },
+      "smear": {
+        "t_therm": {
+          "plaquette": 48.0,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.1415598392486572,
+        "acceptance": 0.9787109375,
+        "rel_err_at_t0": -3.328808253976636e-05,
+        "build_seconds": 23.16999125480652,
+        "smear_sweeps": 200
+      },
+      "smear_mh": {
+        "t_therm": {
+          "plaquette": 0.0,
+          "wilson_2x2": 0.0,
+          "wilson_4x4": 7.0
+        },
+        "t_therm_slowest": 7.0,
+        "blocking_error": 3.1415839195251465,
+        "acceptance": 0.977587890625,
+        "rel_err_at_t0": 5.1468607857660795e-05,
+        "build_seconds": 2.1772477626800537,
+        "smear_sweeps": 200
+      }
+    }
+  },
+  {
+    "fine_L": 32,
+    "fine_beta": 218.58,
+    "coarse_L": 16,
+    "coarse_beta": 55.02364659738549,
+    "n_configs": 64,
+    "arms": {
+      "ape": {
+        "t_therm": {
+          "plaquette": 34.0,
+          "wilson_2x2": 88.0,
+          "wilson_4x4": 143.0
+        },
+        "t_therm_slowest": 143.0,
+        "blocking_error": 3.141282558441162,
+        "acceptance": 0.9779052734375,
+        "rel_err_at_t0": -1.0489519717173215e-06,
+        "build_seconds": 0.11982917785644531,
+        "smear_sweeps": null
+      },
+      "smear": {
+        "t_therm": {
+          "plaquette": null,
+          "wilson_2x2": null,
+          "wilson_4x4": null
+        },
+        "t_therm_slowest": null,
+        "blocking_error": 3.141517400741577,
+        "acceptance": 0.9752685546875,
+        "rel_err_at_t0": -0.0001186796869383752,
+        "build_seconds": 9.77508544921875,
+        "smear_sweeps": 200
+      },
+      "smear_mh": {
+        "t_therm": {
+          "plaquette": 0.0,
+          "wilson_2x2": 3.0,
+          "wilson_4x4": 0.0
+        },
+        "t_therm_slowest": 3.0,
+        "blocking_error": 3.141587734222412,
+        "acceptance": 0.97626953125,
+        "rel_err_at_t0": -7.680242769736125e-06,
+        "build_seconds": 2.0289626121520996,
+        "smear_sweeps": 200
+      }
+    }
+  }
+]

@@ -40,6 +40,9 @@ _spec.loader.exec_module(pq07)
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--benchmark", default="out/u2_2d/seed_benchmark/seed_benchmark.json")
+    parser.add_argument("--arm-dir", default=None,
+                        help="directory holding arm_*.json (raw per-chain charge history); "
+                             "defaults to --benchmark's parent")
     parser.add_argument("--out", default="out/u2_2d/seed_benchmark/topology_stats.json")
     parser.add_argument("--tail", type=float, default=0.5,
                         help="fraction of the trajectory history kept (discards burn-in)")
@@ -47,21 +50,32 @@ def main() -> int:
 
     bench = json.loads(Path(args.benchmark).read_text(encoding="utf-8"))
     beta, size = bench["beta"], bench["lattice_size"]
+    arm_dir = Path(args.arm_dir) if args.arm_dir else Path(args.benchmark).parent
     q_values, probs = det_topological_charge_distribution(beta, size)
     q_values = np.asarray(q_values)
     exact_q2 = float(np.sum(probs * q_values**2))
 
     rows = []
     for arm in bench["arms"]:
-        charge = np.stack([h["charge"] for h in arm["history"]])  # [n_records, n_chains]
+        raw = json.loads((arm_dir / f"arm_{arm['arm']}.json").read_text(encoding="utf-8"))
+        charge = np.stack([np.asarray(h["charge"]) for h in raw["history"]])  # [n_records, n_chains]
         t0 = int(charge.shape[0] * (1.0 - args.tail))
         tail = charge[t0:]
 
+        # A chain frozen at a single charge has EXACTLY zero bootstrap variance
+        # (every resample gives the same mean), not merely a small one -- dividing
+        # by it is meaningless, not just numerically fragile. Report inf, the same
+        # convention CLAUDE.md establishes for tau_int(Q^2) on a frozen chain: a
+        # frozen sampler should never present as "extremely far off" (a finite,
+        # if huge, number) when the honest statement is that it has no error bar
+        # at all to be far off BY.
         q2_mean, q2_sem = pq07.chain_bootstrap(tail**2, np.mean)
-        q2_z = (q2_mean - exact_q2) / max(q2_sem, 1e-12)
+        q2_z = (q2_mean - exact_q2) / q2_sem if q2_sem > 1e-9 else (
+            0.0 if abs(q2_mean - exact_q2) < 1e-9 else float("inf"))
 
         casym_mean, casym_sem = pq07.chain_bootstrap(np.sign(tail), np.mean)
-        casym_z = casym_mean / max(casym_sem, 1e-12)
+        casym_z = casym_mean / casym_sem if casym_sem > 1e-9 else (
+            0.0 if abs(casym_mean) < 1e-9 else float("inf"))
 
         gof = pq07.sector_goodness_of_fit(np.round(tail), q_values, probs)
 

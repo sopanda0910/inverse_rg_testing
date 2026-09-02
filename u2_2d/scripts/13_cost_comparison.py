@@ -68,8 +68,20 @@ def main() -> int:
                         help="wall-clock for the base ensemble (stage 01)")
     parser.add_argument("--base-configs", type=int, default=1024)
     parser.add_argument("--rung-seconds", default="59,246",
-                        help="wall-clock per ladder rung, comma separated")
-    parser.add_argument("--rung-configs", type=int, default=512)
+                        help="wall-clock per ladder rung, comma separated. NOTE "
+                             "(2026-09-01): these were measured when default.yaml's "
+                             "ladder.n_configs was 512; it is now 1024 and these "
+                             "have not been re-timed against that -- if lift cost "
+                             "scales with config count they may understate the "
+                             "current wall-clock by up to 2x. Verify by re-running "
+                             "stage 03 with timing before trusting a precise ratio.")
+    parser.add_argument("--rung-configs", type=int, default=1024,
+                        help="configs delivered per ladder rung -- must match "
+                             "default.yaml's ladder.n_configs (1024 as of "
+                             "2026-09-01; verify against the actual ensemble file "
+                             "with load_ensemble(...).shape[0] if that config "
+                             "changes again, the way this default itself went "
+                             "stale at 512 after n_configs was raised)")
     args = parser.parse_args()
 
     bench = json.loads(Path(args.benchmark).read_text(encoding="utf-8"))

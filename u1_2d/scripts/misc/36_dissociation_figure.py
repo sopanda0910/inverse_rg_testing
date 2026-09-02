@@ -36,7 +36,7 @@ matplotlib.use("Agg")
 import matplotlib.lines as mlines
 import matplotlib.pyplot as plt
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]
 OUT = REPO / "out" / "u1_2d"
 INK = "#1a1a1a"
 GRID = "#d8d8d8"
@@ -101,7 +101,12 @@ def main() -> None:
     if not rungs or not cases:
         raise SystemExit("need out/u1_2d/validation/report.md and an ess_results.json")
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.72))
+    # Height held taller and constrained_layout used instead of manual
+    # tight_layout+bbox_inches="tight": two-line, data-length-dependent panel
+    # titles at fixed fontsize need a fixed number of inches of vertical room
+    # regardless of the canvas's overall scale, and the two didn't reliably
+    # reserve enough of it together.
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 3.8), constrained_layout=True)
 
     # (a) observables
     labels, allz = [], []
@@ -129,8 +134,8 @@ def main() -> None:
     n_out = sum(1 for z in flat if z > 3)
     ax_a.set_title(f"(a) every observable agrees\n"
                    f"mean |z| = {statistics.fmean(flat):.2f}, "
-                   f"{n_out} of {len(flat)} past |z| = 3",
-                   fontsize=10, color=INK)
+                   f"{n_out}/{len(flat)} past |z|=3",
+                   fontsize=8.5, color=INK)
 
     # (b) the density those same observables came from
     for r in cases:
@@ -152,10 +157,9 @@ def main() -> None:
     stds = [r["std"] for r in cases]
     per_site = [r["std"] / (2 * r["L"] ** 2) for r in cases]
     ax_b.set_title(f"(b) the density does not\n"
-                   f"same ensembles: {min(stds):.0f}–{max(stds):.0f} nats/config "
-                   f"({min(per_site):.3f}–{max(per_site):.3f} nats/site), "
-                   f"{min(stds) / USABLE_NATS:.0f}–{max(stds) / USABLE_NATS:.0f}× "
-                   f"above usable", fontsize=10, color=INK)
+                   f"{min(stds):.0f}–{max(stds):.0f} nats/config, "
+                   f"{min(stds) / USABLE_NATS:.0f}–{max(stds) / USABLE_NATS:.0f}"
+                   r"$\times$ above usable", fontsize=8.5, color=INK)
 
     for ax in (ax_a, ax_b):
         ax.grid(color=GRID, lw=0.7)
@@ -170,14 +174,13 @@ def main() -> None:
         mlines.Line2D([], [], color=BAD, marker="o", ls="none",
                       label="one (L, β) case, fiber log-weight spread"),
     ]
-    fig.legend(handles=handles, fontsize=8.5, frameon=False, loc="lower center",
-               bbox_to_anchor=(0.5, -0.02), ncol=2)
+    fig.legend(handles=handles, fontsize=8.5, frameon=False, loc="outside lower center",
+               ncol=2)
     fig.suptitle("Observable agreement does not bound the density",
-                 fontsize=12.5, color=INK)
-    fig.tight_layout(rect=(0, 0.06, 1, 0.95))
+                 fontsize=11, color=INK)
     dest = OUT / "paper_appendix" / "dissociation.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(dest, dpi=231, bbox_inches="tight")
+    fig.savefig(dest, dpi=231)
     plt.close(fig)
     print(f"observables: mean |z| = {statistics.fmean(flat):.3f} "
           f"(ideal {IDEAL:.3f}), {n_out}/{len(flat)} past |z|=3")

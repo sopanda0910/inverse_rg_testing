@@ -30,14 +30,21 @@ and stays closed **for the winding move as originally proposed** — a qualifica
 that turned out to carry the whole claim, and is developed in §11.5.
 
 The measured advantage is that **the seed starts where the classical chain has to
-travel to.** For local observables the ladder is $3.7\times$ more expensive than
-HMC with a winding update at the accuracy-of-record setting, of which a tunable
-factor of three is recoverable. For topology, the honest 2026-08-20 statement is
-not that the classical arm *cannot* reach odd sectors — with the marginal odd move
-of §11.5 it reaches full $P(Q)$ coverage from a cold start — but that it must
-*manufacture* that coverage, at 2587 accepted parity flips and 1100 s, where the
-diffusion seed *inherits* it: arm E reaches the same coverage in 379 s with **zero**
-parity flips, and arm A is already there having made no winding move at all.
+travel to.** For local observables the ladder is roughly $2$–$2.4\times$ more
+expensive than HMC with a winding update at the accuracy-of-record setting
+(2.39x at the top rung, 2026-09-01, after fixing a stale `--rung-configs`
+default that had been overstating this multiplier by ~2x since it assumed 512
+delivered configurations against the 1024 `default.yaml` actually produces —
+see the cross-coupling section below; treat this as good to one significant
+figure until the ladder's per-rung wall-clock is independently re-timed), of
+which a tunable factor of three is recoverable. For topology, the honest 2026-08-20
+statement is not that the classical arm *cannot* reach odd sectors — with the
+marginal odd move of §11.5 it reaches full $P(Q)$ coverage from a cold start —
+but that it must *manufacture* that coverage, at 2578 accepted parity flips and
+913 s, where the diffusion seed *inherits* it: arm E reaches the same coverage
+in 310 s with **zero** parity flips (2.94x cheaper for the same endpoint,
+`13_cost_comparison.py`), and arm A is already there having made no winding
+move at all.
 
 ---
 
@@ -809,60 +816,115 @@ every seed is compared against a sampler of the same strength. **Read this grid 
 row, never diagonally** — comparing a diffusion seed under one sampler against a
 cold start under a weaker one measures the sampler, not the seed.
 
-One bookkeeping caveat, stated because it is visible in figure 7: arms **A–D ran
-300 trajectories and E–H ran 400**. A–D were reused from the earlier four-arm run
-rather than regenerated, and the arm cache is keyed on the arm name, not on the
-trajectory count. Every arm is equilibrated well before 300 — the independent
-interval is $2\tau_{\rm int} = 3.2$ — so the $t=0$ and final columns are
-comparable, but the cumulative `sectors` count is not: it can only grow with
-trajectory number, so A–D are mildly understated against E–H on that one column.
-Do not read the sector counts across that boundary without regenerating A–D.
+**RESOLVED 2026-09-01.** This section used to carry a bookkeeping caveat: arms
+A–D had been reused from an earlier four-arm run at 300 trajectories while E–H
+ran 400, understating A–D's cumulative `sectors` column. All eight arms are now
+regenerated at 400 trajectories (`out/u2_2d/seed_benchmark/`, old n=300 caches
+kept at `_superseded_n300/` rather than deleted) and the table below is that
+run. No caveat needed reading the `sectors` column across the A–D/E–H boundary
+any more.
 
 | arm | sampler | $|\Delta P/P|$ at $t=0$ | at $t=T$ | $\langle Q^2\rangle$ | sectors | $P(Q)$ covered | odd | parity flips |
 |---|---|---|---|---|---|---|---|---|
-| **A** diffusion seed | plain | $8.21e-06$ | $4.49e-06$ | 1.141 | 6 | 0.995 | 3 | 0 |
-| B cold start | plain | $4.83e-03$ | $4.30e-05$ | 0.000 | 1 | 0.399 | 0 | 0 |
-| C hot start | plain | $1.00e+00$ | $6.24e-02$ | 109.370 | 51 | 1.000 | 25 | 31 |
-| D cold | + even winding | $4.83e-03$ | $5.18e-05$ | 0.856 | 3 | 0.507 | 0 | 0 |
-| **E** diffusion seed | + even winding | $8.21e-06$ | $9.40e-06$ | 0.989 | 8 | **1.000** | 4 | **0** |
-| F hot start | + even winding | $1.00e+00$ | $6.24e-02$ | 6.284 | 52 | 1.000 | 25 | 32 |
-| G cold | + **odd** winding | $4.83e-03$ | $5.47e-05$ | 0.973 | 9 | **1.000** | 4 | **2587** |
-| **H** diffusion seed | + **odd** winding | $8.21e-06$ | $1.26e-05$ | 1.011 | 7 | **1.000** | 4 | — |
+| **A** diffusion seed | plain | $8.21e-06$ | $-9.52e-06$ | 1.141 | 6 | 0.995 | 3 | 0 |
+| B cold start | plain | $4.83e-03$ | $4.65e-05$ | 0.000 | 1 | 0.399 | 0 | 0 |
+| C hot start | plain | $-1.00e+00$ | $-6.25e-02$ | 91.521 | 55 | 1.000 | 30 | 27 |
+| D cold | + even winding | $4.83e-03$ | $5.94e-05$ | 0.870 | 5 | 0.507 | 0 | 0 |
+| **E** diffusion seed | + even winding | $8.21e-06$ | $1.10e-05$ | 1.017 | 7 | **1.000** | 4 | **0** |
+| F hot start | + even winding | $-1.00e+00$ | $-6.22e-02$ | 5.247 | 47 | 1.000 | 23 | 36 |
+| G cold | + **odd** winding | $4.83e-03$ | $4.22e-05$ | 0.985 | 7 | **1.000** | 4 | **2578** |
+| **H** diffusion seed | + **odd** winding | $8.21e-06$ | $2.04e-06$ | 0.999 | 9 | **1.000** | 4 | 2503 |
 
-Exact $\langle Q^2\rangle = 1.0012$. The independent-configuration interval for a plain chain is $2\tau_{\rm int} = 3.2$ trajectories.
+Exact $\langle Q^2\rangle = 1.0012$. The independent-configuration interval for a plain chain is $2\tau_{\rm int} = 3.2$ trajectories. All eight arms at 400 trajectories, 64 chains, $L=64$, $\beta=416.524$ (`out/u2_2d/seed_benchmark/`, rerun 2026-09-01 — see the resolved caveat below).
+
+**Chain-aware significance, added 2026-09-01** (`54_seed_benchmark_topology_stats.py`,
+`55_seed_benchmark_observable_stats.py`; both reuse the already-calibrated
+`chain_bootstrap`/`sector_goodness_of_fit` primitives from `07_pq_sampling.py`
+rather than inventing new statistics). The point estimates above now have error
+bars: $\langle Q^2\rangle$ $z$ against exact is **A +0.74, E +0.97, H −0.06** (all
+pass the sector goodness-of-fit gate, $p=$ 0.08/0.70/0.40) against **B +∞
+(frozen at $Q=0$, exactly zero bootstrap variance), C +5.45, D −3.08 ($p=0.000$,
+rejected — structurally cannot reach odd sectors), F +4.33**. Wilson-loop means
+(plaquette through W(8×8), chain-aware SEM) are **within 2.5σ for every
+diffusion-seeded arm** (A, E, H) and **13σ–600σ off for every cold/hot-started
+arm**, winding move or not — cold and hot start have simply not relaxed the
+local observables in 400 trajectories at this coupling. Full tables in
+`out/u2_2d/seed_benchmark/topology_stats.json` and `.../observable_stats.json`.
 
 **Three readings, in order of what they cost the argument.**
 
 *The reachability claim is dead.* Arms D and G differ only in how the winding
-move is priced, and parity flips go $0 \to 2587$. A classical chain at the top
-rung reaches full $P(Q)$ coverage with $\langle Q^2\rangle = 0.973$ against exact
+move is priced, and parity flips go $0 \to 2578$. A classical chain at the top
+rung reaches full $P(Q)$ coverage with $\langle Q^2\rangle = 0.985$ against exact
 $1.0012$. The earlier claim — that odd charge has probability zero in the
 classical arm's stationary distribution — was a property of the *proposal*, and
 is withdrawn (§11.5, `docs/INSTANTON.md`).
 
 *What replaces it is stronger, because it is a cost statement.* Arm E reaches
-coverage $1.000$ using only the **cheap even** move, in 379 s, with **zero**
+coverage $1.000$ using only the **cheap even** move, in 310 s, with **zero**
 parity flips. The even move cannot change parity, so every odd sector E occupies
 was inherited from the seed rather than manufactured. G needs the expensive odd
-move and 1100 s to arrive at the same place. Arm A is already there having made
-no winding move at all.
+move and 913 s to arrive at the same place — 2.94x the cost for the identical
+endpoint, computed directly by `13_cost_comparison.py` as of 2026-09-01 rather
+than by hand. Arm A is already there having made no winding move at all.
 
 *Arm H is the control that keeps A honest.* A's topology could in principle be
 correct-looking only because nothing was able to move it. H gives the same seed a
-sampler that flips parity freely, and $\langle Q^2\rangle$ sits at $1.011$ against
+sampler that flips parity freely, and $\langle Q^2\rangle$ sits at $0.999$ against
 exact $1.0012$ — the seed's sector weights survive contact with a sampler free to
 change them. That is a claim about the model's $P(Q)$, not about its immobility.
 
 **Read coverage together with the second moment, never alone.** The
-hot-start arm covers 1.000 of the exact $P(Q)$ by visiting 51 sectors
-while carrying a second moment of 109 against an exact 1.001 -- it covers
+hot-start arm covers 1.000 of the exact $P(Q)$ by visiting 55 sectors
+while carrying a second moment of 91.5 against an exact 1.001 -- it covers
 everything by being everywhere, and is nowhere near equilibrium (its
-plaquette is still 6% off after 300 trajectories). Coverage rewards
+plaquette is still 6% off after 400 trajectories). Coverage rewards
 breadth; only the pair of numbers identifies a correct distribution.
 
-The diffusion arm uses the first 64 configurations of the 512-configuration
-ensemble, so its sampling error on the second moment is about 0.09 and it
-will not equal the ladder value exactly.
+The diffusion arm uses the first 64 configurations of the 1024-configuration
+ladder ensemble, so its sampling error on the second moment is about 0.09 and
+it will not equal the ladder value exactly.
+
+### Cross-coupling check: the same grid at the middle rung
+
+**Added 2026-09-01.** Everything above is at the top ladder rung only
+(L=64, beta=416.524). The identical 8-arm grid was also run at the middle
+rung (L=32, beta=105.651, `out/u2_2d/seed_benchmark_rung0/`) to check the
+seed-vs-classical-start claim is not a property of one coupling. Fig. 31
+plots chain-bootstrapped $|z|$ against exact for both couplings side by
+side, plain HMC and + even winding, and the pattern is identical at both:
+
+| coupling | diffusion-seeded arms (A/E/H), worst \|z\| across P/W2x2/W4x4/W8x8/$Q^2$ | cold/hot arms (B/C/D/F), best \|z\| |
+|---|---|---|
+| L=32, beta=105.651 | 1.7 (arm H, $Q^2$) | 5.5 (arm C, $Q^2$) |
+| L=64, beta=416.524 | 2.5 (arm E, W8x8) | 4.3 (arm F, $Q^2$) |
+
+Every diffusion-seeded bar is within 2.5 sigma of exact at BOTH couplings and
+every scale; every cold/hot-started bar is at minimum 4.3 sigma off, and most
+are 10-600 sigma off. The topology same-endpoint cost ratio (diffusion+cheap
+move vs classical+expensive odd move) is 6.37x at the middle rung against
+2.94x at the top rung — the classical route gets relatively MORE expensive at
+the weaker coupling here, which is worth noting rather than smoothing into a
+single number. Full tables: `out/u2_2d/seed_benchmark_rung0/{topology,observable}_stats.json`.
+
+**A bug was found and fixed while producing this comparison.**
+`13_cost_comparison.py`'s `--rung-configs` default (512) predates
+`default.yaml`'s `ladder.n_configs` being raised to 1024 -- the ladder
+ensemble files confirm 1024 configs at both rungs, but the cost script's
+default was never updated to match, so every "ladder is Nx SLOWER" number
+computed against the default in this project has been overstating the
+ladder's cost by roughly 2x (it charges the full wall-clock against half the
+configurations actually delivered). Now fixed to 1024; the local-observable
+speed claim moves from "3.30x/4.78x SLOWER" (two noisy reruns under the old
+default) to **2.39x SLOWER at the top rung**, 6.05x at the middle rung. The
+topology same-endpoint cost ratios (2.94x, 6.37x above) were never affected
+by this bug -- they come directly from measured arm wall-clock times, not
+from the `--rung-configs`/`--base-seconds`/`--rung-seconds` CLI defaults.
+**Not yet verified:** `--base-seconds`/`--rung-seconds` (115s/59s/246s) were
+almost certainly measured under the same stale 512-config setup and may
+themselves understate current wall-clock by up to 2x if per-rung lift cost
+scales with configuration count; re-time stage 03 before quoting the
+local-observable multiplier to more than one significant figure.
 
 ### Is the *learned* lift necessary? The prolongator ablation
 

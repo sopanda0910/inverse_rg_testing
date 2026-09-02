@@ -239,14 +239,19 @@ def plot_modes(rungs: list[dict], obs_list: list[str], out_path: Path) -> None:
                              fontsize=10, color=INK)
             if j == 0:
                 ax.set_ylabel(f"{start}\n" + r"$\Gamma(\delta)$", fontsize=9)
+            # Panels are only ~1.7in wide at 4 columns -- "separation delta
+            # (HMC trajectories)" repeated per-column would bleed into its
+            # neighbors, so the bottom row gets the short form only.
             if i == len(STARTS) - 1:
-                ax.set_xlabel(r"separation $\delta$ (HMC trajectories)", fontsize=9)
+                ax.set_xlabel(r"$\delta$ (trajectories)", fontsize=9)
             style_axis(ax)
     handles, labels = axes[0, 0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="lower center", ncol=len(labels),
                fontsize=9, frameon=False)
+    # fontsize reduced from this file's usual 12pt: at 4 narrow columns
+    # (6.9in total) the full-length title overflows the canvas at 12pt.
     fig.suptitle("Fast modes (Wilson loops) vs slow modes (topology): "
-                 "autocorrelation on the equilibrated window", fontsize=12)
+                 "autocorrelation on the equilibrated window", fontsize=9.5)
     fig.tight_layout(rect=(0, 0.05, 1, 0.95))
     fig.savefig(out_path, dpi=round(130 / scale))
     plt.close(fig)

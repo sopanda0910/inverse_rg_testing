@@ -1,0 +1,10 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+regenerating PRE-retherm from out/u2_2d/checkpoints/det_score_net.pt
+wrote out\u2_2d\figures\fig20_honest_distributions_L64_beta416.524.png
+
+arm                              wilson_1x1   wilson_2x2   wilson_4x4   wilson_8x8       <Q^2>
+HMC (plain) -- FROZEN                +13.53        +9.36        +6.45        +4.74        -inf
+HMC + winding $\Delta Q=2$           +14.19        +9.87        +7.52        +5.76       -3.72
+HMC + winding $\Delta Q=1$           +15.58       +11.65        +5.80        +3.13       +0.59
+diffusion seed, PRE-retherm          +17.54        +3.14        +0.46        -0.32       +0.52
+diffusion seed, POST-retherm          +0.40        +0.10        -0.49        -1.37       +0.52

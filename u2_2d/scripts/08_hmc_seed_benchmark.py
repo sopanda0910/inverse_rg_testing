@@ -96,14 +96,40 @@ def integrated_autocorrelation(series: np.ndarray, c: float = 5.0) -> float:
 
 
 def measure(links: torch.Tensor) -> dict:
-    """Gauge-invariant observables of one batch, as plain floats/arrays."""
+    """Gauge-invariant observables of one batch, as plain floats/arrays.
+
+    Every loop observable also gets a `<name>_chain` per-chain mean (shape
+    [n_chains]), alongside the scalar batch mean. The scalar is what every
+    existing consumer of this dict reads; `<name>_chain` exists so a mean can
+    be given a chain-aware SEM/z-score downstream (`54_seed_benchmark_topology_stats.py`)
+    instead of the batch mean's bare point estimate.
+    """
     with torch.no_grad():
-        out = {"plaquette": float(half_retr(plaquette(links)).mean())}
+        p_chain = half_retr(plaquette(links)).mean(dim=(-2, -1))
+        out = {"plaquette": float(p_chain.mean()),
+               "plaquette_chain": p_chain.cpu().numpy().copy()}
         for name, (a, b) in LOOPS.items():
             if a < links.shape[-2]:
-                out[name] = float(half_retr(wilson_loop(links, a, b)).mean())
+                w_chain = half_retr(wilson_loop(links, a, b)).mean(dim=(-2, -1))
+                out[name] = float(w_chain.mean())
+                out[f"{name}_chain"] = w_chain.cpu().numpy().copy()
         out["charge"] = topological_charge(links).cpu().numpy().copy()
         return out
+
+
+def _arrays_to_lists(d: dict) -> None:
+    """In-place JSON-prep: every ndarray value (charge, and now every `_chain`
+    array `measure` adds) becomes a plain list."""
+    for k, v in list(d.items()):
+        if isinstance(v, np.ndarray):
+            d[k] = v.tolist()
+
+
+def _lists_to_arrays(d: dict) -> None:
+    """Inverse of `_arrays_to_lists`, applied after a cache load or a fresh run."""
+    for k, v in list(d.items()):
+        if k == "charge" or k.endswith("_chain"):
+            d[k] = np.asarray(v)
 
 
 def run_arm(name: str, sampler: BatchedHMCU2, start: torch.Tensor,
@@ -240,15 +266,15 @@ def main() -> int:
             print(f"    {name}: reused from {cache.name}")
             continue
         arm = run_arm(name, sampler, start_fn(), args.n_traj, args.record_every)
-        arm["final"]["charge"] = arm["final"]["charge"].tolist()
+        _arrays_to_lists(arm["final"])
         for h in arm["history"]:
-            h["charge"] = h["charge"].tolist()
+            _arrays_to_lists(h)
         cache.write_text(json.dumps(arm), encoding="utf-8")
         arms.append(arm)
     for arm in arms:
-        arm["final"]["charge"] = np.asarray(arm["final"]["charge"])
+        _lists_to_arrays(arm["final"])
         for h in arm["history"]:
-            h["charge"] = np.asarray(h["charge"])
+            _lists_to_arrays(h)
 
     exact_plaq = plaquette_exact(beta, size)
     # wilson_loop_exact takes the loop AREA -- in 2D the enclosed plaquettes are

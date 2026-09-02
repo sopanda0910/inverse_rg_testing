@@ -29,7 +29,7 @@ plt.rcParams.update({
     "font.size": 10, "axes.edgecolor": INK, "axes.labelcolor": INK,
     "text.color": INK, "xtick.color": INK, "ytick.color": INK,
     "axes.grid": True, "grid.color": GRID_COLOR, "grid.linewidth": 0.8,
-    "axes.axisbelow": True, "figure.dpi": 239,
+    "axes.axisbelow": True, "figure.dpi": 280,
 })
 
 
@@ -62,12 +62,19 @@ def fig_three_way():
     betas = [r["beta"] for r in rows]
     frozen_from = min(r["beta"] for r in rows if r["frozen"])
 
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.70))
+    # Height held wider than a strict aspect-preserving rescale would give:
+    # two-line panel titles, rotated tick labels, an inline text annotation
+    # and a suptitle are all fixed-fontsize text that needs the same number
+    # of INCHES regardless of the canvas's overall scale, so shrinking height
+    # in step with width (as for a plain data plot) crushed them together.
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 4.3), constrained_layout=True)
 
     top = 3000.0
     ax_a.axvspan(frozen_from, max(betas) * 1.3, color=HMC_COLOR, alpha=0.06)
-    ax_a.text(30.0, 350, "plain-HMC topology frozen\n(0 tunnelings in 321$\\times$32 traj)",
-              fontsize=8, color=HMC_COLOR)
+    # Axes-fraction placement (not data coordinates): safe regardless of how
+    # far the pink band extends, and short enough for a ~3.4in-wide panel.
+    ax_a.text(0.98, 0.03, "shaded: plain HMC\ntopology frozen", transform=ax_a.transAxes,
+              fontsize=7, color=HMC_COLOR, ha="right", va="bottom")
     for key, color, label, marker in (("hot", HMC_COLOR, "plain HMC, hot start", "s"),
                                       ("cold", AMBER, "plain HMC, cold start", "D")):
         xs = [r["beta"] for r in rows]
@@ -84,9 +91,13 @@ def fig_three_way():
               label="open triangle: never thermalizes")
     ax_a.set_xscale("log")
     ax_a.set_yscale("log")
+    # A narrow (~3.4in) panel can't hold every log-decade's minor ticks
+    # labelled ("6789100200" running together) -- major ticks only.
+    ax_a.xaxis.set_major_locator(matplotlib.ticker.LogLocator(base=10, numticks=4))
+    ax_a.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
     ax_a.set_xlabel(r"fine coupling $\beta_f$  (L = 32)")
     ax_a.set_ylabel("HMC trajectories until thermalized")
-    ax_a.set_title("(a) thermalization cost of three starting points", fontsize=10)
+    ax_a.set_title("(a) thermalization cost of\nthree starting points", fontsize=9)
     ax_a.legend(frameon=False, fontsize=8, loc="upper left")
 
     h2h = _load(OUT / "diffusion_vs_instanton" / "summary.json")
@@ -114,13 +125,14 @@ def fig_three_way():
     ax_b.set_yscale("log")
     ax_b.set_xlabel(r"fine coupling $\beta_f$  (L = 32)")
     ax_b.set_ylabel("seconds per independent configuration")
-    ax_b.set_title("(b) marginal cost where plain HMC no longer appears at all", fontsize=10)
+    ax_b.set_title("(b) marginal cost where plain HMC\nno longer appears at all", fontsize=9)
     ax_b.legend(frameon=False, fontsize=8, loc="center left")
 
-    fig.suptitle("Three-way verdict at L = 32: plain HMC freezes, instanton-HMC pays an "
-                 "exploding entry cost (Fig. 18), diffusion stays flat", fontsize=10.5)
-    fig.tight_layout()
-    fig.savefig(FIG_DIR / "26_three_way.png", bbox_inches="tight")
+    # Two lines, fontsize trimmed from this file's usual 10.5: one line at
+    # 6.9in canvas width overflows past both edges.
+    fig.suptitle("Three-way verdict at L = 32: plain HMC freezes, instanton-HMC\n"
+                 "pays an exploding entry cost (Fig. 18), diffusion stays flat", fontsize=9.5)
+    fig.savefig(FIG_DIR / "26_three_way.png")
     plt.close(fig)
 
 
@@ -140,7 +152,12 @@ def fig_program_optimum():
         ("multi-case rev-KL\n(rkl2)", OUT / "ess_chain" / "verify_rkl2" / "reweighting_results.json", GOOD_GREEN, "KEPT (final)"),
         ("big net + data", OUT / "ess_chain" / "verify_big_base" / "reweighting_results.json", HMC_COLOR, "discarded"),
     ]
-    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 2.70))
+    # Height held wider than a strict aspect-preserving rescale would give:
+    # two-line panel titles, rotated tick labels, an inline text annotation
+    # and a suptitle are all fixed-fontsize text that needs the same number
+    # of INCHES regardless of the canvas's overall scale, so shrinking height
+    # in step with width (as for a plain data plot) crushed them together.
+    fig, (ax_a, ax_b) = plt.subplots(1, 2, figsize=(6.9, 4.3), constrained_layout=True)
     for i, (label, path, color, note) in enumerate(interventions):
         std = _std_at(path, 16, 55.0237)
         ax_a.bar(i, std, color=color, width=0.7)
@@ -204,12 +221,11 @@ def fig_program_optimum():
     # the campaign was regenerated on GPU, and a literal in the title silently
     # outlived the data it described.
     lo, hi = min(per_sites) / 0.005, max(per_sites) / 0.005
-    ax_b.set_title(f"(b) the quantified remainder: {lo:.1f}-{hi:.1f}$\\times$ above the\n"
-                   "bar, everywhere -- the measured end state of the program", fontsize=9.5)
+    ax_b.set_title(f"(b) the quantified remainder: {lo:.1f}-{hi:.1f}$\\times$\n"
+                   "above the bar, everywhere -- the program's endpoint", fontsize=7.3)
     ax_b.legend(frameon=False, fontsize=8, loc="upper left")
 
-    fig.tight_layout()
-    fig.savefig(FIG_DIR / "27_program_optimum.png", bbox_inches="tight")
+    fig.savefig(FIG_DIR / "27_program_optimum.png")
     plt.close(fig)
 
 

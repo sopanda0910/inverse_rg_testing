@@ -1,0 +1,40 @@
+  no cached base; simulating coarse L=16 beta=1.49836
+
+=== 32:4.44 (coarse 16:1.4984), 64 configs ===
+  ape    t_therm(slowest Wilson) = 31      blocking |err| = 2.20e+00  acc = 0.966  rel err at t=0 = +1.57e-02  build = 0.1s
+  smear  t_therm(slowest Wilson) = 3       blocking |err| = 3.14e+00  acc = 0.965  rel err at t=0 = +1.90e-05  build = 11.7s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 5       blocking |err| = 3.14e+00  acc = 0.966  rel err at t=0 = +7.24e-04  build = 1.7s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=2.00134
+
+=== 32:6.11 (coarse 16:2.0013), 64 configs ===
+  ape    t_therm(slowest Wilson) = 130     blocking |err| = 2.08e+00  acc = 0.976  rel err at t=0 = -2.57e-02  build = 0.0s
+  smear  t_therm(slowest Wilson) = 6       blocking |err| = 3.14e+00  acc = 0.972  rel err at t=0 = -2.74e-04  build = 21.8s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 0       blocking |err| = 3.14e+00  acc = 0.975  rel err at t=0 = -2.43e-04  build = 3.7s  sweeps = 200
+  base: wilson_L16_beta4.pt
+
+=== 32:14.1464 (coarse 16:4.0000), 64 configs ===
+  ape    t_therm(slowest Wilson) = 153     blocking |err| = 3.09e+00  acc = 0.985  rel err at t=0 = +4.83e-03  build = 0.1s
+  smear  t_therm(slowest Wilson) = 3       blocking |err| = 3.14e+00  acc = 0.984  rel err at t=0 = +2.69e-04  build = 18.5s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 6       blocking |err| = 3.14e+00  acc = 0.984  rel err at t=0 = -2.37e-04  build = 1.8s  sweeps = 200
+  no cached base; simulating coarse L=16 beta=14.1464
+
+=== 32:55.0237 (coarse 16:14.1464), 64 configs ===
+  ape    t_therm(slowest Wilson) = 351     blocking |err| = 3.14e+00  acc = 0.977  rel err at t=0 = -1.19e-03  build = 0.1s
+  smear  t_therm(slowest Wilson) = > 640   blocking |err| = 3.14e+00  acc = 0.979  rel err at t=0 = -3.33e-05  build = 23.2s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 7       blocking |err| = 3.14e+00  acc = 0.978  rel err at t=0 = +5.15e-05  build = 2.2s  sweeps = 200
+  base: wilson_L16_beta55.0237.pt
+
+=== 32:218.58 (coarse 16:55.0236), 64 configs ===
+  ape    t_therm(slowest Wilson) = 143     blocking |err| = 3.14e+00  acc = 0.978  rel err at t=0 = -1.05e-06  build = 0.1s
+  smear  t_therm(slowest Wilson) = > 640   blocking |err| = 3.14e+00  acc = 0.975  rel err at t=0 = -1.19e-04  build = 9.8s  sweeps = 200
+  smear_mh t_therm(slowest Wilson) = 3       blocking |err| = 3.14e+00  acc = 0.976  rel err at t=0 = -7.68e-06  build = 2.0s  sweeps = 200
+
+| case | ape | smear | smear_mh | diffusion seed (Fig. 12) |
+|---|---|---|---|---|
+| 32:4.44 | 31 | 3 | 5 | -- |
+| 32:6.11 | 130 | 6 | 0 | -- |
+| 32:14.1464 | 153 | 3 | 6 | 0 |
+| 32:55.0237 | 351 | > 640 | 7 | 0 |
+| 32:218.58 | 143 | > 640 | 3 | 6 |
+
+wrote out\u1_2d\tiling_final_smear_mh\tiling_baseline.json

@@ -304,11 +304,19 @@ KL per site across cases.
 
 *Drawn by `u2_2d/scripts/32_dissociation.py`.*
 
+### Figure U2-34: `fig31_seed_vs_classical_significance.png`
+
+![fig31_seed_vs_classical_significance.png](figures/fig31_seed_vs_classical_significance.png)
+
+Chain-bootstrapped |z| against the exact closed form, diffusion seed vs. cold vs. hot start, plain HMC and + even winding, at both benchmarked couplings (L=32/beta=105.651 and L=64/beta=416.524). Every diffusion-seeded bar sits within 2.5 sigma of exact at every loop size and both couplings; every cold/hot-started bar is 6 sigma-600 sigma off, winding move or not.
+
+*Drawn by `u2_2d/scripts/56_seed_benchmark_cross_beta_figure.py`.*
+
 ## Appendix U2-E. Cost and tuning
 
 Cost claims, and the two knobs that were measured rather than assumed.
 
-### Figure U2-34: `fig14_sampler_steps.png`
+### Figure U2-35: `fig14_sampler_steps.png`
 
 ![fig14_sampler_steps.png](figures/fig14_sampler_steps.png)
 
@@ -316,7 +324,7 @@ Cost and accuracy against the number of reverse-diffusion steps. Read the RUNG 0
 
 *Drawn by `u2_2d/scripts/16_cost_figures.py`.*
 
-### Figure U2-35: `fig25_retherm_scan.png`
+### Figure U2-36: `fig25_retherm_scan.png`
 
 ![fig25_retherm_scan.png](figures/fig25_retherm_scan.png)
 
@@ -324,7 +332,7 @@ Observable error against rethermalization sweep count. Note the retraction recor
 
 *Drawn by `u2_2d/scripts/33_retherm_scan.py`.*
 
-### Figure U2-36: `fig15_prolongator.png`
+### Figure U2-37: `fig15_prolongator.png`
 
 ![fig15_prolongator.png](figures/fig15_prolongator.png)
 

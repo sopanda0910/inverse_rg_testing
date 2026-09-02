@@ -1,0 +1,160 @@
+% ============================================================
+% Table: U(1) cold/hot-start entry cost vs the diffusion seed
+% Source: out/u1_2d/diffusion_vs_instanton/report.md, Table S1
+% ============================================================
+\begin{table}[htbp]
+\centering
+\caption{U(1): cold-started HMC with the winding update against the
+diffusion seed, $L=32$. ``Entry cost'' is one-time wall-clock burn-in;
+quality is a local Wilson-observable criterion ($|z|\le 2.5$), reported
+separately from $\langle Q^2\rangle$ because the winding move samples
+topology correctly well before local observables equilibrate.}
+\label{tab:u1_h2h}
+\begin{tabular}{lrrrl}
+\toprule
+$\beta_f$ & entry cost (s) & $\langle Q^2\rangle$ & exact $\langle Q^2\rangle$ & quality \\
+\midrule
+4.44   & 8                        & $7.08 \pm 0.38$  & 6.79  & pass \\
+14.15  & 16                       & $1.87 \pm 0.058$ & 1.90  & pass \\
+55.02  & 31 (500 traj) / 1140 (8000 traj) & $0.47 \pm 0.008$ & 0.474 & fail at 500 traj, marginal at 8000 \\
+218.58 & 58 (500 traj) / 1137 (8000 traj) & $0.032 \pm 0.002$ & 0.029 & fail at 500 traj, marginal at 8000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% Table: U(1) sector-change count, plain HMC vs HMC+winding
+% Source: out/u1_2d/classical_arms/ptbc_benchmark.json (Fig. 31 data)
+% ============================================================
+\begin{table}[htbp]
+\centering
+\caption{U(1): sector changes in 3000 trajectories from a cold start,
+$L=32$. Plain periodic HMC never changes sector at any coupling tested;
+this is why a cold or hot start under plain HMC is not treated as a
+serious classical baseline.}
+\label{tab:u1_frozen}
+\begin{tabular}{lrrr}
+\toprule
+$\beta_f$ & exact $\langle Q^2\rangle$ & plain HMC & HMC + winding \\
+\midrule
+14.15  & 1.904 & 0 & 8{,}447 \\
+55.02  & 0.474 & 0 & 5{,}092 \\
+218.58 & 0.029 & 0 & 358 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% Table: U(2) chain-bootstrapped significance, both benchmarked couplings
+% Source: out/u2_2d/seed_benchmark{,_rung0}/topology_stats.json
+% ============================================================
+\begin{table}[htbp]
+\centering
+\caption{U(2): chain-bootstrapped $\langle Q^2\rangle$ against the exact
+closed form ($1.0012$ at both rungs), 64 chains, 400 trajectories, last
+50\% of history. $z$ is the chain-bootstrapped significance; gof~$p$ is
+the bootstrapped sector goodness-of-fit $p$-value (calibrated against a
+synthetic null; not a raw $\chi^2$ table lookup).}
+\label{tab:u2_topology}
+\begin{tabular}{lrrrrr}
+\toprule
+& \multicolumn{2}{c}{$L=32,\ \beta=105.651$} & \multicolumn{2}{c}{$L=64,\ \beta=416.524$} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+arm & $z$ & gof $p$ & $z$ & gof $p$ \\
+\midrule
+A: diffusion seed              & $+0.74$ & $0.078$ & $+0.74$ & $0.078$ \\
+B: cold start                  & $+\infty$ (frozen) & $1.000$ & $+\infty$ (frozen) & $1.000$ \\
+C: hot start                   & $+5.99$ & $0.0005$ & $+5.45$ & $0.0005$ \\
+D: cold + even winding         & $-6.84$ & $0.0005$ & $-3.08$ & $0.0005$ \\
+E: diffusion + even winding    & $+1.61$ & $0.727$  & $+0.97$ & $0.696$ \\
+F: hot + even winding          & $+2.85$ & $0.192$  & $+4.33$ & $0.116$ \\
+G: cold + odd winding          & $+0.25$ & $0.824$  & $-0.76$ & $0.388$ \\
+H: diffusion + odd winding     & $-0.57$ & $0.746$  & $-0.06$ & $0.397$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% Table: U(2) Wilson-loop mean z-scores, both benchmarked couplings
+% Source: out/u2_2d/seed_benchmark{,_rung0}/observable_stats.json
+% ============================================================
+\begin{table}[htbp]
+\centering
+\caption{U(2): chain-bootstrapped Wilson-loop mean $z$-scores against
+the exact closed form, same runs as Table~\ref{tab:u2_topology}. Every
+diffusion-seeded arm stays within $2.5\sigma$ at every loop size and both
+couplings; every cold/hot-started arm is at minimum $1.1\sigma$ and up to
+$600\sigma$ off.}
+\label{tab:u2_observables}
+\begin{tabular}{lrrrr}
+\toprule
+\multicolumn{5}{c}{$L=32,\ \beta=105.651$} \\
+\midrule
+arm & plaquette & $W(2\times2)$ & $W(4\times4)$ & $W(8\times8)$ \\
+\midrule
+A: diffusion seed              & $+0.56$   & $-0.14$   & $-0.30$   & $-1.08$   \\
+B: cold start                  & $+6.18$   & $+5.52$   & $+6.42$   & $+7.57$   \\
+C: hot start                   & $-31.46$  & $-37.12$  & $-53.26$  & $-111.21$ \\
+D: cold + even winding         & $+5.99$   & $+3.24$   & $+1.88$   & $+1.07$   \\
+E: diffusion + even winding    & $+1.47$   & $+0.40$   & $+0.77$   & $+0.09$   \\
+F: hot + even winding          & $-30.45$  & $-33.80$  & $-45.15$  & $-89.49$  \\
+G: cold + odd winding          & $+5.96$   & $+2.30$   & $+2.03$   & $+1.82$   \\
+H: diffusion + odd winding     & $+0.05$   & $+0.01$   & $-0.44$   & $-0.54$   \\
+\midrule
+\multicolumn{5}{c}{$L=64,\ \beta=416.524$} \\
+\midrule
+A: diffusion seed              & $-0.51$   & $+0.31$   & $+0.01$   & $+0.56$   \\
+B: cold start                  & $+26.57$  & $+22.27$  & $+16.24$  & $+13.38$  \\
+C: hot start                   & $-383.44$ & $-358.73$ & $-332.88$ & $-599.56$ \\
+D: cold + even winding         & $+37.30$  & $+24.53$  & $+19.52$  & $+14.84$  \\
+E: diffusion + even winding    & $+0.11$   & $+0.33$   & $+1.62$   & $+2.48$   \\
+F: hot + even winding          & $-448.52$ & $-369.71$ & $-314.36$ & $-556.55$ \\
+G: cold + odd winding          & $+39.27$  & $+28.07$  & $+18.32$  & $+14.43$  \\
+H: diffusion + odd winding     & $-0.93$   & $-1.10$   & $-0.89$   & $+0.79$   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% Table: U(2) seed quality vs distance to nearest training rung
+% Source: docs/u2_2d/DESIGN.md / crossover_scan discussion (CLAUDE.md)
+% ============================================================
+\begin{table}[htbp]
+\centering
+\caption{U(2): seed $t_{\rm therm}$ against fractional distance to the
+nearest training coupling (model $\beta$), $L=32$ from $L=16$. No
+classical arm (cold or hot start, plain or with the marginal winding
+move) converges within budget at any coupling in this scan.}
+\label{tab:u2_coverage}
+\begin{tabular}{lccc}
+\toprule
+gap to nearest training rung & seed $t_{\rm therm}$ (individual) & median \\
+\midrule
+$\le 10\%$        & 3, 4, 6, 10  & 5 \\
+$16$--$21\%$      & 10, 50, 51   & 50 \\
+past the top rung & never (4/4) & never \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ============================================================
+% Table: U(2) volume scan at matched coverage gap
+% Source: docs/u2_2d/DESIGN.md volume-scan discussion (CLAUDE.md)
+% ============================================================
+\begin{table}[htbp]
+\centering
+\caption{U(2): seed $t_{\rm therm}$ at matched fractional coverage gap,
+one volume apart ($L=64$ lifted from $L=32$). The coverage ordering
+transfers across volume; the quality does not.}
+\label{tab:u2_volume}
+\begin{tabular}{lcccc}
+\toprule
+coverage gap & model $\beta$ & $L=32$ seed $t_{\rm therm}$ & $L=64$ seed $t_{\rm therm}$ \\
+\midrule
+$-0.2\%$ (in-sample) & $\approx 104$ & 3 & 6 \\
+$-9.6\%$ / $-11.6\%$ & $\approx 45$  & 6 & never \\
+$-16\%$ / $-17.6\%$  & $\approx 22$  & 59 & 79 \\
+past top rung        & $\approx 200$ & never & never \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -109,15 +109,43 @@ that produced them, so a further change to these statistics costs a
 paid for itself the same day: the binning-rule change above was applied by
 re-analysis, not by re-running.
 
-## 2. Regenerate seed-benchmark arms A–D at 400 trajectories
+## 2. Regenerate seed-benchmark arms A–D at 400 trajectories -- DONE 2026-09-01
 
-The arm cache is keyed on arm *name*, not trajectory count, so A–D were reused at
-300 while E–H ran at 400. Equilibration is fine either way (2τ_int = 3.2), but
-`n_sectors_visited` is cumulative and can only grow with trajectory number, so
-A–D are understated on that one column. Visible as the short lines in figure 7.
+All eight arms are now at 400 trajectories (`out/u2_2d/seed_benchmark/`, old
+n=300 A-D caches kept at `_superseded_n300/`). `fig06`/`fig07`/`fig13`/`fig19`
+regenerated and the appendix figure gate (`49_assemble_appendix_figures.py
+--check`) passes clean. `docs/u2_2d/NARRATIVE.md`'s table and `CLAUDE.md`'s
+seed-benchmark section updated with the new numbers.
 
-Cost: ~25 min GPU. Delete `out/u2_2d/seed_benchmark/arm_[A-D]*.json` and re-run
-stage 08.
+While fixing this, `08_hmc_seed_benchmark.py`'s `measure()` was also extended to
+record a per-chain series for the plaquette and every Wilson loop (previously
+only the batch mean was kept, so no chain-aware error bar was possible on a
+loop MEAN — only on <Q^2>, which already had per-chain charge data). Two new
+scripts consume it: `54_seed_benchmark_topology_stats.py` (calibrated <Q^2> and
+sector-histogram significance) and `55_seed_benchmark_observable_stats.py`
+(calibrated Wilson-loop-mean significance). Both reuse `07_pq_sampling.py`'s
+already-calibrated `chain_bootstrap`/`sector_goodness_of_fit` rather than
+inventing new statistics.
+
+**Cross-coupling check DONE 2026-09-01.** `--rung 0` gives the same 8-arm grid
+at the middle rung (L=32/beta=105.651, `out/u2_2d/seed_benchmark_rung0/`). The
+pattern reproduces exactly: diffusion-seeded arms stay within 2.5 sigma at
+both couplings, cold/hot arms are 4.3-600 sigma off. `56_seed_benchmark_cross_beta_figure.py`
+draws fig31 (both couplings, plain HMC and + even winding rows) and is now in
+the appendix figure gate.
+
+**A real bug was found producing this comparison and is now fixed.**
+`13_cost_comparison.py --rung-configs` defaulted to 512, stale since
+`default.yaml`'s `ladder.n_configs` was raised to 1024 (verified against the
+actual ladder ensemble files) — every "ladder is Nx SLOWER" number computed
+against that default was overstating the ladder's cost ~2x. Fixed to 1024;
+the top-rung multiplier moves from 3.87x (original) / 3.30x-4.78x (two noisy
+reruns before the fix was found) to **2.39x**. The topology same-endpoint
+cost ratios (2.94x top rung, 6.37x middle rung) were never affected -- they
+come from measured arm wall-clock, not this default. `--base-seconds`/
+`--rung-seconds` (115s/59s/246s) are still UNVERIFIED against the current
+1024-config pipeline and are the next thing to check if this multiplier needs
+to go beyond one significant figure.
 
 ## 3. Re-run `15_base_parity.py` with `charge_step = 1`
 

@@ -133,7 +133,7 @@ def main() -> int:
                          else wilson_loop_exact(beta, nx * ny, lattice_size=size))
                   for name, nx, ny in LOOPS}
 
-    fig, axes = plt.subplots(2, 3, figsize=(6.9, 3.51))
+    fig, axes = plt.subplots(2, 3, figsize=(9.2, 4.8))
     flat = axes.ravel()
 
     for ax, (name, nx, ny) in zip(flat, LOOPS):
@@ -168,32 +168,44 @@ def main() -> int:
         names.append(label.replace("HMC + winding ", "+wind\n").replace(
             "HMC (plain) -- FROZEN", "plain\nHMC").replace(
             "diffusion seed, ", "diff\n").replace("$\\Delta Q=2$", "dQ=2").replace(
-            "$\\Delta Q=1$", "dQ=1"))
+            "$\\Delta Q=1$", "dQ=1").replace("PRE-retherm", "PRE").replace(
+            "POST-retherm", "POST"))
         vals.append(float((q ** 2).mean()))
         errs.append(float((q ** 2).std(ddof=1) / np.sqrt(len(q))))
         cols.append(colour)
     x = np.arange(len(names))
     ax.bar(x, vals, 0.62, yerr=errs, color=cols, alpha=0.9, capsize=3)
-    ax.axhline(q2_exact, color="k", lw=1.5, ls=(0, (5, 2)), label="exact")
+    ax.axhline(q2_exact, color="k", lw=1.5, ls=(0, (5, 2)))
+    # Headroom for the annotations, which sit ABOVE the tallest bar+errorbar --
+    # without it "frozen (no spread)" and the sigma notes collide with the
+    # subplot frame or with fig.suptitle.
+    ax.set_ylim(0, max(v + e for v, e in zip(vals, errs)) * 1.35 + 0.05)
     for xi, (v, e) in enumerate(zip(vals, errs)):
         # A frozen arm has every Q equal to zero, so e == 0 and the z-score is
         # formally infinite. Printing a clamped 1e12 sigma looks like a bug and
         # buries the actual point, which is that the arm has NO spread at all.
         note = "frozen\n(no spread)" if e == 0.0 else f"({(v - q2_exact) / e:+.1f}$\\sigma$)"
         ax.annotate(f"{v:.3f}\n{note}", (xi, v + e), textcoords="offset points",
-                    xytext=(0, 3), ha="center", fontsize=7.5)
+                    xytext=(0, 6), ha="center", va="bottom", fontsize=7)
     ax.set_xticks(x)
     ax.set_xticklabels(names, fontsize=7.5)
     ax.set_ylabel(r"$\langle Q^2 \rangle$")
     ax.set_title(r"$\langle Q^2\rangle$ against exact", fontsize=10)
-    ax.legend(frameon=False, fontsize=8)
 
-    flat[0].legend(frameon=False, fontsize=8)
+    # ONE shared legend for the whole figure instead of one per axis -- with
+    # five series (plus "exact") repeated across six panels, a per-axis
+    # legend has no good corner to sit in and previously overlapped the
+    # W(1x1) title. flat[0] already carries all six handles (5 arms + its
+    # own "exact" axvline), so reuse them rather than re-declaring "exact".
+    handles, labels = flat[0].get_legend_handles_labels()
+    fig.legend(handles, labels, frameon=False, fontsize=8, loc="upper center",
+              ncol=3, bbox_to_anchor=(0.5, 0.98))
+
     for ax in flat:
         ax.grid(alpha=0.22)
     fig.suptitle(f"$L={size}$, $\\beta={beta:g}$ -- generated vs the classical arms "
-                 "that actually run (unseeded, cold start)", y=1.0, fontsize=12)
-    fig.tight_layout()
+                 "that actually run (unseeded, cold start)", y=1.04, fontsize=12)
+    fig.tight_layout(rect=(0, 0, 1, 0.90))
     dest = Path(args.out_dir) / f"fig20_honest_distributions_L{size}_beta{beta:g}.png"
     dest.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(dest, dpi=359, bbox_inches="tight")

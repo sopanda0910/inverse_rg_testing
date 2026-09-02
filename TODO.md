@@ -164,3 +164,5 @@ In the paper, potentially include 2D U(2) if finished, or at least mention it
 People to cite, they have done lots of diffusion modelling stuff:
 - Gert Aarts
 - Lingxiao Wang
+
+Check whether the current method conflicts with the dynamic fermion (RHMC)

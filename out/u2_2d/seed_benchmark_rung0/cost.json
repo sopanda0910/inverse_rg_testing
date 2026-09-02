@@ -1,0 +1,104 @@
+{
+  "lattice_size": 32,
+  "beta": 105.651,
+  "n_chains": 64,
+  "arms": [
+    {
+      "arm": "A_diffusion_seed",
+      "tau_int_plaquette_trajectories": 2.5,
+      "seconds_per_trajectory": 0.38192966878414153,
+      "seconds_per_independent_config_local": 0.029838255373761058,
+      "exact_probability_covered": 0.9952738791854374,
+      "odd_sectors_visited": 3
+    },
+    {
+      "arm": "B_cold_start",
+      "tau_int_plaquette_trajectories": 2.5,
+      "seconds_per_trajectory": 0.34074856102466583,
+      "seconds_per_independent_config_local": 0.02662098133005202,
+      "exact_probability_covered": 0.39870568376373317,
+      "odd_sectors_visited": 0
+    },
+    {
+      "arm": "C_hot_start",
+      "tau_int_plaquette_trajectories": 23.960797336767868,
+      "seconds_per_trajectory": 0.361581169962883,
+      "seconds_per_independent_config_local": 0.27074291044600174,
+      "exact_probability_covered": 0.9999999999999998,
+      "odd_sectors_visited": 17
+    },
+    {
+      "arm": "D_cold_plus_winding",
+      "tau_int_plaquette_trajectories": 2.5,
+      "seconds_per_trajectory": 0.35964987516403196,
+      "seconds_per_independent_config_local": 0.028097646497189998,
+      "exact_probability_covered": 0.5070150261150774,
+      "odd_sectors_visited": 0
+    },
+    {
+      "arm": "E_diffusion_plus_winding",
+      "tau_int_plaquette_trajectories": 3.564341937383641,
+      "seconds_per_trajectory": 0.2952449071407318,
+      "seconds_per_independent_config_local": 0.03288605638502029,
+      "exact_probability_covered": 0.999726896173326,
+      "odd_sectors_visited": 4
+    },
+    {
+      "arm": "F_hot_plus_winding",
+      "tau_int_plaquette_trajectories": 23.88852831325215,
+      "seconds_per_trajectory": 0.33372852087020877,
+      "seconds_per_independent_config_local": 0.24913385061711696,
+      "exact_probability_covered": 0.9999999999999998,
+      "odd_sectors_visited": 17
+    },
+    {
+      "arm": "G_cold_plus_odd_winding",
+      "tau_int_plaquette_trajectories": 2.5,
+      "seconds_per_trajectory": 1.8819340920448304,
+      "seconds_per_independent_config_local": 0.14702610094100238,
+      "exact_probability_covered": 0.9998619335014558,
+      "odd_sectors_visited": 4
+    },
+    {
+      "arm": "H_diffusion_plus_odd_winding",
+      "tau_int_plaquette_trajectories": 2.5,
+      "seconds_per_trajectory": 2.24927327811718,
+      "seconds_per_independent_config_local": 0.17572447485290468,
+      "exact_probability_covered": 0.9999969708295856,
+      "odd_sectors_visited": 4
+    }
+  ],
+  "ladder": {
+    "base_seconds": 115.0,
+    "rung_seconds": [
+      59.0
+    ],
+    "total_seconds": 174.0,
+    "configs_delivered": 1024,
+    "seconds_per_config_including_base": 0.169921875,
+    "seconds_per_config_amortized_base": 0.0576171875,
+    "seconds_per_config_top_rung_only": 0.0576171875
+  },
+  "speedup_local_vs_hmc_winding": 0.1653562644432331,
+  "topology_reachability": {
+    "classical_even_only": {
+      "arm": "D_cold_plus_winding",
+      "exact_probability_covered": 0.5070150261150774,
+      "reachable_at_any_cost": false,
+      "reason": "winding_charge_step=2 has zero stationary probability on odd sectors"
+    },
+    "classical_odd_capable": {
+      "arm": "G_cold_plus_odd_winding",
+      "exact_probability_covered": 0.9998619335014558,
+      "seconds": 752.7736368179321,
+      "reachable_at_any_cost": true
+    },
+    "diffusion_even_only": {
+      "arm": "E_diffusion_plus_winding",
+      "exact_probability_covered": 0.999726896173326,
+      "seconds": 118.09796285629272,
+      "parity_flips_needed": false
+    },
+    "same_endpoint_cost_ratio": 6.374145824462216
+  }
+}

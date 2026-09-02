@@ -335,12 +335,23 @@ closed and `su2_2d/` is set aside.
   (moving the base to L=16/beta=28 tightens the error 3.7x and cuts the drift only
   2.5x, so the z-score gets worse). Removing the bias is the only fix that survives.
 
-  **COST, measured 2026-08-19 — the ladder is NOT a speed-up.** At L = 64,
-  beta = 416.524: HMC + winding delivers an independent configuration (for LOCAL
-  observables) in 0.212 s, the ladder in 0.820 s including base generation, 0.481 s
-  for the top rung alone — so the ladder is **3.87x SLOWER**. Do not lead with
-  speed; the cost is dominated by the 200-step diffusion sampler, which is tunable
-  and untuned. **The REACHABILITY claim that used to sit here is RETIRED
+  **COST, measured 2026-08-19, CORRECTED 2026-09-01 — the ladder is NOT a
+  speed-up, but by a smaller margin than originally stated.** The original
+  0.820 s/0.481 s figures below came from `13_cost_comparison.py`'s
+  `--rung-configs` default (512), which predates `default.yaml`'s
+  `ladder.n_configs` being raised to 1024 and was never updated to match —
+  every ladder-cost number computed against that default (including this one)
+  charged the full wall-clock against half the configurations actually
+  delivered, overstating the ladder's cost by ~2x. Fixed default, re-measured:
+  at L = 64, beta = 416.524, HMC + winding delivers an independent
+  configuration (LOCAL observables) in 0.212 s, the ladder in **0.410 s**
+  including base generation, **0.240 s** for the top rung alone — so the
+  ladder is **2.39x SLOWER**, not 3.87x. Do not lead with speed regardless;
+  the cost is still dominated by the 200-step diffusion sampler, which is
+  tunable and untuned, and the per-rung wall-clock inputs to this number
+  (115s/59s/246s) have not themselves been re-timed against the 1024-config
+  pipeline and could still be understated by up to 2x -- treat 2.39x as good
+  to one significant figure. **The REACHABILITY claim that used to sit here is RETIRED
   (2026-08-20).** It read: the classical arm covers 0.507 of exact P(Q) with zero
   odd sectors "and cannot improve at any cost, because odd charge has probability
   zero in its stationary distribution". That was false — it was a property of the
@@ -378,6 +389,56 @@ closed and `su2_2d/` is set aside.
   3 odd sectors, cold 0.399 with 0, cold+winding 0.507 with 0. Read coverage WITH
   <Q^2> — the hot arm "covers" 1.000 while carrying <Q^2> = 109 against exact
   1.001.
+
+  **UPDATED 2026-09-01: all eight arms rerun at 400 trajectories (previously
+  A-D were reused from an earlier 300-trajectory run), and the point estimates
+  above now have CALIBRATED error bars, not just point values.**
+  `scripts/54_seed_benchmark_topology_stats.py` and
+  `scripts/55_seed_benchmark_observable_stats.py` (new) reuse the already-
+  calibrated `chain_bootstrap`/`sector_goodness_of_fit` primitives from
+  `07_pq_sampling.py` — no new statistics invented — applied to every arm's
+  <Q^2>, sector histogram, and now (via a `measure()` change that records a
+  per-chain series, not just the batch mean) every Wilson loop mean too.
+  Result: diffusion-seeded arms (A, E, H) sit within +-1 sigma of exact <Q^2>
+  and pass the sector goodness-of-fit gate (p = 0.08/0.70/0.40); every
+  cold/hot-started arm fails outright (B is EXACTLY frozen at Q=0, z = +inf;
+  C/F overshoot at z = +5.45/+4.33; D undershoots at z = -3.08, p = 0.000,
+  structurally cannot reach odd sectors). On Wilson-loop MEANS, every
+  diffusion-seeded arm is within 2.5 sigma at every loop size (1x1 through
+  8x8); every cold/hot arm is 13-600 sigma off, winding move or not — 400
+  trajectories is nowhere near enough for a naive start to relax the local
+  observables at this coupling. The cost/reachability numbers move slightly on
+  the rerun (arm E 379s -> 310s, arm G 1100s -> 913s, 2578 not 2587 parity
+  flips) and the same-endpoint ratio is now computed BY `13_cost_comparison.py`
+  itself (2.94x) rather than by hand. Full tables in
+  `out/u2_2d/seed_benchmark/topology_stats.json` and `.../observable_stats.json`.
+  **CROSS-COUPLING CHECK DONE 2026-09-01.** The identical 8-arm grid was also
+  run at the middle rung (L=32, beta=105.651, `out/u2_2d/seed_benchmark_rung0/`).
+  The pattern reproduces exactly: every diffusion-seeded arm stays within 2.5
+  sigma of exact at both couplings and every observable; every cold/hot arm is
+  at minimum 4.3 sigma off (worst case ~600 sigma). The topology same-endpoint
+  cost ratio is 6.37x at the middle rung against 2.94x at the top rung — the
+  classical route gets relatively MORE expensive at the weaker coupling here.
+  Fig. 31 (`scripts/56_seed_benchmark_cross_beta_figure.py`) plots both
+  couplings side by side. Producing this comparison is what surfaced the
+  `--rung-configs` bug below.
+  **A SECOND STALE-DEFAULT BUG WAS FOUND WHILE BUILDING THE CROSS-COUPLING
+  FIGURE, and it explains why "Nx SLOWER" moved between the two write-ups of
+  this section.** `13_cost_comparison.py --rung-configs` defaulted to 512,
+  which predates `default.yaml`'s `ladder.n_configs` being raised to 1024 (the
+  ladder ensemble files confirm 1024 configs at both rungs) and was never
+  updated to match — so every "ladder is Nx SLOWER" number in this project
+  computed against that default, including the COST section further up this
+  file (originally 3.87x), has been overstating the ladder's cost by ~2x.
+  Fixed; the corrected top-rung multiplier is **2.39x SLOWER**, not 3.87x --
+  see the COST section above for the full correction. The topology
+  same-endpoint ratios (2.94x, 6.37x) were never affected, since they come
+  from measured arm wall-clock times, not this CLI default. Still open: the
+  `--base-seconds`/`--rung-seconds` inputs (115s/59s/246s) were almost
+  certainly measured under the same stale 512-config setup and may themselves
+  be stale by up to 2x if per-rung cost scales with configuration count --
+  re-time stage 03 before quoting the local-observable multiplier more
+  precisely than one significant figure.
 
   **Training needs COUPLING coverage, not lattice-size coverage.** The score net is
   fully convolutional and conditioned on `det_lift.model_beta` (the minimum-KL U(1)

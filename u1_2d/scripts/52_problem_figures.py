@@ -60,7 +60,7 @@ def fig_frozen_traces() -> None:
     changes = {(r["arm"], round(r["beta"], 4)): r["n_sector_changes"] for r in rows}
 
     window = 600          # 3000 trajectories overplot into a solid block
-    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.5), sharey=False)
+    fig, axes = plt.subplots(1, 3, figsize=(9.2, 3.2), sharey=False)
     for ax, beta in zip(axes, BETAS):
         for arm, key, lw, alpha in (("hmc+inst", "hmc_inst", 0.7, 0.85),
                                     ("hmc", "hmc", 1.8, 1.0)):
@@ -80,29 +80,29 @@ def fig_frozen_traces() -> None:
         dress(ax)
     axes[0].set_ylabel(r"topological charge $Q$", fontsize=10, color=INK)
 
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, fontsize=9, frameon=False, labelcolor=INK,
-               loc="upper right", ncol=2, bbox_to_anchor=(0.995, 1.0),
-               handletextpad=0.5, columnspacing=1.8)
     fig.suptitle("Periodic HMC does not change topological sector, at any coupling tested",
                  fontsize=12, color=INK, x=0.008, ha="left", y=0.995)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, fontsize=9, frameon=False, labelcolor=INK,
+               loc="upper center", ncol=2, bbox_to_anchor=(0.5, 0.90),
+               handletextpad=0.5, columnspacing=1.8)
     fig.text(0.5, 0.012,
              rf"$L = 32$, one representative chain of four per arm; the first {window} of 3000 "
-             "trajectories are drawn, because at this density the full run overplots into a "
-             "solid block.\nThe frozen arm's flat line is why a sector-change count, not "
-             r"$\tau_{\mathrm{int}}$, is the diagnostic: a constant series has no "
-             r"autocorrelation to integrate, so freezing reports a *small* "
+             "trajectories are drawn, because at this density\nthe full run overplots into a "
+             "solid block. The frozen arm's flat line is why a sector-change count, not "
+             r"$\tau_{\mathrm{int}}$, is the diagnostic:" "\na constant series has no "
+             r"autocorrelation to integrate, so freezing reports a $\mathit{small}$ "
              r"$\tau_{\mathrm{int}}$.",
              fontsize=7, color=MUTED, ha="center")
-    fig.tight_layout(rect=(0, 0.085, 1, 0.90))
-    fig.savefig(FIG / "31_frozen_traces.png", dpi=336)
+    fig.tight_layout(rect=(0.01, 0.14, 0.99, 0.80))
+    fig.savefig(FIG / "31_frozen_traces.png", dpi=336, bbox_inches="tight")
     plt.close(fig)
     print("wrote 31_frozen_traces.png  " +
           ", ".join(f"beta={b:g}: {changes[('hmc', round(b, 4))]}" for b in BETAS))
 
 
 def fig_burnin_wall() -> None:
-    fig, axes = plt.subplots(1, 3, figsize=(6.9, 2.57))
+    fig, axes = plt.subplots(1, 3, figsize=(9.2, 3.3))
 
     for ax, beta in zip(axes, BETAS):
         stem = THERM[beta]
@@ -130,8 +130,8 @@ def fig_burnin_wall() -> None:
             budget = (summary["n_traj_gen"] if name == "diffusion seed"
                       else summary["n_traj_baseline"])
             note.append(f"  {name}: " + ("%d" % v if np.isfinite(v) else f"> {budget}"))
-        ax.text(0.975, 0.05, "\n".join(note), transform=ax.transAxes, fontsize=7.5,
-                color=MUTED, ha="right", va="bottom", linespacing=1.45)
+        ax.text(0.975, 0.05, "\n".join(note), transform=ax.transAxes, fontsize=6.8,
+                color=MUTED, ha="right", va="bottom", linespacing=1.4)
 
         ax.set_xscale("symlog", linthresh=1.0, linscale=0.5)
         ax.set_xlim(0, max(len(series[f"{n}|plaquette"]) for n, _ in STARTS
@@ -143,27 +143,30 @@ def fig_burnin_wall() -> None:
         dress(ax)
 
     axes[0].set_ylabel("mean plaquette", fontsize=10, color=INK)
-    handles, labels = axes[0].get_legend_handles_labels()
-    fig.legend(handles, labels, fontsize=9, frameon=False, labelcolor=INK,
-               loc="upper right", ncol=3, bbox_to_anchor=(0.995, 1.0),
-               handletextpad=0.5, columnspacing=1.8)
     for ax, beta in zip(axes, BETAS):
         target = exact.plaquette_exact(beta, "wilson", 32)
         ax.annotate("exact", xy=(0.99, target), xycoords=("axes fraction", "data"),
                     textcoords="offset points", xytext=(0, 4), fontsize=7.5,
                     color=INK, ha="right", va="bottom")
 
+    # Title and legend each get their OWN row rather than sharing one at y~1.0 --
+    # they previously overlapped because both sat in the same narrow band above
+    # the axes.
     fig.suptitle("The burn-in wall: what a starting configuration has to climb",
                  fontsize=12, color=INK, x=0.008, ha="left", y=0.995)
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, fontsize=9, frameon=False, labelcolor=INK,
+               loc="upper center", ncol=3, bbox_to_anchor=(0.5, 0.90),
+               handletextpad=0.5, columnspacing=1.8)
     fig.text(0.5, 0.012,
              r"$L = 32$. Bands are the across-chain SEM (128 chains for the seed, 32 for the "
-             "baselines). Hot starts run far below the frame at every coupling; the axis is "
-             "cropped to the\nseed's scale deliberately, because that is the scale at which "
+             "baselines).\nHot starts run far below the frame at every coupling; the axis is "
+             "cropped to the seed's scale deliberately,\nbecause that is the scale at which "
              r"$t_{\mathrm{therm}}$ is decided. A non-converging entry is reported against its "
-             "own budget, never as \"never\".",
+             'own budget, never as "never".',
              fontsize=7, color=MUTED, ha="center")
-    fig.tight_layout(rect=(0, 0.075, 1, 0.90))
-    fig.savefig(FIG / "32_burnin_wall.png", dpi=342)
+    fig.tight_layout(rect=(0.01, 0.13, 0.99, 0.82))
+    fig.savefig(FIG / "32_burnin_wall.png", dpi=342, bbox_inches="tight")
     plt.close(fig)
     print("wrote 32_burnin_wall.png")
 

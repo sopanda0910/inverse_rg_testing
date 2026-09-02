@@ -139,6 +139,10 @@ def panel_fixed_time(ax, report):
     ax.text(x[0] - 0.35, 1.35, r"agreement ($|z| \leq 2$)", fontsize=7.5,
             color="#2e7d32", va="center")
     ax.set_yscale("symlog", linthresh=1.0, linscale=0.5)
+    # Headroom above the z=inf arrow (tip at y=60) and its annotation text --
+    # without it the autoscaled top sits right at the arrow tip and the
+    # annotation collides with ax.set_title below.
+    ax.set_ylim(top=110)
     ax.set_xticks(x)
     ax.set_xticklabels([lab for _, lab in SCALES] + [r"$\langle Q^2\rangle$"],
                        fontsize=8)
@@ -236,7 +240,11 @@ def main():
         path = found[-1]
     report = json.loads(Path(path).read_text(encoding="utf-8"))
 
-    fig, axes = plt.subplots(1, 2, figsize=(6.9, 2.85))
+    # Height NOT shrunk in step with width: dense small-fontsize in-plot
+    # annotations, a per-axis legend and a 3-line footnote all need the same
+    # number of inches of room regardless of the canvas's overall scale, and
+    # this figure's original 5.2in height was already tuned for them.
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 5.2))
     panel_fixed_time(axes[0], report)
     panel_significance(axes[1], report)
     for ax in axes:

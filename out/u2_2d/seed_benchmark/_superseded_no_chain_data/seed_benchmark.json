@@ -1,0 +1,4615 @@
+{
+  "beta": 416.524,
+  "lattice_size": 64,
+  "n_chains": 64,
+  "n_trajectories": 400,
+  "plaquette_exact": 0.9951954459438838,
+  "tau_int_plaquette_seeded": 1.9444714164783532,
+  "independent_interval_trajectories": 3.8889428329567064,
+  "arms": [
+    {
+      "arm": "A_diffusion_seed",
+      "seconds": 410.61361742019653,
+      "seconds_per_trajectory": 1.0265340435504913,
+      "plaquette_initial": 0.9952036142349243,
+      "plaquette_final": 0.9951859712600708,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 8.207725501474528e-06,
+      "plaquette_final_rel": -9.520425210518546e-06,
+      "loops_final": {
+        "wilson_1x1": 0.9951859712600708,
+        "wilson_2x2": 0.9808310866355896,
+        "wilson_4x4": 0.9255190491676331,
+        "wilson_8x8": 0.7336714267730713
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 0.9952036142349243,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9951903820037842,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9951918125152588,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9951958656311035,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9951876997947693,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9951892495155334,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9951894879341125,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.995186448097229,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9951820373535156,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9951812028884888,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9951831102371216,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9952007532119751,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9952030181884766,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9951955080032349,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9951974749565125,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9951950311660767,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.995191216468811,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9951990246772766,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9951980710029602,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.9951958656311035,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.9951900243759155,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9951968789100647,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.995204508304596,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9951971769332886,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9952008724212646,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9952046275138855,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9952000379562378,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9952026605606079,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.9952033758163452,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9951972961425781,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9951937794685364,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9951953887939453,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9951938390731812,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9951914548873901,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9952116012573242,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9952090978622437,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9952069520950317,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9951987862586975,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9951990246772766,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9951892495155334,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.995189905166626,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9951905608177185,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9952012896537781,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9951862096786499,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9951968193054199,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.9951909184455872,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9951895475387573,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9951903223991394,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9951983690261841,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9951860904693604,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.9951920509338379,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9951891899108887,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.9951949119567871,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9952000379562378,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9951964616775513,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9952019453048706,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9952032566070557,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9952004551887512,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9952015280723572,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9952009916305542,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9951999187469482,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9952043294906616,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9952037930488586,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.995201826095581,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9951969981193542,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9951907396316528,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.9951903820037842,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.99519944190979,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9951955080032349,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.9951895475387573,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9951930642127991,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9951943159103394,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9951856732368469,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9951878786087036,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9951918721199036,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9951883554458618,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.995184063911438,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.995200514793396,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.9951925873756409,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.9951899647712708,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9951859712600708,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        }
+      ]
+    },
+    {
+      "arm": "B_cold_start",
+      "seconds": 333.6035158634186,
+      "seconds_per_trajectory": 0.8340087896585464,
+      "plaquette_initial": 1.0,
+      "plaquette_final": 0.9952417612075806,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 0.004827749238301093,
+      "plaquette_final_rel": 4.653886217576009e-05,
+      "loops_final": {
+        "wilson_1x1": 0.9952417612075806,
+        "wilson_2x2": 0.9811607003211975,
+        "wilson_4x4": 0.9272909164428711,
+        "wilson_8x8": 0.7413668632507324
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 0.0,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          0
+        ],
+        "n_sectors_visited": 1,
+        "exact_probability_covered": 0.3987053665786871,
+        "odd_sectors_visited": []
+      },
+      "topology_initial": {
+        "q_squared": 0.0,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          0
+        ],
+        "n_sectors_visited": 1,
+        "exact_probability_covered": 0.3987053665786871,
+        "odd_sectors_visited": []
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 1.0,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9956467151641846,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.995431125164032,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9953943490982056,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9953664541244507,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9953658580780029,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9953474998474121,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9953353404998779,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9953190088272095,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9953211545944214,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.995319128036499,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9953144192695618,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9953039884567261,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9952982068061829,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9952957630157471,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9952989220619202,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9952852129936218,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9952943325042725,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.995296835899353,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.9952924251556396,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.9952934384346008,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9952830672264099,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9952841997146606,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9952911734580994,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9952898621559143,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9952811598777771,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9952844977378845,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9952676296234131,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.9952808022499084,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9952711462974548,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9952723383903503,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9952694177627563,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9952653050422668,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9952700138092041,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9952626824378967,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.995262622833252,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9952589273452759,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9952633380889893,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9952685832977295,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9952564239501953,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.9952582120895386,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9952511787414551,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9952523708343506,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9952637553215027,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9952572584152222,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.9952491521835327,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.995261549949646,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9952577352523804,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9952532052993774,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9952576160430908,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.99524986743927,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.995255708694458,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.995259165763855,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9952584505081177,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9952459335327148,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9952542781829834,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9952523708343506,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9952537417411804,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9952431321144104,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9952386617660522,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9952412247657776,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9952408671379089,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9952389001846313,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.9952394962310791,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9952405691146851,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9952282905578613,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.9952374696731567,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9952325820922852,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9952242970466614,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.9952383041381836,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9952455759048462,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9952503442764282,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9952518343925476,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9952501058578491,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9952439069747925,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9952257871627808,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9952367544174194,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.9952355623245239,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.9952369332313538,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.9952481985092163,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9952417612075806,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        }
+      ]
+    },
+    {
+      "arm": "C_hot_start",
+      "seconds": 384.3754346370697,
+      "seconds_per_trajectory": 0.9609385865926743,
+      "plaquette_initial": -0.0009428907069377601,
+      "plaquette_final": 0.9329957365989685,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": -1.00094744274683,
+      "plaquette_final_rel": -0.0624999939443277,
+      "loops_final": {
+        "wilson_1x1": 0.9329957365989685,
+        "wilson_2x2": 0.7403181791305542,
+        "wilson_4x4": 0.2738775610923767,
+        "wilson_8x8": 0.0045278556644916534
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 91.52083333333333,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -42,
+          -38,
+          -35,
+          -30,
+          -26,
+          -25,
+          -23,
+          -21,
+          -19,
+          -18,
+          -17,
+          -16,
+          -15,
+          -14,
+          -13,
+          -12,
+          -11,
+          -9,
+          -8,
+          -7,
+          -6,
+          -5,
+          -4,
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          15,
+          16,
+          17,
+          18,
+          19,
+          21,
+          22,
+          23,
+          29,
+          30,
+          31,
+          35,
+          38,
+          40,
+          45
+        ],
+        "n_sectors_visited": 55,
+        "exact_probability_covered": 0.9999999999999999,
+        "odd_sectors_visited": [
+          -35,
+          -25,
+          -23,
+          -21,
+          -19,
+          -17,
+          -15,
+          -13,
+          -11,
+          -9,
+          -7,
+          -5,
+          -3,
+          -1,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          17,
+          19,
+          21,
+          23,
+          29,
+          31,
+          35,
+          45
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 372.203125,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -42,
+          -38,
+          -35,
+          -30,
+          -26,
+          -23,
+          -21,
+          -19,
+          -16,
+          -15,
+          -13,
+          -12,
+          -11,
+          -9,
+          -8,
+          -7,
+          -6,
+          -4,
+          -2,
+          -1,
+          0,
+          3,
+          4,
+          5,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          16,
+          17,
+          19,
+          21,
+          22,
+          23,
+          29,
+          30,
+          31,
+          35,
+          38,
+          40,
+          45
+        ],
+        "n_sectors_visited": 43,
+        "exact_probability_covered": 0.6994877112673841,
+        "odd_sectors_visited": [
+          -35,
+          -23,
+          -21,
+          -19,
+          -15,
+          -13,
+          -11,
+          -9,
+          -7,
+          -1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          17,
+          19,
+          21,
+          23,
+          29,
+          31,
+          35,
+          45
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": -0.0009428907069377601,
+          "q_squared": 372.203125,
+          "n_sectors": 43
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.8873448371887207,
+          "q_squared": 103.796875,
+          "n_sectors": 34
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9329957365989685,
+          "q_squared": 87.8125,
+          "n_sectors": 33
+        }
+      ]
+    },
+    {
+      "arm": "D_cold_plus_winding",
+      "seconds": 383.2787711620331,
+      "seconds_per_trajectory": 0.9581969279050827,
+      "plaquette_initial": 1.0,
+      "plaquette_final": 0.9952545166015625,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 0.004827749238301093,
+      "plaquette_final_rel": 5.9355836001362405e-05,
+      "loops_final": {
+        "wilson_1x1": 0.9952545166015625,
+        "wilson_2x2": 0.9811687469482422,
+        "wilson_4x4": 0.9268221855163574,
+        "wilson_8x8": 0.7389352321624756
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 0.8695987654320988,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -4,
+          -2,
+          0,
+          2,
+          4
+        ],
+        "n_sectors_visited": 5,
+        "exact_probability_covered": 0.5071498168766522,
+        "odd_sectors_visited": []
+      },
+      "topology_initial": {
+        "q_squared": 0.0,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          0
+        ],
+        "n_sectors_visited": 1,
+        "exact_probability_covered": 0.3987053665786871,
+        "odd_sectors_visited": []
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 1.0,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9956555366516113,
+          "q_squared": 0.5,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9954454898834229,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9953932166099548,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9953693151473999,
+          "q_squared": 0.9375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9953518509864807,
+          "q_squared": 0.9375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9953378438949585,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9953314065933228,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9953263998031616,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9953122138977051,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9953172206878662,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9953099489212036,
+          "q_squared": 0.75,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9953135251998901,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9953060150146484,
+          "q_squared": 1.1875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9953014254570007,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9953001737594604,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9952954053878784,
+          "q_squared": 1.375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9952919483184814,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9952847361564636,
+          "q_squared": 0.5625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.995285153388977,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.9952719211578369,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9952785968780518,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9952738285064697,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9952766299247742,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9952751398086548,
+          "q_squared": 0.75,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9952816963195801,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9952857494354248,
+          "q_squared": 1.25,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9952765703201294,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.995263934135437,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9952747821807861,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9952737092971802,
+          "q_squared": 0.4375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9952711462974548,
+          "q_squared": 1.1875,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9952584505081177,
+          "q_squared": 1.0625,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9952660799026489,
+          "q_squared": 0.5625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9952723383903503,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9952675700187683,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9952752590179443,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9952796101570129,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9952629208564758,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9952511787414551,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.9952534437179565,
+          "q_squared": 1.0,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9952634572982788,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9952551126480103,
+          "q_squared": 0.75,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.995246410369873,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9952560663223267,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.995262622833252,
+          "q_squared": 0.625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9952610731124878,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9952577352523804,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9952536225318909,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9952523708343506,
+          "q_squared": 0.75,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.9952569007873535,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9952536225318909,
+          "q_squared": 0.5625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.9952549934387207,
+          "q_squared": 0.625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9952523112297058,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9952569007873535,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9952417612075806,
+          "q_squared": 0.9375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9952480792999268,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9952477812767029,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9952500462532043,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9952468872070312,
+          "q_squared": 0.75,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9952452778816223,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9952414035797119,
+          "q_squared": 1.25,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.995244026184082,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.9952435493469238,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9952492713928223,
+          "q_squared": 1.25,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9952404499053955,
+          "q_squared": 0.625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.995250940322876,
+          "q_squared": 1.125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9952571392059326,
+          "q_squared": 0.875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9952539205551147,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.9952619671821594,
+          "q_squared": 1.3125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9952528476715088,
+          "q_squared": 0.9375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9952532052993774,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9952597618103027,
+          "q_squared": 0.6875,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9952534437179565,
+          "q_squared": 0.75,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9952556490898132,
+          "q_squared": 1.0,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9952542185783386,
+          "q_squared": 1.125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9952489137649536,
+          "q_squared": 0.9375,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.9952462911605835,
+          "q_squared": 1.125,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.995246171951294,
+          "q_squared": 1.0625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.9952476620674133,
+          "q_squared": 0.625,
+          "n_sectors": 3
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9952545166015625,
+          "q_squared": 0.8125,
+          "n_sectors": 3
+        }
+      ]
+    },
+    {
+      "arm": "E_diffusion_plus_winding",
+      "seconds": 379.4798803329468,
+      "seconds_per_trajectory": 0.948699700832367,
+      "plaquette_initial": 0.9952036142349243,
+      "plaquette_final": 0.9951860904693604,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 8.207725501474528e-06,
+      "plaquette_final_rel": -9.400640408441241e-06,
+      "loops_final": {
+        "wilson_1x1": 0.9951860904693604,
+        "wilson_2x2": 0.9809075593948364,
+        "wilson_4x4": 0.9259768128395081,
+        "wilson_8x8": 0.7363588213920593
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 0.9886188271604939,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -4,
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_sectors_visited": 8,
+        "exact_probability_covered": 0.9998619434568835,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1,
+          3
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 0.9952036142349243,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9951938390731812,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9951926469802856,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9952017068862915,
+          "q_squared": 0.890625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9951972961425781,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9951956272125244,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9951901435852051,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9951840043067932,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9951777458190918,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9951808452606201,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9951926469802856,
+          "q_squared": 0.640625,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9951907396316528,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9951924085617065,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9951869249343872,
+          "q_squared": 1.390625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9951901435852051,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9951902627944946,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9951879978179932,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9951898455619812,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9951964616775513,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.995182991027832,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.995191752910614,
+          "q_squared": 0.890625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9951938390731812,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9951882362365723,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9951895475387573,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9951913356781006,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9951945543289185,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.995182454586029,
+          "q_squared": 0.953125,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9951947927474976,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.9952012300491333,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9951951503753662,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9951906204223633,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9951946139335632,
+          "q_squared": 0.828125,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9951910972595215,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9951938390731812,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9951915740966797,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9951968789100647,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.995198667049408,
+          "q_squared": 0.703125,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9951943159103394,
+          "q_squared": 1.203125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9952062964439392,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9952009916305542,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.9951939582824707,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.995187520980835,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9951839447021484,
+          "q_squared": 0.703125,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9951826930046082,
+          "q_squared": 1.078125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9951872825622559,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.995189905166626,
+          "q_squared": 1.140625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9951919317245483,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9951936602592468,
+          "q_squared": 1.140625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9951877593994141,
+          "q_squared": 0.953125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.995197057723999,
+          "q_squared": 0.890625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.9951938986778259,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9952012896537781,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.9952019453048706,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9951942563056946,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9951918125152588,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9951832294464111,
+          "q_squared": 0.703125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9951821565628052,
+          "q_squared": 0.703125,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9951847791671753,
+          "q_squared": 0.890625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9951984286308289,
+          "q_squared": 1.390625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9951975345611572,
+          "q_squared": 1.265625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9951984882354736,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9952031373977661,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9951916337013245,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.9951971769332886,
+          "q_squared": 1.140625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.995206892490387,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9952012300491333,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.995197057723999,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9951882362365723,
+          "q_squared": 1.328125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9951885342597961,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.9951989650726318,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9951930642127991,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9951940774917603,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9952011108398438,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9951961636543274,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9951989650726318,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9951961636543274,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9951989650726318,
+          "q_squared": 1.078125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.9951906204223633,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.9951879978179932,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.9951980113983154,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9951860904693604,
+          "q_squared": 1.140625,
+          "n_sectors": 5
+        }
+      ]
+    },
+    {
+      "arm": "F_hot_plus_winding",
+      "seconds": 374.55616331100464,
+      "seconds_per_trajectory": 0.9363904082775116,
+      "plaquette_initial": 0.000468278129119426,
+      "plaquette_final": 0.9330793619155884,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": -0.9995294611414994,
+      "plaquette_final_rel": -0.06241596490564927,
+      "loops_final": {
+        "wilson_1x1": 0.9330793619155884,
+        "wilson_2x2": 0.7401933073997498,
+        "wilson_4x4": 0.27546870708465576,
+        "wilson_8x8": 0.0035939100198447704
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 6.284336419753086,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -57,
+          -47,
+          -38,
+          -31,
+          -29,
+          -24,
+          -23,
+          -22,
+          -21,
+          -20,
+          -19,
+          -17,
+          -16,
+          -14,
+          -13,
+          -12,
+          -11,
+          -10,
+          -9,
+          -8,
+          -7,
+          -6,
+          -5,
+          -4,
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          18,
+          21,
+          22,
+          24,
+          25,
+          26,
+          32,
+          44
+        ],
+        "n_sectors_visited": 52,
+        "exact_probability_covered": 0.9999999999999999,
+        "odd_sectors_visited": [
+          -57,
+          -47,
+          -31,
+          -29,
+          -23,
+          -21,
+          -19,
+          -17,
+          -13,
+          -11,
+          -9,
+          -7,
+          -5,
+          -3,
+          -1,
+          1,
+          3,
+          5,
+          7,
+          9,
+          11,
+          13,
+          15,
+          21,
+          25
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 348.703125,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -57,
+          -47,
+          -38,
+          -31,
+          -29,
+          -24,
+          -22,
+          -19,
+          -17,
+          -16,
+          -14,
+          -13,
+          -11,
+          -10,
+          -8,
+          -7,
+          -5,
+          -4,
+          -3,
+          -2,
+          0,
+          1,
+          2,
+          3,
+          5,
+          6,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          16,
+          18,
+          21,
+          22,
+          24,
+          25,
+          26,
+          32,
+          44
+        ],
+        "n_sectors_visited": 41,
+        "exact_probability_covered": 0.7578943399563959,
+        "odd_sectors_visited": [
+          -57,
+          -47,
+          -31,
+          -29,
+          -19,
+          -17,
+          -13,
+          -11,
+          -7,
+          -5,
+          -3,
+          1,
+          3,
+          5,
+          9,
+          11,
+          13,
+          21,
+          25
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 0.000468278129119426,
+          "q_squared": 348.703125,
+          "n_sectors": 41
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9099009037017822,
+          "q_squared": 45.96875,
+          "n_sectors": 24
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9299381971359253,
+          "q_squared": 16.890625,
+          "n_sectors": 18
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9330775737762451,
+          "q_squared": 7.328125,
+          "n_sectors": 11
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9330786466598511,
+          "q_squared": 3.453125,
+          "n_sectors": 8
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.933079183101654,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.453125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.328125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9330791234970093,
+          "q_squared": 1.578125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9330791234970093,
+          "q_squared": 1.453125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.078125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.453125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.390625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.140625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.390625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.390625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 0.890625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9330791234970093,
+          "q_squared": 1.640625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.328125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.203125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.933079183101654,
+          "q_squared": 1.515625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.933079183101654,
+          "q_squared": 1.515625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9330791234970093,
+          "q_squared": 1.640625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.203125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.140625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.9330793023109436,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.9330792427062988,
+          "q_squared": 1.078125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9330793619155884,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        }
+      ]
+    },
+    {
+      "arm": "G_cold_plus_odd_winding",
+      "seconds": 1099.8101353645325,
+      "seconds_per_trajectory": 2.749525338411331,
+      "plaquette_initial": 1.0,
+      "plaquette_final": 0.9952499270439148,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 0.004827749238301093,
+      "plaquette_final_rel": 5.4744121120275935e-05,
+      "loops_final": {
+        "wilson_1x1": 0.9952499270439148,
+        "wilson_2x2": 0.9811509847640991,
+        "wilson_4x4": 0.9268971085548401,
+        "wilson_8x8": 0.7394315004348755
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 0.972608024691358,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -4,
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3,
+          4
+        ],
+        "n_sectors_visited": 9,
+        "exact_probability_covered": 0.9999969714255282,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1,
+          3
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 0.0,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          0
+        ],
+        "n_sectors_visited": 1,
+        "exact_probability_covered": 0.3987053665786871,
+        "odd_sectors_visited": []
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 1.0,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9955099821090698,
+          "q_squared": 0.84375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9954466819763184,
+          "q_squared": 0.8125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9954091906547546,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9953693151473999,
+          "q_squared": 0.734375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9953683614730835,
+          "q_squared": 1.25,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9953488111495972,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9953349828720093,
+          "q_squared": 1.0625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.995323657989502,
+          "q_squared": 1.296875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.995333194732666,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9953147172927856,
+          "q_squared": 1.03125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9953163862228394,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.995313823223114,
+          "q_squared": 0.828125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9953118562698364,
+          "q_squared": 0.90625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.99531090259552,
+          "q_squared": 0.75,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.9953095316886902,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9952861070632935,
+          "q_squared": 1.0,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9952950477600098,
+          "q_squared": 0.859375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9952840805053711,
+          "q_squared": 0.75,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.9952936172485352,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.995283842086792,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9952750205993652,
+          "q_squared": 1.34375,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9952822923660278,
+          "q_squared": 0.984375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9952889680862427,
+          "q_squared": 1.421875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9952905178070068,
+          "q_squared": 1.28125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9952898025512695,
+          "q_squared": 0.78125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9952710270881653,
+          "q_squared": 0.875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9952800273895264,
+          "q_squared": 1.15625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.9952747821807861,
+          "q_squared": 1.3125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9952763319015503,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9952726364135742,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.9952716827392578,
+          "q_squared": 1.296875,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.995278000831604,
+          "q_squared": 0.859375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9952705502510071,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9952696561813354,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9952619075775146,
+          "q_squared": 0.796875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9952809810638428,
+          "q_squared": 1.0,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9952734708786011,
+          "q_squared": 0.796875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9952695369720459,
+          "q_squared": 1.296875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9952638745307922,
+          "q_squared": 0.859375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.9952590465545654,
+          "q_squared": 1.0,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9952574968338013,
+          "q_squared": 0.75,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9952635169029236,
+          "q_squared": 1.28125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9952688217163086,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9952636957168579,
+          "q_squared": 1.109375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.9952545166015625,
+          "q_squared": 0.828125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9952574372291565,
+          "q_squared": 1.0,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9952500462532043,
+          "q_squared": 1.0625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9952641725540161,
+          "q_squared": 1.09375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9952607154846191,
+          "q_squared": 1.234375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.9952678680419922,
+          "q_squared": 0.9375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9952604174613953,
+          "q_squared": 1.046875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.995258092880249,
+          "q_squared": 0.8125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9952428340911865,
+          "q_squared": 0.796875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9952511787414551,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9952373504638672,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9952508211135864,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9952433705329895,
+          "q_squared": 0.90625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9952569007873535,
+          "q_squared": 0.84375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9952492713928223,
+          "q_squared": 1.0625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9952583312988281,
+          "q_squared": 1.09375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9952570199966431,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9952527284622192,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.995258629322052,
+          "q_squared": 0.796875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9952545166015625,
+          "q_squared": 1.125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.9952461123466492,
+          "q_squared": 1.09375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.9952549934387207,
+          "q_squared": 1.0,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9952470660209656,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9952497482299805,
+          "q_squared": 0.875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.9952605366706848,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9952532052993774,
+          "q_squared": 1.0625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.995250940322876,
+          "q_squared": 0.6875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9952532052993774,
+          "q_squared": 1.03125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9952429533004761,
+          "q_squared": 0.84375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9952318668365479,
+          "q_squared": 0.984375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9952453970909119,
+          "q_squared": 0.96875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9952448010444641,
+          "q_squared": 0.734375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.995235800743103,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.9952435493469238,
+          "q_squared": 1.0625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.995255708694458,
+          "q_squared": 0.984375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9952499270439148,
+          "q_squared": 1.390625,
+          "n_sectors": 7
+        }
+      ]
+    },
+    {
+      "arm": "H_diffusion_plus_odd_winding",
+      "seconds": 882.2745943069458,
+      "seconds_per_trajectory": 2.2056864857673646,
+      "plaquette_initial": 0.9952036142349243,
+      "plaquette_final": 0.9951828718185425,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 8.207725501474528e-06,
+      "plaquette_final_rel": -1.2634830065305636e-05,
+      "loops_final": {
+        "wilson_1x1": 0.9951828718185425,
+        "wilson_2x2": 0.9808419942855835,
+        "wilson_4x4": 0.9254924654960632,
+        "wilson_8x8": 0.7337433099746704
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 1.0106095679012346,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_sectors_visited": 7,
+        "exact_probability_covered": 0.9997269154882388,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1,
+          3
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 0.9952036142349243,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9951878786087036,
+          "q_squared": 1.171875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9951949715614319,
+          "q_squared": 1.15625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9952011108398438,
+          "q_squared": 0.9375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9952046871185303,
+          "q_squared": 1.03125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9951921105384827,
+          "q_squared": 1.171875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9951955676078796,
+          "q_squared": 1.3125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9951956272125244,
+          "q_squared": 1.328125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9951983690261841,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9951906204223633,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9951869249343872,
+          "q_squared": 1.125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 55,
+          "plaquette": 0.9951944351196289,
+          "q_squared": 1.3125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 60,
+          "plaquette": 0.9951857924461365,
+          "q_squared": 1.078125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 65,
+          "plaquette": 0.9951865673065186,
+          "q_squared": 0.875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 70,
+          "plaquette": 0.9951860904693604,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 75,
+          "plaquette": 0.995185375213623,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 80,
+          "plaquette": 0.9951884746551514,
+          "q_squared": 0.90625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 85,
+          "plaquette": 0.9951881766319275,
+          "q_squared": 1.046875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 90,
+          "plaquette": 0.9951930046081543,
+          "q_squared": 1.34375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 95,
+          "plaquette": 0.9951923489570618,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 100,
+          "plaquette": 0.9951882362365723,
+          "q_squared": 0.921875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 105,
+          "plaquette": 0.9951882362365723,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 110,
+          "plaquette": 0.9952088594436646,
+          "q_squared": 0.9375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 115,
+          "plaquette": 0.9951942563056946,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 120,
+          "plaquette": 0.9951890707015991,
+          "q_squared": 0.71875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 125,
+          "plaquette": 0.9951974749565125,
+          "q_squared": 1.046875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 130,
+          "plaquette": 0.9952061772346497,
+          "q_squared": 0.90625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 135,
+          "plaquette": 0.9951858520507812,
+          "q_squared": 1.15625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 140,
+          "plaquette": 0.995191216468811,
+          "q_squared": 1.171875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 145,
+          "plaquette": 0.9952016472816467,
+          "q_squared": 1.03125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 150,
+          "plaquette": 0.9952093362808228,
+          "q_squared": 0.78125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 155,
+          "plaquette": 0.995201587677002,
+          "q_squared": 1.296875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 160,
+          "plaquette": 0.9951863288879395,
+          "q_squared": 0.953125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 165,
+          "plaquette": 0.9951854944229126,
+          "q_squared": 0.796875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 170,
+          "plaquette": 0.9952053427696228,
+          "q_squared": 1.09375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 175,
+          "plaquette": 0.9952012300491333,
+          "q_squared": 1.03125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 180,
+          "plaquette": 0.9952000379562378,
+          "q_squared": 0.96875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 185,
+          "plaquette": 0.9952081441879272,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 190,
+          "plaquette": 0.9951921701431274,
+          "q_squared": 1.0,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 195,
+          "plaquette": 0.9951898455619812,
+          "q_squared": 1.046875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 200,
+          "plaquette": 0.995194137096405,
+          "q_squared": 1.171875,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 205,
+          "plaquette": 0.9951927065849304,
+          "q_squared": 1.21875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 210,
+          "plaquette": 0.9951950311660767,
+          "q_squared": 1.578125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 215,
+          "plaquette": 0.9951947927474976,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 220,
+          "plaquette": 0.9951950311660767,
+          "q_squared": 1.0625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 225,
+          "plaquette": 0.9951958060264587,
+          "q_squared": 0.609375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 230,
+          "plaquette": 0.9951859712600708,
+          "q_squared": 0.8125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 235,
+          "plaquette": 0.9951983690261841,
+          "q_squared": 0.65625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 240,
+          "plaquette": 0.9951981902122498,
+          "q_squared": 1.09375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 245,
+          "plaquette": 0.9951969385147095,
+          "q_squared": 1.109375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 250,
+          "plaquette": 0.995187520980835,
+          "q_squared": 1.4375,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 255,
+          "plaquette": 0.9952037334442139,
+          "q_squared": 1.0,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 260,
+          "plaquette": 0.9951914548873901,
+          "q_squared": 0.890625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 265,
+          "plaquette": 0.9951969385147095,
+          "q_squared": 0.703125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 270,
+          "plaquette": 0.9951897263526917,
+          "q_squared": 1.0625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 275,
+          "plaquette": 0.9951874613761902,
+          "q_squared": 0.921875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 280,
+          "plaquette": 0.9952016472816467,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 285,
+          "plaquette": 0.9951878190040588,
+          "q_squared": 0.734375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 290,
+          "plaquette": 0.9951846599578857,
+          "q_squared": 1.03125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 295,
+          "plaquette": 0.9951842427253723,
+          "q_squared": 0.859375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 300,
+          "plaquette": 0.9951920509338379,
+          "q_squared": 0.75,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 305,
+          "plaquette": 0.9951964020729065,
+          "q_squared": 0.71875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 310,
+          "plaquette": 0.9951953887939453,
+          "q_squared": 0.796875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 315,
+          "plaquette": 0.9951798915863037,
+          "q_squared": 1.140625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 320,
+          "plaquette": 0.9951996207237244,
+          "q_squared": 0.953125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 325,
+          "plaquette": 0.995194137096405,
+          "q_squared": 1.234375,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 330,
+          "plaquette": 0.9951986074447632,
+          "q_squared": 0.8125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 335,
+          "plaquette": 0.9951924085617065,
+          "q_squared": 1.0625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 340,
+          "plaquette": 0.9952032566070557,
+          "q_squared": 0.625,
+          "n_sectors": 4
+        },
+        {
+          "trajectory": 345,
+          "plaquette": 0.995197594165802,
+          "q_squared": 1.125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 350,
+          "plaquette": 0.9951996803283691,
+          "q_squared": 0.96875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 355,
+          "plaquette": 0.9952036142349243,
+          "q_squared": 0.75,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 360,
+          "plaquette": 0.9951989054679871,
+          "q_squared": 1.125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 365,
+          "plaquette": 0.9951916933059692,
+          "q_squared": 1.1875,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 370,
+          "plaquette": 0.9951941967010498,
+          "q_squared": 1.0,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 375,
+          "plaquette": 0.9951883554458618,
+          "q_squared": 0.90625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 380,
+          "plaquette": 0.9951962232589722,
+          "q_squared": 1.015625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 385,
+          "plaquette": 0.9952077865600586,
+          "q_squared": 0.828125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 390,
+          "plaquette": 0.995202362537384,
+          "q_squared": 0.984375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 395,
+          "plaquette": 0.995190441608429,
+          "q_squared": 0.90625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 400,
+          "plaquette": 0.9951828718185425,
+          "q_squared": 1.125,
+          "n_sectors": 6
+        }
+      ]
+    }
+  ]
+}

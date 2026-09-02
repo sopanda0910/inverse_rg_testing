@@ -205,6 +205,15 @@ U1_CAPTIONS: dict[str, str] = {
     "41_breakeven.png":
         "Break-even: ensemble size at which the pipeline's fixed cost is "
         "repaid.",
+    "cost_interval_time.png":
+        "Interval time, not wall-clock: trajectories needed for an "
+        "independent (classical arms) or thermalized (diffusion seed) "
+        "configuration, at the three Table S8 couplings. Plain HMC never "
+        "decorrelates (hatched, capped bar); HMC+winding needs "
+        "$2\\tau_{\\mathrm{int}}$ trajectories between samples; the "
+        "diffusion seed reaches equilibrium in $t_{\\mathrm{therm}}$ "
+        "trajectories after delivery, at or below the classical interval "
+        "throughout.",
     "42_mala_locality.png":
         "The MALA-locality test: a local corrector is not a substitute for a "
         "real tail.",
@@ -264,7 +273,7 @@ MAIN: list[tuple[str, str, str, list[tuple[str, str]]]] = [
     ("cost", "Cost accounting",
      "The classical baseline of record is HMC + winding, not PTBC and not "
      "plain HMC; the winding update itself; break-even.",
-     [("u1", "40_cost_per_config.png")]),
+     [("u1", "40_cost_per_config.png"), ("u1", "cost_interval_time.png")]),
     ("implications", "What this implies for the class of method",
      "The design directive, now demonstrated rather than owed; a local "
      "corrector is not a substitute for a real tail; a reporting protocol.",
@@ -334,7 +343,8 @@ APPENDIX: list[tuple[str, str, str, list[tuple[str, str]]]] = [
      "Seed quality tracks distance to the nearest training rung, not "
      "$\\beta$. These are the limits, stated rather than papered over.",
      [("u2", "fig21_seed_quality.png"), ("u2", "fig29_observable_scan.png"),
-      ("u2", "fig27_volume_scan.png")]),
+      ("u2", "fig27_volume_scan.png"),
+      ("u2", "fig31_seed_vs_classical_significance.png")]),
     ("app:u2dist", "U(2): how far from equilibrium the seed is",
      "Observable-level agreement is sharp while the density is not, "
      "reproducing the U(1) dissociation. Read the resolution notes: large "

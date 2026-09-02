@@ -251,6 +251,16 @@ FIGURES: dict[str, tuple[str, list[str], str]] = {
         "fixed endpoint by 1, 2 and 3 lifts, u1 and u2 side by side: the rung "
         "count is free, the error is injected by the LAST lift, and only the "
         "intermediate rethermalization moves Q."),
+    "fig31_seed_vs_classical_significance.png": (
+        "56_seed_benchmark_cross_beta_figure.py",
+        ["seed_benchmark/topology_stats.json", "seed_benchmark/observable_stats.json",
+         "seed_benchmark_rung0/topology_stats.json", "seed_benchmark_rung0/observable_stats.json"],
+        "Chain-bootstrapped |z| against the exact closed form, diffusion seed "
+        "vs. cold vs. hot start, plain HMC and + even winding, at both "
+        "benchmarked couplings (L=32/beta=105.651 and L=64/beta=416.524). "
+        "Every diffusion-seeded bar sits within 2.5 sigma of exact at every "
+        "loop size and both couplings; every cold/hot-started bar is "
+        "6 sigma-600 sigma off, winding move or not."),
 }
 
 # Where each figure sits in the paper. The order here is the order of
@@ -302,7 +312,7 @@ SECTIONS: list[tuple[str, str, list[str]]] = [
       "fig18_z_vs_loop_area_L32_beta105.651.png",
       "fig18_z_vs_loop_area_L64_beta416.524.png",
       "fig22_division_of_labour.png", "fig23_dissociation.png",
-      "fig24_kl_per_site.png"]),
+      "fig24_kl_per_site.png", "fig31_seed_vs_classical_significance.png"]),
     ("Appendix U2-E. Cost and tuning",
      "Cost claims, and the two knobs that were measured rather than assumed.",
      ["fig14_sampler_steps.png", "fig25_retherm_scan.png",

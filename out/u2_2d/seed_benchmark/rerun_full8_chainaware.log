@@ -1,0 +1,23 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+benchmark at L=64 beta=416.524, 64 chains, 400 trajectories per arm
+    A_diffusion_seed: 400 trajectories in 341s
+    B_cold_start: 400 trajectories in 303s
+    C_hot_start: 400 trajectories in 287s
+    D_cold_plus_winding: 400 trajectories in 264s
+    E_diffusion_plus_winding: 400 trajectories in 310s
+    F_hot_plus_winding: 400 trajectories in 286s
+    G_cold_plus_odd_winding: 400 trajectories in 913s
+    H_diffusion_plus_odd_winding: 400 trajectories in 899s
+
+L=64 beta=416.524   exact plaquette 0.995195   2 tau_int = 3.9 trajectories
+arm                        plaq t=0   plaq final    <Q^2>    exact  sectors  P(Q) covered   odd
+A_diffusion_seed          +8.21e-06    -9.52e-06    1.141    1.001        6         0.995     3
+B_cold_start              +4.83e-03    +4.65e-05    0.000    1.001        1         0.399     0
+C_hot_start               -1.00e+00    -6.25e-02   91.521    1.001       55         1.000    30
+D_cold_plus_winding       +4.83e-03    +5.94e-05    0.870    1.001        5         0.507     0
+E_diffusion_plus_winding    +8.21e-06    +1.10e-05    1.017    1.001        7         1.000     4
+F_hot_plus_winding        -1.00e+00    -6.22e-02    5.247    1.001       47         1.000    23
+G_cold_plus_odd_winding    +4.83e-03    +4.22e-05    0.985    1.001        7         1.000     4
+H_diffusion_plus_odd_winding    +8.21e-06    +2.04e-06    0.999    1.001        9         1.000     4
+
+wrote out\u2_2d\seed_benchmark\seed_benchmark.json
