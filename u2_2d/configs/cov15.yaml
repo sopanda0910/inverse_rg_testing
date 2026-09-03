@@ -1,0 +1,139 @@
+# Coverage-ablation challenger, lighter than cov60: SAME capacity/training
+# recipe as default.yaml (hidden 64, depth 4, batch 32, 120 epochs) but
+# training coverage capped at model beta ~15.0, built from ensembles ALREADY
+# GENERATED under data_v2 (no new HMC). One point in the coverage sweep
+# {15, 30, 60, ~104 (default), ~107.5 (v2/cap)} -- see 57/58/59 and
+# CLAUDE.md's u2 coverage discussion. Deliberately run on CPU: at this
+# coverage the training set (71 rungs, lighter than cov60's 100) is
+# small enough that CPU is a reasonable place to put it while the GPU is
+# already carrying v2/cap/cov60/wide250.
+
+seed: 0
+device: cpu
+
+data:
+  out_dir: out/u2_2d/data_v2
+  n_chains: 32
+  thin: 5
+  topological_updates: true
+  winding_charge_step: 1
+  winding_interval: 5
+  seed_exact_sectors: true
+  thermalize_sweeps: 60
+  rungs:
+    - {beta: 3.5, lattice_size: 8}
+    - {beta: 6.4002, lattice_size: 8}
+    - {beta: 6.7687, lattice_size: 8}
+    - {beta: 7, lattice_size: 8}
+    - {beta: 8.5207, lattice_size: 8}
+    - {beta: 9.7255, lattice_size: 8}
+    - {beta: 12.5129, lattice_size: 8}
+    - {beta: 13.0449, lattice_size: 8}
+    - {beta: 14, lattice_size: 8}
+    - {beta: 4.0544, lattice_size: 16}
+    - {beta: 4.1819, lattice_size: 16}
+    - {beta: 4.3415, lattice_size: 16}
+    - {beta: 5.1446, lattice_size: 16}
+    - {beta: 5.2793, lattice_size: 16}
+    - {beta: 7.5726, lattice_size: 16}
+    - {beta: 8.0115, lattice_size: 16}
+    - {beta: 8.2179, lattice_size: 16}
+    - {beta: 9.4479, lattice_size: 16}
+    - {beta: 9.4813, lattice_size: 16}
+    - {beta: 9.7216, lattice_size: 16}
+    - {beta: 9.7754, lattice_size: 16}
+    - {beta: 10.35, lattice_size: 16}
+    - {beta: 10.3822, lattice_size: 16}
+    - {beta: 10.5929, lattice_size: 16}
+    - {beta: 12.7822, lattice_size: 16}
+    - {beta: 14, lattice_size: 16}
+    - {beta: 14.8468, lattice_size: 16}
+    - {beta: 14.9277, lattice_size: 16}
+    - {beta: 15.6045, lattice_size: 16}
+    - {beta: 16.1038, lattice_size: 16}
+    - {beta: 16.1931, lattice_size: 16}
+    - {beta: 17.4088, lattice_size: 16}
+    - {beta: 17.9556, lattice_size: 16}
+    - {beta: 19.9186, lattice_size: 16}
+    - {beta: 23.6203, lattice_size: 16}
+    - {beta: 23.7962, lattice_size: 16}
+    - {beta: 28, lattice_size: 16}
+    - {beta: 28.5476, lattice_size: 16}
+    - {beta: 32.4034, lattice_size: 16}
+    - {beta: 33.4572, lattice_size: 16}
+    - {beta: 36.2022, lattice_size: 16}
+    - {beta: 45.4637, lattice_size: 16}
+    - {beta: 45.8361, lattice_size: 16}
+    - {beta: 47.4445, lattice_size: 16}
+    - {beta: 51.0255, lattice_size: 16}
+    - {beta: 51.75, lattice_size: 16}
+    - {beta: 52.8118, lattice_size: 16}
+    - {beta: 54.5735, lattice_size: 16}
+    - {beta: 56, lattice_size: 16}
+    - {beta: 56.915, lattice_size: 16}
+    - {beta: 8.3757, lattice_size: 32}
+    - {beta: 8.91, lattice_size: 32}
+    - {beta: 10.0876, lattice_size: 32}
+    - {beta: 10.2429, lattice_size: 32}
+    - {beta: 10.4346, lattice_size: 32}
+    - {beta: 12.1743, lattice_size: 32}
+    - {beta: 18.5155, lattice_size: 32}
+    - {beta: 19.391, lattice_size: 32}
+    - {beta: 19.4844, lattice_size: 32}
+    - {beta: 23.3695, lattice_size: 32}
+    - {beta: 25.0485, lattice_size: 32}
+    - {beta: 27.793, lattice_size: 32}
+    - {beta: 29.9653, lattice_size: 32}
+    - {beta: 40.9962, lattice_size: 32}
+    - {beta: 45.0584, lattice_size: 32}
+    - {beta: 46.4473, lattice_size: 32}
+    - {beta: 48.9485, lattice_size: 32}
+    - {beta: 50.1067, lattice_size: 32}
+    - {beta: 50.6966, lattice_size: 32}
+    - {beta: 56, lattice_size: 32}
+    - {beta: 58.1503, lattice_size: 32}
+
+  random_rungs: []
+  heldout:
+    - {beta: 80.0, lattice_size: 16, n_configs: 128, burn_in: 300, thermalize_sweeps: 60}
+
+train:
+  checkpoint_path: out/u2_2d/checkpoints/det_score_net_cov15.pt
+  history: out/u2_2d/checkpoints/det_score_net_cov15.history.json
+  resume: true
+  epochs: 120
+  batch_size: 32
+  learning_rate: 2.0e-4
+  sigma_min: 0.02
+  sigma_max: 6.0
+  hidden: 64
+  depth: 4
+  kernel_size: 3
+  cond_channels: 5
+  val_fraction: 0.1
+  topo_weight: 0.0
+  ema_decay: 0.999
+  early_stop_patience: 0
+  snapshot_every: 10
+
+ladder:
+  out_dir: out/u2_2d/ladder_cov15
+  base: {beta: 28.0, lattice_size: 16}
+  beta_schedule: [105.651, 416.524]
+  n_configs: 1024
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  n_su2_sweeps: 30
+  n_retherm_sweeps: 10
+  batch_size: 64
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  physics_blend_coef: 0.0
+
+validate:
+  out_dir: out/u2_2d/validation_cov15
+  n_reference_configs: 512
+  n_chains: 32
+  burn_in: 1500
+  generate_reference: true
+  max_reference_lattice_size: 32

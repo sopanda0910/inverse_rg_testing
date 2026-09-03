@@ -76,8 +76,9 @@ def sector_augment(configs: torch.Tensor, action, fraction: float) -> torch.Tens
         return configs
     lattice_size = configs.shape[-1]
     index = torch.randperm(configs.shape[0])[:n_aug]
-    charges = torch.tensor([-2.0, -1.0, 1.0, 2.0])[torch.randint(0, 4, (n_aug,))]
-    inst = instanton_field(lattice_size, dtype=configs.dtype)
+    charges = torch.tensor([-2.0, -1.0, 1.0, 2.0], device=configs.device)[
+        torch.randint(0, 4, (n_aug,))]
+    inst = instanton_field(lattice_size, device=configs.device, dtype=configs.dtype)
     shifted = wrap(configs[index] + charges.view(-1, 1, 1, 1) * inst)
     shifted = retherm_sweeps(shifted, action, 8, topological_updates=False)
     print(f"    sector augmentation: +{n_aug} configs at Q shifts of +-1, +-2")

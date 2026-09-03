@@ -1,0 +1,84 @@
+# Coverage-ablation challenger for the u2 training-coverage question: same
+# recipe as v2.yaml (data.rungs, train.*, everything) with ONLY the random-beta
+# coverage widened, beta_max 60 -> 250 at L=16/32 (and 8 -> 35 at L=8, same
+# ratio) -- so `67_coverage_comparison_figure.py` can show whether u1's
+# cost-efficiency curve (which does NOT fall off at its existing beta_max=60
+# edge out to beta ~900, see fig65) changes at all when the net is actually
+# shown that range during training. Separate output paths throughout so the
+# deployed score_net.pt and its ladder/validation directories are untouched.
+# Regenerate by hand if v2.yaml's non-coverage settings ever change.
+
+seed: 0
+device: auto
+action_type: wilson
+
+data:
+  out_dir: out/u1_2d/data_wide
+  rungs:
+    - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600, sector_augment: 0.5}
+    - {beta: 25.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 40.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+  random_rungs:
+    - {n: 60, beta_min: 1.0, beta_max: 250.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 2.0, beta_max: 250.0, lattice_size: 32, n_configs: 128}
+    - {n: 6, beta_min: 1.0, beta_max: 35.0, lattice_size: 8, n_configs: 128}
+  heldout:
+    - {beta: 20.0, lattice_size: 16, hot_start: false, burn_in: 2000, n_configs: 128}
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  topological_updates: true
+  hot_start: true
+
+train:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 3.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  sigma_min_beta_coef: 0.3
+  high_beta_sigma_bias: 0.3
+  sym_augment: 0.5
+  norm_type: channel
+  cond_film: true
+  hidden: 56
+  depth: 4
+  kernel_size: 3
+  cond_channels: 5
+  val_fraction: 0.1
+  topo_weight: 0.1
+  early_stop_patience: 0
+  ema_decay: 0.999
+  grad_clip_norm: 1.0
+  snapshot_every: 5
+  checkpoint: out/u1_2d/checkpoints/score_net_wide250.pt
+  history: out/u1_2d/checkpoints/score_net_wide250.history.json
+
+ladder:
+  base: {beta: 1.3472, lattice_size: 8}
+  n_base_configs: 192
+  beta_schedule: [4.0, 14.1464, 55.0237]
+  n_retherm_sweeps: 16
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  corrector_snr: 0.16
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  charge_projection_sigma: 0.5
+  charge_projection_interval: 10
+  retherm_topological_updates: false
+  sample_batch_size: 32
+  out_dir: out/u1_2d/generated_wide250
+  physics_blend_coef: 1.0
+  physics_blend_beta_min: 5.0
+  sigma_min_beta_coef: 0.1
+
+validate:
+  out_dir: out/u1_2d/validation_wide250
+  n_reference_configs: 384
+  freezing_rung: {beta: 55.0237, lattice_size: 64}
+  freezing_hmc_length: 300
