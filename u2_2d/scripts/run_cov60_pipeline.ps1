@@ -22,9 +22,20 @@ while (-not ((Test-Done "out\u2_2d\coverage_scan\v2\crossover_topo.json" 14) -an
 }
 "$(Get-Date) v2/cap done -- training cov60" *>> $log
 
-$ckpt = "out\u2_2d\checkpoints\det_score_net_cov60.pt"
-if (Test-Path $ckpt) {
-    "$(Get-Date) $ckpt already exists -- skipping training" *>> $log
+# Checked by EPOCH COUNT in history.json, not by the checkpoint file's mere
+# existence -- a checkpoint can exist mid-training (periodic saves), and
+# Test-Path alone treated that as "done" once already (cov15's CPU run).
+function Test-TrainingDone($historyPath, $epochs) {
+    if (-not (Test-Path $historyPath)) { return $false }
+    try {
+        $h = Get-Content $historyPath -Raw | ConvertFrom-Json
+        if ($h.Count -eq 0) { return $false }
+        return ($h[-1].epoch + 1) -ge $epochs
+    } catch { return $false }
+}
+
+if (Test-TrainingDone "out\u2_2d\checkpoints\det_score_net_cov60.history.json" 120) {
+    "$(Get-Date) cov60 already trained -- skipping training" *>> $log
 } else {
     # train.resume: true is set in cov60.yaml -- a Task-Scheduler restart
     # after a crash resumes from the last snapshot (snapshot_every: 10)

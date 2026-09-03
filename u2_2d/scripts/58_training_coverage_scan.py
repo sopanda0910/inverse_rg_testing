@@ -116,13 +116,20 @@ def main() -> int:
           "the story.)")
     print()
 
+    # L=64 writes DISTINCT filenames from L=32's "crossover"/"crossover_topo"
+    # -- same out-dir, different tag -- so a volume-scaling pass never
+    # overwrites the beta-scaling pass already there (found the collision
+    # risk before it happened: both used to hardcode "crossover").
+    size_suffix = "" if args.fine_size == 32 else f"_L{args.fine_size}"
+
     for tag in args.checkpoints:
         spec = CHECKPOINTS[tag]
         out_dir = f"{args.out_root}/{tag}"
         print(f"[{tag}] {spec['label']}")
         print(f"       checkpoint: {spec['path']}")
         print(f"       out-dir:    {out_dir}")
-        for topo_flag, round_tag in ((False, "crossover"), (True, "crossover_topo")):
+        for topo_flag, round_tag in ((False, f"crossover{size_suffix}"),
+                                      (True, f"crossover{size_suffix}_topo")):
             cmd = [
                 sys.executable, "u2_2d/scripts/28_crossover_scan.py",
                 "--checkpoint", spec["path"],

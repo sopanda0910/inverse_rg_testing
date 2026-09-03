@@ -1,0 +1,8 @@
+﻿watchdog tick: 09/02/2026 21:45:10
+u2_coverage_scan_v2 : Ready  (log age 2.1m)  coupling=28
+u2_coverage_scan_cap : Ready  (log age 2m)  coupling=28
+u2_cov60_pipeline : Running  (log age 3.7m)  epoch=60
+u2_cpu_coverage_pipeline : Running  (log age 3.1m)  epoch=38
+u2_volume_scan_pipeline : NOT REGISTERED
+u1_wide250_pipeline : Running  (log age 4.5m)  no progress markers yet
+active GPU/CPU-bound jobs (distinct command lines): 5

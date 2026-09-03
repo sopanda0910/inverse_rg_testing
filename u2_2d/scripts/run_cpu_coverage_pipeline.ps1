@@ -1,32 +1,50 @@
 Set-Location "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing"
 $log = "out\u2_2d\coverage_scan\cpu_pipeline.log"
 $py = ".venv\Scripts\python.exe"
+$env:PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True"
 "$(Get-Date) pipeline (re)start" *>> $log
 
-# Training runs on CPU immediately (device: cpu in both configs) -- cheap
-# enough (71/88 rungs vs the deployed net's ~9-114) that it does not need to
-# wait its turn behind the GPU-bound scans already queued (v2, cap, cov60).
-$ckpt15 = "out\u2_2d\checkpoints\det_score_net_cov15.pt"
-if (Test-Path $ckpt15) {
-    "$(Get-Date) $ckpt15 already exists -- skipping" *>> $log
-} else {
-    "$(Get-Date) training cov15 (CPU)" *>> $log
-    # train.resume: true in cov15.yaml resumes from the last snapshot
-    # (snapshot_every: 10) on a Task-Scheduler restart.
+# MOVED TO GPU 2026-09-02, ~21:30. CPU training measured at ~6.4 min/epoch for
+# cov15 (18 epochs in 115 min) -- at that rate 120 epochs is ~13h, and cov30
+# (88 rungs, even more) would add another ~16h+ behind it. That is far slower
+# than this comparison is worth; cov15/cov30.yaml now set device: cuda. v2/cap
+# finished their scans by the time this was caught, so the GPU has room
+# (cov60 alone, 1 context) for these too -- 2-3 concurrent contexts, still
+# inside the documented 3-context ceiling. The partial CPU run is NOT wasted:
+# train.resume: true + the epoch-18 snapshot (snapshot_every: 10, so the
+# checkpoint is current to about epoch 10-18) let training pick up close to
+# where the CPU run left off, on the faster device.
+#
+# "Already trained" is checked by EPOCH COUNT in history.json, not by the
+# checkpoint file's mere existence -- Test-Path alone was wrong here once
+# already: it treated a checkpoint that was merely mid-training (periodic
+# saves during CPU training) as "done" and would have skipped finishing it.
+function Test-TrainingDone($historyPath, $epochs) {
+    if (-not (Test-Path $historyPath)) { return $false }
+    try {
+        $h = Get-Content $historyPath -Raw | ConvertFrom-Json
+        if ($h.Count -eq 0) { return $false }
+        return ($h[-1].epoch + 1) -ge $epochs
+    } catch { return $false }
+}
+
+if (-not (Test-TrainingDone "out\u2_2d\checkpoints\det_score_net_cov15.history.json" 120)) {
+    "$(Get-Date) training cov15 (GPU, resuming from the CPU-trained snapshot)" *>> $log
     & $py "u2_2d\scripts\02_train.py" --config "u2_2d\configs\cov15.yaml" *>> $log
     if ($LASTEXITCODE -ne 0) { "$(Get-Date) cov15 training FAILED, exit $LASTEXITCODE" *>> $log; exit 1 }
+} else {
+    "$(Get-Date) cov15 already trained -- skipping" *>> $log
 }
 
-$ckpt30 = "out\u2_2d\checkpoints\det_score_net_cov30.pt"
-if (Test-Path $ckpt30) {
-    "$(Get-Date) $ckpt30 already exists -- skipping" *>> $log
-} else {
-    "$(Get-Date) training cov30 (CPU)" *>> $log
+if (-not (Test-TrainingDone "out\u2_2d\checkpoints\det_score_net_cov30.history.json" 120)) {
+    "$(Get-Date) training cov30 (GPU)" *>> $log
     & $py "u2_2d\scripts\02_train.py" --config "u2_2d\configs\cov30.yaml" *>> $log
     if ($LASTEXITCODE -ne 0) { "$(Get-Date) cov30 training FAILED, exit $LASTEXITCODE" *>> $log; exit 1 }
+} else {
+    "$(Get-Date) cov30 already trained -- skipping" *>> $log
 }
 
-"$(Get-Date) both CPU checkpoints trained -- waiting for the GPU-bound scan queue (v2/cap/cov60) before scanning" *>> $log
+"$(Get-Date) both checkpoints trained -- waiting for the GPU-bound scan queue (v2/cap/cov60) before scanning" *>> $log
 
 # The scan step (28_crossover_scan.py: diffusion lift + batched HMC) is GPU-
 # bound, unlike training here -- so queue behind whatever is already using the

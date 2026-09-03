@@ -9,7 +9,7 @@
 # already carrying v2/cap/cov60/wide250.
 
 seed: 0
-device: cpu
+device: cuda
 
 data:
   out_dir: out/u2_2d/data_v2
