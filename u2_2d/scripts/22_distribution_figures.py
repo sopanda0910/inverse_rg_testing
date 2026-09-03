@@ -102,7 +102,17 @@ def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
         ax.set_title(name.replace("wilson_", "W ").replace("plaquette", "W 1x1"),
                      fontsize=10)
         ax.set_xlabel(r"$\frac{1}{2}\,\mathrm{ReTr}\,W$")
-        ax.legend(frameon=False, fontsize=7)
+        # frameon=True with an opaque-ish backing, NOT the project's usual
+        # frameon=False -- unlike a line/scatter plot with a free corner,
+        # these panels overlay two semi-transparent histograms plus a step
+        # histogram that together cover nearly the whole panel, so there is
+        # no location "best" can pick without landing on dense bars. Without
+        # a background the legend text became illegible, overlapping the
+        # peak bars directly (caught 2026-09-03 on fig16_distributions_
+        # L64_beta416.524.png). A white, mostly-opaque box behind the text
+        # fixes legibility regardless of where the data happens to peak.
+        ax.legend(frameon=True, fontsize=7, facecolor="white",
+                  framealpha=0.85, edgecolor="none")
         ax.grid(alpha=0.2)
         ax.xaxis.set_major_locator(plt.MaxNLocator(4))
         ax.tick_params(axis="x", labelrotation=25, labelsize=8)
@@ -128,7 +138,8 @@ def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
     ax.set_xlabel("$Q$")
     ax.set_ylabel("$P(Q)$")
     ax.set_title("topological charge", fontsize=10)
-    ax.legend(frameon=False, fontsize=7)
+    ax.legend(frameon=True, fontsize=7, facecolor="white", framealpha=0.85,
+              edgecolor="none")
     ax.grid(alpha=0.2, axis="y")
 
     # --- <Q^2> -------------------------------------------------------------
@@ -151,7 +162,8 @@ def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
     ax.set_xticklabels(labels, fontsize=9)
     ax.set_ylabel(r"$\langle Q^2\rangle$")
     ax.set_title("second moment", fontsize=10)
-    ax.legend(frameon=False, fontsize=8)
+    ax.legend(frameon=True, fontsize=8, facecolor="white", framealpha=0.85,
+              edgecolor="none")
     ax.grid(alpha=0.2, axis="y")
 
     fig.suptitle(
@@ -201,7 +213,11 @@ def figure_z(meas: dict, exact: dict, beta: float, size: int, path_hist: Path,
     ax.set_ylabel("density")
     ax.set_title(f"Observable $z$-distribution: $L = {size}$, "
                  r"$\beta$ = " f"{beta:g}", fontsize=11)
-    ax.legend(frameon=False, fontsize=8)
+    # Same overlapping-histograms legibility issue as figure_distributions'
+    # Wilson-loop panels above -- three semi-transparent histograms plus a
+    # curve, all centered near z=0 -- so give the legend a backing here too.
+    ax.legend(frameon=True, fontsize=8, facecolor="white", framealpha=0.85,
+              edgecolor="none")
     ax.grid(alpha=0.2)
     fig.tight_layout()
     fig.savefig(path_hist, dpi=157, bbox_inches="tight")

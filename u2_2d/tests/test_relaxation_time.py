@@ -3,8 +3,8 @@ estimator (`28_crossover_scan.py`'s `fit_relaxation_time` /
 `fit_joint_relaxation_time`), which replaced the discrete threshold-crossing
 `thermalization_time` on 2026-09-03.
 
-These pin down three real failure modes found while building the estimator,
-not hypothetical edge cases:
+These pin down several real failure modes found while building and running
+the estimator, not hypothetical edge cases:
 
   * an "already at target" test that requires EVERY record to pass a 2-sigma
     band fails from pure multiple-testing noise over ~100 records;
@@ -15,7 +15,17 @@ not hypothetical edge cases:
     equilibrated seed's plaquette series, chi2/dof=1.28, fit to a fictitious
     tau~186 by the chi2 test alone; caught only by the chain-bootstrap
     significance gate). That real series is reproduced synthetically below
-    (same shape: flat mean, small per-record noise, no true decay).
+    (same shape: flat mean, small per-record noise, no true decay);
+  * a fit that saturates its search bound (the optimizer settling ~1e-4
+    short of the exact boundary) must report inf, not a huge finite number
+    that looks like a real measurement -- caught live in the first ~8
+    minutes of the full matrix run;
+  * "no resolved decay" was conflated with "already at target" -- but a
+    series that is flat and stuck significantly AWAY from target, with no
+    detectable trend inside the window, also has no decay to resolve, and
+    the old code called that tau=0.0 (instantly thermalized) instead of the
+    correct tau=inf (never converged) -- found via the sanity monitor on a
+    live run (cov60 beta=414.90, cold start, chi2_flat/dof=463.6).
 
 Methodology reference: Detmold & Endres, "Multiscale Monte Carlo
 equilibration" (PRD 92, 114516 (2015); PRD 94, 114502 (2016)) -- coupled
@@ -140,6 +150,46 @@ def test_boundary_saturation_is_reported_as_inf_not_a_huge_finite_number(stage28
         f"got tau={result['tau']} -- a fit that saturates its search bound "
         "must report inf (unresolved), never a huge finite number that "
         "looks like a real measurement")
+
+
+def test_flat_but_biased_series_is_inf_not_zero(stage28):
+    """A THIRD real-data failure, found 2026-09-03 via the sanity monitor
+    flagging a diffusion-seed record at a DIFFERENT coupling, which led to
+    checking the arm actually responsible: cov60 beta=414.90, COLD START.
+    The delta-chi2 test only asks whether an exponential fits better than
+    "already at target" -- when the series is flat but stuck significantly
+    away from target, with no detectable time-trend inside the window, that
+    question's honest answer is "no" (there is no trend to fit), and the old
+    code took that as "already at target" (tau=0.0). It is the opposite
+    conclusion: chi2_flat/dof = 463.6 here, and the independent old
+    threshold method agrees this arm's plaquette never resolved at all
+    (Infinity). A first fix attempt tested chi2_flat itself against a plain
+    chi2 critical value and was WRONG the same way the original delta-chi2
+    gate was: it flagged a genuinely-equilibrated synthetic series as
+    "stuck" too (see test_already_equilibrated_returns_zero), because
+    chi2_flat is fooled by within-chain autocorrelation just like chi2_exp
+    is. The fix instead tests the settled TAIL (second half of the window)
+    via the same chain-resampling bootstrap already used for tau_err
+    (`_tail_is_biased`). This fixture is the exact real series that exposed
+    the bug (checkpoint det_score_net_cov60, beta=414.897, cold start,
+    200-trajectory plain round).
+    """
+    from u2_2d.lgt.exact import plaquette_exact, wilson_loop_exact
+
+    npz = np.load(FIXTURES / "stuck_flat_bias_case.npz")
+    names = ("plaquette", "wilson_2x2", "wilson_4x4")
+    series = {name: npz[f"cold start__{name}"] for name in names}
+    beta = 414.8972549121468
+    targets = {"plaquette": plaquette_exact(beta, 32),
+              "wilson_2x2": wilson_loop_exact(beta, 4),
+              "wilson_4x4": wilson_loop_exact(beta, 16)}
+    result = stage28.fit_joint_relaxation_time(series, targets, record_every=2,
+                                               names=names, n_boot=50, seed=0)
+    assert math.isinf(result["tau"]), (
+        f"got tau={result['tau']} -- a flat series sitting significantly "
+        "away from target, with no resolved decay, must report inf (never "
+        "converged), not 0.0 (already converged) -- those are opposite "
+        "conclusions")
 
 
 def test_joint_fit_shared_tau_across_observables(stage28):

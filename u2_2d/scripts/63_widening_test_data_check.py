@@ -46,6 +46,15 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data-dir", default="out/u2_2d/data_widening_test")
     parser.add_argument("--n-boot", type=int, default=2000)
+    parser.add_argument("--n-configs-before-augment", type=int, default=256,
+                        help="matches widening_test.yaml's data.rungs n_configs -- "
+                             "sector_augment appends int(fraction * this) extra configs "
+                             "AFTER this many. Slicing by this KNOWN count, not by "
+                             "divisibility with n_chains, because that heuristic silently "
+                             "fails here: 256*1.5=384=6*64, still evenly divisible, so it "
+                             "let the non-chain-structured augmented tail through "
+                             "undetected (found 2026-09-03 building the u1 twin of this "
+                             "script, which had the identical bug -- both are fixed now)")
     args = parser.parse_args()
 
     chain_bootstrap = _load_chain_bootstrap()
@@ -66,14 +75,18 @@ def main() -> int:
         size = meta["lattice_size"]
         n_chains = meta["n_chains"]
         n_cfg = configs.shape[0]
-        if n_cfg % n_chains != 0:
-            print(f"  ! {p}: n_configs={n_cfg} not a multiple of n_chains="
-                  f"{n_chains} -- cannot reshape into chains, skipping")
+        # sector_augment appends non-chain-structured configs at the end --
+        # slice them off by the KNOWN pre-augment count (see the CLI arg's
+        # help for why divisibility-with-n_chains alone does not catch this).
+        n_pre_aug = min(args.n_configs_before_augment, n_cfg)
+        n_pre_aug = (n_pre_aug // n_chains) * n_chains
+        if n_pre_aug == 0:
+            print(f"  ! {p}: n_configs={n_cfg} < n_chains={n_chains}, skipping")
             continue
-        n_draws = n_cfg // n_chains
+        n_draws = n_pre_aug // n_chains
 
-        plaq_per_config = half_retr(plaquette(configs)).mean(dim=(1, 2)).numpy()
-        q_per_config = topological_charge(configs).numpy()
+        plaq_per_config = half_retr(plaquette(configs)).mean(dim=(1, 2)).numpy()[:n_pre_aug]
+        q_per_config = topological_charge(configs).numpy()[:n_pre_aug]
         q2_per_config = q_per_config**2
 
         # Chain-major ordering (index = draw*n_chains + chain), the same

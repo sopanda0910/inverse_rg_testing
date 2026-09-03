@@ -60,6 +60,128 @@ def fit_exponential_relaxation(mean: np.ndarray, target: float) -> dict:
     return out
 
 
+# ---------------------------------------------------------------------------
+# t_therm ESTIMATOR, ported verbatim (same gates, same thresholds, same fixed
+# bugs) from u2_2d/scripts/28_crossover_scan.py on 2026-09-03, replacing the
+# discrete threshold-crossing `thermalization_time` in
+# u1_2d/scripts/05_hmc_thermalization.py. u1 and u2 must be evaluated with
+# the SAME estimator unless a difference is explicitly justified (none is,
+# here) -- see CLAUDE.md's "Thermalization / relaxation-time definition"
+# entry for the full derivation, literature grounding (Detmold & Endres,
+# PRD 92, 114516 (2015); PRD 94, 114502 (2016)), and the four real numerical
+# bugs found and fixed while building/running it in u2. This is NOT
+# `fit_exponential_relaxation` above: that fits a FREE plateau C (not fixed
+# at the exact target) and reports curve_fit's own covariance-based error,
+# neither of which is right for a "how long until the target is reached"
+# estimator, and it has none of the four bug fixes below. It stays in this
+# file only for the dashed-curve plot overlay, not for any t_therm number
+# that feeds a claim.
+#
+# u1 records EVERY trajectory (`series[k].append(v)` each step, no
+# subsampling), unlike u2's `record_every=2` -- so t = arange(len(mean))
+# directly, no record_every parameter needed.
+def _tail_is_biased(tails: list, rng: "np.random.Generator", n_chains: int,
+                    n_boot: int = 200) -> bool:
+    """True if ANY (tail_series, target) pair's settled tail (second half of
+    the observation window) is significantly biased from its target, under a
+    CHAIN-resampling bootstrap. See the matching function in
+    u2_2d/scripts/28_crossover_scan.py for the full derivation: "no resolved
+    decay" is ambiguous between "already at target" and "flat but stuck away
+    from target the whole window", and a plain chi2 test on the full-window
+    disagreement is fooled by within-chain autocorrelation the same way the
+    delta-chi2 gate below would be; chain resampling is not.
+    """
+    for tail, target in tails:
+        tail_mean = float(tail.mean())
+        boots = np.empty(n_boot)
+        for i in range(n_boot):
+            pick = rng.integers(0, n_chains, n_chains)
+            boots[i] = tail[:, pick].mean()
+        tail_err = float(boots.std())
+        if tail_err > 0 and abs(tail_mean - target) / tail_err >= 2.0:
+            return True
+    return False
+
+
+def _fit_exp_once(t: np.ndarray, mean: np.ndarray, sem: np.ndarray,
+                  target: float) -> float:
+    """One exponential relaxation-time fit: mean(t) ~= target + A*exp(-t/tau).
+    Returns tau (0.0 if already at target, inf if no resolved decay within
+    the window). See u2_2d/scripts/28_crossover_scan.py's `_fit_exp_once`
+    for the full derivation of every gate below -- ported verbatim."""
+    chi2_flat = float(np.sum(((mean - target) / sem) ** 2))
+
+    bias = mean - target
+    resolved = np.abs(bias) / sem >= 1.0
+    idx = np.where(resolved & (np.abs(bias) > 0))[0]
+    if len(idx) >= 2:
+        slope, _ = np.polyfit(t[idx], np.log(np.abs(bias[idx])), 1)
+        tau0 = min(max(-1.0 / slope, 0.1), float(t[-1]) * 10.0) if slope < 0 else max(float(t[-1]) / 4.0, 1.0)
+    else:
+        tau0 = max(float(t[-1]) / 4.0, 1.0)
+    A0 = float(mean[0] - target)
+    try:
+        popt, _ = curve_fit(
+            lambda tt, A, tau: target + A * np.exp(-tt / max(tau, 1e-6)),
+            t, mean, p0=[A0, tau0], sigma=sem, absolute_sigma=True,
+            bounds=([-np.inf, 0.0], [np.inf, float(t[-1]) * 10.0]),
+            maxfev=2000)
+    except (RuntimeError, ValueError):
+        return 0.0
+
+    pred = target + popt[0] * np.exp(-t / max(popt[1], 1e-6))
+    chi2_exp = float(np.sum(((mean - pred) / sem) ** 2))
+    if chi2_flat - chi2_exp < 6.0:
+        return 0.0
+
+    tau = float(popt[1])
+    upper = float(t[-1]) * 10.0
+    if tau >= upper * (1.0 - 1e-3):
+        return float("inf")
+    return max(tau, 0.0)
+
+
+def fit_relaxation_time(series: np.ndarray, target: float, n_boot: int = 100,
+                        seed: int = 0) -> tuple[float, float]:
+    """Exponential relaxation-time replacement for `thermalization_time`,
+    ported verbatim from u2_2d/scripts/28_crossover_scan.py's function of the
+    same name. `series` is [n_records, n_chains]. Returns (tau_hat, tau_err),
+    tau_err from a chain-resampling bootstrap.
+    """
+    t = np.arange(series.shape[0], dtype=float)
+    mean = series.mean(axis=1)
+    sem = np.maximum(series.std(axis=1, ddof=1) / math.sqrt(series.shape[1]), 1e-12)
+    tau_hat = _fit_exp_once(t, mean, sem, target)
+
+    n_chains = series.shape[1]
+    rng = np.random.default_rng(seed)
+    boots = np.empty(n_boot)
+    for i in range(n_boot):
+        pick = rng.integers(0, n_chains, n_chains)
+        sub = series[:, pick]
+        m = sub.mean(axis=1)
+        s = np.maximum(sub.std(axis=1, ddof=1) / math.sqrt(n_chains), 1e-12)
+        boots[i] = _fit_exp_once(t, m, s, target)
+    finite = boots[np.isfinite(boots)]
+    if len(finite) > 3:
+        q16, q84 = np.percentile(finite, [16, 84])
+        tau_err = float((q84 - q16) / 2.0)
+    elif len(finite) > 1:
+        tau_err = float(finite.std())
+    else:
+        tau_err = float("nan")
+
+    if math.isfinite(tau_hat) and tau_hat > 0 and math.isfinite(tau_err):
+        if tau_err <= 0 or tau_hat / tau_err < 2.0:
+            tau_hat = 0.0
+
+    if tau_hat == 0.0:
+        tail = series[series.shape[0] // 2:]
+        if _tail_is_biased([(tail, target)], rng, n_chains):
+            tau_hat = float("inf")
+    return tau_hat, tau_err
+
+
 def jackknife(values: np.ndarray, estimator=np.mean) -> tuple[float, float]:
     """Leave-one-out jackknife mean and error of `estimator` over axis 0."""
     values = np.asarray(values, dtype=float)

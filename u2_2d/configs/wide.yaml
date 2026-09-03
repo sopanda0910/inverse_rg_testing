@@ -1,0 +1,123 @@
+# Widened-coverage retrain -- decided 2026-09-03, launched immediately rather
+# than deferred further. Identical to default.yaml in every respect except
+# the 12 new fixed rungs appended below (raw beta 600-2000, L=8, sector-
+# augmented) and the checkpoint path, so any quality change is attributable
+# to coverage alone, not a confound with capacity/data-recipe changes (the
+# same isolation discipline as every other retrain in this project -- see
+# CLAUDE.md's "BUT COVERAGE IS BOUGHT, NOT FREE" and the batch-size lesson
+# from the v2/capacity retrains).
+#
+# These 12 rungs' ensembles already exist under out/u2_2d/data/ (copied from
+# out/u2_2d/data_widening_test/, generated with sector_augment: 0.5 -- see
+# CLAUDE.md's "Thermalization / relaxation-time definition" era notes and
+# u2_2d/scripts/63_widening_test_data_check.py for their own validation
+# against the closed form, all 12 rungs within |z|<=2.84). This config does
+# NOT regenerate them.
+#
+# Extends model_beta coverage from ~104-107.5 (existing checkpoints) to
+# ~500 (raw beta 2000 -> model_beta ~500), a genuine 4.7x extension, not the
+# ~3% v2/cap added.
+seed: 0
+device: auto
+
+data:
+  out_dir: out/u2_2d/data
+  n_chains: 32
+  thin: 5
+  topological_updates: true
+  winding_charge_step: 1
+  winding_interval: 5
+  seed_exact_sectors: true
+  thermalize_sweeps: 60
+  rungs:
+    - {beta: 3.5,   lattice_size: 8,  n_configs: 1024, burn_in: 300, hot_start: true, seed_exact_sectors: false, n_chains: 128}
+    - {beta: 7.0,   lattice_size: 8,  n_configs: 1024, burn_in: 150, seed_exact_sectors: false, n_chains: 128}
+    - {beta: 14.0,  lattice_size: 8,  n_configs: 1024, burn_in: 400, seed_exact_sectors: false, n_chains: 128, hot_start: true}
+    - {beta: 14.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
+    - {beta: 28.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
+    - {beta: 56.0,  lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250, sector_augment: 0.5}
+    - {beta: 203.15, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 416.524, lattice_size: 64, n_configs: 512, burn_in: 300, n_chains: 64,
+       train: false}
+    # NEW: widening-coverage rungs, L=8, sector-augmented. n_chains matches
+    # the widening-test generation config (64), not this file's other L=8
+    # rungs (128) -- pass it explicitly per rung since expand_rungs takes
+    # the per-rung value where given.
+    - {beta: 600.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 700.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 800.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 900.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1000.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1100.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1200.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1300.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1400.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1500.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1750.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 2000.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+
+  # NO random_rungs, deliberately: those need 102 NEW ensembles this session
+  # has not generated (hours of additional HMC), and per CLAUDE.md the
+  # currently-deployed det_score_net.pt was itself trained WITHOUT them --
+  # default.yaml grew that block later, describing a retrain that was never
+  # actually deployed. Matching the deployed checkpoint's own recipe (fixed
+  # rungs only) keeps this comparison to coverage alone, uses only data that
+  # already exists on disk, and is why this can launch immediately.
+
+  heldout:
+    - {beta: 80.0, lattice_size: 16, n_configs: 128, burn_in: 300,
+       thermalize_sweeps: 60}
+
+train:
+  checkpoint_path: out/u2_2d/checkpoints/det_score_net_wide.pt
+  epochs: 120
+  batch_size: 32
+  learning_rate: 2.0e-4
+  hidden: 64
+  depth: 4
+  cond_channels: 5
+  cond_film: true
+  norm_type: channel
+  sigma_min_beta_coef: 0.35
+  high_beta_sigma_bias: 0.5
+  sym_augment: 0.5
+  early_stop_patience: 25
+  val_fraction: 0.1
+  # Restartable: this GPU has an empirically-established 3-CUDA-context
+  # ceiling (CLAUDE.md), and this training run is deliberately launched as a
+  # 4th context alongside the still-running relaxation matrix -- a real OOM
+  # risk, accepted because a training crash is cheap to resume from a
+  # snapshot while restarting the matrix would discard hours of completed
+  # work (it rewrites its JSON output from scratch, no resume). If this dies
+  # to OOM, rerun with the same config and `resume: true` picks up from the
+  # last snapshot.
+  resume: true
+  snapshot_every: 5
+
+ladder:
+  out_dir: out/u2_2d/ladder_wide
+  base: {beta: 28.0, lattice_size: 16}
+  beta_schedule: [105.651, 416.524]
+  n_configs: 1024
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  n_su2_sweeps: 30
+  n_retherm_sweeps: 10
+  batch_size: 64
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  physics_blend_coef: 0.0
+
+validate:
+  out_dir: out/u2_2d/validation_wide
+  n_reference_configs: 512
+  n_chains: 32
+  burn_in: 1500
+  generate_reference: true
+  max_reference_lattice_size: 32

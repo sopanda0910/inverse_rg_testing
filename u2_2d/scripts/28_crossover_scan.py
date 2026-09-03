@@ -104,6 +104,41 @@ def thermalization_time(series: np.ndarray, target: float,
     return float("inf")
 
 
+def _tail_is_biased(tails: list, rng: "np.random.Generator", n_chains: int,
+                    n_boot: int = 200) -> bool:
+    """True if ANY (tail_series, target) pair's settled tail (second half of
+    the observation window, matching this file's own tau_int_plaquette
+    convention for "the settled part of the chain") is significantly biased
+    from its target, under a CHAIN-resampling bootstrap.
+
+    Exists because "no resolved decay" (tau_hat=0.0 from the delta-chi2 test)
+    is ambiguous between two opposite situations: the series is genuinely
+    already at target (nothing to explain), or it is flat but stuck
+    significantly away from target the whole window (also nothing to fit,
+    but the opposite conclusion). A first attempt tested this with a plain
+    chi2 test on the full-window chi2_flat and was WRONG the same way the
+    original delta-chi2 gate for tau itself was: chi2_flat is fooled by
+    within-chain autocorrelation and flagged a genuinely-equilibrated
+    synthetic series as "stuck" purely from chance temporal structure
+    (caught by this file's own `test_already_equilibrated_returns_zero`).
+    Chain resampling does not share that blind spot, for the same reason the
+    tau significance gate above uses it. Found/fixed 2026-09-03 on real
+    output: cov60 beta=414.90 cold start returned tau=0.0 while sitting
+    dozens of naive-sigma from target the whole window; the independent old
+    threshold method agrees this arm's plaquette never resolved (Infinity).
+    """
+    for tail, target in tails:
+        tail_mean = float(tail.mean())
+        boots = np.empty(n_boot)
+        for i in range(n_boot):
+            pick = rng.integers(0, n_chains, n_chains)
+            boots[i] = tail[:, pick].mean()
+        tail_err = float(boots.std())
+        if tail_err > 0 and abs(tail_mean - target) / tail_err >= 2.0:
+            return True
+    return False
+
+
 def _fit_exp_once(t: np.ndarray, mean: np.ndarray, sem: np.ndarray,
                   target: float) -> float:
     """One exponential relaxation-time fit: mean(t) ~= target + A*exp(-t/tau).
@@ -233,6 +268,11 @@ def fit_relaxation_time(series: np.ndarray, target: float, record_every: int,
     if math.isfinite(tau_hat) and tau_hat > 0 and math.isfinite(tau_err):
         if tau_err <= 0 or tau_hat / tau_err < 2.0:
             tau_hat = 0.0
+
+    if tau_hat == 0.0:
+        tail = series[series.shape[0] // 2:]
+        if _tail_is_biased([(tail, target)], rng, n_chains):
+            tau_hat = float("inf")
     return tau_hat, tau_err
 
 
@@ -348,6 +388,11 @@ def fit_joint_relaxation_time(series: dict, targets: dict, record_every: int,
     if math.isfinite(tau_hat) and tau_hat > 0 and math.isfinite(tau_err):
         if tau_err <= 0 or tau_hat / tau_err < 2.0:
             tau_hat = 0.0
+
+    if tau_hat == 0.0:
+        tails = [(series[name][n_records // 2:], targets[name]) for name in names]
+        if _tail_is_biased(tails, rng, n_chains):
+            tau_hat = float("inf")
 
     # Report chi2/dof of the FLAT null (n_params=0) when no decay was
     # resolved (tau=0) or the fit saturated the bound (tau=inf) -- the

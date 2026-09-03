@@ -1268,7 +1268,22 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
   observables — std(z) grows 1.09 → 1.44 from W(4×4) to W(12×12). Report
   large-loop dispersion, not just plaquette/W(2×2)/W(4×4).
 
-### Thermalization / relaxation-time definition (u2, superseded 2026-09-03)
+### Thermalization / relaxation-time definition (u1 AND u2, superseded 2026-09-03)
+
+**PORTED TO u1 THE SAME DAY IT WAS BUILT, 2026-09-03 -- this is a
+project-wide evaluation standard, not a u2-only change.** Built first in
+`u2_2d/scripts/28_crossover_scan.py` (motivated by u2's own visibly jagged
+cost-efficiency curve), then ported VERBATIM -- same gates, same thresholds,
+same four bug fixes below -- into `u1_2d/validate/stats.py`'s
+`fit_relaxation_time`, replacing `05_hmc_thermalization.py`'s use of the
+discrete `thermalization_time` (which is u1's ORIGINAL function; u2 had
+ported and used a copy of it before this switch, so the naming history runs
+u1 -> u2 -> u1, with u1 now importing the fixed version back). Standing rule:
+**u1 and u2 are evaluated with the SAME method unless a difference is
+explicitly justified in writing** -- do not let the two studies' estimators,
+budgets, or test criteria drift apart silently. Both keep the discrete
+method's output too, in a `t_therm_threshold_old` field, purely as a
+cross-check.
 
 **`t_therm` is an EXPONENTIAL RELAXATION-TIME FIT, not a discrete
 threshold-crossing, as of 2026-09-03.** The original definition (u1's own
@@ -1305,9 +1320,9 @@ report **chi2/dof (0.6–2.1 in their case)** as the fit-quality diagnostic —
 all three of which u2's implementation now does
 (`fit_joint_relaxation_time` in `28_crossover_scan.py`).
 
-**Two real numerical failure modes were found and fixed while building this
-— read before trusting a `tau` output blindly, and before "improving" the
-fit again without re-deriving why these guards exist:**
+**FOUR real numerical failure modes were found and fixed while building and
+running this — read before trusting a `tau` output blindly, and before
+"improving" the fit again without re-deriving why these guards exist:**
 - A fixed initial guess for `tau` sends the nonlinear fit into a bad local
   minimum whenever the true decay is much faster than the guess (a true
   `tau=1` series fit to `tau=0.045`). Fixed with a data-driven initial guess
@@ -1335,6 +1350,42 @@ fit again without re-deriving why these guards exist:**
   expensive (the original discrete-threshold runs did not save series, so
   switching definitions meant a full re-run of the whole coverage/volume
   matrix rather than a `--reanalyse` pass).
+- **A third boundary bug, found live ~8 minutes into the full matrix run**:
+  the optimizer's own convergence tolerance settles ~1e-4 SHORT of the exact
+  upper search bound, which an ABSOLUTE `tau >= bound - 1e-6` saturation
+  check missed (`tau=3979.9999115` shipped against a `3980.0` bound, i.e. a
+  seed "thermalizing" in more trajectories than its own budget). Fixed with
+  a RELATIVE tolerance, `tau >= bound * (1 - 1e-3)`.
+- **A fourth bug, found 2026-09-03 via the sanity monitor flagging one
+  record and investigating the arm actually responsible, not the flagged
+  one.** "No resolved decay" (`tau_hat=0.0` from the delta-chi2 test) was
+  conflated with "already at target" — but a series that is flat and stuck
+  significantly AWAY from target the whole window also has no decay to
+  resolve, and the old code called that `tau=0.0` (instantly thermalized)
+  instead of the correct `tau=inf` (never converged): opposite conclusions.
+  Real case: `cov60 beta=414.90`, cold start, `chi2_flat/dof=463.6`,
+  reported `tau=0.0` while the independent old threshold method agreed this
+  arm's plaquette never resolved (`Infinity`). **The first fix attempt
+  (test `chi2_flat` against a plain chi2 critical value) was ITSELF wrong
+  the same way the original delta-chi2 gate was** — it flagged a
+  genuinely-equilibrated synthetic series as "stuck" too, because
+  `chi2_flat` is fooled by within-chain autocorrelation exactly like
+  `chi2_exp` is (caught by the existing
+  `test_already_equilibrated_returns_zero` regressing). The real fix tests
+  the settled TAIL (second half of the window) via the same chain-
+  resampling bootstrap already used for `tau_err` (`_tail_is_biased`), not
+  a raw chi2 test — consistent with why the tau significance gate above
+  uses chain resampling rather than a per-record test in the first place.
+  **This affects `interval_source`/`speedup` wherever it fires**, not just
+  the flagged coupling: `cold_ok` in `main()` only checks
+  `tau < 0.5*n_traj`, not fit quality, so a `tau=0.0` cold arm that was
+  actually stuck away from target was silently accepted as the interval
+  source. Jobs already completed before this fix (cov60 L32-plain/topo as
+  of 2026-09-03) carry the bug; new job launches pick up the fix
+  automatically since each is a fresh `subprocess.Popen` reading the
+  current script from disk, but already-finished rungs need a rerun (or a
+  reanalysis pass from their saved `series/*.npz`, per the point above) to
+  pick it up retroactively.
 
 **Standing rule this satisfies, and to apply generally**: when a
 methodology has a citable, refereed-paper precedent, prefer it over an
@@ -1368,9 +1419,11 @@ variable number of jointly-fit observables).
 
 ### Testing
 
-- `pytest u1_2d/tests -q` (169 tests) and `pytest u2_2d/tests -q` (107 tests,
-  including `test_relaxation_time.py`'s 8 for the exponential-fit `t_therm`);
-  `su2_2d/tests` only exists once su2_2d is restored from git — see above
+- `pytest u1_2d/tests -q` (176 tests, including `test_relaxation_time.py`'s 7
+  for the exponential-fit `t_therm`, ported from u2 2026-09-03) and
+  `pytest u2_2d/tests -q` (109 tests, including `test_relaxation_time.py`'s
+  9 for the same estimator's own build/debug history); `su2_2d/tests` only
+  exists once su2_2d is restored from git — see above
 - `python u2_2d/scripts/07_pq_sampling.py` — where P(Q) can be SAMPLED rather than
   seeded; the `PARITY-STUCK` verdict is the U(2)-specific one. Minutes.
 - `python u2_2d/scripts/08_hmc_seed_benchmark.py` — the headline claim: a generated

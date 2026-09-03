@@ -44,11 +44,13 @@ CHECKPOINTS = {
     "v2": "out/u2_2d/checkpoints/det_score_net_v2.pt",
     "cap": "out/u2_2d/checkpoints/det_score_net_cap.pt",
 }
-# Decision-critical pair first (cov60 vs default settles the coverage-cap
-# question), then the rest of the coverage ablation, then the two lowest-
-# priority/widest-data checkpoints last -- same priority reasoning as
-# tonight's earlier (now superseded) queue.
-PRIORITY = ["cov60", "default", "cov30", "cov15", "v2", "cap"]
+# Trimmed 2026-09-03 to just the decision-critical pair (cov60 vs default
+# settles the coverage-cap question / fig21) -- the full 6-checkpoint matrix
+# was ~25-30h at 3-way concurrency, and the ablation detail (cov30, cov15,
+# v2, cap) isn't gating any paper claim the way this pair is. Restore the
+# full list (["cov60", "default", "cov30", "cov15", "v2", "cap"]) if/when
+# there's GPU headroom to spare on the ablation curve.
+PRIORITY = ["cov60", "default"]
 OUT_ROOT = Path("out/u2_2d/coverage_scan_relaxation")
 MAX_RETRIES = 2
 

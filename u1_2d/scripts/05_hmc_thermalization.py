@@ -42,7 +42,8 @@ from u1_2d.lgt.hmc import BatchedHMC, adapted_hmc_params
 from u1_2d.lgt.lattice import plaquette_angles, topological_charge, wilson_loop_angles
 from u1_2d.lgt import exact
 from u1_2d.validate.report import validate_ensemble, freezing_diagnostics
-from u1_2d.validate.stats import fit_exponential_relaxation, integrated_autocorrelation_time
+from u1_2d.validate.stats import (fit_exponential_relaxation, fit_relaxation_time,
+                                   integrated_autocorrelation_time)
 from u1_2d.utils import (
     load_config,
     resolve_device,
@@ -129,7 +130,18 @@ def ensemble_z_series(series: np.ndarray, target: float) -> np.ndarray:
 def thermalization_time(
     series: np.ndarray, target: float, z_threshold: float = 2.0, n_consecutive: int = 5
 ) -> float:
-    """First trajectory count t at which |z(ensemble mean)| <= threshold and stays
+    """SUPERSEDED 2026-09-03 as the definition of t_therm -- kept only for
+    the `t_therm_threshold_old` cross-check field, matching u2_2d's own
+    precedent. The value of record is `u1_2d.validate.stats.fit_relaxation_time`
+    (a continuous exponential-fit estimator, ported verbatim from
+    u2_2d/scripts/28_crossover_scan.py so both studies are evaluated with the
+    same method -- see CLAUDE.md's "Thermalization / relaxation-time
+    definition" entry). This discrete threshold-crossing definition is what
+    produced visibly jagged cost-efficiency curves in u2 before the switch,
+    and cannot represent "thermalizes in ~0 trajectories" honestly since it
+    forces a discrete integer answer.
+
+    First trajectory count t at which |z(ensemble mean)| <= threshold and stays
     there for n_consecutive trajectories. t = 0 means thermalized before any HMC.
     Returns inf when the window never occurs."""
     z = np.abs(ensemble_z_series(series, target))
@@ -635,6 +647,13 @@ def run_rung(
 
     n_traj_gen = int(args.n_traj_gen)
     n_traj_base = int(args.n_traj_baseline)
+    schedule = getattr(args, "traj_schedule", None)
+    if schedule:
+        for part in schedule.split(","):
+            cut, n = part.split(":")
+            if beta <= float(cut):
+                n_traj_gen = n_traj_base = int(n)
+                break
     n_chains_base = max(8, int(args.n_chains_baseline * (16 / lattice_size)))
 
     print(f"diffusion seed: {seed_configs.shape[0]} chains x {n_traj_gen} trajectories")
@@ -684,13 +703,29 @@ def run_rung(
     t_therm_series["diffusion seed"] = {
         k: v[:, subsample] for k, v in all_series["diffusion seed"].items()
     }
-    t_therm = {
+    # EXPONENTIAL-FIT t_therm (ported from u2_2d/scripts/28_crossover_scan.py,
+    # 2026-09-03) is now the definition of record for BOTH studies -- see
+    # u1_2d/validate/stats.py's fit_relaxation_time docstring and CLAUDE.md's
+    # "Thermalization / relaxation-time definition" entry. The discrete
+    # threshold-crossing `thermalization_time` is kept ONLY as a labeled
+    # cross-check (`_threshold_old`), the same role it plays in u2, not as
+    # the value anything downstream should read.
+    t_therm_fits = {
+        start: {name: fit_relaxation_time(series[name], targets[name])
+                for name in targets if name in series}
+        for start, series in t_therm_series.items()
+    }
+    t_therm = {start: {name: fit[0] for name, fit in obs.items()}
+               for start, obs in t_therm_fits.items()}
+    t_therm_err = {start: {name: fit[1] for name, fit in obs.items()}
+                  for start, obs in t_therm_fits.items()}
+    t_therm_threshold_old = {
         start: {name: thermalization_time(series[name], targets[name])
                 for name in targets if name in series}
         for start, series in t_therm_series.items()
     }
     t_therm_full = {
-        name: thermalization_time(all_series["diffusion seed"][name], targets[name])
+        name: fit_relaxation_time(all_series["diffusion seed"][name], targets[name])[0]
         for name in targets if name in all_series["diffusion seed"]
     }
     final_abs_z = {
@@ -747,6 +782,8 @@ def run_rung(
                 "acceptance": {"generated": gen_acc, "hot": hot_acc, "cold": cold_acc},
                 "sec_per_traj_gen_batch": gen_spt, "sec_per_traj_baseline_batch": hot_spt},
         "t_therm": t_therm,
+        "t_therm_err": t_therm_err,
+        "t_therm_threshold_old": t_therm_threshold_old,
         "t_therm_generated_full_batch": t_therm_full,
         "t_therm_subsample_size": int(len(subsample)),
         "final_abs_z": final_abs_z,
@@ -1242,6 +1279,23 @@ def main() -> None:
     parser.add_argument("--rungs", default=None, help="comma-separated rung indices (default: all)")
     parser.add_argument("--n-traj-gen", type=int, default=96, dest="n_traj_gen")
     parser.add_argument("--n-traj-baseline", type=int, default=640, dest="n_traj_baseline")
+    parser.add_argument("--traj-schedule", default=None,
+                        help="coupling-aware override of --n-traj-gen/--n-traj-baseline: "
+                             "'beta_cut:n_traj' breakpoints, e.g. '100:400,600:800,inf:1200' "
+                             "(first matching beta<=cut wins). Mechanism matches "
+                             "u2_2d/scripts/28_crossover_scan.py's --traj-schedule -- "
+                             "added 2026-09-03 for structural parity (u1 previously had no "
+                             "coupling-aware budget at all, only a single flat number for "
+                             "every case regardless of beta), NOT populated with u2's own "
+                             "values: u2's schedule DECREASES budget with beta for cost "
+                             "control, which is the opposite of what a 'more trajectories "
+                             "at higher beta, to resolve the slow-but-not-frozen regime' "
+                             "experiment needs. Off by default -- existing pipelines are "
+                             "unaffected until a schedule is explicitly passed. When active, "
+                             "it resolves ONE n_traj shared by n_traj_gen and n_traj_baseline "
+                             "for that coupling (matching u2's design: one budget per "
+                             "coupling, shared across arms), not two independently-scheduled "
+                             "numbers.")
     parser.add_argument("--n-chains-baseline", type=int, default=64, dest="n_chains_baseline",
                         help="baseline chains at L=16; scaled by 16/L at larger L")
     parser.add_argument("--out", default=None)
