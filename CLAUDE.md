@@ -604,6 +604,44 @@ closed and `su2_2d/` is set aside.
   gone from the method and survives only in the scoring. Queue it behind the
   capacity experiment.
 
+  **CLARIFIED 2026-09-03: `sector_augment` (`01_generate_data.py`) is ALREADY the
+  coverage-not-frequency case, mechanically, not just an argument.** Read the
+  function: `charges = [-2,-1,1,2][randint(0,4,n_aug)]` -- a FIXED fraction
+  (0.5 on every trained rung with beta >= 51.75), UNIFORM over the four shifts,
+  with no reference to beta or the true P(Q) at that coupling at all. So every
+  high-beta training rung already delivers a BLEND: roughly half honestly-weighted
+  from `seed_exact_sectors` (collapsing to near-all-Q=0 at high beta) plus a
+  uniform-flat supplement layered on top. This is evidence FOR the
+  coverage-not-frequency hypothesis (the deployed checkpoint already trains on
+  data that does not match exact P(Q), and lift quality is fine), but it is NOT
+  the clean ablation above -- no rung has ever been trained on pure uniform
+  coverage with `seed_exact_sectors` off, so the two mechanisms are still
+  entangled in every checkpoint that exists. The ablation queued above is still
+  the thing that would actually settle it.
+
+  **THE GENERALIZATION-TO-FULL-QCD ARGUMENT THIS SUPPORTS, AND THE CAVEAT IT
+  NEEDS TO CARRY (2026-09-03).** If coverage without correct frequency turns out
+  to be enough (untested, see above), the natural extension is: full QCD's P(Q)
+  is not solvable, but coverage could still be manufactured by SOME
+  topology-changing mechanism applied to existing configurations -- an
+  approximate/forced instanton, or a PTBC ladder used to manufacture global
+  topological moves the theory itself does not offer cheaply (exactly PTBC's
+  original purpose, see the U(1) PTBC note above) -- without needing that
+  mechanism's own acceptance rate or resulting frequencies to be correct AT ALL.
+  **This is NOT free-standing: it only works because Q is never sampled from the
+  trained model, it is IMPOSED afterward by transport** (`enforce_coarse_charge`
+  here). The model only ever has to learn correct LOCAL structure conditioned on
+  a sector, never the sector's own probability. So the full-QCD analogue of this
+  claim is a PACKAGE, not a single trick: (i) some mechanism, however
+  approximate or biased, that can visit multiple sectors during TRAINING-DATA
+  construction (coverage), plus (ii) an analogous TRANSPORT step at deployment
+  that imposes charge on the fine lattice rather than asking the trained model to
+  sample it correctly. Piece (ii) is exact here because U(2)'s determinant sector
+  is abelian (\S "TOPOLOGY TRANSPORT IS EXACT" above); whether an
+  analogous transport -- exact or even just unbiased -- exists for 4D SU(3) is a
+  separate, harder open question this argument does not answer, and is the load-
+  bearing assumption if this is written into the paper's generalization claims.
+
   **THE DIVISION OF LABOUR IS A REQUIREMENT, NOT AN OBSERVATION — measured in
   BOTH studies, 2026-08-21.** `u1_2d/scripts/59_pre_post_retherm.py` scores the
   lift at every scale BEFORE and AFTER the rethermalization tail, cumulatively on

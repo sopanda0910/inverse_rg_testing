@@ -1,9 +1,8 @@
-tick Thu Sep  3 09:50:45 2026
-done: 0/24  failed: 0  active: 3  pending: 21
-  RUNNING cov60_L32_plain  621s
-  RUNNING cov60_L32_topo  621s
-  RUNNING cov60_L64_plain  620s
-  queued  cov60_L64_topo
+tick Thu Sep  3 12:42:43 2026
+done: 1/24  failed: 0  active: 3  pending: 20
+  RUNNING cov60_L32_topo  3922s
+  RUNNING cov60_L64_plain  3921s
+  RUNNING cov60_L64_topo  3921s
   queued  default_L32_plain
   queued  default_L32_topo
   queued  default_L64_plain

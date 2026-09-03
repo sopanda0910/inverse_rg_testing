@@ -28,7 +28,9 @@ separate PowerShell script instance.
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
+import os
 import subprocess
 import sys
 import time
@@ -107,12 +109,69 @@ def launch(job: tuple[str, int, bool], py: str, log_dir: Path):
     return proc, log_f
 
 
+def acquire_lock(lock_path: Path, stale_after: float) -> None:
+    # Guards against a real, observed failure mode (2026-09-03): a single
+    # `Start-ScheduledTask` call for this script's task spawned TWO
+    # orchestrator processes simultaneously (confirmed via process listing,
+    # not a hypothesis -- MultipleInstances was already set to IgnoreNew,
+    # so this is a Task Scheduler race/quirk, not a config mistake). Each
+    # instance independently launched its own budget of jobs against the
+    # SAME priority-ordered job list, doubling concurrent GPU load past the
+    # documented 3-CUDA-context ceiling for this card.
+    #
+    # A first version of this guard used `Path.exists()` then `write_text()`
+    # -- NOT atomic, so two processes starting in the same instant (exactly
+    # what happens here) both pass the existence check before either
+    # finishes writing, and both proceed. Verified reproducing the bug with
+    # this exact guard in place before switching to `os.open` with
+    # O_CREAT | O_EXCL, which is an atomic exclusive-create at the OS level:
+    # only one of two simultaneous callers can win it, full stop.
+    lock_path.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        fd = os.open(lock_path, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+        os.write(fd, str(os.getpid()).encode("utf-8"))
+        os.close(fd)
+    except FileExistsError:
+        age = time.time() - lock_path.stat().st_mtime
+        if age < stale_after:
+            print(f"another orchestrator instance holds {lock_path} "
+                  f"(heartbeat {age:.0f}s old, stale-after {stale_after:.0f}s) "
+                  "-- exiting so we do not duplicate its work", flush=True)
+            raise SystemExit(0)
+        print(f"stale lock at {lock_path} (heartbeat {age:.0f}s old) -- "
+              "previous instance likely crashed; taking over", flush=True)
+        # Stale takeover has the same TOCTOU race as before, but only
+        # between two processes BOTH observing staleness at the same
+        # instant -- far narrower than the original race (this only
+        # recurs if two instances start within the same poll cycle AND
+        # the prior lock is already stale), and the heartbeat rewrite in
+        # the main loop keeps a healthy instance's lock fresh so this
+        # branch is not on the hot path.
+        try:
+            lock_path.unlink()
+        except OSError:
+            pass
+        fd = os.open(lock_path, os.O_CREAT | os.O_WRONLY)
+        os.write(fd, str(os.getpid()).encode("utf-8"))
+        os.close(fd)
+
+    def _release():
+        try:
+            if lock_path.exists() and lock_path.read_text(encoding="utf-8").strip() == str(os.getpid()):
+                lock_path.unlink()
+        except OSError:
+            pass
+    atexit.register(_release)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--budget", type=int, default=3,
                         help="max concurrent GPU-bound jobs (CLAUDE.md's documented ceiling for this card)")
     parser.add_argument("--poll-seconds", type=int, default=20)
     args = parser.parse_args()
+
+    acquire_lock(OUT_ROOT / "orchestrator.lock", stale_after=max(args.poll_seconds * 4, 120))
 
     py = str(Path(".venv/Scripts/python.exe").resolve())
     log_dir = OUT_ROOT / "logs"
@@ -168,6 +227,10 @@ def main() -> int:
             proc, log_f = launch(j, py, log_dir)
             active[j] = (proc, log_f, time.time())
         write_status()
+        try:
+            (OUT_ROOT / "orchestrator.lock").write_text(str(os.getpid()), encoding="utf-8")
+        except OSError:
+            pass
         if pending or active:
             time.sleep(args.poll_seconds)
 

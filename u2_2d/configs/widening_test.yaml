@@ -25,6 +25,29 @@
 # THIS FILE GENERATES DATA ONLY. Retraining a checkpoint on it (and running
 # the same coverage-comparison scan against it) is a separate, larger
 # decision for later -- not queued by this file.
+#
+# 2026-09-03: densified. The original 5 rungs (600/800/1000/1200/1500)
+# finished in ~30 min on CPU while the GPU relaxation matrix ran, leaving
+# the CPU idle (18%) with nothing queued. 01_generate_data.py skips any
+# rung whose ensemble already exists, so it is safe to keep adding rungs to
+# this same file and re-launch -- the five originals are untouched. Filled
+# the 200-wide gaps (700/900/1100/1300/1400) and extended one step past
+# 1500 (1750/2000) so a future retrain has a denser, and slightly wider,
+# grid to choose from, still CPU-only, still L=8.
+#
+# 2026-09-03, second pass: added sector_augment: 0.5, matching every
+# beta >= 51.75 rung in the DEPLOYED default.yaml. Without it every one of
+# these rungs measured <Q^2> = 0.0000 (63's sanity check confirmed this
+# matches the exact P(Q), which is genuinely concentrated at Q=0 this far
+# out -- not an HMC-freezing artifact to fix), so the raw ensembles carry
+# zero charged-sector coverage. That is fine as ground truth but useless as
+# training material: CLAUDE.md's own finding is that the score net needs
+# COVERAGE of nonzero-Q examples, not correctly-weighted frequencies (Q is
+# imposed by transport at deployment, never sampled from training
+# frequencies) -- so under-representing charged sectors here would starve
+# exactly the examples a wider-coverage retrain is meant to add. This
+# rebuilds all 12 rungs with --overwrite (needed since augmentation happens
+# inside generation, not as a separate pass).
 seed: 0
 device: cpu
 
@@ -33,8 +56,15 @@ data:
   n_chains: 64
   thermalize_sweeps: 60
   rungs:
-    - {beta: 600.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
-    - {beta: 800.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
-    - {beta: 1000.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
-    - {beta: 1200.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
-    - {beta: 1500.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
+    - {beta: 600.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 700.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 800.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 900.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1000.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1100.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1200.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1300.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1400.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1500.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 1750.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
+    - {beta: 2000.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true, sector_augment: 0.5}
