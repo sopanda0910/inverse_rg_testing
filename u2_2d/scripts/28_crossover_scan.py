@@ -55,6 +55,8 @@ from pathlib import Path
 
 import numpy as np
 import torch
+from scipy.optimize import curve_fit, least_squares
+from scipy.stats import chi2 as chi2_dist
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
@@ -79,7 +81,18 @@ LOCAL = ("plaquette", "wilson_2x2", "wilson_4x4")
 
 def thermalization_time(series: np.ndarray, target: float,
                         z_threshold: float = 2.0, n_consecutive: int = 5) -> float:
-    """u1's criterion, verbatim (see 17_prolongator_baseline.thermalization_time)."""
+    """u1's criterion, verbatim (see 17_prolongator_baseline.thermalization_time).
+    SUPERSEDED as the record's t_therm (see fit_relaxation_time below) -- kept
+    only because it is cheap to also log for cross-checking against the old
+    definition, not because it is trusted any more. The discrete
+    threshold-crossing this computes is a noise-sensitive statistic: a single
+    lagging chain among 64 can shift the crossing record by a lot, and the
+    resulting t_therm was measured to be genuinely rugged in coupling (not an
+    artifact of one run) -- see CLAUDE.md's u1 sampler-steps section. It is
+    also unusable for the seed arm specifically once thermalization is O(1)
+    trajectory: the discrete integer answer (0, 1, or 2) swings the derived
+    cost-efficiency ratio by a large factor for no physical reason.
+    """
     mean = series.mean(axis=1)
     sem = series.std(axis=1, ddof=1) / math.sqrt(series.shape[1])
     z = np.abs((mean - target) / np.maximum(sem, 1e-12))
@@ -89,6 +102,266 @@ def thermalization_time(series: np.ndarray, target: float,
         if ok[t:t + n_consecutive].all():
             return float(t)
     return float("inf")
+
+
+def _fit_exp_once(t: np.ndarray, mean: np.ndarray, sem: np.ndarray,
+                  target: float) -> float:
+    """One exponential relaxation-time fit: mean(t) ~= target + A*exp(-t/tau).
+    Returns tau in the same units as t (trajectories), 0.0 if the series is
+    already indistinguishable from target everywhere (nothing to fit -- the
+    honest answer for a seed that thermalizes in ~0 trajectories, rather than
+    forcing a discrete 0/1/2 integer), or inf if the fit cannot resolve any
+    decay (never approaches target within the window -- same meaning as the
+    old function's inf, consistent with the "HMC dead"/"Q frozen" regime
+    logic downstream that already branches on isinf(seed)/isinf(cold)).
+    """
+    # LIKELIHOOD-RATIO (delta-chi2) test against the flat-at-target null,
+    # not a pooled-window or per-record threshold. Verified necessary on real
+    # HMC output, not just a hypothetical: a genuinely-equilibrated seed's
+    # plaquette series (flat within noise the whole 150-trajectory window,
+    # chi2/dof = 1.28) still has isolated records exceeding 2-sigma purely by
+    # chance scattered THROUGHOUT the window (not just early on, since with
+    # ~75 records at ~5% false-positive rate that is expected) -- both a
+    # per-record test and a pooled-first-5-records test are fooled by this
+    # and fit a fictitious tau ~ 185 to what is actually pure noise. The
+    # delta-chi2 test is not fooled the same way because it looks at whether
+    # the exponential's 2 EXTRA parameters buy a global fit improvement large
+    # enough to not be explained by fitting noise (Wilks' theorem: under the
+    # null, that improvement is chi2-distributed with 2 dof, so >~6 is the
+    # justified threshold at 95% confidence).
+    chi2_flat = float(np.sum(((mean - target) / sem) ** 2))
+
+    bias = mean - target
+    resolved = np.abs(bias) / sem >= 1.0
+    idx = np.where(resolved & (np.abs(bias) > 0))[0]
+    if len(idx) >= 2:
+        slope, _ = np.polyfit(t[idx], np.log(np.abs(bias[idx])), 1)
+        tau0 = min(max(-1.0 / slope, 0.1), float(t[-1]) * 10.0) if slope < 0 else max(float(t[-1]) / 4.0, 1.0)
+    else:
+        tau0 = max(float(t[-1]) / 4.0, 1.0)
+    A0 = float(mean[0] - target)
+    try:
+        popt, _ = curve_fit(
+            lambda tt, A, tau: target + A * np.exp(-tt / max(tau, 1e-6)),
+            t, mean, p0=[A0, tau0], sigma=sem, absolute_sigma=True,
+            bounds=([-np.inf, 0.0], [np.inf, float(t[-1]) * 10.0]),
+            maxfev=2000)
+    except (RuntimeError, ValueError):
+        return 0.0
+
+    pred = target + popt[0] * np.exp(-t / max(popt[1], 1e-6))
+    chi2_exp = float(np.sum(((mean - pred) / sem) ** 2))
+    if chi2_flat - chi2_exp < 6.0:
+        return 0.0
+
+    tau = float(popt[1])
+    # A fit that saturates the upper bound is not a resolved decay -- treat
+    # the same as a non-converging fit rather than reporting a number that is
+    # really just "the optimizer hit the wall". RELATIVE tolerance (0.1%),
+    # not an absolute 1e-6: verified on real HMC output that the optimizer's
+    # own convergence tolerance settles ~1e-4 short of the exact boundary
+    # (tau=3979.9999115 against a bound of 3980.0, i.e. ~8.9e-5 away), which
+    # an absolute 1e-6 window does not catch -- that exact case shipped a
+    # seed=3980.0 "thermalization time" into a live run before being caught.
+    upper = float(t[-1]) * 10.0
+    if tau >= upper * (1.0 - 1e-3):
+        return float("inf")
+    return max(tau, 0.0)
+
+
+def fit_relaxation_time(series: np.ndarray, target: float, record_every: int,
+                        n_boot: int = 100, seed: int = 0) -> tuple[float, float]:
+    """Exponential relaxation-time replacement for `thermalization_time`.
+
+    THE STANDARD DEFINITION (fit the transient decay of the observable mean
+    toward its exact value and take the fitted time constant), not the
+    discrete threshold-crossing above. This is the same class of estimator
+    `integrated_autocorrelation_time` already uses for the `interval`
+    denominator elsewhere in this script -- bringing t_therm up to that same
+    standard, rather than introducing a new methodology, is the point.
+
+    `series` is [n_records, n_chains]. Returns (tau_hat, tau_err), with
+    tau_err from a chain-resampling bootstrap (same resampling unit as
+    `chain_bootstrap` elsewhere in this project: chains, not configurations,
+    since a chain stuck away from equilibrium should resample as one unit).
+    """
+    t = np.arange(series.shape[0], dtype=float) * record_every
+    mean = series.mean(axis=1)
+    sem = np.maximum(series.std(axis=1, ddof=1) / math.sqrt(series.shape[1]), 1e-12)
+    tau_hat = _fit_exp_once(t, mean, sem, target)
+
+    n_chains = series.shape[1]
+    rng = np.random.default_rng(seed)
+    boots = np.empty(n_boot)
+    for i in range(n_boot):
+        pick = rng.integers(0, n_chains, n_chains)
+        sub = series[:, pick]
+        m = sub.mean(axis=1)
+        s = np.maximum(sub.std(axis=1, ddof=1) / math.sqrt(n_chains), 1e-12)
+        boots[i] = _fit_exp_once(t, m, s, target)
+    # IQR-based spread, not raw std: an occasional bootstrap resample can
+    # spuriously trip the pooled-window threshold (a handful of chains drawn
+    # together happen to sit >2 sigma from target) and return a large finite
+    # tau against a true-zero point estimate -- a rare outlier the std is not
+    # robust to, verified on synthetic already-equilibrated data.
+    finite = boots[np.isfinite(boots)]
+    if len(finite) > 3:
+        q16, q84 = np.percentile(finite, [16, 84])
+        tau_err = float((q84 - q16) / 2.0)
+    elif len(finite) > 1:
+        tau_err = float(finite.std())
+    else:
+        tau_err = float("nan")
+
+    # SIGNIFICANCE GATE on the fitted tau itself, using the bootstrap spread
+    # already computed. This is the second and decisive line of defense
+    # (the delta-chi2 test in _fit_exp_once is the first, but is not
+    # reliable alone -- verified on real HMC output): successive HMC records
+    # are autocorrelated in Monte Carlo time, which the per-record chi2 test
+    # does not model, so a slow spurious drift in what is actually flat noise
+    # can beat the delta-chi2 threshold too (measured case: a genuinely
+    # equilibrated seed's plaquette series, chi2/dof=1.28, no visible trend,
+    # still fit to tau~186 by both defenses individually). But the CHAIN
+    # bootstrap does not share that blind spot -- it resamples which chains
+    # contribute, and a fictitious drift driven by chance temporal structure
+    # in the pooled mean is unstable under that resampling, so its own
+    # z-score (tau_hat / tau_err) collapses to O(1) exactly when the point
+    # estimate is not real. Confirmed on that same measured series: point
+    # tau=185.7, bootstrap tau_err=163.4, z=1.1 -- below the gate, correctly
+    # overridden to 0. A genuine slow decay (synthetic tau=50 case) keeps
+    # z~111 and is untouched.
+    if math.isfinite(tau_hat) and tau_hat > 0 and math.isfinite(tau_err):
+        if tau_err <= 0 or tau_hat / tau_err < 2.0:
+            tau_hat = 0.0
+    return tau_hat, tau_err
+
+
+def _fit_joint_once(t: np.ndarray, means: dict, sems: dict, targets: dict,
+                    names: tuple) -> tuple:
+    """Coupled multi-exponential fit sharing ONE tau across observables --
+    Detmold & Endres, "Multiscale Monte Carlo equilibration" (PRD 92, 114516
+    (2015); PRD 94, 114502 (2016)): they fit rethermalization timescales the
+    same way, coupled multi-exponential fits across observables and starting
+    distributions with a common exponent, reporting chi2/dof (0.6-2.1 in
+    their case) as the fit-quality diagnostic. Returns
+    (tau, chi2_flat, chi2_fit, n_dof, n_params) so the caller can report
+    chi2/dof exactly as they do, not just use it internally for a gate.
+    """
+    chi2_flat = 0.0
+    n_dof = 0
+    tau0_candidates = []
+    for name in names:
+        bias = means[name] - targets[name]
+        z = np.abs(bias) / sems[name]
+        chi2_flat += float(np.sum(z ** 2))
+        n_dof += len(means[name])
+        resolved = (z >= 1.0) & (np.abs(bias) > 0)
+        idx = np.where(resolved)[0]
+        if len(idx) >= 2:
+            slope, _ = np.polyfit(t[idx], np.log(np.abs(bias[idx])), 1)
+            if slope < 0:
+                tau0_candidates.append(-1.0 / slope)
+    tau0 = float(np.median(tau0_candidates)) if tau0_candidates else max(float(t[-1]) / 4.0, 1.0)
+    tau0 = min(max(tau0, 0.1), float(t[-1]) * 10.0)
+    A0 = [float(means[name][0] - targets[name]) for name in names]
+
+    def residuals(params):
+        tau = max(params[0], 1e-6)
+        out = []
+        for i, name in enumerate(names):
+            pred = targets[name] + params[1 + i] * np.exp(-t / tau)
+            out.append((means[name] - pred) / sems[name])
+        return np.concatenate(out)
+
+    n_params = 1 + len(names)
+    lower = [0.0] + [-np.inf] * len(names)
+    upper = [float(t[-1]) * 10.0] + [np.inf] * len(names)
+    try:
+        result = least_squares(residuals, [tau0] + A0, bounds=(lower, upper), max_nfev=4000)
+    except (RuntimeError, ValueError):
+        return 0.0, chi2_flat, chi2_flat, n_dof, n_params
+
+    chi2_fit = float(np.sum(result.fun ** 2))
+    # Critical delta-chi2 for n_params extra free parameters (Wilks'
+    # theorem), not the fixed threshold of 6 the single-observable version
+    # used (that value was specific to 2 params/1 observable) -- generalizes
+    # correctly as more observables are fit jointly.
+    if chi2_flat - chi2_fit < chi2_dist.ppf(0.95, n_params):
+        return 0.0, chi2_flat, chi2_fit, n_dof, n_params
+
+    tau = float(result.x[0])
+    # RELATIVE tolerance -- see the matching comment in _fit_exp_once for the
+    # measured case (tau=3979.9999115 against bound 3980.0) that an absolute
+    # 1e-6 window missed and shipped into a live run.
+    bound = float(t[-1]) * 10.0
+    if tau >= bound * (1.0 - 1e-3):
+        return float("inf"), chi2_flat, chi2_fit, n_dof, n_params
+    return max(tau, 0.0), chi2_flat, chi2_fit, n_dof, n_params
+
+
+def fit_joint_relaxation_time(series: dict, targets: dict, record_every: int,
+                              names: tuple = LOCAL, n_boot: int = 100,
+                              seed: int = 0) -> dict:
+    """Joint relaxation-time fit across `names` sharing one tau, replacing
+    both the discrete threshold-crossing t_therm AND the earlier
+    per-observable-then-take-max version of the exponential fit. `series` is
+    {name: [n_records, n_chains]}, `targets` is {name: exact value}.
+
+    Returns a dict: tau, tau_err (chain-bootstrap, same resampling unit as
+    `chain_bootstrap` elsewhere in this project), chi2_per_dof (from the
+    FULL, non-bootstrapped fit -- report this in any table, per Detmold &
+    Endres), n_dof.
+    """
+    n_records = series[names[0]].shape[0]
+    n_chains = series[names[0]].shape[1]
+    t = np.arange(n_records, dtype=float) * record_every
+
+    def means_sems(sub: dict) -> tuple:
+        m = {name: sub[name].mean(axis=1) for name in names}
+        s = {name: np.maximum(sub[name].std(axis=1, ddof=1) / math.sqrt(sub[name].shape[1]), 1e-12)
+             for name in names}
+        return m, s
+
+    m0, s0 = means_sems(series)
+    tau_hat, chi2_flat, chi2_fit, n_dof, n_params = _fit_joint_once(t, m0, s0, targets, names)
+
+    rng = np.random.default_rng(seed)
+    boots = np.empty(n_boot)
+    for i in range(n_boot):
+        pick = rng.integers(0, n_chains, n_chains)
+        sub = {name: series[name][:, pick] for name in names}
+        m, s = means_sems(sub)
+        boots[i] = _fit_joint_once(t, m, s, targets, names)[0]
+    finite = boots[np.isfinite(boots)]
+    if len(finite) > 3:
+        q16, q84 = np.percentile(finite, [16, 84])
+        tau_err = float((q84 - q16) / 2.0)
+    elif len(finite) > 1:
+        tau_err = float(finite.std())
+    else:
+        tau_err = float("nan")
+
+    # Same significance gate as the single-observable version, and for the
+    # same reason: autocorrelated MC-time residuals can beat the delta-chi2
+    # test even jointly across observables, and the chain bootstrap is not
+    # fooled the same way.
+    if math.isfinite(tau_hat) and tau_hat > 0 and math.isfinite(tau_err):
+        if tau_err <= 0 or tau_hat / tau_err < 2.0:
+            tau_hat = 0.0
+
+    # Report chi2/dof of the FLAT null (n_params=0) when no decay was
+    # resolved (tau=0) or the fit saturated the bound (tau=inf) -- the
+    # exponential fit's own chi2 is meaningless in both cases (respectively:
+    # unused, since the flat model won; or a degenerate boundary fit), and
+    # Detmold & Endres' quoted 0.6-2.1 range is for genuine resolved fits.
+    if tau_hat == 0.0 or math.isinf(tau_hat):
+        dof = max(n_dof, 1)
+        chi2_per_dof = chi2_flat / dof
+    else:
+        dof = max(n_dof - n_params, 1)
+        chi2_per_dof = chi2_fit / dof
+    return {"tau": tau_hat, "tau_err": tau_err,
+           "chi2_per_dof": chi2_per_dof, "n_dof": dof}
 
 
 def observe(links: torch.Tensor) -> dict:
@@ -289,12 +562,34 @@ def main() -> int:
                            sampler.initialize(hot=True)[:n]], dim=0)
         all_series, _ = run_arm(sampler, start, n_traj, args.record_every)
 
+        series_to_save = {}
         for i, arm in enumerate(arms):
             series = {k: v[:, i * n:(i + 1) * n] for k, v in all_series.items()}
-            record["t_therm"][arm] = {
+            # JOINT fit across plaquette/W2x2/W4x4 sharing one tau -- Detmold
+            # & Endres' "coupled multi-exponential fits ... with common
+            # exponents" (PRD 92, 114516; PRD 94, 114502), which also
+            # supersedes the earlier per-observable-then-take-max version:
+            # a single joint tau IS the record's t_therm now, not a dict of
+            # three numbers reduced by max().
+            fit = fit_joint_relaxation_time(series, targets_exact, args.record_every)
+            record["t_therm"][arm] = fit["tau"]
+            record.setdefault("t_therm_err", {})[arm] = fit["tau_err"]
+            record.setdefault("t_therm_chi2_per_dof", {})[arm] = fit["chi2_per_dof"]
+            # Cross-check against the old discrete definition and the earlier
+            # per-observable exponential fit -- logged, not used for anything
+            # downstream. Lets a spot-check compare all three without
+            # re-running HMC.
+            record.setdefault("t_therm_threshold_old", {})[arm] = {
                 name: thermalization_time(series[name], targets_exact[name])
                 for name in LOCAL
             }
+            record.setdefault("t_therm_per_observable", {})[arm] = {
+                name: fit_relaxation_time(series[name], targets_exact[name],
+                                          args.record_every)[0]
+                for name in LOCAL
+            }
+            for name in (*LOCAL, "charge"):
+                series_to_save[f"{arm}__{name}"] = series[name]
             q = np.round(series["charge"])
             record["q_changes"][arm] = int((np.diff(q, axis=0) != 0).sum())
             # Parity flips separately: the even winding move is mobile in charge
@@ -318,11 +613,9 @@ def main() -> int:
             record.setdefault("tau_int_plaquette", {})[arm] = (
                 float(np.median(finite)) * args.record_every if finite else None)
 
-        def slowest(arm):
-            return max(record["t_therm"][arm].values())
-
-        seed, cold, hot = (slowest("diffusion seed"), slowest("cold start"),
-                           slowest("hot start"))
+        seed, cold, hot = (record["t_therm"]["diffusion seed"],
+                           record["t_therm"]["cold start"],
+                           record["t_therm"]["hot start"])
 
         taus = record["tau_int_plaquette"]
         # Prefer the cold chain where it genuinely equilibrated with room to
@@ -348,6 +641,18 @@ def main() -> int:
         record["speedup_is_bound"] = math.isinf(best)
         record["seed"], record["cold"], record["hot"] = seed, cold, hot
         rows.append(record)
+
+        # Raw per-trajectory series, saved so a future change to the
+        # thermalization/relaxation-time definition (like this one, replacing
+        # the discrete threshold-crossing t_therm) can be REANALYSED without
+        # redoing the HMC -- the exact gap that made switching definitions
+        # mid-project costly this time (07_pq_sampling.py's --reanalyse is
+        # the precedent). Small: ~n_records * n_chains * 4 observables *
+        # 3 arms floats, kilobytes not megabytes.
+        series_dir = out / "series"
+        series_dir.mkdir(parents=True, exist_ok=True)
+        np.savez_compressed(series_dir / f"{stem}_beta{beta:g}.npz",
+                            record_every=args.record_every, **series_to_save)
 
         print(f"  b={beta:8.2f} (model {record['model_beta']:6.2f}) "
               f"<Q^2>ex={q2_exact:5.3f}  seed={seed:6.1f} cold={cold:6.1f} "

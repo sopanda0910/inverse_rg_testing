@@ -1,0 +1,26 @@
+tick Thu Sep  3 09:50:45 2026
+done: 0/24  failed: 0  active: 3  pending: 21
+  RUNNING cov60_L32_plain  621s
+  RUNNING cov60_L32_topo  621s
+  RUNNING cov60_L64_plain  620s
+  queued  cov60_L64_topo
+  queued  default_L32_plain
+  queued  default_L32_topo
+  queued  default_L64_plain
+  queued  default_L64_topo
+  queued  cov30_L32_plain
+  queued  cov30_L32_topo
+  queued  cov30_L64_plain
+  queued  cov30_L64_topo
+  queued  cov15_L32_plain
+  queued  cov15_L32_topo
+  queued  cov15_L64_plain
+  queued  cov15_L64_topo
+  queued  v2_L32_plain
+  queued  v2_L32_topo
+  queued  v2_L64_plain
+  queued  v2_L64_topo
+  queued  cap_L32_plain
+  queued  cap_L32_topo
+  queued  cap_L64_plain
+  queued  cap_L64_topo

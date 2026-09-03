@@ -39,9 +39,27 @@ function Get-ActiveGpuJobs {
     return [Math]::Ceiling($distinct.Count)
 }
 
-function Wait-ForGpuRoom($budget) {
+function Test-TagAlreadyRunning($checkpointPath) {
+    # Stop-ScheduledTask does not reliably kill a python.exe it launched --
+    # confirmed 2026-09-03: an orphaned cov60 scan process survived two
+    # Stop/Start-ScheduledTask cycles on this task and kept producing output
+    # the whole time. So "this tag isn't in Test-ScanDone yet" does NOT mean
+    # "safe to launch it" -- it might already be running, orphaned or not.
+    # Check by checkpoint path (unique per tag) rather than trusting task state.
+    $procs = Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
+        Where-Object { $_.CommandLine -match "28_crossover_scan\.py" -and $_.CommandLine -match [regex]::Escape($checkpointPath) }
+    return [bool]$procs
+}
+
+function Wait-ForGpuRoom($budget, $label) {
+    # Silent version of this loop was the actual cause of two false-stall
+    # restarts tonight (23:15, and the earlier 22:30 one blamed on the
+    # training-wait loop instead) -- this loop has no log line at all while
+    # waiting, so > 30 minutes of legitimate GPU-room waiting reads as a hang
+    # to the watchdog. Heartbeat every poll so it never does again.
     while ((Get-ActiveGpuJobs) -ge $budget) {
         Start-Sleep -Seconds 120
+        "$(Get-Date) [$label] still waiting for GPU room (budget $budget contexts, active $(Get-ActiveGpuJobs))" *>> $log
     }
 }
 
@@ -61,27 +79,60 @@ function Test-ScanDone($path, $n) {
 }
 
 # tag -> (checkpoint path, history path, epochs)
+# NOTE 2026-09-03: "default" and "cov30" were pulled OUT of this queue and are
+# run by standalone one-off tasks (u2_default_l64_extra, u2_cov30_l64_extra)
+# instead, so this script and those two run concurrently as 3 separate GPU
+# contexts rather than this queue doing them one at a time after cov60. If
+# they were left in here too, this loop would eventually reach them, see
+# their scan not yet done, and launch a SECOND competing process against the
+# same output files -- a real race, not a hypothetical one, since the extra
+# tasks write to the exact same out-dir/tag this queue would use.
 $order = @(
-    @{ tag="cov60"; hist="out\u2_2d\checkpoints\det_score_net_cov60.history.json"; epochs=120 },
-    @{ tag="default"; hist=$null; epochs=0 },
-    @{ tag="cov30"; hist="out\u2_2d\checkpoints\det_score_net_cov30.history.json"; epochs=120 },
-    @{ tag="cov15"; hist="out\u2_2d\checkpoints\det_score_net_cov15.history.json"; epochs=120 },
-    @{ tag="v2"; hist=$null; epochs=0 },
-    @{ tag="cap"; hist=$null; epochs=0 }
+    @{ tag="cov60"; hist="out\u2_2d\checkpoints\det_score_net_cov60.history.json"; epochs=120; ckpt="out/u2_2d/checkpoints/det_score_net_cov60.pt" },
+    @{ tag="cov15"; hist="out\u2_2d\checkpoints\det_score_net_cov15.history.json"; epochs=120; ckpt="out/u2_2d/checkpoints/det_score_net_cov15.pt" },
+    @{ tag="v2"; hist=$null; epochs=0; ckpt="out/u2_2d/checkpoints/det_score_net_v2.pt" },
+    @{ tag="cap"; hist=$null; epochs=0; ckpt="out/u2_2d/checkpoints/det_score_net_cap.pt" }
 )
 
 foreach ($item in $order) {
     $tag = $item.tag
     if ($item.hist -and -not (Test-TrainingDone $item.hist $item.epochs)) {
         "$(Get-Date) [$tag] training not finished yet -- waiting" *>> $log
-        while (-not (Test-TrainingDone $item.hist $item.epochs)) { Start-Sleep -Seconds 120 }
+        # Heartbeat every poll (not just once): a silent multi-hour wait loop
+        # looks identical to a hang to the watchdog's 30-min log-growth check,
+        # and it restarted this script once for exactly that reason tonight --
+        # harmless (idempotent gates) but wastes one of the 3 restart attempts.
+        while (-not (Test-TrainingDone $item.hist $item.epochs)) {
+            Start-Sleep -Seconds 120
+            "$(Get-Date) [$tag] still waiting for training" *>> $log
+        }
     }
     if (Test-ScanDone "out\u2_2d\coverage_scan\$tag\crossover_L64_topo.json" 8) {
         "$(Get-Date) [$tag] L=64 scan already complete -- skipping" *>> $log
         continue
     }
     "$(Get-Date) [$tag] waiting for GPU room (budget 3 contexts)" *>> $log
-    Wait-ForGpuRoom 3
+    Wait-ForGpuRoom 3 $tag
+    # Re-check after waiting, not just before: another process (an extra
+    # one-off parallel job, or another restarted instance of this same
+    # script, possibly an ORPHANED one Stop-ScheduledTask failed to actually
+    # kill -- observed 2026-09-03) may have finished this tag's scan, or
+    # still be actively running it, during the wait.
+    if (Test-ScanDone "out\u2_2d\coverage_scan\$tag\crossover_L64_topo.json" 8) {
+        "$(Get-Date) [$tag] L=64 scan completed while waiting for GPU room -- skipping" *>> $log
+        continue
+    }
+    if (Test-TagAlreadyRunning $item.ckpt) {
+        "$(Get-Date) [$tag] a scan for this checkpoint is ALREADY RUNNING (likely orphaned from an earlier restart) -- waiting for it instead of launching a duplicate" *>> $log
+        while (Test-TagAlreadyRunning $item.ckpt) {
+            Start-Sleep -Seconds 120
+            "$(Get-Date) [$tag] still waiting on the already-running scan" *>> $log
+        }
+        if (Test-ScanDone "out\u2_2d\coverage_scan\$tag\crossover_L64_topo.json" 8) {
+            "$(Get-Date) [$tag] the already-running scan finished -- skipping" *>> $log
+            continue
+        }
+    }
     "$(Get-Date) [$tag] starting L=64 scan (8 couplings, both rounds)" *>> $log
     & $py "u2_2d\scripts\58_training_coverage_scan.py" --checkpoints $tag --fine-size 64 --n-couplings 8 *>> $log
     if ($LASTEXITCODE -ne 0) {

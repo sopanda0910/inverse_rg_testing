@@ -1,0 +1,2 @@
+
+=== launch Thu Sep  3 09:40:23 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt --fine-size 32 --n-chains 64 --n-couplings 14 --out-dir out\u2_2d\coverage_scan_relaxation\cov60 --tag crossover_topo --topological-updates ===

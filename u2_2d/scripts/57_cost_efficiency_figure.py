@@ -105,10 +105,17 @@ def load_rounds(dirs: list[str]) -> dict:
 
 
 def slowest(record, arm):
-    vals = record["t_therm"].get(arm)
-    if not vals:
+    # t_therm[arm] is now a single joint-fit value (28_crossover_scan.py's
+    # fit_joint_relaxation_time, one tau shared across plaquette/W2x2/W4x4),
+    # not a per-observable dict reduced by max() -- schema changed 2026-09-03
+    # when the discrete threshold-crossing t_therm was replaced by an
+    # exponential relaxation-time fit. Old per-record-dict files (from
+    # before that change) are not expected to be read by this script any
+    # more; if one is, this will raise rather than silently misread it.
+    val = record["t_therm"].get(arm)
+    if val is None:
         return float("inf")
-    return max(float(v) for v in vals.values())
+    return float(val)
 
 
 def cost_efficiency(record) -> float | None:

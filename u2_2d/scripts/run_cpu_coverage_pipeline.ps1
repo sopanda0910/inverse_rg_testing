@@ -51,6 +51,7 @@ if (-not (Test-TrainingDone "out\u2_2d\checkpoints\det_score_net_cov30.history.j
 # card rather than adding a 4th/5th concurrent CUDA context.
 while (-not (Select-String -Path "out\u2_2d\coverage_scan\cov60_pipeline.log" -Pattern "PIPELINE DONE" -Quiet -ErrorAction SilentlyContinue)) {
     Start-Sleep -Seconds 120
+    "$(Get-Date) still waiting on cov60_pipeline to finish" *>> $log
 }
 function Test-Done($path, $n) {
     if (-not (Test-Path $path)) { return $false }

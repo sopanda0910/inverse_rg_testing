@@ -38,6 +38,7 @@ directory the deployed checkpoint's figure already reads.
 from __future__ import annotations
 
 import argparse
+import json
 import subprocess
 import sys
 import time
@@ -143,6 +144,27 @@ def main() -> int:
                 cmd.append("--topological-updates")
             if args.device:
                 cmd += ["--device", args.device]
+            # 28_crossover_scan.py always starts rows=[] and overwrites this
+            # file, with no "already done" check of its own -- a script
+            # restart (watchdog, or by hand) that re-invokes this per-tag,
+            # per-round call for a round that already finished silently
+            # discards it and redoes the full HMC budget from scratch (the
+            # diffusion-lift cache under out-dir/seeds is the only part that
+            # survives). Found the hard way 2026-09-03: a queue restart threw
+            # away a complete 8/8 L=64 plain round for cov60. Skip here
+            # instead of inside 28_crossover_scan.py so a direct invocation
+            # of that script still always runs (useful for e.g. extending an
+            # existing file with --betas).
+            out_path = Path(out_dir) / f"{round_tag}.json"
+            if out_path.exists():
+                try:
+                    n_done = len(json.loads(out_path.read_text()))
+                except (json.JSONDecodeError, OSError):
+                    n_done = 0
+                if n_done >= args.n_couplings:
+                    print(f"       {round_tag}.json already has {n_done}/"
+                          f"{args.n_couplings} couplings -- skipping")
+                    continue
             print("       $ " + " ".join(cmd))
             if args.dry_run:
                 continue

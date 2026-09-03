@@ -1,0 +1,40 @@
+# Data-generation only (not yet a training config): new L=8 rungs at raw
+# beta well past everything in out/u2_2d/data_v2 (max raw beta 430, model
+# beta ~107.5), for the NOT-YET-LAUNCHED widening-coverage test discussed
+# 2026-09-03 -- does pushing training coverage to a genuinely higher model
+# beta push the seed-thermalization collapse edge out proportionally, or is
+# there a capacity/structural ceiling independent of coverage?
+#
+# L=8, not L=16/32: CLAUDE.md's own finding is that training needs COUPLING
+# coverage, not lattice-size coverage (the score net is conditioned on
+# model_beta alone, not on L), so the cheapest way to add a coupling is at
+# the smallest L. Also the reason this is a CPU-appropriate job: the
+# measured u2 CPU/GPU crossover is L=16, so L=8 is comfortably CPU-favorable
+# (CLAUDE.md: 10.05 cpu vs 5.18 gpu traj/s at L=8/32 chains).
+#
+# seed_exact_sectors: true on every rung, matching CLAUDE.md's stated policy
+# for every existing training rung above model beta ~12.9 -- topology is
+# TRANSPORTED at deployment (enforce_coarse_charge), not sampled, so what
+# training data needs from these high-beta rungs is coverage of the LOCAL
+# structure at a given sector, not honestly-sampled sector frequencies.
+#
+# Raw beta targets 600/800/1000/1200/1500 -> model beta (~beta/4 at this
+# range, matched_u1_beta) roughly 150/200/250/300/375 -- a genuine ~1.5-3.5x
+# extension past the current ~107.5 ceiling, not the ~3% v2/cap added.
+#
+# THIS FILE GENERATES DATA ONLY. Retraining a checkpoint on it (and running
+# the same coverage-comparison scan against it) is a separate, larger
+# decision for later -- not queued by this file.
+seed: 0
+device: cpu
+
+data:
+  out_dir: out/u2_2d/data_widening_test
+  n_chains: 64
+  thermalize_sweeps: 60
+  rungs:
+    - {beta: 600.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
+    - {beta: 800.0,  lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
+    - {beta: 1000.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
+    - {beta: 1200.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}
+    - {beta: 1500.0, lattice_size: 8, n_configs: 256, burn_in: 300, seed_exact_sectors: true}

@@ -1230,16 +1230,108 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
   observables — std(z) grows 1.09 → 1.44 from W(4×4) to W(12×12). Report
   large-loop dispersion, not just plaquette/W(2×2)/W(4×4).
 
+### Thermalization / relaxation-time definition (u2, superseded 2026-09-03)
+
+**`t_therm` is an EXPONENTIAL RELAXATION-TIME FIT, not a discrete
+threshold-crossing, as of 2026-09-03.** The original definition (u1's own
+`thermalization_time`, ported into u2's `28_crossover_scan.py`: first
+trajectory where `|z| <= 2` for 5 consecutive records) was measured to be
+genuinely rugged in coupling — a single lagging chain among 64 can shift the
+discrete crossing point by a lot, and the resulting cost-efficiency curves
+(`interval / t_therm(seed)`) were visibly jagged rather than showing a smooth
+envelope. It is also unusable once thermalization is O(1) trajectory: the
+integer answer (0, 1, or 2, quantized by `record_every`) swings the derived
+ratio by a large factor for no physical reason.
+
+**The replacement fits the transient decay of the observable mean toward its
+exact value**, `mean_obs(t) ≈ target + A·exp(-t/tau)`, via weighted nonlinear
+least squares, and reports the fitted `tau` (continuous, with a bootstrap
+confidence interval) instead of a discrete crossing index. This is the same
+class of estimator `integrated_autocorrelation_time` already used for the
+`interval` denominator elsewhere in the same script — bringing `t_therm` up
+to that standard, not introducing a new methodology.
+
+**Literature grounding, found by explicit search rather than assumed** (see
+below for the standing rule this satisfies): W. Detmold, M. G. Endres,
+*"Multiscale Monte Carlo equilibration: Pure Yang-Mills theory"*, Phys. Rev.
+D 92, 114516 (2015) (arXiv:1510.04675), and the follow-up *"...Two-color QCD
+with two fermion flavors"*, Phys. Rev. D 94, 114502 (2016) (arXiv:1605.09650).
+Their experimental design is this project's, one generation earlier: an
+RG-matched coarse-to-fine map (classical, not diffusion) produces a fine
+ensemble close to the target thermalized distribution, rethermalized with
+conventional HMC and compared against cold/hot starts. They extract
+rethermalization timescales via **single-exponential fits of observables
+approaching equilibrium**, run **coupled multi-exponential fits across
+several observables and starting distributions sharing one exponent**, and
+report **chi2/dof (0.6–2.1 in their case)** as the fit-quality diagnostic —
+all three of which u2's implementation now does
+(`fit_joint_relaxation_time` in `28_crossover_scan.py`).
+
+**Two real numerical failure modes were found and fixed while building this
+— read before trusting a `tau` output blindly, and before "improving" the
+fit again without re-deriving why these guards exist:**
+- A fixed initial guess for `tau` sends the nonlinear fit into a bad local
+  minimum whenever the true decay is much faster than the guess (a true
+  `tau=1` series fit to `tau=0.045`). Fixed with a data-driven initial guess
+  from log-linear regression on the resolved (`|z| >= 1`) points.
+- **A delta-chi2 (likelihood-ratio) goodness-of-fit test ALONE is fooled by
+  autocorrelated Monte Carlo time series, verified on real HMC output, not a
+  hypothetical.** A genuinely-equilibrated seed's plaquette series (flat
+  within noise the whole window, chi2/dof = 1.28, no visible trend) still
+  fit to a fictitious `tau ~ 186`, because successive HMC records are
+  correlated in Monte Carlo time — which a per-record/per-t chi2 test
+  assumes away — so a chance slow drift in what is actually pure noise can
+  buy more delta-chi2 than fitting 2-4 extra parameters to truly independent
+  noise would. The chi2 test is NOT reliable alone. The fix is a second,
+  decisive gate: the fitted `tau`'s own CHAIN-RESAMPLING BOOTSTRAP
+  significance (`tau_hat / tau_err >= 2`) — a fictitious drift is unstable
+  under resampling which chains contribute, so its bootstrap z-score
+  collapses to O(1) exactly when the point estimate is not real, while a
+  genuine slow decay keeps a large z-score. Both guards are covered by
+  `u2_2d/tests/test_relaxation_time.py`, including a synthetic reproduction
+  of the exact real-data failure case — run it before trusting a change to
+  this estimator.
+- Raw per-trajectory series are now saved (`out-dir/series/*.npz` per
+  coupling) specifically so a FUTURE definition change never again requires
+  redoing the HMC to reanalyze — the gap that made this switch itself
+  expensive (the original discrete-threshold runs did not save series, so
+  switching definitions meant a full re-run of the whole coverage/volume
+  matrix rather than a `--reanalyse` pass).
+
+**Standing rule this satisfies, and to apply generally**: when a
+methodology has a citable, refereed-paper precedent, prefer it over an
+ad hoc invention, even if the ad hoc version seems to work — an established
+method carries known failure modes, known limitations, and reviewer
+credibility an invented one does not. This applies to statistics/fitting
+choices project-wide (autocorrelation-time estimators, goodness-of-fit
+tests, thermalization criteria, bootstrap procedures), not just this one
+estimator. Before inventing a new statistical test or fitting procedure,
+search for whether the physics or statistics literature already has one —
+and if it does, cite it, use it as specified, and only deviate with a
+stated, defensible reason (as u2 does above, generalizing Detmold & Endres'
+fixed chi2 threshold to `scipy.stats.chi2.ppf(0.95, n_params)` for a
+variable number of jointly-fit observables).
+
 ### Code Style
 
 - No comments that merely narrate what code does
 - All tensor operations handle both single and batched inputs
 - Use `torch.no_grad()` for measurement computations when not inside training
 - Preserve backward compatibility when adding new methods
+- **A citable, refereed-paper methodology beats an ad hoc invention, for any
+  statistics/fitting/estimator choice** — even one that appears to work.
+  Search the literature before building a new statistical test, fitting
+  procedure, or convergence criterion; a known method carries known failure
+  modes and reviewer credibility an invented one does not. Full statement
+  and the episode that established this rule (the u2 thermalization
+  definition, grounded in Detmold & Endres' multiscale equilibration papers
+  after a search) are under "Thermalization / relaxation-time definition"
+  above.
 
 ### Testing
 
-- `pytest u1_2d/tests -q` (169 tests) and `pytest u2_2d/tests -q` (84 tests);
+- `pytest u1_2d/tests -q` (169 tests) and `pytest u2_2d/tests -q` (107 tests,
+  including `test_relaxation_time.py`'s 8 for the exponential-fit `t_therm`);
   `su2_2d/tests` only exists once su2_2d is restored from git — see above
 - `python u2_2d/scripts/07_pq_sampling.py` — where P(Q) can be SAMPLED rather than
   seeded; the `PARITY-STUCK` verdict is the U(2)-specific one. Minutes.

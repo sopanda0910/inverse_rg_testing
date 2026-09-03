@@ -1,8 +1,5 @@
-﻿watchdog tick: 09/02/2026 21:45:10
-u2_coverage_scan_v2 : Ready  (log age 2.1m)  coupling=28
-u2_coverage_scan_cap : Ready  (log age 2m)  coupling=28
-u2_cov60_pipeline : Running  (log age 3.7m)  epoch=60
-u2_cpu_coverage_pipeline : Running  (log age 3.1m)  epoch=38
-u2_volume_scan_pipeline : NOT REGISTERED
-u1_wide250_pipeline : Running  (log age 4.5m)  no progress markers yet
-active GPU/CPU-bound jobs (distinct command lines): 5
+﻿watchdog tick: 09/03/2026 09:49:17
+u2_relaxation_matrix : Running  (log age 0.2m)  jobs done (of 24)=0 rate=0/h
+u2_widening_data_gen : Running  (log age 4.4m)  no progress markers yet
+u1_wide250_pipeline : Ready  (log age 418.6m)  epoch=99 rate=0/h
+active GPU/CPU-bound jobs (distinct command lines): 4
