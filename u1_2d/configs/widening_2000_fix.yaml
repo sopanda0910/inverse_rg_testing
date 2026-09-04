@@ -1,0 +1,60 @@
+# Isolated re-generation of widening_test.yaml's beta = 2000 rung ONLY.
+# `69_widening_test_data_check.py` flagged it at z = 5.48 on the plaquette while
+# the other six rungs passed; the suspected cause is under-thermalization, since
+# burn_in was held flat at 2000 across all seven rungs rather than tapered up for
+# the stiffest coupling (see this file's inherited header below).
+#
+# Exactly two lines differ from widening_test.yaml: the beta = 2000 rung's
+# burn_in (2000 -> 8000) and out_dir (isolated, so the existing data is not
+# overwritten until this is verified). Run with --only-betas 2000.
+#
+# Written 2026-09-03 per docs/MAC_MINI_TASKS.md, task 2.
+#
+# Data-generation only (not yet a training config) -- the u1 twin of
+# u2_2d/configs/widening_test.yaml, built 2026-09-03 for the same reason and
+# named identically on purpose (see CLAUDE.md: "u1 and u2 must be evaluated
+# with the SAME method unless a difference is explicitly justified").
+#
+# u1's widest EXISTING coverage is wide250.yaml: fixed rungs to beta=55.0237,
+# random coverage to beta_max=250 (already trained, score_net_wide250.pt).
+# This file adds new FIXED rungs well past that ceiling -- beta 300 to 2000,
+# roughly the same ~8x extension u2's widening rungs represent relative to
+# its own prior ceiling (model_beta ~107.5) -- so a future u1 retrain can
+# ask the identical coverage-widening question u2's wide.yaml just did.
+#
+# L=16, not L=32/64: u1's OWN device table (CLAUDE.md) already runs data-gen
+# on CPU regardless of L up to 32, and the score net is conditioned on beta,
+# not L (same reasoning wide250.yaml's own fixed rungs already use), so L=16
+# teaches the same coupling for less cost. This is why the job is CPU-
+# appropriate at all four of these beta values, not just some of them --
+# unlike u2, u1 has no CPU/GPU crossover to worry about until L=64.
+#
+# sector_augment: 0.5 on every rung, matching wide250.yaml's own convention
+# for beta >= 14.1464 (u1 already had this mechanism; nothing new here).
+# burn_in: 2000, matching wide250's coldest fixed rung (beta=55.0237) --
+# kept flat across all seven new rungs rather than tapered, since these are
+# CPU jobs with no per-trajectory cost pressure the way GPU sampler steps
+# have; if thermalization checks show any rung underconverged, lengthen its
+# burn_in specifically rather than all seven speculatively.
+seed: 0
+device: cpu
+action_type: wilson
+
+data:
+  out_dir: out/u1_2d/data_widening_2000_fix
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  topological_updates: true
+  hot_start: true
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  rungs:
+    - {beta: 300.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 400.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 550.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 750.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 1000.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 1500.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 2000.0, lattice_size: 16, hot_start: false, burn_in: 8000, sector_augment: 0.5}

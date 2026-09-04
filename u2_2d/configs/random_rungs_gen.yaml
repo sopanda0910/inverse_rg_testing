@@ -1,0 +1,49 @@
+# Data-generation only. Generates the `random_rungs` coverage block that
+# `u2_2d/configs/default.yaml` already specifies but which was never executed:
+# the deployed `det_score_net.pt` predates that block (see CLAUDE.md -- its
+# history carries only the 9 unique model betas of the 12 fixed rungs).
+#
+# The block below is copied VERBATIM from default.yaml lines 161-165; the
+# coupling ranges and counts are the project's existing considered choice and
+# are deliberately not redesigned here. `n_chains` / `thin` /
+# `topological_updates` / `winding_charge_step` are copied from default.yaml's
+# `data:` section so the recipe matches the data of record.
+#
+# Separate out_dir on purpose: `out/u2_2d/data/` is the data of record for the
+# currently deployed checkpoint and must not be written into. Nothing merges
+# this into a training config until it has been reviewed.
+#
+# Written 2026-09-03 per docs/MAC_MINI_TASKS.md, task 1. CPU-only machine.
+seed: 0
+device: cpu
+
+data:
+  out_dir: out/u2_2d/data_random
+  n_chains: 32
+  thin: 5
+  topological_updates: true
+  winding_charge_step: 1
+  # ALL THREE OF THESE ARE IN default.yaml's `data:` BLOCK AND MUST BE COPIED
+  # WITH IT. docs/MAC_MINI_TASKS.md's sketch of this file listed only the four
+  # keys above; omitting these three does not fall back to default.yaml, it
+  # falls back to the SCRIPT defaults, which differ:
+  #   * winding_interval defaults to 1, not 5 -- so the marginal odd move (25
+  #     conditional SU(2) sweeps, 1609 ms/trajectory against a plain
+  #     trajectory's ~200 ms) fires on EVERY trajectory. default.yaml's own
+  #     comment already measured this: 7.6x more expensive for no benefit,
+  #     because mobility is set by ACCEPTED flips, not attempted ones. Measured
+  #     here too -- at interval 1 not one of the 102 rungs finished in 15
+  #     minutes across 6 cores. This is the one key that changes cost.
+  #   * seed_exact_sectors and thermalize_sweeps are INERT for random rungs
+  #     (utils.expand_rungs writes both into every random rung itself, at False
+  #     and 60, and the per-rung value wins in stage 01 -- so default.yaml's own
+  #     random rungs would behave identically). They are stated anyway so a diff
+  #     of this `data:` block against default.yaml's comes back clean.
+  winding_interval: 5
+  seed_exact_sectors: true
+  thermalize_sweeps: 60
+  random_rungs:
+    - {n: 60, beta_min: 4.0,  beta_max: 430.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 8.0,  beta_max: 430.0, lattice_size: 32, n_configs: 128}
+    - {n: 6,  beta_min: 4.0,  beta_max: 60.0,  lattice_size: 8,  n_configs: 128}
+    - {n: 24, beta_min: 8.0,  beta_max: 430.0, lattice_size: 32, n_configs: 128}

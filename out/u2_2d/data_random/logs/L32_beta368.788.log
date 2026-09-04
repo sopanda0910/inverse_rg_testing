@@ -1,0 +1,4 @@
+cpu | torch 2.2.2 | 1 threads
+shard 11/36: L32b368.788
+  L=32 beta=368.788: 60 thermalization sweeps -> plaq 0.99456 (exact 0.99457), <Q^2> 0.000
+wrote L=32 beta=368.788  plaq=0.99456 (exact 0.99457)  <Q^2>=0.328 (exact 0.259)  acc=0.678  [2430s]

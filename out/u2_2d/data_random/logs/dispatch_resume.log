@@ -1,0 +1,6 @@
+queued: 0 L=32, 1 L=16/L=8
+[ 0.04h] ok       L16b7.5726 in   2.3 min  (1/1 done, 0+0 queued)
+all rungs finished in 0.04 h (1 ok, 0 failed)
+cpu | torch 2.2.2 | 1 threads
+merged 1 shard summaries -> /Users/deeptimanpanda/Documents/inverse_rg_testing/out/u2_2d/data_random/summary.json (102 rungs)
+MERGE-DONE 0
