@@ -1,0 +1,18 @@
+# Extends u1's random-beta coverage past wide250.yaml's random_rungs
+# ceiling (beta_max=250) up to 2000, matching wide2000.yaml's new fixed-rung
+# range. Originally queued for the Snapdragon X Elite machine
+# (docs/SNAPDRAGON_TASKS.md); moved to run locally on Windows CPU 2026-09-04
+# after that machine's run kept failing. Counts unchanged from that doc's
+# design (first cut, not validated) -- see SNAPDRAGON_TASKS.md for the
+# reasoning behind the 24/6 split.
+seed: 1
+device: cpu
+
+data:
+  out_dir: out/u1_2d/data_random_2000
+  n_chains: 16
+  thin: 5
+  topological_updates: true
+  random_rungs:
+    - {n: 24, beta_min: 250.0, beta_max: 2000.0, lattice_size: 16, n_configs: 128}
+    - {n: 6,  beta_min: 250.0, beta_max: 2000.0, lattice_size: 32, n_configs: 128}
