@@ -151,7 +151,17 @@ def main() -> None:
         if action_type == "villain":
             matched = villain_blocked_beta(float(rung["beta"]))
         else:
-            matched = match_coarse_beta(block_links(configs), action_type)
+            # The default bracket (1e-3, 256.0) can't bracket the root once
+            # the fine beta itself gets large (found 2026-09-04 generating
+            # rungs up to beta=2000: brentq threw "f(a) and f(b) must have
+            # different signs" at beta=1488, crashing the whole shard AFTER
+            # the expensive HMC ensemble was already saved). The matched
+            # coarse beta is always well below the fine beta (tree level is
+            # fine/4), so using fine beta as the upper bound is a safe,
+            # generous widening -- never narrower than the original default.
+            matched = match_coarse_beta(
+                block_links(configs), action_type,
+                beta_bracket=(1e-3, max(256.0, float(rung["beta"]))))
         matching[f"L{rung['lattice_size']}_beta{rung['beta']:g}"] = {
             "fine_beta": float(rung["beta"]),
             "matched_coarse_beta": matched,
@@ -174,7 +184,9 @@ def main() -> None:
             if action_type == "villain":
                 matched = villain_blocked_beta(beta)
             else:
-                matched = match_coarse_beta(block_links(configs.float()), action_type)
+                matched = match_coarse_beta(
+                    block_links(configs.float()), action_type,
+                    beta_bracket=(1e-3, max(256.0, beta)))
             matching[key] = {
                 "fine_beta": beta,
                 "matched_coarse_beta": matched,

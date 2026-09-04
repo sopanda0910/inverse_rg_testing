@@ -36,4 +36,14 @@ if ($states -contains "Failed") {
     "$(Get-Date) FAILED, one or more shards errored" *>> $log
     exit 1
 }
+
+# Earlier crashes (fixed 2026-09-04: match_coarse_beta's default bracket
+# couldn't reach the coarse-beta match for fine beta above ~1024) left some
+# already-saved ensembles without a matching.json entry, since a shard only
+# writes its matching dict once at the very end of its loop and a rung that
+# already exists on disk is skipped entirely (never re-attempts matching).
+# A single non-sharded --rebuild-matching pass backfills any ensemble file
+# that's missing one -- safe to run every time, it skips keys already present.
+& $py "u1_2d\scripts\01_generate_data.py" --config "u1_2d\configs\random_rungs_2000_gen.yaml" --rebuild-matching *>> $log
+if ($LASTEXITCODE -ne 0) { "$(Get-Date) FAILED, rebuild-matching exit $LASTEXITCODE" *>> $log; exit 1 }
 "PIPELINE DONE $(Get-Date)" *>> $log
