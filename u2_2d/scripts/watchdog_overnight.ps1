@@ -68,9 +68,19 @@ $tasks = @(
     # -- this structurally closes the "long legitimate wait looks like a
     # hang" false-stall class that hit the old per-checkpoint scripts twice
     # tonight (they only logged on coupling completion, up to ~35 min apart).
-    @{ Name="u2_relaxation_matrix"; Log="out\u2_2d\coverage_scan_relaxation\orchestrator.log" },
-    @{ Name="u2_widening_data_gen"; Log="out\u2_2d\data_widening_test\gen.log" },
-    @{ Name="u1_wide250_pipeline"; Log="out\u1_2d\wide250_pipeline.log" }
+    @{ Name="u2_relaxation_matrix"; Log="out\u2_2d\coverage_scan_relaxation\orchestrator.log"; IsOrchestrator=$true; DoneCheck="RelaxationMatrix" },
+    # Refreshed 2026-09-04, replacing the now-finished u2_widening_data_gen /
+    # u1_wide250_pipeline entries: the two tasks actually live right now.
+    # u1_random_rungs_2000_local failed three times tonight on real bugs
+    # (wrong CLI flag, missing config keys, a bracket overflow in
+    # match_coarse_beta) before the last one was fixed -- watch it closely.
+    @{ Name="u1_random_rungs_2000_local"; Log="out\u1_2d\data_random_2000\gen.log"; StallMinutes=20 },
+    # u1_wide2000_train is DELIBERATELY paused right now (GPU handed to the
+    # matrix) and auto-resumes via run_relaxation_matrix.ps1's own chain once
+    # the matrix finishes -- so "Ready" here is EXPECTED, not a failure, and
+    # this task is intentionally NOT in the stall/restart list. It is still
+    # useful to report its state/progress every tick.
+    @{ Name="u1_wide2000_train"; Log="out\u1_2d\wide2000_train.log"; ReportOnly=$true }
 )
 
 # NOTE: this repo's PowerShell is 5.1, which has no ConvertFrom-Json
@@ -109,6 +119,31 @@ function Get-LastEpochOrCoupling($logPath) {
     return $null
 }
 
+function Test-RelaxationMatrixPending {
+    # True if fewer than the full 8-job trimmed matrix (cov60+default x
+    # {L32,L64} x {plain,topo}) has a complete result file. Cheap enough to
+    # call every tick -- just reads small JSON files, no HMC/model work.
+    $files = @(
+        "out\u2_2d\coverage_scan_relaxation\cov60\crossover.json",       # cov60 L32 plain
+        "out\u2_2d\coverage_scan_relaxation\cov60\crossover_topo.json",  # cov60 L32 topo
+        "out\u2_2d\coverage_scan_relaxation\cov60\crossover_L64.json",
+        "out\u2_2d\coverage_scan_relaxation\cov60\crossover_L64_topo.json",
+        "out\u2_2d\coverage_scan_relaxation\default\crossover.json",
+        "out\u2_2d\coverage_scan_relaxation\default\crossover_topo.json",
+        "out\u2_2d\coverage_scan_relaxation\default\crossover_L64.json",
+        "out\u2_2d\coverage_scan_relaxation\default\crossover_L64_topo.json"
+    )
+    foreach ($f in $files) {
+        if (-not (Test-Path $f)) { return $true }
+        $n = if ($f -match "L64") { 8 } else { 14 }
+        try {
+            $rows = (Get-Content $f -Raw | ConvertFrom-Json)
+            if ($rows.Count -lt $n) { return $true }
+        } catch { return $true }
+    }
+    return $false
+}
+
 $now = Get-Date
 $statusLines = @("watchdog tick: $now")
 $newState = @{}
@@ -122,6 +157,14 @@ foreach ($t in $tasks) {
         continue
     }
     $taskState = $taskObj.State
+
+    if ($t.ContainsKey("ReportOnly") -and $t.ReportOnly) {
+        $logExists0 = Test-Path $logPath
+        $prog0 = if ($logExists0) { Get-LastEpochOrCoupling $logPath } else { $null }
+        $progStr0 = if ($prog0) { "$($prog0.kind)=$($prog0.value)" } else { "no progress markers yet" }
+        $statusLines += "$name : $taskState (paused by design until the matrix finishes)  $progStr0"
+        continue
+    }
     $logExists = Test-Path $logPath
     $lastWrite = if ($logExists) { (Get-Item $logPath).LastWriteTime } else { $null }
     $ageMin = if ($lastWrite) { [Math]::Round(($now - $lastWrite).TotalMinutes, 1) } else { $null }
@@ -191,17 +234,51 @@ foreach ($t in $tasks) {
         $explicitFail = ($lastFail -ge 0) -and ($lastFail -gt $lastOk)
     }
 
-    if (($stalled -or $explicitFail) -and $restarts -lt 3) {
-        $reason = if ($stalled) { "STALLED (no log growth in ${ageMin}m while Running)" } else { "explicit FAILED line in log" }
-        $msg = "$now ALERT [$name] $reason -- restarting (attempt $($restarts+1)/3)"
+    # ORPHANED ORCHESTRATOR: the exact failure that cost ~6 hours tonight.
+    # Stop-ScheduledTask killed the orchestrator process while its already-
+    # launched children (28_crossover_scan.py subprocesses) kept running as
+    # orphans, so the task's own State went to "Ready" -- not "Running" --
+    # while the LOG kept growing (the children were still writing to it),
+    # so neither the stall check (requires "Running") nor explicitFail
+    # (no FAILED line was ever written) caught it. Nothing was left to pick
+    # up the next queued job once those orphans finished, and the GPU sat
+    # idle until a human noticed. This checks the thing that actually
+    # matters -- is there still real work left, and is anything positioned
+    # to do it -- independent of task state or log recency.
+    $orphaned = $false
+    if ($t.ContainsKey("IsOrchestrator") -and $t.IsOrchestrator -and $taskState -ne "Running") {
+        # Only safe to restart once no orphaned 28_crossover_scan.py child is
+        # STILL running -- a fresh orchestrator's is_done() check only
+        # recognizes a COMPLETE result file, so restarting while an orphan is
+        # mid-coupling would launch a DUPLICATE process racing to write the
+        # exact same output file. Let genuinely-in-flight orphans finish;
+        # only self-heal once the orchestrator is dead AND idle.
+        $liveChildren = Get-CimInstance Win32_Process -Filter "Name='python.exe'" -ErrorAction SilentlyContinue |
+            Where-Object { $_.CommandLine -match "28_crossover_scan\.py" }
+        if ((-not $liveChildren) -and (Test-RelaxationMatrixPending)) { $orphaned = $true }
+    }
+
+    # Cap raised 3 -> 16 (2026-09-04, before a 10-hour unattended drive): at
+    # 15-minute ticks, 3 attempts exhausts itself in under an hour, which is
+    # far too little budget for a genuinely unattended overnight/all-day
+    # window -- a run of transient hiccups could permanently strand a task
+    # with nobody there to notice the give-up alert for hours. 16 attempts
+    # is still a real cap against an infinite crash loop (it will alert, not
+    # spin forever), just not one that exhausts itself in the first hour.
+    $maxRestarts = 16
+    if (($stalled -or $explicitFail -or $orphaned) -and $restarts -lt $maxRestarts) {
+        $reason = if ($orphaned) { "ORCHESTRATOR NOT RUNNING with pending matrix work (task state: $taskState)" }
+                  elseif ($stalled) { "STALLED (no log growth in ${ageMin}m while Running)" }
+                  else { "explicit FAILED line in log" }
+        $msg = "$now ALERT [$name] $reason -- restarting (attempt $($restarts+1)/$maxRestarts)"
         $msg *>> $alertFile
         $statusLines += "  !! $msg"
         Stop-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
         Start-Sleep -Seconds 5
         Start-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
         $newState[$restartKey] = $restarts + 1
-    } elseif (($stalled -or $explicitFail) -and $restarts -ge 3) {
-        $msg = "$now ALERT [$name] still unhealthy after 3 restart attempts -- giving up, needs a human"
+    } elseif (($stalled -or $explicitFail -or $orphaned) -and $restarts -ge $maxRestarts) {
+        $msg = "$now ALERT [$name] still unhealthy after $maxRestarts restart attempts -- giving up, needs a human"
         if (-not (Select-String -Path $alertFile -Pattern "\[$name\] still unhealthy" -Quiet -ErrorAction SilentlyContinue)) {
             $msg *>> $alertFile
         }
