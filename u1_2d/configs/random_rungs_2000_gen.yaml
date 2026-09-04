@@ -7,11 +7,17 @@
 # reasoning behind the 24/6 split.
 seed: 1
 device: cpu
+action_type: wilson
 
 data:
   out_dir: out/u1_2d/data_random_2000
   n_chains: 16
   thin: 5
+  burn_in: 200
+  n_configs: 128
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  hot_start: true
   topological_updates: true
   random_rungs:
     - {n: 24, beta_min: 250.0, beta_max: 2000.0, lattice_size: 16, n_configs: 128}
