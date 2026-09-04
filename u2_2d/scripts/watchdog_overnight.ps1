@@ -73,8 +73,23 @@ $tasks = @(
     # u1_wide250_pipeline entries: the two tasks actually live right now.
     # u1_random_rungs_2000_local failed three times tonight on real bugs
     # (wrong CLI flag, missing config keys, a bracket overflow in
-    # match_coarse_beta) before the last one was fixed -- watch it closely.
-    @{ Name="u1_random_rungs_2000_local"; Log="out\u1_2d\data_random_2000\gen.log"; StallMinutes=20 },
+    # match_coarse_beta), then a FOURTH time not a crash but a genuine data
+    # bug: burn_in=2000 was insufficient at these couplings (sign test on the
+    # 30 rungs found 23/30 positive z, p=0.005 -- confirmed causally by
+    # regenerating the worst offender at burn_in=8000, z: +4.88 -> -0.55).
+    # Now regenerating all 30 at burn_in=8000, verified sufficient.
+    #
+    # StallMinutes set generously high, NOT because progress is slow but
+    # because it is INVISIBLE: the wrapper's `$jobs | Wait-Job | Receive-Job`
+    # pattern buffers every shard's entire stdout and only appends it to this
+    # log once ALL 5 shards finish -- so the log's mtime will not move AT ALL
+    # for the full run (est. 1-2.5h at burn_in=8000 x 30 rungs / 5 shards),
+    # even though the job is healthy the whole time. At the default 30 (or
+    # the previous 20), the watchdog would read that silence as a stall and
+    # restart a perfectly good run in a loop, destroying all progress every
+    # cycle -- caught before it could happen, not after. 240 min is
+    # comfortably above the estimated worst case with real margin.
+    @{ Name="u1_random_rungs_2000_local"; Log="out\u1_2d\data_random_2000\gen.log"; StallMinutes=240 },
     # u1_wide2000_train is DELIBERATELY paused right now (GPU handed to the
     # matrix) and auto-resumes via run_relaxation_matrix.ps1's own chain once
     # the matrix finishes -- so "Ready" here is EXPECTED, not a failure, and

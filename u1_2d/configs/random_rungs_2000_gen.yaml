@@ -2,9 +2,28 @@
 # ceiling (beta_max=250) up to 2000, matching wide2000.yaml's new fixed-rung
 # range. Originally queued for the Snapdragon X Elite machine
 # (docs/SNAPDRAGON_TASKS.md); moved to run locally on Windows CPU 2026-09-04
-# after that machine's run kept failing. Counts unchanged from that doc's
-# design (first cut, not validated) -- see SNAPDRAGON_TASKS.md for the
-# reasoning behind the 24/6 split.
+# after that machine's run kept failing.
+#
+# REWRITTEN 2026-09-04 as explicit fixed rungs, not a random_rungs block.
+# The first version used random_rungs with expand_rungs()'s auto-tapered
+# burn_in (2000 sweeps flat for any cold-start rung beta >= 20), which
+# 69_widening_test_data_check.py found insufficient at these couplings: a
+# sign test on the 30 rungs found 23/30 positive z (p=0.005) -- a genuine
+# systematic, not noise, and every cold-start rung's plaquette started at
+# exactly 1.0 and relaxed toward the true value, so a coherent POSITIVE bias
+# is exactly the signature of under-relaxation. Confirmed causally by
+# regenerating the worst offender (L32, beta=381.875) at burn_in=8000:
+# z went from +4.88 to -0.55. Worse for L32 (3/6 rungs flagged) than L16
+# (4/24), consistent with a larger lattice needing more sweeps to mix.
+# random_rungs' burn_in policy is NOT overridable per-spec (hardcoded inside
+# utils.expand_rungs), so the same 30 (beta, lattice_size) draws are
+# reproduced here as explicit rungs with burn_in: 8000 throughout -- the one
+# verified-sufficient value, not a tapered guess. Cross-checked against the
+# EXISTING wide250/wide2000 random_rungs data (beta capped at 250): those
+# show no such systematic (7/12 L32 rungs positive, statistically
+# unremarkable), so this issue is specific to this beta>250 extension and
+# does NOT implicate the already-trained score_net_wide250.pt or the
+# in-progress score_net_wide2000.pt.
 seed: 1
 device: cpu
 action_type: wilson
@@ -19,6 +38,34 @@ data:
   hmc_step_size: 0.2
   hot_start: true
   topological_updates: true
-  random_rungs:
-    - {n: 24, beta_min: 250.0, beta_max: 2000.0, lattice_size: 16, n_configs: 128}
-    - {n: 6,  beta_min: 250.0, beta_max: 2000.0, lattice_size: 32, n_configs: 128}
+  rungs:
+    - {beta: 1227.28, lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 1276.08, lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 1488.31, lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 1669.45, lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 1826.39, lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 1848.62, lattice_size: 32, hot_start: false, burn_in: 8000}
+    - {beta: 1935.02, lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 258.297,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 284.855,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 292.923,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 306.867,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 313.29,   lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 328.915,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 343.079,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 363.678,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 369.352,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 379.789,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 379.865,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 381.875,  lattice_size: 32, hot_start: false, burn_in: 8000}
+    - {beta: 387.763,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 423.491,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 434.724,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 504.233,  lattice_size: 32, hot_start: false, burn_in: 8000}
+    - {beta: 529.043,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 603.326,  lattice_size: 32, hot_start: false, burn_in: 8000}
+    - {beta: 613.841,  lattice_size: 32, hot_start: false, burn_in: 8000}
+    - {beta: 671.426,  lattice_size: 32, hot_start: false, burn_in: 8000}
+    - {beta: 693.45,   lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 893.652,  lattice_size: 16, hot_start: false, burn_in: 8000}
+    - {beta: 926.783,  lattice_size: 16, hot_start: false, burn_in: 8000}
