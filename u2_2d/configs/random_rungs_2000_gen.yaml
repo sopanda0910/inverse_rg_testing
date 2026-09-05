@@ -1,0 +1,23 @@
+# Extends u2's random-beta coverage past default.yaml's random_rungs ceiling
+# (beta_max=430) up to 2000, matching wide.yaml's new fixed-rung range --
+# the analogous gap SNAPDRAGON_TASKS.md closes for u1 (its random_rungs
+# capped at 250 while wide2000.yaml's fixed rungs reach 2000). Complements,
+# does not duplicate, the Mac Mini's random_rungs_gen.yaml (which covers
+# u2's ORIGINAL 4-430 gap) -- see docs/MAC_MINI_TASKS.md.
+#
+# Counts scaled down from default.yaml's 60(L16)+12(L32)+6(L8)+24(L32) block
+# proportionally to log-range coverage density: log(2000/430) ~= 1.54 vs
+# log(430/4) ~= 4.68, ratio ~0.33. First cut, not a validated design.
+seed: 2
+device: cpu
+
+data:
+  out_dir: out/u2_2d/data_random_2000
+  n_chains: 32
+  thin: 5
+  topological_updates: true
+  winding_charge_step: 1
+  random_rungs:
+    - {n: 20, beta_min: 430.0, beta_max: 2000.0, lattice_size: 16, n_configs: 128}
+    - {n: 8,  beta_min: 430.0, beta_max: 2000.0, lattice_size: 32, n_configs: 128}
+    - {n: 3,  beta_min: 430.0, beta_max: 2000.0, lattice_size: 8,  n_configs: 128}

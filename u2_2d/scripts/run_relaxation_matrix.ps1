@@ -30,5 +30,16 @@ if ($LASTEXITCODE -eq 0) {
 # earlier tonight to give the matrix the full card). Runs either way: a
 # stalled/failed matrix leaving the GPU idle until morning would waste more
 # compute than the failure itself.
-"$(Get-Date) resuming u1_wide2000_train" *>> $log
-Start-ScheduledTask -TaskName "u1_wide2000_train"
+# Guarded 2026-09-05: wide2000's train->ladder->validate chain already
+# completed once (out/u1_2d/wide2000_train.log ends "PIPELINE DONE"). Without
+# this check, re-running this orchestrator for a DIFFERENT checkpoint (e.g.
+# the "wide" u2 scan) would blindly re-trigger u1's already-finished pipeline,
+# wasting GPU time re-doing a completed ladder+validate for no reason.
+$wide2000Log = "out\u1_2d\wide2000_train.log"
+$alreadyDone = (Test-Path $wide2000Log) -and ((Get-Content $wide2000Log -Raw -Encoding Unicode) -match "PIPELINE DONE")
+if ($alreadyDone) {
+    "$(Get-Date) u1_wide2000_train already completed -- not re-triggering" *>> $log
+} else {
+    "$(Get-Date) resuming u1_wide2000_train" *>> $log
+    Start-ScheduledTask -TaskName "u1_wide2000_train"
+}

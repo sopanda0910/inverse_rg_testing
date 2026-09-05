@@ -1,5 +1,5 @@
-﻿watchdog tick: 09/03/2026 11:45:38
-u2_relaxation_matrix : Running  (log age 0.3m)  jobs done (of 24)=1 rate=4/h
-u2_widening_data_gen : Ready  (log age 34.9m)  no progress markers yet
-u1_wide250_pipeline : Ready  (log age 535m)  epoch=99 rate=0/h
-active GPU/CPU-bound jobs (distinct command lines): 3
+﻿watchdog tick: 09/05/2026 11:28:30
+u2_relaxation_matrix : Ready  (log age 258.7m)  jobs done (of 4)=4 rate=0/h
+u1_random_rungs_2000_local : Ready  (log age 1484.5m)  no progress markers yet
+u1_wide2000_train : Ready (paused by design until the matrix finishes)  epoch=99
+active GPU/CPU-bound jobs (distinct command lines): 0

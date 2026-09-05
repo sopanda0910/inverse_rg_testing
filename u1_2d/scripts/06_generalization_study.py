@@ -139,7 +139,14 @@ OUT_DIR = Path("out/u1_2d/demo/generalization")
 ACTION_TYPE = "wilson"
 
 A_COARSE_BETAS = [0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0]
-D_COARSE_BETAS = [14.1464, 20.0, 30.0, 40.0, 55.0237]
+D_COARSE_BETAS = [14.1464, 20.0, 30.0, 40.0, 55.0237, 100.0, 150.0, 220.0, 320.0, 470.0]
+# The last five (bf = 398.5/598.5/878.5/1278.5/1878.5) added 2026-09-05 for
+# the wide2000 checkpoint (beta_max=2000, trained after the default (60) and
+# wide250 (250) checkpoints) -- the original ceiling (55.0237 -> 218.58) was
+# already past DEFAULT's coverage but is now well INSIDE wide250's and
+# wide2000's, so it can no longer show what either wide checkpoint's own
+# extended range buys. These probe genuinely past wide250's edge and toward
+# wide2000's.
 # Originally an off-grid probe against the OLD discrete training anchors
 # {1, 2, 4, 8, 14.1464, 55.0237}. Under v6's continuous-beta training this no
 # longer measures off-grid generalization for the lower entries (bc <= 11.8,
@@ -173,6 +180,23 @@ F_CASES = [
     (16, 100.0),
     (16, 218.58),
     (32, 55.0237),
+    # base_size=8 (fine=16) entries added 2026-09-05 for the wide2000
+    # checkpoint: its config's new high-beta rungs (fine beta 300-2000) are
+    # ALL lattice_size=16 (fine=16) -- random_rungs, the only source of
+    # fine=32 examples, was left capped at beta<=250 (see wide2000.yaml's
+    # header). An earlier comparison run mistakenly used base_size=16
+    # (fine=32) cases and found wide2000 apparently failing everywhere past
+    # beta=250 -- that was a test/train volume mismatch, not a real
+    # capability gap. These coarse betas are chosen (via brentq inversion of
+    # approx_matched_fine_beta) to land close to wide2000's actual trained
+    # fine rungs: 300, 400, 550, 750, 1000, 1500, 2000.
+    (8, 75.3776),
+    (8, 100.3770),
+    (8, 137.8764),
+    (8, 187.8760),
+    (8, 250.3758),
+    (8, 375.3755),
+    (8, 500.3754),
 ]
 B_TARGET_BETAS = [6.0, 10.0, 16.0, 20.0, 30.0, 55.0237]
 MATCHED_PAIR = (4.0, 14.1464)

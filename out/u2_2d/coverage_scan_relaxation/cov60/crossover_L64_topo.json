@@ -84,5 +84,607 @@
     "seed": 0.0,
     "cold": 2.048588455772516,
     "hot": 2.0155308541978325
+  },
+  {
+    "lattice_size": 64,
+    "beta": 41.46158780990283,
+    "base_beta": 12.1743,
+    "model_beta": 10.376766541926505,
+    "q_squared_exact": 10.532488965748332,
+    "build_seconds": 0.0,
+    "n_traj": 400,
+    "t_therm": {
+      "diffusion seed": 0.0,
+      "cold start": 2.25245917457179,
+      "hot start": 1.954256876342607
+    },
+    "q_changes": {
+      "diffusion seed": 4421,
+      "cold start": 4499,
+      "hot start": 4135
+    },
+    "parity_flips": {
+      "diffusion seed": 4421,
+      "cold start": 4499,
+      "hot start": 4080
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 226.2962763451162,
+      "cold start": 0.051569316662912534,
+      "hot start": 0.06532347394676608
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1.2551417287190756,
+      "cold start": 77.23702856275935,
+      "hot start": 299.87724722178615
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": 0.0,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": 0.0,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": 2.341798022520981,
+        "wilson_2x2": 2.112733669223771,
+        "wilson_4x4": 1.9849510440631144
+      },
+      "hot start": {
+        "plaquette": 1.4864621792627832,
+        "wilson_2x2": 2.86113915356375,
+        "wilson_4x4": 58.397481915895
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 2.9627984910067857,
+      "cold start": 2.6980166798455416,
+      "hot start": 7.88505957447499
+    },
+    "interval_source": "cold start",
+    "interval": 5.396033359691083,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 1.954256876342607,
+    "speedup_is_bound": false,
+    "seed": 0.0,
+    "cold": 2.25245917457179,
+    "hot": 1.954256876342607
+  },
+  {
+    "lattice_size": 64,
+    "beta": 93.79329566935759,
+    "base_beta": 25.0485,
+    "model_beta": 23.452703234972553,
+    "q_squared_exact": 4.522347156219119,
+    "build_seconds": 0.0,
+    "n_traj": 400,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.113762697342511,
+      "hot start": 1516.493296210017
+    },
+    "q_changes": {
+      "diffusion seed": 4069,
+      "cold start": 4095,
+      "hot start": 4031
+    },
+    "parity_flips": {
+      "diffusion seed": 4069,
+      "cold start": 4095,
+      "hot start": 4000
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 451.5807338036911,
+      "cold start": 0.047729252284740564,
+      "hot start": 316.24288285154773
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1.1560491943359374,
+      "cold start": 81.37683721111829,
+      "hot start": 4066.837652992079
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": 1.0,
+        "wilson_2x2": 3.0,
+        "wilson_4x4": 7.0
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": 88.0
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": 0.0,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": 2.1474574241869213,
+        "wilson_2x2": 2.0639636196227316,
+        "wilson_4x4": 1.994333037147261
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": 1253.3890695625873,
+        "wilson_4x4": 602.0288388696191
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 2.4927143499191353,
+      "cold start": 2.90110772785813,
+      "hot start": 2.893193475686774
+    },
+    "interval_source": "cold start",
+    "interval": 5.80221545571626,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.113762697342511,
+    "hot": 1516.493296210017
+  },
+  {
+    "lattice_size": 64,
+    "beta": 174.0328475453873,
+    "base_beta": 45.0584,
+    "model_beta": 43.510471592384,
+    "q_squared_exact": 2.412576313271579,
+    "build_seconds": 0.0,
+    "n_traj": 200,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.200941520811318,
+      "hot start": 436.7369762618802
+    },
+    "q_changes": {
+      "diffusion seed": 1856,
+      "cold start": 1863,
+      "hot start": 1757
+    },
+    "parity_flips": {
+      "diffusion seed": 1856,
+      "cold start": 1863,
+      "hot start": 1727
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 85.16562688393796,
+      "cold start": 0.06490667189091925,
+      "hot start": 77.72233369024005
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1.6176932779947917,
+      "cold start": 181.1630547975921,
+      "hot start": 3813.236729284409
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": 11.0,
+        "wilson_2x2": 2.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": 1609.9813899349185,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": 2.2376684627576813,
+        "wilson_2x2": 2.164642773673311,
+        "wilson_4x4": 2.086684986536287
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": 161.58403882626342
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 2.3434800455670004,
+      "cold start": 2.2125992944127937,
+      "hot start": 2.0996874223083006
+    },
+    "interval_source": "cold start",
+    "interval": 4.425198588825587,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.200941520811318,
+    "hot": 436.7369762618802
+  },
+  {
+    "lattice_size": 64,
+    "beta": 310.37630368798006,
+    "base_beta": 79.1213,
+    "model_beta": 77.5953162809806,
+    "q_squared_exact": 1.345826803989378,
+    "build_seconds": 0.0,
+    "n_traj": 200,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.066487205362648,
+      "hot start": Infinity
+    },
+    "q_changes": {
+      "diffusion seed": 1682,
+      "cold start": 1643,
+      "hot start": 1571
+    },
+    "parity_flips": {
+      "diffusion seed": 1682,
+      "cold start": 1643,
+      "hot start": 1531
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 121.98765611063652,
+      "cold start": 0.028715902597822307,
+      "hot start": 120.42364846043348
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1984.8105729166666,
+      "cold start": 127.65563824468268,
+      "hot start": 10629.737864583334
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": 72.0
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": 1604.3069390069345
+      },
+      "cold start": {
+        "plaquette": 2.1253162723116064,
+        "wilson_2x2": 1.9811826437719642,
+        "wilson_4x4": 1.9089065032364139
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": 131.5609361110876
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 2.277398883139477,
+      "cold start": 2.4225208213842953,
+      "hot start": 2.884834517237439
+    },
+    "interval_source": "cold start",
+    "interval": 4.8450416427685905,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.066487205362648,
+    "hot": Infinity
+  },
+  {
+    "lattice_size": 64,
+    "beta": 636.8480134247018,
+    "base_beta": 160.725,
+    "model_beta": 159.21259970479463,
+    "q_squared_exact": 0.6536375602315321,
+    "build_seconds": 0.0,
+    "n_traj": 150,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.2437265339295065,
+      "hot start": 54.01469912266551
+    },
+    "q_changes": {
+      "diffusion seed": 957,
+      "cold start": 950,
+      "hot start": 1005
+    },
+    "parity_flips": {
+      "diffusion seed": 957,
+      "cold start": 950,
+      "hot start": 956
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": NaN,
+      "cold start": 0.049460260996823546,
+      "hot start": 9.85579350033671
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 23875.035277777777,
+      "cold start": 233.109636846249,
+      "hot start": 273.9501201928724
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": 2.272185821968907,
+        "wilson_2x2": 2.198696192907672,
+        "wilson_4x4": 2.2312020023797676
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": 14.46764393727329,
+        "wilson_4x4": 88.83432167546879
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 3.251691840993137,
+      "cold start": 2.15505202127815,
+      "hot start": 4.6240319050465954
+    },
+    "interval_source": "cold start",
+    "interval": 4.3101040425563,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.2437265339295065,
+    "hot": 54.01469912266551
+  },
+  {
+    "lattice_size": 64,
+    "beta": 1094.8862718772587,
+    "base_beta": 275.229,
+    "model_beta": 273.7219129954922,
+    "q_squared_exact": 0.37342269693291036,
+    "build_seconds": 0.0,
+    "n_traj": 150,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.304963225860033,
+      "hot start": 57.06740589440527
+    },
+    "q_changes": {
+      "diffusion seed": 660,
+      "cold start": 681,
+      "hot start": 858
+    },
+    "parity_flips": {
+      "diffusion seed": 660,
+      "cold start": 681,
+      "hot start": 819
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": NaN,
+      "cold start": 0.06359847568688126,
+      "hot start": 7.330897711082802
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 28998.458055555555,
+      "cold start": 205.33251876539998,
+      "hot start": 452.5482082522825
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": 2.3735261951543802,
+        "wilson_2x2": 2.204018019995377,
+        "wilson_4x4": 2.2890599677763572
+      },
+      "hot start": {
+        "plaquette": 908.1163687530146,
+        "wilson_2x2": 30.97092417760684,
+        "wilson_4x4": 145.60467538730532
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 4.2841212479325,
+      "cold start": 2.166798643606632,
+      "hot start": 4.608185602541981
+    },
+    "interval_source": "cold start",
+    "interval": 4.333597287213264,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.304963225860033,
+    "hot": 57.06740589440527
+  },
+  {
+    "lattice_size": 64,
+    "beta": 1660.0767336440456,
+    "base_beta": 416.524,
+    "model_beta": 415.0194103991934,
+    "q_squared_exact": 0.21542882374168731,
+    "build_seconds": 0.0,
+    "n_traj": 150,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.3542128255057593,
+      "hot start": 18.264531244532296
+    },
+    "q_changes": {
+      "diffusion seed": 373,
+      "cold start": 422,
+      "hot start": 759
+    },
+    "parity_flips": {
+      "diffusion seed": 373,
+      "cold start": 422,
+      "hot start": 721
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": NaN,
+      "cold start": 0.0626373452321436,
+      "hot start": 2.0271299340674007
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 29251.836666666666,
+      "cold start": 188.61466616002932,
+      "hot start": 625.5906979352268
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      },
+      "cold start": {
+        "plaquette": 2.5227354945258447,
+        "wilson_2x2": 2.153114207053734,
+        "wilson_4x4": 2.1298394812108272
+      },
+      "hot start": {
+        "plaquette": 15.276723319590952,
+        "wilson_2x2": 29.908692210027823,
+        "wilson_4x4": 87.62129489637013
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 4.778522008364151,
+      "cold start": 2.5943744180998243,
+      "hot start": 5.374658751148054
+    },
+    "interval_source": "cold start",
+    "interval": 5.1887488361996486,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.3542128255057593,
+    "hot": 18.264531244532296
   }
 ]

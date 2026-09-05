@@ -22,3 +22,55 @@ C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\to
 === launch Thu Sep  3 11:34:39 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\cov60 --tag crossover_L64 ===
 C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
   untyped_storage = torch.UntypedStorage(self.size(), device=device)
+
+=== launch Thu Sep  3 11:37:22 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\cov60 --tag crossover_L64 ===
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt
+L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 160.725, 275.229, 416.524
+PLAIN round: no topological updates in any arm
+  b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=   inf cold=   2.1 hot=   2.1  n= 400  iv=  9.1(cold)  flips=    0  Q frozen      [1352s]
+  b=   41.46 (model  10.38) <Q^2>ex=10.532  seed=   inf cold=   2.3 hot= 187.6  n= 400  iv=  8.3(cold)  flips=    0  Q frozen      [1640s]
+  b=   93.79 (model  23.45) <Q^2>ex=4.522  seed=   inf cold=   2.3 hot=   inf  n= 400  iv= 10.4(cold)  flips=    0  Q frozen      [2486s]
+  b=  174.03 (model  43.51) <Q^2>ex=2.413  seed=   0.0 cold=   2.3 hot=1656.6  n= 200  iv=  5.8(cold)  flips=    0  Q frozen      [1661s]
+  b=  310.38 (model  77.60) <Q^2>ex=1.346  seed=   inf cold=   2.3 hot=   inf  n= 200  iv=  6.5(cold)  flips=    0  Q frozen      [2227s]
+  b=  636.85 (model 159.21) <Q^2>ex=0.654  seed=   inf cold=   2.4 hot=   inf  n= 150  iv=  6.7(cold)  flips=    0  Q frozen      [2490s]
+
+=== launch Thu Sep  3 15:54:21 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\cov60 --tag crossover_L64 ===
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt
+L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 160.725, 275.229, 416.524
+PLAIN round: no topological updates in any arm
+  b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=   inf cold=   2.1 hot=   2.1  n= 400  iv=  9.1(cold)  flips=    0  Q frozen      [1568s]
+  b=   41.46 (model  10.38) <Q^2>ex=10.532  seed=   inf cold=   2.3 hot= 187.6  n= 400  iv=  8.3(cold)  flips=    0  Q frozen      [1892s]
+  b=   93.79 (model  23.45) <Q^2>ex=4.522  seed=   inf cold=   2.3 hot=   inf  n= 400  iv= 10.4(cold)  flips=    0  Q frozen      [2830s]
+  b=  174.03 (model  43.51) <Q^2>ex=2.413  seed=   0.0 cold=   2.3 hot=1656.6  n= 200  iv=  5.8(cold)  flips=    0  Q frozen      [1770s]
+
+=== launch Thu Sep  3 18:23:25 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\cov60 --tag crossover_L64 ===
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt
+L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 160.725, 275.229, 416.524
+PLAIN round: no topological updates in any arm
+  b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=   inf cold=   2.1 hot=   2.1  n= 400  iv=  9.1(cold)  flips=    0  Q frozen      [1899s]
+
+=== launch Thu Sep  3 21:02:37 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\cov60 --tag crossover_L64 ===
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net_cov60.pt
+L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 160.725, 275.229, 416.524
+PLAIN round: no topological updates in any arm
+  b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=   inf cold=   2.1 hot=   2.1  n= 400  iv=  9.1(cold)  flips=    0  Q frozen      [1187s]
+  b=   41.46 (model  10.38) <Q^2>ex=10.532  seed=   inf cold=   2.3 hot= 187.6  n= 400  iv=  8.3(cold)  flips=    0  Q frozen      [1336s]
+  b=   93.79 (model  23.45) <Q^2>ex=4.522  seed=   inf cold=   2.3 hot=   inf  n= 400  iv= 10.4(cold)  flips=    0  Q frozen      [1868s]
+  b=  174.03 (model  43.51) <Q^2>ex=2.413  seed=   0.0 cold=   2.3 hot=1656.6  n= 200  iv=  5.8(cold)  flips=    0  Q frozen      [1237s]
+  b=  310.38 (model  77.60) <Q^2>ex=1.346  seed=   inf cold=   2.3 hot=   inf  n= 200  iv=  6.5(cold)  flips=    0  Q frozen      [1706s]
+  b=  636.85 (model 159.21) <Q^2>ex=0.654  seed=   inf cold=   2.5 hot=1067.7  n= 150  iv=  6.0(cold)  flips=    0  Q frozen      [1806s]
+  b= 1094.89 (model 273.72) <Q^2>ex=0.373  seed=   inf cold=   2.4 hot= 286.3  n= 150  iv=  5.8(cold)  flips=    0  Q frozen      [2306s]
+  b= 1660.08 (model 415.02) <Q^2>ex=0.215  seed=   inf cold=   2.4 hot=   inf  n= 150  iv=  6.1(cold)  flips=    0  Q frozen      [2933s]
+wrote out\u2_2d\coverage_scan_relaxation\cov60\crossover_L64.json

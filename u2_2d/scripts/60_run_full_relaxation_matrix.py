@@ -43,6 +43,7 @@ CHECKPOINTS = {
     "cov15": "out/u2_2d/checkpoints/det_score_net_cov15.pt",
     "v2": "out/u2_2d/checkpoints/det_score_net_v2.pt",
     "cap": "out/u2_2d/checkpoints/det_score_net_cap.pt",
+    "wide": "out/u2_2d/checkpoints/det_score_net_wide.pt",
 }
 # Trimmed 2026-09-03 to just the decision-critical pair (cov60 vs default
 # settles the coverage-cap question / fig21) -- the full 6-checkpoint matrix
@@ -50,7 +51,11 @@ CHECKPOINTS = {
 # v2, cap) isn't gating any paper claim the way this pair is. Restore the
 # full list (["cov60", "default", "cov30", "cov15", "v2", "cap"]) if/when
 # there's GPU headroom to spare on the ablation curve.
-PRIORITY = ["cov60", "default"]
+# "wide" added 2026-09-05: the checkpoint trained to model beta ~2000 (vs
+# default's ~104), under the SAME corrected fit_relaxation_time estimator as
+# cov60/default, so it can go on the same axis as those two rather than
+# mixing methodologies with the old discrete-threshold coverage_scan/ dirs.
+PRIORITY = ["wide"]
 OUT_ROOT = Path("out/u2_2d/coverage_scan_relaxation")
 MAX_RETRIES = 2
 

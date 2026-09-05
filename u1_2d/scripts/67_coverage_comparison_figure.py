@@ -38,6 +38,8 @@ CHECKPOINTS = [
      60.0, "deployed (score_net.pt, beta_max=60)"),
     ("wide250", ["out/u1_2d/coverage_scan/wide250/crossover_window.json"],
      "#D55E00", 250.0, "wide250 (beta_max=250, same capacity)"),
+    ("wide2000", ["out/u1_2d/coverage_scan/wide2000/crossover_window.json"],
+     "#009E73", 2000.0, "wide2000 (beta_max=2000, same capacity)"),
 ]
 
 

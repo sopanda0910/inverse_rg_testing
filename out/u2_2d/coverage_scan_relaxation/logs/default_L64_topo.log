@@ -1,0 +1,17 @@
+
+=== launch Fri Sep  4 09:16:29 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\default --tag crossover_L64_topo --topological-updates ===
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net.pt
+L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 160.725, 275.229, 416.524
+WINDING round: charge_step=1, interval=5
+  b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=   0.0 cold=   2.1 hot=   2.0  n= 400  iv=  4.6(cold)  flips= 4655  HMC healthy   [2352s]
+  b=   41.46 (model  10.38) <Q^2>ex=10.532  seed=  42.3 cold=   2.3 hot=   2.0  n= 400  iv=  5.0(cold)  flips= 4453  HMC healthy   [2565s]
+  b=   93.79 (model  23.45) <Q^2>ex=4.522  seed=  61.4 cold=   2.2 hot=2003.3  n= 400  iv=  5.7(cold)  flips= 4127  HMC healthy   [1586s]
+  b=  174.03 (model  43.51) <Q^2>ex=2.413  seed=   inf cold=   2.2 hot= 282.4  n= 200  iv=  4.1(cold)  flips= 1865  HMC healthy   [682s]
+  b=  310.38 (model  77.60) <Q^2>ex=1.346  seed=1891.5 cold=   2.3 hot=   inf  n= 200  iv=  4.0(cold)  flips= 1671  HMC healthy   [995s]
+  b=  636.85 (model 159.21) <Q^2>ex=0.654  seed=   inf cold=   2.2 hot=  40.7  n= 150  iv=  4.6(cold)  flips=  964  HMC healthy   [1029s]
+  b= 1094.89 (model 273.72) <Q^2>ex=0.373  seed=   inf cold=   2.5 hot=  41.0  n= 150  iv=  4.5(cold)  flips=  642  HMC healthy   [31121s]
+  b= 1660.08 (model 415.02) <Q^2>ex=0.215  seed=   inf cold=   2.3 hot=  16.1  n= 150  iv=  4.2(cold)  flips=  414  HMC healthy   [1193s]
+wrote out\u2_2d\coverage_scan_relaxation\default\crossover_L64_topo.json

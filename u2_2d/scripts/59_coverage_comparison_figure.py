@@ -41,18 +41,31 @@ INK, MUTED, GRID = "#1a1a1a", "#5c5c5c", "#d8d8d8"
 
 CHECKPOINTS = [
     # tag, dirs to read, colour, train_model_beta_max, label
-    ("default", ["out/u2_2d/crossover"], "#0072B2", 104.132,
+    #
+    # default/cov60/wide re-pointed 2026-09-05 at
+    # out/u2_2d/coverage_scan_relaxation/<tag>/, the corrected
+    # exponential-relaxation-time (fit_relaxation_time) data from the
+    # overnight matrix -- NOT the old out/u2_2d/crossover or
+    # coverage_scan/{cov60,...} directories, which used the retired discrete
+    # threshold-crossing t_therm. v2/cap/cov30/cov15 were not re-run under
+    # the corrected estimator (out of scope for that matrix, see
+    # 60_run_full_relaxation_matrix.py's PRIORITY comment) and still read
+    # the old dirs -- mixing methodologies on one axis, so treat any
+    # v2/cap/cov30/cov15 curve here as qualitative only until re-run.
+    ("default", ["out/u2_2d/coverage_scan_relaxation/default"], "#0072B2", 104.132,
      "default (12 fixed rungs)"),
-    ("v2", ["out/u2_2d/coverage_scan/v2"], "#D55E00", 107.5,
-     "v2 (+102 random rungs, same capacity)"),
-    ("cap", ["out/u2_2d/coverage_scan/cap"], "#009E73", 107.5,
-     "cap (+102 random rungs, capacity raised)"),
-    ("cov60", ["out/u2_2d/coverage_scan/cov60"], "#CC79A7", 56.83,
+    ("wide", ["out/u2_2d/coverage_scan_relaxation/wide"], "#009E73", 2000.0,
+     "wide (trained to model beta ~2000)"),
+    ("cov60", ["out/u2_2d/coverage_scan_relaxation/cov60"], "#CC79A7", 56.83,
      "cov60 (capped at model beta ~60, matching u1_2d)"),
+    ("v2", ["out/u2_2d/coverage_scan/v2"], "#D55E00", 107.5,
+     "v2 (+102 random rungs, same capacity) [old estimator]"),
+    ("cap", ["out/u2_2d/coverage_scan/cap"], "#8B4513", 107.5,
+     "cap (+102 random rungs, capacity raised) [old estimator]"),
     ("cov30", ["out/u2_2d/coverage_scan/cov30"], "#E69F00", 29.60,
-     "cov30 (capped at model beta ~30)"),
+     "cov30 (capped at model beta ~30) [old estimator]"),
     ("cov15", ["out/u2_2d/coverage_scan/cov15"], "#56B4E9", 14.55,
-     "cov15 (capped at model beta ~15)"),
+     "cov15 (capped at model beta ~15) [old estimator]"),
 ]
 
 
@@ -78,7 +91,15 @@ def main() -> int:
         rows = sorted(rows.values(), key=lambda r: r["beta"])
         xs, ys, lo_xs, hi_xs = [], [], [], []
         for r in rows:
-            v = fig57.cost_efficiency(r)
+            try:
+                v = fig57.cost_efficiency(r)
+            except TypeError:
+                # Old per-observable-dict t_therm schema (pre-2026-09-03),
+                # still present in the [old estimator] checkpoints
+                # (v2/cap/cov30/cov15) that were never re-run under the
+                # corrected exponential relaxation-time fit -- skip rather
+                # than crash the whole figure over one incompatible arm.
+                continue
             if v is None:
                 continue
             if v <= 0.0:

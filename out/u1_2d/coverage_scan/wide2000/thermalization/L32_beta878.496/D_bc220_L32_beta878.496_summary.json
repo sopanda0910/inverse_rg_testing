@@ -1,0 +1,243 @@
+{
+  "label": "D_bc220_L32_beta878.496",
+  "beta": 878.4964253118603,
+  "lattice_size": 32,
+  "n_gen_chains": 128,
+  "n_baseline_chains": 32,
+  "n_traj_gen": 96,
+  "n_traj_baseline": 640,
+  "hmc": {
+    "step_size": 0.013495531462044179,
+    "n_steps": 74,
+    "acceptance": {
+      "generated": 0.9701334635416666,
+      "hot": 0.0078125,
+      "cold": 0.974462890625
+    },
+    "sec_per_traj_gen_batch": 0.4263354962070783,
+    "sec_per_traj_baseline_batch": 0.4249405022710562
+  },
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 4500.550926678621,
+      "wilson_4x4": 3152.6444585475583,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": 4.7869617168008585,
+      "wilson_2x2": 3.945323746689389,
+      "wilson_4x4": 2.4449782310692014,
+      "wilson_6x6": 2.3985488644402015,
+      "Q^2": Infinity
+    }
+  },
+  "t_therm_err": {
+    "diffusion seed": {
+      "plaquette": 275.11837546853366,
+      "wilson_2x2": 12.010659413042061,
+      "wilson_4x4": 7.245842824412899,
+      "wilson_6x6": 10.5565472844115,
+      "Q^2": NaN
+    },
+    "hot start": {
+      "plaquette": NaN,
+      "wilson_2x2": 878.8611578505429,
+      "wilson_4x4": 682.9653033268844,
+      "wilson_6x6": NaN,
+      "Q^2": NaN
+    },
+    "cold start": {
+      "plaquette": 0.5069068207990797,
+      "wilson_2x2": 0.4773620675567831,
+      "wilson_4x4": 0.24926969722003234,
+      "wilson_6x6": 0.184361933928338,
+      "Q^2": NaN
+    }
+  },
+  "t_therm_threshold_old": {
+    "diffusion seed": {
+      "plaquette": 0.0,
+      "wilson_2x2": 0.0,
+      "wilson_4x4": 0.0,
+      "wilson_6x6": 0.0,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 538.0,
+      "wilson_4x4": 53.0,
+      "wilson_6x6": 26.0,
+      "Q^2": Infinity
+    }
+  },
+  "t_therm_generated_full_batch": {
+    "plaquette": 0.0,
+    "wilson_2x2": 0.0,
+    "wilson_4x4": 0.0,
+    "wilson_6x6": 0.0,
+    "Q^2": Infinity
+  },
+  "t_therm_subsample_size": 32,
+  "final_abs_z": {
+    "diffusion seed": {
+      "plaquette": 0.8846524357795715,
+      "wilson_2x2": 0.5164008736610413,
+      "wilson_4x4": 0.6152408719062805,
+      "wilson_6x6": 0.7356491088867188,
+      "Q^2": 89273.515625
+    },
+    "hot start": {
+      "plaquette": 72.99303436279297,
+      "wilson_2x2": 49.30852127075195,
+      "wilson_4x4": 40.928565979003906,
+      "wilson_6x6": 56.8128547668457,
+      "Q^2": 3.629708766937256
+    },
+    "cold start": {
+      "plaquette": 6.473799228668213,
+      "wilson_2x2": 3.500474214553833,
+      "wilson_4x4": 0.9478883743286133,
+      "wilson_6x6": 0.9534391164779663,
+      "Q^2": 89273.515625
+    }
+  },
+  "tau_int": {
+    "plaquette": {
+      "value": 0.5,
+      "error": 0.0
+    },
+    "wilson_2x2": {
+      "value": 0.5,
+      "error": 0.0
+    },
+    "wilson_4x4": {
+      "value": 0.5,
+      "error": 0.0
+    },
+    "wilson_6x6": {
+      "value": 0.5,
+      "error": 0.0
+    }
+  },
+  "tau_int_static": {
+    "plaquette": false,
+    "wilson_2x2": false,
+    "wilson_4x4": false,
+    "wilson_6x6": false
+  },
+  "interval_reliable": true,
+  "relaxation_fits": {
+    "diffusion seed": {
+      "plaquette": {
+        "tau": 3.078989890734119,
+        "tau_error": 0.8768795246474255,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "unreliable (tau exceeds window)"
+      },
+      "wilson_4x4": {
+        "tau": null,
+        "tau_error": null,
+        "status": "unreliable (tau exceeds window)"
+      },
+      "wilson_6x6": {
+        "tau": null,
+        "tau_error": null,
+        "status": "unreliable (tau exceeds window)"
+      },
+      "Q^2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "constant series (no decay; frozen)"
+      }
+    },
+    "hot start": {
+      "plaquette": {
+        "tau": 1.484248339655399,
+        "tau_error": 0.005171546648317479,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 2.676653563423259,
+        "tau_error": 0.051081024964420026,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 3.6549326869484045,
+        "tau_error": 0.10516117379665134,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 3.870255232316179,
+        "tau_error": 0.15265752491420767,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": 0.6017566582241233,
+        "tau_error": 0.003532692204729756,
+        "status": "ok"
+      }
+    },
+    "cold start": {
+      "plaquette": {
+        "tau": 13.105133099668935,
+        "tau_error": 0.6415289593077764,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 8.046312750713724,
+        "tau_error": 0.34863234960458184,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 3.9535475408461718,
+        "tau_error": 0.17222110648124173,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 3.174415252267026,
+        "tau_error": 0.17559533028774169,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "constant series (no decay; frozen)"
+      }
+    }
+  },
+  "hmc_interval_trajectories": 1.0,
+  "q_freezing": {
+    "label": "hot-start HMC L=32 beta=878.496",
+    "frozen": true,
+    "n_tunnelings": 0,
+    "window_length": 321,
+    "n_chains": 32,
+    "tau_int_Q": 321.0
+  },
+  "wall_clock": {
+    "gen_sample_seconds": 32.749170541763306,
+    "n_seed_configs": 128,
+    "sec_per_traj_gen_batch": 0.4263354962070783,
+    "sec_per_traj_baseline_batch": 0.4249405022710562
+  }
+}

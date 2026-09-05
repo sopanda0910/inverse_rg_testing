@@ -1,0 +1,32 @@
+{
+  "L16_beta1669.45": {
+    "fine_beta": 1669.45,
+    "matched_coarse_beta": 436.668261930281,
+    "tree_level": 417.3625
+  },
+  "L16_beta284.855": {
+    "fine_beta": 284.855,
+    "matched_coarse_beta": 71.03403932469686,
+    "tree_level": 71.21375
+  },
+  "L16_beta343.079": {
+    "fine_beta": 343.079,
+    "matched_coarse_beta": 81.83487008197268,
+    "tree_level": 85.76975
+  },
+  "L32_beta381.875": {
+    "fine_beta": 381.875,
+    "matched_coarse_beta": 97.55408430636842,
+    "tree_level": 95.46875
+  },
+  "L16_beta529.043": {
+    "fine_beta": 529.043,
+    "matched_coarse_beta": 129.99524668512115,
+    "tree_level": 132.26075
+  },
+  "L16_beta893.652": {
+    "fine_beta": 893.652,
+    "matched_coarse_beta": 222.29531345652964,
+    "tree_level": 223.413
+  }
+}
