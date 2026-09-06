@@ -44,6 +44,7 @@ CHECKPOINTS = {
     "v2": "out/u2_2d/checkpoints/det_score_net_v2.pt",
     "cap": "out/u2_2d/checkpoints/det_score_net_cap.pt",
     "wide": "out/u2_2d/checkpoints/det_score_net_wide.pt",
+    "wide_dense": "out/u2_2d/checkpoints/det_score_net_wide_dense.pt",
 }
 # Trimmed 2026-09-03 to just the decision-critical pair (cov60 vs default
 # settles the coverage-cap question / fig21) -- the full 6-checkpoint matrix
@@ -55,7 +56,11 @@ CHECKPOINTS = {
 # default's ~104), under the SAME corrected fit_relaxation_time estimator as
 # cov60/default, so it can go on the same axis as those two rather than
 # mixing methodologies with the old discrete-threshold coverage_scan/ dirs.
-PRIORITY = ["wide"]
+# "wide_dense" added 2026-09-05: density-matched twin of "wide" (see
+# u2_2d/configs/wide_dense.yaml), run on the identical matrix so the two are
+# directly comparable -- isolates whether "wide"'s past-ceiling win and
+# in-coverage null are a range effect or a density-confound artifact.
+PRIORITY = ["wide_dense"]
 OUT_ROOT = Path("out/u2_2d/coverage_scan_relaxation")
 MAX_RETRIES = 2
 

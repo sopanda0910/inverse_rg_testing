@@ -1,0 +1,88 @@
+{
+  "rows": [
+    {
+      "L": 16,
+      "beta": 299.99983104380385,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": 445.9361100778202,
+      "cold": 8.636364538457723,
+      "interval": 88.27099833071176,
+      "speedup": 0.0,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 400.00010237204737,
+      "regime": "Q frozen",
+      "seed": 0.0,
+      "hot": Infinity,
+      "cold": 3.5382685855050724,
+      "interval": 20.33751837961101,
+      "speedup": 3.5382685855050724,
+      "q_frozen": true,
+      "speedup_is_bound": true
+    },
+    {
+      "L": 16,
+      "beta": 549.9998733788032,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": Infinity,
+      "cold": 4.30149402585712,
+      "interval": 15.054770718037744,
+      "speedup": 0.0,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 749.9998093238304,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": Infinity,
+      "cold": 1.948041516997207,
+      "interval": 20.65324714400746,
+      "speedup": 0.0,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 1000.0000615288142,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": Infinity,
+      "cold": 2.8020768014677486,
+      "interval": 17.75057077343357,
+      "speedup": 0.0,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 1499.999910693037,
+      "regime": "Q frozen",
+      "seed": 0.0,
+      "hot": Infinity,
+      "cold": 2.664298492360654,
+      "interval": 17.262564190517907,
+      "speedup": 2.664298492360654,
+      "q_frozen": true,
+      "speedup_is_bound": true
+    },
+    {
+      "L": 16,
+      "beta": 2000.0000341458128,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": 3496.123053124982,
+      "cold": 3.816762888440949,
+      "interval": 13.410094570652076,
+      "speedup": 0.0,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    }
+  ]
+}

@@ -1,5 +1,5 @@
-﻿watchdog tick: 09/05/2026 11:28:30
-u2_relaxation_matrix : Ready  (log age 258.7m)  jobs done (of 4)=4 rate=0/h
-u1_random_rungs_2000_local : Ready  (log age 1484.5m)  no progress markers yet
+﻿watchdog tick: 09/05/2026 20:58:29
+u2_relaxation_matrix : Ready  (log age 828.7m)  jobs done (of 4)=4 rate=0/h
+u1_random_rungs_2000_local : Ready  (log age 2054.5m)  no progress markers yet
 u1_wide2000_train : Ready (paused by design until the matrix finishes)  epoch=99
-active GPU/CPU-bound jobs (distinct command lines): 0
+active GPU/CPU-bound jobs (distinct command lines): 3

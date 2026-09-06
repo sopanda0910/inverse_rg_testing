@@ -1,0 +1,88 @@
+[
+  {
+    "lattice_size": 32,
+    "beta": 10.929898155975241,
+    "base_beta": 4.0544,
+    "model_beta": 2.7913854161697973,
+    "q_squared_exact": 12.15801186652663,
+    "build_seconds": 22.05187153816223,
+    "n_traj": 400,
+    "t_therm": {
+      "diffusion seed": Infinity,
+      "cold start": 2.1014641936777023,
+      "hot start": 1.9261833414469904
+    },
+    "q_changes": {
+      "diffusion seed": 7257,
+      "cold start": 7143,
+      "hot start": 7248
+    },
+    "parity_flips": {
+      "diffusion seed": 5712,
+      "cold start": 5672,
+      "hot start": 5680
+    },
+    "topological_updates": true,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 167.20299314951473,
+      "cold start": 0.06872573896723799,
+      "hot start": 0.03792345366158534
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1.0131848653157551,
+      "cold start": 3.2570096198615697,
+      "hot start": 7.1211413074888865
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": 0.0,
+        "wilson_2x2": 3.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": 14.0,
+        "wilson_2x2": 13.0,
+        "wilson_4x4": 9.0
+      },
+      "hot start": {
+        "plaquette": 22.0,
+        "wilson_2x2": 22.0,
+        "wilson_4x4": 17.0
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": 1836.9218022375208,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": 2.2452674785421634,
+        "wilson_2x2": 1.955966730429955,
+        "wilson_4x4": 1.3158104573801217
+      },
+      "hot start": {
+        "plaquette": 1.6593382364925064,
+        "wilson_2x2": 2.9570624530593945,
+        "wilson_4x4": 5.612895507077536
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 2.466749227403524,
+      "cold start": 2.339781463867939,
+      "hot start": 2.1694046263292295
+    },
+    "interval_source": "cold start",
+    "interval": 4.679562927735878,
+    "q_frozen": false,
+    "parity_frozen": false,
+    "regime": "HMC healthy",
+    "speedup": 0.0,
+    "speedup_is_bound": false,
+    "seed": Infinity,
+    "cold": 2.1014641936777023,
+    "hot": 1.9261833414469904
+  }
+]

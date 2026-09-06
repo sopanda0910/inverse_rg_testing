@@ -1,0 +1,138 @@
+# Density-matched twin of wide2000.yaml, built 2026-09-05 to answer a direct
+# challenge: does wide2000's measured degradation (paper.tex
+# sec:coverage-u1) come from the wider COUPLING RANGE itself, or from the
+# fact that its 7 new high-beta rungs (300-2000) are bare anchor points with
+# NO supporting random_rungs density, unlike the original beta<=250 range
+# (4 fixed + 78 random)? Identical to wide2000.yaml in every respect --
+# same capacity (hidden=56, depth=4), same original rungs, same
+# random_rungs block for the low range -- except the 30 additional rungs
+# below, which supply exactly that missing density in the 258-2000 range at
+# a log-beta density comparable to the low range's random_rungs coverage.
+# These 30 ensembles were generated 2026-09-04 by
+# u1_2d/configs/random_rungs_2000_gen.yaml (see that file's header: an
+# earlier auto-tapered-burn_in attempt showed a real, sign-test-confirmed
+# under-relaxation bias at these couplings, fixed by regenerating all 30 at
+# burn_in=8000) and copied from out/u1_2d/data_random_2000/ into this
+# config's out_dir (out/u1_2d/data_wide, already containing wide2000's own
+# rungs -- filenames do not collide).
+#
+# If this checkpoint resolves seeds at the same 7 matched-comparison
+# couplings (sec:coverage-u1) where wide2000 (sparse) failed and deployed
+# (zero coverage there) succeeded, density was the whole story. If it still
+# fails, the range itself is the driver and wide2000's finding stands as a
+# genuine range effect.
+
+seed: 0
+device: auto
+action_type: wilson
+
+data:
+  out_dir: out/u1_2d/data_wide
+  rungs:
+    - {beta: 14.1464, lattice_size: 16, hot_start: false, burn_in: 600, sector_augment: 0.5}
+    - {beta: 25.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 40.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 55.0237, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 300.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 400.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 550.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 750.0,  lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 1000.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 1500.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    - {beta: 2000.0, lattice_size: 16, hot_start: false, burn_in: 2000, sector_augment: 0.5}
+    # NEW: density-matched supplement, out/u1_2d/data_random_2000, beta
+    # 258-1935 at L=16/32, burn_in=8000 (verified sufficient, see header).
+    - {beta: 1227.28, lattice_size: 16}
+    - {beta: 1276.08, lattice_size: 16}
+    - {beta: 1488.31, lattice_size: 16}
+    - {beta: 1669.45, lattice_size: 16}
+    - {beta: 1826.39, lattice_size: 16}
+    - {beta: 1935.02, lattice_size: 16}
+    - {beta: 258.297, lattice_size: 16}
+    - {beta: 284.855, lattice_size: 16}
+    - {beta: 292.923, lattice_size: 16}
+    - {beta: 306.867, lattice_size: 16}
+    - {beta: 313.29, lattice_size: 16}
+    - {beta: 328.915, lattice_size: 16}
+    - {beta: 343.079, lattice_size: 16}
+    - {beta: 363.678, lattice_size: 16}
+    - {beta: 369.352, lattice_size: 16}
+    - {beta: 379.789, lattice_size: 16}
+    - {beta: 379.865, lattice_size: 16}
+    - {beta: 387.763, lattice_size: 16}
+    - {beta: 423.491, lattice_size: 16}
+    - {beta: 434.724, lattice_size: 16}
+    - {beta: 529.043, lattice_size: 16}
+    - {beta: 693.45, lattice_size: 16}
+    - {beta: 893.652, lattice_size: 16}
+    - {beta: 926.783, lattice_size: 16}
+    - {beta: 1848.62, lattice_size: 32}
+    - {beta: 381.875, lattice_size: 32}
+    - {beta: 504.233, lattice_size: 32}
+    - {beta: 603.326, lattice_size: 32}
+    - {beta: 613.841, lattice_size: 32}
+    - {beta: 671.426, lattice_size: 32}
+  random_rungs:
+    - {n: 60, beta_min: 1.0, beta_max: 250.0, lattice_size: 16, n_configs: 128}
+    - {n: 12, beta_min: 2.0, beta_max: 250.0, lattice_size: 32, n_configs: 128}
+    - {n: 6, beta_min: 1.0, beta_max: 35.0, lattice_size: 8, n_configs: 128}
+  heldout:
+    - {beta: 20.0, lattice_size: 16, hot_start: false, burn_in: 2000, n_configs: 128}
+  n_configs: 448
+  n_chains: 16
+  burn_in: 200
+  thin: 5
+  hmc_steps: 5
+  hmc_step_size: 0.2
+  topological_updates: true
+  hot_start: true
+
+train:
+  epochs: 100
+  batch_size: 16
+  learning_rate: 3.0e-4
+  sigma_min: 0.03
+  sigma_max: 6.0
+  sigma_min_beta_coef: 0.3
+  high_beta_sigma_bias: 0.3
+  sym_augment: 0.5
+  norm_type: channel
+  cond_film: true
+  hidden: 56
+  depth: 4
+  kernel_size: 3
+  cond_channels: 5
+  val_fraction: 0.1
+  topo_weight: 0.1
+  early_stop_patience: 0
+  ema_decay: 0.999
+  grad_clip_norm: 1.0
+  snapshot_every: 5
+  resume: true
+  checkpoint: out/u1_2d/checkpoints/score_net_wide2000_dense.pt
+  history: out/u1_2d/checkpoints/score_net_wide2000_dense.history.json
+
+ladder:
+  base: {beta: 1.3472, lattice_size: 8}
+  n_base_configs: 192
+  beta_schedule: [4.0, 14.1464, 55.0237]
+  n_retherm_sweeps: 16
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  corrector_snr: 0.16
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  charge_projection_sigma: 0.5
+  charge_projection_interval: 10
+  retherm_topological_updates: false
+  sample_batch_size: 32
+  out_dir: out/u1_2d/generated_wide2000_dense
+  physics_blend_coef: 1.0
+  physics_blend_beta_min: 5.0
+  sigma_min_beta_coef: 0.1
+
+validate:
+  out_dir: out/u1_2d/validation_wide2000_dense
+  n_reference_configs: 384
+  freezing_rung: {beta: 55.0237, lattice_size: 64}
+  freezing_hmc_length: 300

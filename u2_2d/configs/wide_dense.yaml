@@ -1,0 +1,137 @@
+# Density-matched twin of wide.yaml, built 2026-09-05 for the same reason as
+# u1_2d/configs/wide2000_dense.yaml: wide.yaml's 12 new fixed rungs
+# (raw beta 600-2000, L=8) are bare anchor points with NO random_rungs
+# density, unlike u2's deployed recipe (12 fixed + dense random_rungs up to
+# beta~430). This isolates whether wide's measured degradation is a range
+# effect or a density-confound artifact. Identical to wide.yaml in every
+# respect -- same capacity (hidden=64, depth=4), same fixed rungs, same
+# absence of low-range random_rungs (matching wide.yaml's own deliberate
+# choice to mirror the deployed checkpoint's recipe there) -- except the 31
+# additional rungs below, generated 2026-09-04 by
+# u2_2d/configs/random_rungs_2000_gen.yaml (raw beta 430-2000 at L=8/16/32,
+# counts scaled proportionally to log-range density against the deployed
+# checkpoint's beta 4-430 random_rungs block) and copied from
+# out/u2_2d/data_random_2000/ into this config's out_dir (out/u2_2d/data,
+# already containing wide.yaml's own rungs -- filenames do not collide).
+#
+# If this checkpoint's cost-efficiency at coverage_scan's matched couplings
+# (sec:coverage-u2) recovers relative to wide, density was the driver. If it
+# does not, wide's own past-ceiling win (sec:coverage-u2, wins 6/7,
+# p=0.031) and in-coverage null (wins 12/22, p=0.50) stand as genuine range
+# effects, not a density confound.
+seed: 0
+device: auto
+
+data:
+  out_dir: out/u2_2d/data
+  n_chains: 32
+  thin: 5
+  topological_updates: true
+  winding_charge_step: 1
+  winding_interval: 5
+  seed_exact_sectors: true
+  thermalize_sweeps: 60
+  rungs:
+    - {beta: 3.5,   lattice_size: 8,  n_configs: 1024, burn_in: 300, hot_start: true, seed_exact_sectors: false, n_chains: 128}
+    - {beta: 7.0,   lattice_size: 8,  n_configs: 1024, burn_in: 150, seed_exact_sectors: false, n_chains: 128}
+    - {beta: 14.0,  lattice_size: 8,  n_configs: 1024, burn_in: 400, seed_exact_sectors: false, n_chains: 128, hot_start: true}
+    - {beta: 14.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
+    - {beta: 28.0,  lattice_size: 16, n_configs: 4096, burn_in: 400,
+       seed_exact_sectors: false, n_chains: 1024, hot_start: true}
+    - {beta: 56.0,  lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 51.75, lattice_size: 16, n_configs: 1024, burn_in: 250, sector_augment: 0.5}
+    - {beta: 56.0,  lattice_size: 32, n_configs: 512,  burn_in: 250, sector_augment: 0.5}
+    - {beta: 203.15, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 105.651, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
+    - {beta: 416.524, lattice_size: 64, n_configs: 512, burn_in: 300, n_chains: 64,
+       train: false}
+    - {beta: 600.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 700.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 800.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 900.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1000.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1100.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1200.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1300.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1400.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1500.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 1750.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    - {beta: 2000.0, lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
+    # NEW: density-matched supplement, out/u2_2d/data_random_2000, raw beta
+    # 431-1969 at L=8/16/32 (see header).
+    - {beta: 1009.01, lattice_size: 16}
+    - {beta: 1356.89, lattice_size: 16}
+    - {beta: 1509.87, lattice_size: 16}
+    - {beta: 1564.78, lattice_size: 16}
+    - {beta: 1792.81, lattice_size: 16}
+    - {beta: 1968.74, lattice_size: 16}
+    - {beta: 431.872, lattice_size: 16}
+    - {beta: 451.729, lattice_size: 16}
+    - {beta: 516.825, lattice_size: 16}
+    - {beta: 536.629, lattice_size: 16}
+    - {beta: 545.181, lattice_size: 16}
+    - {beta: 573.388, lattice_size: 16}
+    - {beta: 664.415, lattice_size: 16}
+    - {beta: 721.979, lattice_size: 16}
+    - {beta: 734.044, lattice_size: 16}
+    - {beta: 744.585, lattice_size: 16}
+    - {beta: 754.684, lattice_size: 16}
+    - {beta: 772.129, lattice_size: 16}
+    - {beta: 782.489, lattice_size: 16}
+    - {beta: 798.538, lattice_size: 16}
+    - {beta: 1182.49, lattice_size: 32}
+    - {beta: 1246.72, lattice_size: 32}
+    - {beta: 1685.66, lattice_size: 32}
+    - {beta: 1882.79, lattice_size: 32}
+    - {beta: 542.552, lattice_size: 32}
+    - {beta: 543.275, lattice_size: 32}
+    - {beta: 559.81, lattice_size: 32}
+    - {beta: 708.948, lattice_size: 32}
+    - {beta: 1112.39, lattice_size: 8}
+    - {beta: 540.177, lattice_size: 8}
+    - {beta: 973.059, lattice_size: 8}
+  heldout:
+    - {beta: 80.0, lattice_size: 16, n_configs: 128, burn_in: 300,
+       thermalize_sweeps: 60}
+
+train:
+  checkpoint_path: out/u2_2d/checkpoints/det_score_net_wide_dense.pt
+  epochs: 120
+  batch_size: 32
+  learning_rate: 2.0e-4
+  hidden: 64
+  depth: 4
+  cond_channels: 5
+  cond_film: true
+  norm_type: channel
+  sigma_min_beta_coef: 0.35
+  high_beta_sigma_bias: 0.5
+  sym_augment: 0.5
+  early_stop_patience: 25
+  val_fraction: 0.1
+  resume: true
+  snapshot_every: 5
+
+ladder:
+  out_dir: out/u2_2d/ladder_wide_dense
+  base: {beta: 28.0, lattice_size: 16}
+  beta_schedule: [105.651, 416.524]
+  n_configs: 1024
+  n_sampler_steps: 200
+  n_corrector_steps: 1
+  n_su2_sweeps: 30
+  n_retherm_sweeps: 10
+  batch_size: 64
+  consistency_weight: 1.0
+  enforce_coarse_charge: true
+  physics_blend_coef: 0.0
+
+validate:
+  out_dir: out/u2_2d/validation_wide_dense
+  n_reference_configs: 512
+  n_chains: 32
+  burn_in: 1500
+  generate_reference: true
+  max_reference_lattice_size: 32

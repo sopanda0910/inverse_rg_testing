@@ -1,2 +1,6 @@
-tick Sat Sep  5 07:09:49 2026
-done: 4/4  failed: 0  active: 0  pending: 0
+tick Sat Sep  5 21:09:32 2026
+done: 0/4  failed: 0  active: 2  pending: 2
+  RUNNING wide_dense_L32_topo  1001s
+  RUNNING wide_dense_L64_plain  960s
+  queued  wide_dense_L64_topo
+  queued  wide_dense_L32_plain

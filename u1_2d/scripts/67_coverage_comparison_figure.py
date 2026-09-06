@@ -34,11 +34,21 @@ INK, MUTED, GRID = "#1a1a1a", "#5c5c5c", "#d8d8d8"
 
 CHECKPOINTS = [
     # tag, paths, colour, train_beta_max, label
-    ("deployed", ["out/u1_2d/thermalization/crossover_window.json"], "#0072B2",
-     60.0, "deployed (score_net.pt, beta_max=60)"),
-    ("wide250", ["out/u1_2d/coverage_scan/wide250/crossover_window.json"],
-     "#D55E00", 250.0, "wide250 (beta_max=250, same capacity)"),
-    ("wide2000", ["out/u1_2d/coverage_scan/wide2000/crossover_window.json"],
+    #
+    # wide2000's new coverage (fine beta 300-2000) is L=16 ONLY --
+    # random_rungs, the sole fine=32 source, stayed capped at beta<=250 (see
+    # wide2000.yaml's header) -- so this figure's wide2000/deployed panel is
+    # the matched L=8->16 scan in
+    # coverage_scan/wide2000_L16target/{deployed,wide2000}/, which reruns
+    # BOTH checkpoints identically except for the checkpoint (--L 16, run
+    # with `python 67_coverage_comparison_figure.py --L 16`). wide250 has no
+    # L=16 data (its own coverage extension was L=32) and is intentionally
+    # left off this panel; its qualitative result (thermalizes at
+    # beta_f=218.58, L=32, where deployed has no coverage at all) is quoted
+    # in the text from its own L=32 figure/run, not from this one.
+    ("deployed", ["out/u1_2d/coverage_scan/wide2000_L16target/deployed/crossover_window.json"],
+     "#0072B2", 60.0, "deployed (score_net.pt, beta_max=60)"),
+    ("wide2000", ["out/u1_2d/coverage_scan/wide2000_L16target/wide2000/crossover_window.json"],
      "#009E73", 2000.0, "wide2000 (beta_max=2000, same capacity)"),
 ]
 
