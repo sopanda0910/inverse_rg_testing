@@ -1,0 +1,4 @@
+2026-09-06 15:50:10 OVER-CAP ours=4/3 foreign=1 mem=5107/8151MiB util=98% | 11416:28_crossover_scan.py; 33404:08_hmc_seed_benchmark.py; 39048:28_crossover_scan.py; 19688:03_run_ladder.py; 9244:unknown
+2026-09-06 15:50:30 ok       ours=3/3 foreign=1 mem=1544/8151MiB util=97% | 11416:28_crossover_scan.py; 33404:08_hmc_seed_benchmark.py; 39048:28_crossover_scan.py; 9244:unknown
+2026-09-06 15:51:30 ok       ours=3/3 foreign=2 mem=5107/8151MiB util=98% | 11416:28_crossover_scan.py; 33404:08_hmc_seed_benchmark.py; 39048:28_crossover_scan.py; 9244:unknown; 10232:03_run_ladder.py
+2026-09-06 15:52:27 OVER-CAP ours=4/3 foreign=1 mem=5107/8151MiB util=98% | 11416:28_crossover_scan.py; 33404:08_hmc_seed_benchmark.py; 39048:28_crossover_scan.py; 10232:03_run_ladder.py; 9244:unknown

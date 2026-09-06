@@ -15,3 +15,13 @@ PLAIN round: no topological updates in any arm
   b= 1094.89 (model 273.72) <Q^2>ex=0.373  seed=  37.1 cold=   2.4 hot= 309.0  n= 150  iv=  5.3(cold)  flips=    0  Q frozen      [3300s]
   b= 1660.08 (model 415.02) <Q^2>ex=0.215  seed=  54.9 cold=   2.3 hot=   inf  n= 150  iv=  6.2(cold)  flips=    0  Q frozen      [4020s]
 wrote out\u2_2d\coverage_scan_relaxation\wide_dense\crossover_L64.json
+
+=== launch Sun Sep  6 14:37:34 2026: C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Scripts\python.exe u2_2d/scripts/28_crossover_scan.py --checkpoint out/u2_2d/checkpoints/det_score_net_wide_dense.pt --fine-size 64 --n-chains 64 --n-couplings 8 --out-dir out\u2_2d\coverage_scan_relaxation\wide_dense --tag crossover_L64 ===
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+checkpoint out/u2_2d/checkpoints/det_score_net_wide_dense.pt
+L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 160.725, 275.229, 416.524
+PLAIN round: no topological updates in any arm
+  b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=  35.3 cold=   nan hot=   nan  n= 400  iv=  7.7(diff)  flips=    0  Q frozen      [1635s]
+  b=   41.46 (model  10.38) <Q^2>ex=10.532  seed=  29.3 cold=   nan hot=   nan  n= 400  iv=  8.6(diff)  flips=    0  Q frozen      [1963s]

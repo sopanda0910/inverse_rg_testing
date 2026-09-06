@@ -19,7 +19,46 @@ Last updated 2026-08-22.
 | exact identities (must pass, seconds) | `09_verify_identities.py` | `29_verify_identities.py` | both |
 | seed as an HMC starting point | `08_hmc_seed_benchmark.py` | `14_diffusion_vs_instanton_hmc.py`, `16_h2h_burnin_scan.py` | both |
 | seed quality vs training coverage | `28_crossover_scan.py` + `30_seed_quality_figure.py` | `50_seed_quality_figure.py` | both |
-| volume scan | `28_crossover_scan.py --fine-size 64` + `38_volume_figure.py` | `51_volume_scan_figure.py` | both |
+| volume scan | `28_crossover_scan.py --fine-size 64` + `38_volume_figure.py` | `51_volume_scan_figure.py` | both, but they measure DIFFERENT things -- see section 1c |
+| **joint relaxation-time estimator** | **`28_crossover_scan.py:fit_joint_relaxation_time`** | **`validate/stats.py:fit_joint_relaxation_time`** | **both as of 2026-09-06** -- ported verbatim into u1; before that u1 had only the single-observable `fit_relaxation_time`, so the two studies' volume results were computed by different rules |
+
+## 1c. The two volume scans are complementary, not duplicates (2026-09-06)
+
+Both packages have a "volume scan" and the row above says `both`, which hid
+the fact that they vary different things:
+
+| | u2 | u1 |
+|---|---|---|
+| what varies | volume ALONG THE LADDER (`--fine-size 32` vs `64`) | volume at FIXED beta (`L = 32/64/128`, beta = 14.1464) |
+| coupling | rises with L (beta_f = 4 beta_c) | held constant |
+| answers | is coverage bought at small L usable at large L | does the seed's advantage survive volume per se |
+
+Neither answers the other's question, and the ladder CANNOT answer u1's --
+doubling L quadruples beta by construction, so along a ladder volume and
+coupling are inseparable. Keep both; do not "reconcile" them into one test.
+
+**Estimator parity was restored 2026-09-06 and it changed the u1 answer's
+FORM, not its direction.** `u1_2d/scripts/78_volume_scan_reanalysis.py`
+re-scores the saved `thermalization_volume/*_series.npz` with the ported
+joint fit, no HMC. Seed tau = 0.0 / 0.0 / 30.1 +- 7.2 at L = 32/64/128 with
+chi2/dof = 1.28 / 2.04 / 1.03; every cold and hot arm returns BAD-FIT or inf
+with chi2/dof 13-684. So the sharpest statement is about FIT QUALITY, not
+fitted times: the seed is the only arm at any volume the relaxing-exponential
+model describes at all.
+
+Two traps recorded from doing it, both about changing one thing at a time:
+* The HMC decorrelation interval is taken UNCHANGED from the original run's
+  summary. Recomputing it here as well gave 8.5 / 10.0 / 11.0 against the
+  stored 8.7 / 35.0 / 64.1 -- agreeing at L=32, off by 3-6x at L=64/128 --
+  because at those volumes the cold arm never equilibrates, so its "settled
+  tail" is not settled and a Madras-Sokal window on a short drifting series
+  truncates early and UNDERSTATES tau_int. Using it would have flattered the
+  seed by shrinking its own yardstick.
+* The `t_therm_threshold_old` cross-check column is computed on the FULL
+  generated batch while `report.md` used a baseline-matched subsample. More
+  chains means a smaller SEM and a stricter |z| <= 2 test, so the column
+  reads 9 / 18 / 52 against the report's 1 / 3 / 30. Both are the same rule;
+  they are not interchangeable numbers.
 | topology transport | `36_transport_check.py` + `37_transport_figure.py` | `53_transport_figures.py` | both |
 | pre/post rethermalization decomposition | `31_division_of_labour.py`, `33_retherm_scan.py`, `42_retherm_reconcile.py` | `59_pre_post_retherm.py` | both |
 | cost against the classical baseline | `13_cost_comparison.py` | `55_cost_figures.py` | both |

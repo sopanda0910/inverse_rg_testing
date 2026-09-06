@@ -1,0 +1,17 @@
+L= 32 plain mb=    2.79  CE=   5.555  95% CI [0.000, 5.643]  zero-branch  43%  unusable   0%  src=cold start
+L= 32 plain mb=   31.89  CE=   4.656  95% CI [0.000, 4.995]  zero-branch  40%  unusable   0%  src=cold start
+L= 32 plain mb=    3.52  CE=    0.59  95% CI [0.000, 0.969]  zero-branch  16%  unusable   0%  src=cold start
+L= 32 plain mb=   45.90  CE=   0.046  95% CI [0.000, 0.209]  zero-branch  20%  unusable   0%  src=cold start
+L= 32 plain mb=    6.18  CE=   0.634  95% CI [0.017, 0.973]  zero-branch   0%  unusable   0%  src=cold start
+L= 32 plain mb=   66.06  CE=   0.167  95% CI [0.000, 4.726]  zero-branch  22%  unusable   0%  src=cold start
+L= 32 plain mb=  103.73  CE=   0.051  95% CI [0.000, 0.177]  zero-branch   6%  unusable   0%  src=cold start
+L= 32 plain mb=   11.01  CE=   4.393  95% CI [0.000, 4.918]  zero-branch  33%  unusable   0%  src=cold start
+L= 32 plain mb=   14.52  CE=   4.963  95% CI [0.000, 5.738]  zero-branch  34%  unusable   0%  src=cold start
+L= 32 plain mb=   22.19  CE=     0.0  95% CI [0.000, 1.332]  zero-branch  57%  unusable   0%  src=cold start
+L= 32 topo  mb=    2.79  CE=     0.0  95% CI [0.000, 4.475]  zero-branch  39%  unusable   0%  src=cold start
+L= 32 topo  mb=    3.52  CE=   1.049  95% CI [0.000, 2.918]  zero-branch   6%  unusable   0%  src=cold start
+L= 32 topo  mb=    6.18  CE=   0.468  95% CI [0.000, 3.914]  zero-branch   3%  unusable   0%  src=cold start
+L= 32 topo  mb=   11.01  CE=   0.053  95% CI [0.000, 4.512]  zero-branch  16%  unusable   0%  src=cold start
+L= 32 topo  mb=   14.52  CE=   3.913  95% CI [0.000, 4.783]  zero-branch  24%  unusable   0%  src=cold start
+
+wrote out\u2_2d\cost_efficiency_errorbars_wide_dense.json

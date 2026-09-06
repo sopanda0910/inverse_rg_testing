@@ -1,0 +1,174 @@
+[
+  {
+    "lattice_size": 64,
+    "beta": 25.288793038966098,
+    "base_beta": 8.3757,
+    "model_beta": 6.345523320253037,
+    "q_squared_exact": 17.900913206719313,
+    "build_seconds": 103.97080063819885,
+    "n_traj": 400,
+    "t_therm": {
+      "diffusion seed": 35.311743462841264,
+      "cold start": NaN,
+      "hot start": NaN
+    },
+    "q_changes": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 117
+    },
+    "parity_flips": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 55
+    },
+    "topological_updates": false,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 13.34881653514361,
+      "cold start": 0.05890725853132195,
+      "hot start": 0.06286362773564758
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1.0606111374842855,
+      "cold start": 48.49766937274693,
+      "hot start": 255.95200046176282
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": 13.0,
+        "wilson_2x2": 12.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": 123.0,
+        "wilson_2x2": 124.0,
+        "wilson_4x4": 123.0
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": 31.50539990761804,
+        "wilson_2x2": 0.0,
+        "wilson_4x4": 0.0
+      },
+      "cold start": {
+        "plaquette": 2.3313693428345377,
+        "wilson_2x2": 2.1476611690160774,
+        "wilson_4x4": 1.8788744748919803
+      },
+      "hot start": {
+        "plaquette": 1.5584497685838565,
+        "wilson_2x2": 2.958653617998503,
+        "wilson_4x4": 54.9638308970215
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 3.8533665313245202,
+      "cold start": 4.5506480919147725,
+      "hot start": 4.977361556534396
+    },
+    "interval_source": "diffusion seed",
+    "interval": 7.7067330626490405,
+    "q_frozen": true,
+    "parity_frozen": true,
+    "regime": "Q frozen",
+    "speedup": NaN,
+    "speedup_is_bound": false,
+    "seed": 35.311743462841264,
+    "cold": NaN,
+    "hot": NaN
+  },
+  {
+    "lattice_size": 64,
+    "beta": 41.46158780990283,
+    "base_beta": 12.1743,
+    "model_beta": 10.376766541926505,
+    "q_squared_exact": 10.532488965748332,
+    "build_seconds": 96.7159857749939,
+    "n_traj": 400,
+    "t_therm": {
+      "diffusion seed": 29.28791040267731,
+      "cold start": NaN,
+      "hot start": NaN
+    },
+    "q_changes": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 106
+    },
+    "parity_flips": {
+      "diffusion seed": 0,
+      "cold start": 0,
+      "hot start": 61
+    },
+    "topological_updates": false,
+    "winding_charge_step": 1,
+    "winding_interval": 5,
+    "t_therm_err": {
+      "diffusion seed": 6.296155501646849,
+      "cold start": 0.05403028725132031,
+      "hot start": 25.189053511712117
+    },
+    "t_therm_chi2_per_dof": {
+      "diffusion seed": 1.1831020794538847,
+      "cold start": 72.81369215070404,
+      "hot start": 1518.3605692102806
+    },
+    "t_therm_threshold_old": {
+      "diffusion seed": {
+        "plaquette": 36.0,
+        "wilson_2x2": 14.0,
+        "wilson_4x4": 15.0
+      },
+      "cold start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": 151.0
+      },
+      "hot start": {
+        "plaquette": Infinity,
+        "wilson_2x2": Infinity,
+        "wilson_4x4": Infinity
+      }
+    },
+    "t_therm_per_observable": {
+      "diffusion seed": {
+        "plaquette": 27.845020662445517,
+        "wilson_2x2": 35.35646361000772,
+        "wilson_4x4": 36.67200376798652
+      },
+      "cold start": {
+        "plaquette": 2.52178549778004,
+        "wilson_2x2": 2.3037436029525917,
+        "wilson_4x4": 2.149148535704324
+      },
+      "hot start": {
+        "plaquette": 160.77519671201483,
+        "wilson_2x2": 173.74572683030317,
+        "wilson_4x4": 593.9676733157028
+      }
+    },
+    "tau_int_plaquette": {
+      "diffusion seed": 4.283243214282841,
+      "cold start": 4.721077343188082,
+      "hot start": 1.0
+    },
+    "interval_source": "diffusion seed",
+    "interval": 8.566486428565682,
+    "q_frozen": true,
+    "parity_frozen": true,
+    "regime": "Q frozen",
+    "speedup": NaN,
+    "speedup_is_bound": false,
+    "seed": 29.28791040267731,
+    "cold": NaN,
+    "hot": NaN
+  }
+]

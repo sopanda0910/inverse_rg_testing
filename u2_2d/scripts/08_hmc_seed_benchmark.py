@@ -180,6 +180,11 @@ def main() -> int:
     parser.add_argument("--n-traj", type=int, default=400)
     parser.add_argument("--record-every", type=int, default=5)
     parser.add_argument("--n-chains", type=int, default=64)
+    parser.add_argument("--arms", default=None,
+                        help="comma-separated arm subset (e.g. "
+                             "A_diffusion_seed,D_cold_plus_winding,"
+                             "G_cold_plus_odd_winding,H_diffusion_plus_odd_winding); "
+                             "A_diffusion_seed is required. Default: all 8.")
     parser.add_argument("--rung", type=int, default=-1,
                         help="which ladder rung to benchmark (-1 = the top one)")
     args = parser.parse_args()
@@ -258,6 +263,25 @@ def main() -> int:
         ("G_cold_plus_odd_winding", odd, lambda: odd.initialize(hot=False)),
         ("H_diffusion_plus_odd_winding", odd, lambda: generated),
     ]
+    # Optional arm subset, for couplings where the full 8-arm grid is
+    # unaffordable (the two odd-winding arms cost ~3x a plain arm, and total
+    # cost scales with lattice volume -- the full grid at L=128 is ~13 h).
+    # A_diffusion_seed is MANDATORY and must stay first: tau_int below is
+    # taken from arms[0] on the stated grounds that it is the only arm
+    # actually in equilibrium and unaided, so dropping or reordering it would
+    # silently compute the autocorrelation from a relaxing chain instead.
+    if args.arms:
+        keep = {a.strip() for a in args.arms.split(",") if a.strip()}
+        unknown = keep - {name for name, _, _ in plan}
+        if unknown:
+            print(f"unknown arm name(s): {sorted(unknown)}")
+            return 1
+        if "A_diffusion_seed" not in keep:
+            print("A_diffusion_seed is required (tau_int is measured from it)")
+            return 1
+        plan = [entry for entry in plan if entry[0] in keep]
+        print(f"    arm subset: {[e[0] for e in plan]}")
+
     arms = []
     for name, sampler, start_fn in plan:
         cache = out_dir / f"arm_{name}.json"

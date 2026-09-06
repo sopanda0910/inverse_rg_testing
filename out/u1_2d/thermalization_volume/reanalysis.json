@@ -1,0 +1,173 @@
+[
+  {
+    "lattice_size": 32,
+    "beta": 14.146446570889967,
+    "arm": "diffusion seed",
+    "n_records": 97,
+    "n_chains": 128,
+    "tau": 0.0,
+    "tau_err": 41.18184827754545,
+    "chi2_per_dof": 1.2822066363747653,
+    "fit_quality_ok": true,
+    "t_therm_threshold_old": 9.0,
+    "tau_int_plaquette_stored": 4.367417107821931,
+    "hmc_interval_trajectories": 8.734834215643861,
+    "targets": {
+      "plaquette": 0.9639808987868075,
+      "wilson_2x2": 0.8635226110243367,
+      "wilson_4x4": 0.5560256872712839
+    }
+  },
+  {
+    "lattice_size": 32,
+    "beta": 14.146446570889967,
+    "arm": "hot start",
+    "n_records": 641,
+    "n_chains": 32,
+    "tau": NaN,
+    "tau_err": 4.089756169139353,
+    "chi2_per_dof": 80.72661801118748,
+    "fit_quality_ok": false,
+    "t_therm_threshold_old": 391.0,
+    "tau_int_plaquette_stored": 4.367417107821931,
+    "hmc_interval_trajectories": 8.734834215643861,
+    "targets": {
+      "plaquette": 0.9639808987868075,
+      "wilson_2x2": 0.8635226110243367,
+      "wilson_4x4": 0.5560256872712839
+    }
+  },
+  {
+    "lattice_size": 32,
+    "beta": 14.146446570889967,
+    "arm": "cold start",
+    "n_records": 641,
+    "n_chains": 32,
+    "tau": NaN,
+    "tau_err": 0.2276205462954728,
+    "chi2_per_dof": 13.277697011732386,
+    "fit_quality_ok": false,
+    "t_therm_threshold_old": 168.0,
+    "tau_int_plaquette_stored": 4.367417107821931,
+    "hmc_interval_trajectories": 8.734834215643861,
+    "targets": {
+      "plaquette": 0.9639808987868075,
+      "wilson_2x2": 0.8635226110243367,
+      "wilson_4x4": 0.5560256872712839
+    }
+  },
+  {
+    "lattice_size": 64,
+    "beta": 14.1464,
+    "arm": "diffusion seed",
+    "n_records": 97,
+    "n_chains": 96,
+    "tau": 0.0,
+    "tau_err": 20.605901552690643,
+    "chi2_per_dof": 2.042302549082565,
+    "fit_quality_ok": true,
+    "t_therm_threshold_old": 18.0,
+    "tau_int_plaquette_stored": 11.034392288982652,
+    "hmc_interval_trajectories": 34.98544103621411,
+    "targets": {
+      "plaquette": 0.9639807778019461,
+      "wilson_2x2": 0.8635221775172254,
+      "wilson_4x4": 0.5560245707242245
+    }
+  },
+  {
+    "lattice_size": 64,
+    "beta": 14.1464,
+    "arm": "hot start",
+    "n_records": 641,
+    "n_chains": 16,
+    "tau": Infinity,
+    "tau_err": 8.235029632556051,
+    "chi2_per_dof": 682.1415435594635,
+    "fit_quality_ok": true,
+    "t_therm_threshold_old": Infinity,
+    "tau_int_plaquette_stored": 11.034392288982652,
+    "hmc_interval_trajectories": 34.98544103621411,
+    "targets": {
+      "plaquette": 0.9639807778019461,
+      "wilson_2x2": 0.8635221775172254,
+      "wilson_4x4": 0.5560245707242245
+    }
+  },
+  {
+    "lattice_size": 64,
+    "beta": 14.1464,
+    "arm": "cold start",
+    "n_records": 641,
+    "n_chains": 16,
+    "tau": NaN,
+    "tau_err": 0.2041072916885991,
+    "chi2_per_dof": 32.52197324768058,
+    "fit_quality_ok": false,
+    "t_therm_threshold_old": 316.0,
+    "tau_int_plaquette_stored": 11.034392288982652,
+    "hmc_interval_trajectories": 34.98544103621411,
+    "targets": {
+      "plaquette": 0.9639807778019461,
+      "wilson_2x2": 0.8635221775172254,
+      "wilson_4x4": 0.5560245707242245
+    }
+  },
+  {
+    "lattice_size": 128,
+    "beta": 14.1464,
+    "arm": "diffusion seed",
+    "n_records": 97,
+    "n_chains": 64,
+    "tau": 30.070334345189035,
+    "tau_err": 7.223055733215411,
+    "chi2_per_dof": 1.0275422328873545,
+    "fit_quality_ok": true,
+    "t_therm_threshold_old": 52.0,
+    "tau_int_plaquette_stored": 24.265865119970403,
+    "hmc_interval_trajectories": 64.13853035374933,
+    "targets": {
+      "plaquette": 0.9639807778019461,
+      "wilson_2x2": 0.8635221775172254,
+      "wilson_4x4": 0.5560245707242245
+    }
+  },
+  {
+    "lattice_size": 128,
+    "beta": 14.1464,
+    "arm": "hot start",
+    "n_records": 641,
+    "n_chains": 8,
+    "tau": NaN,
+    "tau_err": 45.1986689780411,
+    "chi2_per_dof": 623.8192394158586,
+    "fit_quality_ok": false,
+    "t_therm_threshold_old": Infinity,
+    "tau_int_plaquette_stored": 24.265865119970403,
+    "hmc_interval_trajectories": 64.13853035374933,
+    "targets": {
+      "plaquette": 0.9639807778019461,
+      "wilson_2x2": 0.8635221775172254,
+      "wilson_4x4": 0.5560245707242245
+    }
+  },
+  {
+    "lattice_size": 128,
+    "beta": 14.1464,
+    "arm": "cold start",
+    "n_records": 641,
+    "n_chains": 8,
+    "tau": NaN,
+    "tau_err": 0.31533836644993496,
+    "chi2_per_dof": 83.32317174760693,
+    "fit_quality_ok": false,
+    "t_therm_threshold_old": 378.0,
+    "tau_int_plaquette_stored": 24.265865119970403,
+    "hmc_interval_trajectories": 64.13853035374933,
+    "targets": {
+      "plaquette": 0.9639807778019461,
+      "wilson_2x2": 0.8635221775172254,
+      "wilson_4x4": 0.5560245707242245
+    }
+  }
+]
