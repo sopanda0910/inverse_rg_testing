@@ -405,8 +405,43 @@ def fit_joint_relaxation_time(series: dict, targets: dict, record_every: int,
     else:
         dof = max(n_dof - n_params, 1)
         chi2_per_dof = chi2_fit / dof
+
+    # ABSOLUTE goodness-of-fit veto -- a gap this function did NOT close
+    # before (found 2026-09-06 reanalysing wide_dense's topo-round cold-start
+    # arm: tau_hat=2.3, tau_hat/tau_err=41 -- comfortably past the bootstrap
+    # significance gate above -- yet chi2_per_dof=40.9, wildly outside
+    # Detmold & Endres' quoted 0.6-2.1 healthy range, and the OLD discrete
+    # threshold-crossing method flags the SAME point as Infinity. The
+    # delta-chi2 test above (chi2_flat - chi2_fit vs the Wilks threshold) and
+    # the bootstrap significance gate both ask "is the exponential fit
+    # SIGNIFICANTLY BETTER than flat/noise" -- neither asks "is the
+    # exponential fit GOOD IN AN ABSOLUTE SENSE". A fit can clear both
+    # relative bars while still being an objectively poor description of the
+    # data (e.g. a persistent small residual bias a decaying-to-zero
+    # exponential cannot represent), and that is exactly what happened here.
+    # This is a THIRD, distinct failure mode from the two already documented
+    # for `fit_relaxation_time` (tau=0/never-converged conflation, boundary
+    # saturation) -- not a re-derivation of either.
+    #
+    # GATE ON chi2_per_dof ITSELF, NOT A FORMAL p-VALUE -- a first attempt
+    # used `chi2_dist.sf(chi2_fit, dof) < 1e-3`, and it was wrong the same
+    # way the delta-chi2 test elsewhere in this file is wrong: a raw
+    # significance test gets arbitrarily strict as dof grows (n_dof ~
+    # 200-600 here, from ~100 records x 3 observables), so it flagged
+    # perfectly healthy fits -- diffusion-seed chi2/dof as low as 1.20, 1.22,
+    # 1.26, comfortably inside Detmold & Endres' own 0.6-2.1 range -- purely
+    # from statistical power, not a real problem. chi2/dof is the quantity
+    # this project already calibrates against (it is what gets reported in
+    # every table), so gate on it directly: healthy fits from the real
+    # failure case sit at chi2/dof ~1-3, the genuine failures at ~40-9000 --
+    # a wide, unambiguous gap, so the exact multiple chosen is not sensitive.
+    if tau_hat not in (0.0, float("inf")) and math.isfinite(tau_hat):
+        if chi2_per_dof > 5.0:
+            return {"tau": float("nan"), "tau_err": tau_err,
+                   "chi2_per_dof": chi2_per_dof, "n_dof": dof,
+                   "fit_quality_ok": False}
     return {"tau": tau_hat, "tau_err": tau_err,
-           "chi2_per_dof": chi2_per_dof, "n_dof": dof}
+           "chi2_per_dof": chi2_per_dof, "n_dof": dof, "fit_quality_ok": True}
 
 
 def observe(links: torch.Tensor) -> dict:

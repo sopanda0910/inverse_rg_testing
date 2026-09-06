@@ -1,4 +1,0 @@
-cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
-checkpoint out/u2_2d/checkpoints/det_score_net_wide_dense.pt
-L_c = 16 -> L_f = 32; 14 couplings: 4.0544, 5.2793, 8.2179, 12.7822, 16.1931, 23.7962, 33.4572, 47.4445, 67.5917, 105.244, 135.861, 199.229, 267.858, 407.306
-PLAIN round: no topological updates in any arm

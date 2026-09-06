@@ -1,0 +1,4 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+base subsample: 1024 configs from 1024 distinct chains
+base: L=16 beta=28  1024 configs
+resuming: 2 rung(s) on disk, restarting from L=64 beta=416.524

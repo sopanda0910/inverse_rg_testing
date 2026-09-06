@@ -104,12 +104,25 @@ def _tail_is_biased(tails: list, rng: "np.random.Generator", n_chains: int,
 
 
 def _fit_exp_once(t: np.ndarray, mean: np.ndarray, sem: np.ndarray,
-                  target: float) -> float:
+                  target: float) -> tuple[float, float]:
     """One exponential relaxation-time fit: mean(t) ~= target + A*exp(-t/tau).
-    Returns tau (0.0 if already at target, inf if no resolved decay within
-    the window). See u2_2d/scripts/28_crossover_scan.py's `_fit_exp_once`
-    for the full derivation of every gate below -- ported verbatim."""
+    Returns (tau, chi2_per_dof) -- tau is 0.0 if already at target, inf if no
+    resolved decay within the window. See u2_2d/scripts/28_crossover_scan.py's
+    `_fit_exp_once` for the full derivation of every gate below -- ported
+    verbatim.
+
+    chi2_per_dof ADDED 2026-09-06, porting u2's fix of the same date (found
+    reanalysing u2's saved crossover series: a fit can clear the delta-chi2
+    test below AND the bootstrap significance gate in the caller while still
+    being an objectively bad description of the data -- chi2/dof ~40-9000 in
+    the real case that motivated this, against Detmold & Endres' quoted
+    0.6-2.1 healthy range -- because both existing gates test whether the
+    exponential is SIGNIFICANTLY BETTER than flat/noise, not whether it is
+    GOOD IN AN ABSOLUTE SENSE. u1 and u2 share this estimator, so u1 shares
+    the gap and the fix, per this project's standing rule that the two
+    studies not drift apart in methodology."""
     chi2_flat = float(np.sum(((mean - target) / sem) ** 2))
+    n_dof_flat = max(len(t), 1)
 
     bias = mean - target
     resolved = np.abs(bias) / sem >= 1.0
@@ -127,18 +140,29 @@ def _fit_exp_once(t: np.ndarray, mean: np.ndarray, sem: np.ndarray,
             bounds=([-np.inf, 0.0], [np.inf, float(t[-1]) * 10.0]),
             maxfev=2000)
     except (RuntimeError, ValueError):
-        return 0.0
+        return 0.0, chi2_flat / n_dof_flat
 
     pred = target + popt[0] * np.exp(-t / max(popt[1], 1e-6))
     chi2_exp = float(np.sum(((mean - pred) / sem) ** 2))
     if chi2_flat - chi2_exp < 6.0:
-        return 0.0
+        return 0.0, chi2_flat / n_dof_flat
 
+    n_dof_fit = max(len(t) - 2, 1)
+    chi2_per_dof = chi2_exp / n_dof_fit
     tau = float(popt[1])
     upper = float(t[-1]) * 10.0
     if tau >= upper * (1.0 - 1e-3):
-        return float("inf")
-    return max(tau, 0.0)
+        return float("inf"), chi2_flat / n_dof_flat
+    # ABSOLUTE goodness-of-fit veto -- gate on chi2/dof itself, not a formal
+    # p-value (a p-value gets arbitrarily strict as dof grows and flags
+    # perfectly healthy fits; see u2's 28_crossover_scan.py for the measured
+    # example of that exact mistake). NaN signals "resolved a decay the
+    # bootstrap called significant, but the exponential model does not
+    # actually describe this series" -- distinct from both 0.0 (already at
+    # target) and inf (never converges).
+    if chi2_per_dof > 5.0:
+        return float("nan"), chi2_per_dof
+    return max(tau, 0.0), chi2_per_dof
 
 
 def fit_relaxation_time(series: np.ndarray, target: float, n_boot: int = 100,
@@ -151,7 +175,7 @@ def fit_relaxation_time(series: np.ndarray, target: float, n_boot: int = 100,
     t = np.arange(series.shape[0], dtype=float)
     mean = series.mean(axis=1)
     sem = np.maximum(series.std(axis=1, ddof=1) / math.sqrt(series.shape[1]), 1e-12)
-    tau_hat = _fit_exp_once(t, mean, sem, target)
+    tau_hat, _ = _fit_exp_once(t, mean, sem, target)
 
     n_chains = series.shape[1]
     rng = np.random.default_rng(seed)
@@ -161,7 +185,7 @@ def fit_relaxation_time(series: np.ndarray, target: float, n_boot: int = 100,
         sub = series[:, pick]
         m = sub.mean(axis=1)
         s = np.maximum(sub.std(axis=1, ddof=1) / math.sqrt(n_chains), 1e-12)
-        boots[i] = _fit_exp_once(t, m, s, target)
+        boots[i] = _fit_exp_once(t, m, s, target)[0]
     finite = boots[np.isfinite(boots)]
     if len(finite) > 3:
         q16, q84 = np.percentile(finite, [16, 84])

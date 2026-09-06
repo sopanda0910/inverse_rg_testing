@@ -103,7 +103,12 @@ train:
 ladder:
   out_dir: out/u2_2d/ladder_wide
   base: {beta: 28.0, lattice_size: 16}
-  beta_schedule: [105.651, 416.524]
+  # rung 2 (L=128, beta=1660.076) added 2026-09-06 for the seed-vs-HMC-vs-
+  # winding-HMC benchmark (08_hmc_seed_benchmark.py --rung 2) at a coupling
+  # genuinely past `default`'s training ceiling (model beta ~415 vs ~104) and
+  # a volume this checkpoint has never trained on directly -- see paper
+  # sec:seed-comparison. topology_matched_fine_beta(416.524, 64).
+  beta_schedule: [105.651, 416.524, 1660.076283]
   n_configs: 1024
   n_sampler_steps: 200
   n_corrector_steps: 1

@@ -66,7 +66,17 @@ LOOPS = [(1, 1), (2, 2), (4, 4)]
 
 
 def score(links, beta, size):
+    """Scores, AND the per-configuration values they were computed from.
+
+    The per-config arrays are kept (`per_config`, written into the result
+    JSON) so an error-bar method can be changed later -- a config-level
+    bootstrap, a different resampling unit -- without redoing the lift on a
+    GPU. Only summary z/ppm were saved originally, which made exactly that
+    re-analysis impossible and forced a full re-run; the same lesson the
+    crossover scan already learned by saving its raw per-trajectory series.
+    """
     out = {}
+    per_config = {}
     with torch.no_grad():
         for nx, ny in LOOPS:
             v = (half_retr(plaquette(links)) if (nx, ny) == (1, 1)
@@ -77,7 +87,11 @@ def score(links, beta, size):
             sem = v.std(ddof=1) / math.sqrt(len(v))
             out[f"z_W{nx}x{ny}"] = float((v.mean() - exact) / max(sem, 1e-30))
             out[f"ppm_W{nx}x{ny}"] = float(1e6 * (v.mean() - exact) / exact)
-        out["q_squared"] = float((topological_charge(links).round() ** 2).mean())
+            per_config[f"W{nx}x{ny}"] = v.tolist()
+        q = (topological_charge(links).round() ** 2)
+        out["q_squared"] = float(q.mean())
+        per_config["q_squared"] = q.cpu().numpy().astype(float).tolist()
+    out["per_config"] = per_config
     return out
 
 

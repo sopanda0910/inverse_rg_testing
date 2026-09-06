@@ -1,0 +1,42 @@
+{
+  "chain": [
+    {
+      "lattice_size": 8,
+      "beta": 15.0,
+      "model_beta": 3.8061140192404785
+    },
+    {
+      "lattice_size": 16,
+      "beta": 53.16242915440921,
+      "model_beta": 13.298972126189913
+    },
+    {
+      "lattice_size": 32,
+      "beta": 206.48286327056854,
+      "model_beta": 51.622605800025916
+    },
+    {
+      "lattice_size": 64,
+      "beta": 819.8913062647886,
+      "model_beta": 204.97328846002742
+    },
+    {
+      "lattice_size": 128,
+      "beta": 3273.5552785050186,
+      "model_beta": 818.3889344613488
+    }
+  ],
+  "final_size": 128,
+  "final_beta": 3273.5552785050186,
+  "tau_sweep": 0.3312220668928395,
+  "tau_sweep_err": 0.006860333017237874,
+  "chi2_per_dof": 5.2386854532732965,
+  "n_dof": 449,
+  "targets": {
+    "plaquette": 0.9993889967778514,
+    "wilson_2x2": 0.9975582260231559,
+    "wilson_4x4": 0.9902686194551295
+  },
+  "max_retherm_sweeps": 150,
+  "n_configs": 32
+}

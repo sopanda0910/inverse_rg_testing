@@ -1,0 +1,68 @@
+Traceback (most recent call last):
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\scripts\03_run_ladder.py", line 221, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\scripts\03_run_ladder.py", line 186, in main
+    results = generate_ladder(
+        coarse,
+    ...<13 lines>...
+        on_rung=save_rung,
+    )
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\pipeline\ladder.py", line 325, in generate_ladder
+    fine = generate_fine_from_coarse(
+        model, noise_schedule, current, beta_target,
+        n_su2_sweeps=n_su2_sweeps, batch_size=batch_size, device=device,
+        **lift_kwargs,
+    )
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\pipeline\ladder.py", line 270, in generate_fine_from_coarse
+    psi_fine = lift_determinant(model, schedule, det_links(coarse), beta_target,
+                                device=device, **lift_kwargs)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\pipeline\ladder.py", line 243, in lift_determinant
+    outputs = _run_batched(lift_batch, batch_size, coarse_psi.shape[0])
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\pipeline\ladder.py", line 87, in _run_batched
+    outputs.append(fn(start, size))
+                   ~~^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\pipeline\ladder.py", line 230, in lift_batch
+    sample = sample_ancestral(
+        score_fn,
+    ...<5 lines>...
+        step_callback=step_callback,
+    )
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\utils\_contextlib.py", line 124, in decorate_context
+    return func(*args, **kwargs)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\model\sampler.py", line 40, in sample_ancestral
+    score = score_fn(theta, sigma)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\pipeline\ladder.py", line 201, in score_fn
+    score = model.score(psi, sig, beta[: psi.shape[0]], cond[: psi.shape[0]])
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\model\score_net.py", line 253, in score
+    return self.forward(theta, sigma, beta, cond) / sigma_b
+           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\model\score_net.py", line 235, in forward
+    x = block(x, emb)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u1_2d\model\score_net.py", line 158, in forward
+    h = self.act(self.norm1(self.conv1(x)))
+                            ~~~~~~~~~~^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1779, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\nn\modules\module.py", line 1790, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\nn\modules\conv.py", line 553, in forward
+    return self._conv_forward(input, self.weight, self.bias)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\nn\modules\conv.py", line 536, in _conv_forward
+    return F.conv2d(
+           ~~~~~~~~^
+        F.pad(
+        ^^^^^^
+    ...<7 lines>...
+        self.groups,
+        ^^^^^^^^^^^^
+    )
+    ^
+RuntimeError: cuDNN error: CUDNN_STATUS_EXECUTION_FAILED_CUDART

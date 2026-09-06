@@ -1,0 +1,24 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+
+bootstrap chain (no classical HMC past the base):
+  L=  8  beta=     15.0000  model beta=     3.81
+  L= 16  beta=     53.1624  model beta=    13.30
+  L= 32  beta=    206.4829  model beta=    51.62
+  L= 64  beta=    819.8913  model beta=   204.97
+  L=128  beta=   3273.5553  model beta=   818.39
+  honest base built [262s], <Q^2> at base = 0.5000
+  lifted to L= 16 beta=   53.162  raw z(plaq)=  +1.05
+  lifted to L= 32 beta=  206.483  raw z(plaq)=  +2.23
+  lifted to L= 64 beta=  819.891  raw z(plaq)= +14.38
+  lifted to L=128 beta= 3273.555  raw z(plaq)=-287.23
+
+==========================================================================
+BOOTSTRAPPED RUNG: L=128 beta=3273.56 (model beta 818.4)
+  plaquette: 0.99939  (exact 0.99939)
+  <Q^2>: 0.5000  (exact 0.5065)
+  raw  z(plaq/W2x2/W4x4) = -287.23 / -117.16 / -28.62
+  post z(plaq/W2x2/W4x4) = -0.94 / -1.16 / -2.13
+  charge match to honest base's transported Q: 100.0%
+  VERDICT: locally trustworthy -- usable as a training rung without ever running classical HMC at this coupling.
+
+wrote out\u2_2d\data_bootstrap_poc_deepretherm\u2_L128_beta3273.56.pt

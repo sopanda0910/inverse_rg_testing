@@ -1,0 +1,45 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+
+chain (identical to 70_bootstrap_rung_poc.py's default):
+  L=  8  beta=     15.0000  model beta=     3.81
+  L= 16  beta=     53.1624  model beta=    13.30
+  L= 32  beta=    206.4829  model beta=    51.62
+  L= 64  beta=    819.8913  model beta=   204.97
+  L=128  beta=   3273.5553  model beta=   818.39
+  honest base built [212s]
+  lifted to L= 16 beta=   53.162
+  lifted to L= 32 beta=  206.483
+  lifted to L= 64 beta=  819.891
+  lifted to L=128 beta= 3273.555
+
+  sweep-by-sweep retherm at L=128 beta=3273.56 (model beta 818.4), recording up to 150 sweeps...
+    sweep 25: plaq mean = 0.99939
+    sweep 50: plaq mean = 0.99939
+    sweep 75: plaq mean = 0.99939
+    sweep 100: plaq mean = 0.99939
+    sweep 125: plaq mean = 0.99939
+    sweep 150: plaq mean = 0.99939
+
+==========================================================================
+RETHERM RELAXATION at L=128 beta=3273.56:
+  tau_sweep = 0.33 +- 0.01 sweeps  (chi2/dof = 5.24)
+  recommended retherm budget (5x tau): 2 sweeps
+
+  z at fixed sweep counts (for comparison against the earlier ad hoc choices):
+    sweep   10  plaquette     z =   -1.88
+    sweep   10  wilson_2x2    z =   -6.09
+    sweep   10  wilson_4x4    z =   -6.99
+    sweep   15  plaquette     z =   -0.31
+    sweep   15  wilson_2x2    z =   -1.77
+    sweep   15  wilson_4x4    z =   -4.23
+    sweep   40  plaquette     z =   +1.05
+    sweep   40  wilson_2x2    z =   +0.89
+    sweep   40  wilson_4x4    z =   +0.26
+    sweep   80  plaquette     z =   -0.06
+    sweep   80  wilson_2x2    z =   +1.18
+    sweep   80  wilson_4x4    z =   +2.48
+    sweep  150  plaquette     z =   -1.05
+    sweep  150  wilson_2x2    z =   -0.52
+    sweep  150  wilson_4x4    z =   +0.74
+
+wrote out\u2_2d\bootstrap_retherm_relaxation\retherm_relaxation.json

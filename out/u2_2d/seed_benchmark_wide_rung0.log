@@ -1,0 +1,8 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+benchmark at L=32 beta=105.651, 64 chains, 400 trajectories per arm
+    A_diffusion_seed: 400 trajectories in 487s
+    B_cold_start: 400 trajectories in 499s
+    C_hot_start: 400 trajectories in 497s
+    D_cold_plus_winding: 400 trajectories in 513s
+    E_diffusion_plus_winding: 400 trajectories in 519s
+    F_hot_plus_winding: 400 trajectories in 517s
