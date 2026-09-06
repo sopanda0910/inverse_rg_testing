@@ -50,6 +50,13 @@ CHECKPOINTS = [
      "#0072B2", 60.0, "deployed (score_net.pt, beta_max=60)"),
     ("wide2000", ["out/u1_2d/coverage_scan/wide2000_L16target/wide2000/crossover_window.json"],
      "#009E73", 2000.0, "wide2000 (beta_max=2000, same capacity)"),
+    # wide2000_dense: density-matched twin of wide2000 (adds 30 supplement
+    # rungs, out/u1_2d/data_random_2000/, on top of wide2000's own rungs),
+    # same capacity, evaluated on the identical 7 matched couplings -- see
+    # CHECKPOINTS' header comment above and sec:coverage-u1's density-vs-range
+    # paragraph.
+    ("wide2000_dense", ["out/u1_2d/coverage_scan/wide2000_dense_L16target/crossover_window.json"],
+     "#CC79A7", 2000.0, "wide2000_dense (beta_max=2000, density-matched)"),
 ]
 
 

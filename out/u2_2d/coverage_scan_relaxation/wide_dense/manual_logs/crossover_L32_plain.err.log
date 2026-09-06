@@ -1,0 +1,37 @@
+C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\.venv\Lib\site-packages\torch\_utils.py:106: UserWarning: expandable_segments not supported on this platform (Triggered internally at C:\actions-runner\_work\pytorch\pytorch\pytorch\c10/cuda/CUDAAllocatorConfig.h:39.)
+  untyped_storage = torch.UntypedStorage(self.size(), device=device)
+Traceback (most recent call last):
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\scripts\28_crossover_scan.py", line 717, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\scripts\28_crossover_scan.py", line 608, in main
+    all_series, _ = run_arm(sampler, start, n_traj, args.record_every)
+                    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\scripts\28_crossover_scan.py", line 427, in run_arm
+    links, _ = sampler.metropolis_step(links)
+               ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\hmc.py", line 135, in metropolis_step
+    new_links, new_momenta = self.omelyan(links.clone(), momenta)
+                             ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\hmc.py", line 128, in omelyan
+    momenta = momenta - 2.0 * lam * dt * self.force(links)
+                                         ~~~~~~~~~~^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\hmc.py", line 118, in force
+    return u2_force(links, self.action.beta)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\hmc.py", line 70, in u2_force
+    m = link_environment(links)
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\lattice.py", line 426, in link_environment
+    return quat_mul(to_complex_quaternion(links), staples(links))
+                                                  ~~~~~~~^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\lattice.py", line 409, in staples
+    up_y = quat_mul(quat_mul(shift(m0, dy=1), shift(d1, dx=1)), d0)
+                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ompan\Desktop\Lattice QCD\inverse_rg_testing\u2_2d\lgt\lattice.py", line 81, in quat_mul
+    a0 * b3 + b0 * a3 - (a1 * b2 - a2 * b1),
+              ~~~^~~~
+torch.AcceleratorError: CUDA error: out of memory
+Search for `cudaErrorMemoryAllocation' in https://docs.nvidia.com/cuda/cuda-runtime-api/group__CUDART__TYPES.html for more information.
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+

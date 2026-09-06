@@ -11,13 +11,36 @@
 seed: 2
 device: cpu
 
+# FIX (2026-09-06): these rungs sit at raw beta 430-2000, deep in the regime
+# CLAUDE.md documents as topologically frozen under honest sampling (odd
+# mobility already dies past beta~14-20 at small L, and even the marginal
+# move's flip rate keeps falling through this range) -- yet this file, unlike
+# wide.yaml's own fixed rungs at the same betas, never set `sector_augment` or
+# `seed_exact_sectors`, so every rung here silently fell back to plain honest
+# HMC with NO mitigation. Found by tracing a specific wide_dense supplement
+# rung (raw beta=536.629, L=16) that came back with winding_acceptance_rate=0
+# and q_squared=0.0 against exact ~6.7e-5 -- genuinely frozen at Q=0, not
+# sampled -- which then taught the net to reproduce a frozen, wrong
+# coarse-to-fine map at exactly the coupling closest to it (see
+# sec:coverage-u2's "frozen coarse training input" paragraph in the paper).
+# `sector_augment: 0.5` + `seed_exact_sectors: true` matches the convention
+# every other beta>=51.75 rung in this project already uses (wide.yaml,
+# default.yaml): install the exact P(Q) weight, then layer a uniform-coverage
+# supplement on top via `local_updates.conditional_su2_sweeps`, the EXACT
+# conditional sampler -- so the resulting configs are genuinely well-formed at
+# their assigned sector, not just charge-labeled.
 data:
   out_dir: out/u2_2d/data_random_2000
   n_chains: 32
   thin: 5
   topological_updates: true
   winding_charge_step: 1
+  seed_exact_sectors: true
+  sector_augment: 0.5
   random_rungs:
-    - {n: 20, beta_min: 430.0, beta_max: 2000.0, lattice_size: 16, n_configs: 128}
-    - {n: 8,  beta_min: 430.0, beta_max: 2000.0, lattice_size: 32, n_configs: 128}
-    - {n: 3,  beta_min: 430.0, beta_max: 2000.0, lattice_size: 8,  n_configs: 128}
+    - {n: 20, beta_min: 430.0, beta_max: 2000.0, lattice_size: 16, n_configs: 128,
+       seed_exact_sectors: true, sector_augment: 0.5}
+    - {n: 8,  beta_min: 430.0, beta_max: 2000.0, lattice_size: 32, n_configs: 128,
+       seed_exact_sectors: true, sector_augment: 0.5}
+    - {n: 3,  beta_min: 430.0, beta_max: 2000.0, lattice_size: 8,  n_configs: 128,
+       seed_exact_sectors: true, sector_augment: 0.5}

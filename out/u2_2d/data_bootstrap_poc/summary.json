@@ -1,0 +1,54 @@
+[
+  {
+    "beta": 3273.5552785050186,
+    "lattice_size": 128,
+    "n_configs": 32,
+    "n_chains": 32,
+    "source": "bootstrap: diffusion lift chain from honest low-beta base + local retherm -- NO classical HMC at this beta",
+    "chain": [
+      {
+        "lattice_size": 8,
+        "beta": 15.0,
+        "model_beta": 3.8061140192404785
+      },
+      {
+        "lattice_size": 16,
+        "beta": 53.16242915440921,
+        "model_beta": 13.298972126189913
+      },
+      {
+        "lattice_size": 32,
+        "beta": 206.48286327056854,
+        "model_beta": 51.622605800025916
+      },
+      {
+        "lattice_size": 64,
+        "beta": 819.8913062647886,
+        "model_beta": 204.97328846002742
+      },
+      {
+        "lattice_size": 128,
+        "beta": 3273.5552785050186,
+        "model_beta": 818.3889344613488
+      }
+    ],
+    "checkpoint": "out/u2_2d/checkpoints/det_score_net_wide_dense.pt",
+    "plaquette": 0.9993885159492493,
+    "plaquette_exact": 0.9993889967778514,
+    "q_squared": 0.5625,
+    "q_squared_exact": 0.5065099885509461,
+    "charge_match_to_honest_base_fraction": 1.0,
+    "raw_z_before_retherm": {
+      "z_W1x1": -242.24847127982852,
+      "z_W2x2": -116.6658599576414,
+      "z_W4x4": -33.60346866139113
+    },
+    "post_z_after_retherm": {
+      "z_W1x1": -0.8208235626917816,
+      "z_W2x2": -2.551833646559327,
+      "z_W4x4": -4.785417289317557
+    },
+    "final_retherm_sweeps": 15,
+    "seconds": 340.5964276790619
+  }
+]
