@@ -29,4 +29,10 @@ out/u2_2d/keep_awake.log
 # paper_appendix/figures/, regenerated in seconds by
 # u1_2d/scripts/64_export_paper_bundle.py. The appendix directories themselves
 # ARE tracked; this is the copy made for upload.
-paper/
+# NOTE: must exclude the CONTENTS (paper/*), not the directory (paper/).
+# Git cannot re-include a file whose parent directory is excluded, so a
+# `!paper/current.tex` line under a bare `paper/` rule is silently inert.
+paper/*
+# current.tex is HAND-AUTHORED and not regenerable by the exporter, so it
+# is tracked. Losing it would lose the paper.
+!paper/current.tex

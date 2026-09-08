@@ -1270,6 +1270,106 @@ figure inputs: `ode_reweighting_sweep/` and `model_ess_noguide/` (figures 19,
 
 ### Thermalization / relaxation-time definition (u1 AND u2, superseded 2026-09-03)
 
+**READ CAPACITY AND COVERAGE OFF THE CHECKPOINT, NOT THE CONFIG -- THE u1
+CONFIGS HAVE DRIFTED TOO (2026-09-08).** This file already warns that
+`u2_2d/configs/default.yaml` grew a `random_rungs` block and no longer
+describes the deployed `det_score_net.pt`. The same hazard bit on the u1 side
+and nearly produced a false "the coverage comparison is confounded" finding in
+the paper: `u1_2d/configs/v3_scale.yaml` (hidden 80, depth 5) does **not**
+produce the deployed `score_net.pt` -- it writes `score_net_big.pt`. The
+deployed u1 checkpoint comes from `v2.yaml`: hidden 56, depth 4, 100 epochs,
+4 fixed + 78 random rungs at beta_max 60.
+
+Every checkpoint stores `model_kwargs` and a parameter count, and u2's
+checkpoints also carry a `.history.json` whose `val_*` keys name the rungs
+actually trained on. Use those. Verified 2026-09-08:
+
+| checkpoint | params | hidden/depth | rungs |
+|---|---|---|---|
+| u1 `score_net.pt` (deployed) | 324,954 | 56/4 | 4 fixed + 78 random (bmax 60) |
+| u1 `score_net_wide2000.pt` | 324,954 | 56/4 | 11 fixed + 78 random (bmax 250) |
+| u1 `..._wide2000_dense_sectorfix.pt` | 324,954 | 56/4 | 41 fixed + 78 random |
+| u2 `det_score_net.pt` (deployed) | 403,394 | 64/4 | 9 unique fixed, NO random |
+| u2 `det_score_net_cov60.pt` | 403,394 | 64/4 | ~100 fixed, NO random |
+| u2 `det_score_net_wide.pt` | 403,394 | 64/4 | 24 fixed, NO random |
+| u2 `det_score_net_wide_dense.pt` | 403,394 | 64/4 | 55 fixed, NO random |
+
+**Consequence for the paper's coverage claims: every published comparison is
+INTERNALLY CONTROLLED** -- within a theory the two arms share architecture,
+parameter count, epoch budget and randomly-placed-rung block, and differ only
+in the fixed coverage rungs. The two THEORIES use different recipes (u1 has
+78 random rungs, u2 none), which is not a confound because no claim
+differences a u1 number against a u2 one, and is addressed explicitly in
+`sec:coverage-u1`. **Do not "fix" the asymmetry by retraining u1 without
+random rungs**: this file records random-beta training as one of the keys to
+u1's generalization, so that trade buys cosmetic symmetry at the cost of the
+result, and the claim is about coverage rather than rung placement.
+
+**Also do not claim one theory outperforms the other from these numbers.**
+The evaluation grids are not comparable -- u1's 15 couplings all sit 4-43x
+past its deployed ceiling and were chosen to be hard; u2's 44 span both sides
+of its own ceiling.
+
+**A RELAXATION TIME IS NOT A SEED-QUALITY MEASURE -- IT IS INVERTED FOR GOOD
+SEEDS (2026-09-08). Read this before using `t_therm`, `fit_relaxation_time`,
+or any cost-efficiency built on them to COMPARE checkpoints or seeds.** The
+estimator fits `mean(t) ~ target + A exp(-t/tau)`. A seed FAR from target
+relaxes visibly, so the fit succeeds and returns a finite tau -- scored a
+SUCCESS. A seed ALREADY AT target has no transient to resolve, so the fit
+returns `inf` or is vetoed -- scored a FAILURE. It also cannot separate
+`tau=0` (already correct, the best case) from `tau=483` (bad). So the binary
+"does the seed resolve a finite relaxation time" ranks checkpoints by HOW
+MUCH ROOM THEIR SEEDS LEFT TO RELAX, which is backwards.
+
+Measured, not argued: u1 `deployed`'s seeds sit 59-78 sigma from exact and
+score 8/15; `wide2000`'s sit at 1-32 sigma and score 3/15. u2's indicator puts
+`wide_dense` below `wide` and `cov60` below `default`, both the reverse of the
+seeds' measured distance from exact.
+
+**The replacement, and it is the standard for BOTH theories**
+(`u2_2d/scripts/84_raw_seed_quality.py`, one script for u1 and u2 on purpose;
+figures via `85_coverage_seed_quality_figure.py`):
+
+    Z   = max over {plaquette, W(2x2), W(4x4)} of |mean - exact| / SEM
+    PPM = same in relative deviation
+
+both at RECORD 0 of the saved series -- the raw seed, before any trajectory.
+Fit-free, so it inherits none of the estimator's failure modes.
+
+**REPORT BOTH.** `z = sqrt(N) bias/sigma`, so a checkpoint whose seeds are
+NOISIER scores a smaller z at equal bias; a relative deviation ignores that
+the theory's own spread moves by orders of magnitude across couplings. Rule of
+thumb: AT FIXED COUPLING the ratio is meaningful (both arms face the identical
+spread); ACROSS couplings use z. This trap was hit twice while building the
+endpoint -- a first pass on Z alone appeared to show a full inversion in u2
+that PPM did not support, and the gap correlation gives -0.16 in PPM against
++0.63 in z.
+
+`tau` IS retained for the question it does answer: the trajectory cost of
+rethermalizing a given start. Do not use it to rank seeds.
+
+**What this corrected when applied, so the scale of the problem is on record.**
+Three published claims were resting on the inverted indicator: the paper's
+ABSTRACT ("indistinguishable at 32x32, separate decisively at 64x64" -- an
+artifact of the finite-tau column; on seed distance the ordering is the same
+at both volumes and it is the MAGNITUDE that doubles); the u2 DENSITY null
+("density was not the missing ingredient" -- `wide_dense` in fact beats `wide`
+35/44, p<1e-4, entirely inside coverage); and the coverage-empty-rung
+mechanism (conclusion survived, evidence did not). The pre-registration and
+the full outcome are in `docs/u1_2d/COVERAGE_TEST_PREREG.md`.
+
+**THE COVERAGE RESULT, on the corrected endpoint.** u1, 15 couplings, 8 of
+them pre-registered off-rung: both wide checkpoints beat `deployed` 15/15
+(median 9.4x and 8.7x in Z) and 8/8 off-rung (8.1x, 8.2x, p=0.0078 -- the
+floor at n=8). Density is NOT resolved in u1 (0.9x, CI straddles 1). u2, 44
+couplings: past `default`'s ceiling both wide checkpoints win 14/14 (9.8x,
+17.1x); inside coverage the NARROWEST checkpoint `cov60` is the best of the
+four (28/30 against `default`, p<1e-4). So quality tracks WHERE a
+checkpoint's rungs are, not how wide its nominal range is -- and range and
+density act in different places: range rescues past the ceiling where density
+does nothing, density improves inside coverage where range does nothing.
+
+
 **PORTED TO u1 THE SAME DAY IT WAS BUILT, 2026-09-03 -- this is a
 project-wide evaluation standard, not a u2-only change.** Built first in
 `u2_2d/scripts/28_crossover_scan.py` (motivated by u2's own visibly jagged

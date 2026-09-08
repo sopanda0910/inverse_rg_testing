@@ -1,0 +1,243 @@
+{
+  "label": "F_L16_bc217.876_L16_beta870",
+  "beta": 869.9999902278433,
+  "lattice_size": 16,
+  "n_gen_chains": 64,
+  "n_baseline_chains": 64,
+  "n_traj_gen": 96,
+  "n_traj_baseline": 640,
+  "hmc": {
+    "step_size": 0.01356127014857877,
+    "n_steps": 74,
+    "acceptance": {
+      "generated": 0.9295247395833334,
+      "hot": 0.7844970703125,
+      "cold": 0.988134765625
+    },
+    "sec_per_traj_gen_batch": 0.16550310204426447,
+    "sec_per_traj_baseline_batch": 0.15679569803178312
+  },
+  "t_therm": {
+    "diffusion seed": {
+      "plaquette": NaN,
+      "wilson_2x2": NaN,
+      "wilson_4x4": NaN,
+      "wilson_6x6": NaN,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": NaN,
+      "wilson_2x2": NaN,
+      "wilson_4x4": NaN,
+      "wilson_6x6": 1187.6049511986155,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": NaN,
+      "wilson_2x2": NaN,
+      "wilson_4x4": 2.9557470121593594,
+      "wilson_6x6": 1.973816358284114,
+      "Q^2": Infinity
+    }
+  },
+  "t_therm_err": {
+    "diffusion seed": {
+      "plaquette": NaN,
+      "wilson_2x2": NaN,
+      "wilson_4x4": NaN,
+      "wilson_6x6": NaN,
+      "Q^2": NaN
+    },
+    "hot start": {
+      "plaquette": NaN,
+      "wilson_2x2": NaN,
+      "wilson_4x4": NaN,
+      "wilson_6x6": 336.77711627367074,
+      "Q^2": NaN
+    },
+    "cold start": {
+      "plaquette": NaN,
+      "wilson_2x2": NaN,
+      "wilson_4x4": 0.26702524907263747,
+      "wilson_6x6": 0.18743713834677922,
+      "Q^2": NaN
+    }
+  },
+  "t_therm_threshold_old": {
+    "diffusion seed": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "hot start": {
+      "plaquette": Infinity,
+      "wilson_2x2": Infinity,
+      "wilson_4x4": Infinity,
+      "wilson_6x6": Infinity,
+      "Q^2": Infinity
+    },
+    "cold start": {
+      "plaquette": Infinity,
+      "wilson_2x2": 318.0,
+      "wilson_4x4": 54.0,
+      "wilson_6x6": 19.0,
+      "Q^2": Infinity
+    }
+  },
+  "t_therm_generated_full_batch": {
+    "plaquette": NaN,
+    "wilson_2x2": NaN,
+    "wilson_4x4": NaN,
+    "wilson_6x6": NaN,
+    "Q^2": Infinity
+  },
+  "t_therm_subsample_size": 64,
+  "final_abs_z": {
+    "diffusion seed": {
+      "plaquette": 31.823720932006836,
+      "wilson_2x2": 23.391796112060547,
+      "wilson_4x4": 13.4342041015625,
+      "wilson_6x6": 5.513220310211182,
+      "Q^2": 24271.84375
+    },
+    "hot start": {
+      "plaquette": 3.2776710987091064,
+      "wilson_2x2": 4.378328323364258,
+      "wilson_4x4": 6.461207389831543,
+      "wilson_6x6": 8.968920707702637,
+      "Q^2": 5.2443318367004395
+    },
+    "cold start": {
+      "plaquette": 7.552542209625244,
+      "wilson_2x2": 1.9053491353988647,
+      "wilson_4x4": 1.1400976181030273,
+      "wilson_6x6": 0.9457723498344421,
+      "Q^2": 24271.84375
+    }
+  },
+  "tau_int": {
+    "plaquette": {
+      "value": 23.712311426368387,
+      "error": 1.9702811959632902
+    },
+    "wilson_2x2": {
+      "value": 10.924949644279678,
+      "error": 1.531949647659192
+    },
+    "wilson_4x4": {
+      "value": 4.431204439858698,
+      "error": 1.0808551559050872
+    },
+    "wilson_6x6": {
+      "value": 3.7371602749258446,
+      "error": 1.2633848981007452
+    }
+  },
+  "tau_int_static": {
+    "plaquette": false,
+    "wilson_2x2": false,
+    "wilson_4x4": false,
+    "wilson_6x6": false
+  },
+  "interval_reliable": true,
+  "relaxation_fits": {
+    "diffusion seed": {
+      "plaquette": {
+        "tau": 9.644513525626019,
+        "tau_error": 0.22365576715927,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 10.176291913128273,
+        "tau_error": 0.1640707751803719,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 11.047059986614952,
+        "tau_error": 0.1394297742850346,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 10.584704241880745,
+        "tau_error": 0.2574151710448823,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "constant series (no decay; frozen)"
+      }
+    },
+    "hot start": {
+      "plaquette": {
+        "tau": 1.603398769612221,
+        "tau_error": 0.0178852199587099,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 4.321995701306557,
+        "tau_error": 0.14754146823916714,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 46.27860552180841,
+        "tau_error": 0.6592299527417667,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 42.901805650982546,
+        "tau_error": 0.3784132107769456,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": 0.9080325534455774,
+        "tau_error": 0.003822328252645923,
+        "status": "ok"
+      }
+    },
+    "cold start": {
+      "plaquette": {
+        "tau": 39.33316406466166,
+        "tau_error": 2.08124427770998,
+        "status": "ok"
+      },
+      "wilson_2x2": {
+        "tau": 5.281131519402959,
+        "tau_error": 0.20792897369816393,
+        "status": "ok"
+      },
+      "wilson_4x4": {
+        "tau": 3.939435138975402,
+        "tau_error": 0.210090466177517,
+        "status": "ok"
+      },
+      "wilson_6x6": {
+        "tau": 2.2565370031774084,
+        "tau_error": 0.18499527669979934,
+        "status": "ok"
+      },
+      "Q^2": {
+        "tau": null,
+        "tau_error": null,
+        "status": "constant series (no decay; frozen)"
+      }
+    }
+  },
+  "hmc_interval_trajectories": 47.424622852736775,
+  "q_freezing": {
+    "label": "hot-start HMC L=16 beta=870",
+    "frozen": true,
+    "n_tunnelings": 0,
+    "window_length": 321,
+    "n_chains": 64,
+    "tau_int_Q": 321.0
+  },
+  "wall_clock": {
+    "gen_sample_seconds": 140.04794549942017,
+    "n_seed_configs": 64,
+    "sec_per_traj_gen_batch": 0.16550310204426447,
+    "sec_per_traj_baseline_batch": 0.15679569803178312
+  }
+}

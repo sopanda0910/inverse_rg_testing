@@ -22,13 +22,21 @@ sets in as beta grows and standard HMC slides into critical slowing down and top
 
 | rung | L | beta | t_therm diffusion seed | standard-HMC interval 2 tau_int | margin (interval - t_therm) | burn-in hot / cold | tau_int(Q) |
 |---|---|---|---|---|---|---|---|
+| F_L16_bc62.8782_L16_beta250 | 16 | 250 | never | 91.3 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc75.3776_L16_beta300 | 16 | 300 | never | 88.3 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc87.8773_L16_beta350 | 16 | 350 | 0 | 46.8 | 46.8 traj | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc100.377_L16_beta400 | 16 | 400 | 0 | 20.3 | 20.3 traj | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc117.877_L16_beta470 | 16 | 470 | never | 9.2 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc137.876_L16_beta550 | 16 | 550 | never | 15.1 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc162.876_L16_beta650 | 16 | 650 | 350 | 79.4 | -270.4 traj | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc187.876_L16_beta750 | 16 | 750 | never | 20.7 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc217.876_L16_beta870 | 16 | 870 | never | 57.1 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc250.376_L16_beta1000 | 16 | 1000 | 478 | 17.8 | -460.2 traj | nan / 3 | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc306.626_L16_beta1225 | 16 | 1225 | never | 65.4 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc375.375_L16_beta1500 | 16 | 1500 | 0 | 17.3 | 17.3 traj | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc437.875_L16_beta1750 | 16 | 1750 | 26 | 26.1 | -0.3 traj | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
 | F_L16_bc500.375_L16_beta2000 | 16 | 2000 | never | 13.4 | -- | nan / nan | frozen (0 tunnelings in 321 x 64 traj) |
+| F_L16_bc650.375_L16_beta2600 | 16 | 2600 | nan | 3.0 | -- | never / nan | frozen (0 tunnelings in 321 x 64 traj) |
 
 ## Wall-clock accounting
 
@@ -36,13 +44,21 @@ All timescales above are in HMC trajectories -- the honest *ergodicity* unit. Th
 
 | case | seed: sample s/config | seed: t_therm s (batch) | HMC interval s/config | hot burn-in s (batch) | s/traj (batch) |
 |---|---|---|---|---|---|
+| F_L16_bc62.8782_L16_beta250 | n/a (cached) | never | 0.14 | never | 0.10 |
 | F_L16_bc75.3776_L16_beta300 | 0.1 | never | 0.23 | never | 0.17 |
+| F_L16_bc87.8773_L16_beta350 | 2.3 | 0.0 | 0.08 | never | 0.10 |
 | F_L16_bc100.377_L16_beta400 | 0.1 | 0.0 | 0.06 | never | 0.20 |
+| F_L16_bc117.877_L16_beta470 | 2.1 | never | 0.02 | never | 0.13 |
 | F_L16_bc137.876_L16_beta550 | 0.1 | never | 0.05 | never | 0.22 |
+| F_L16_bc162.876_L16_beta650 | 2.2 | 46.9 | 0.17 | never | 0.14 |
 | F_L16_bc187.876_L16_beta750 | 0.1 | never | 0.08 | never | 0.24 |
+| F_L16_bc217.876_L16_beta870 | 2.2 | never | 0.15 | never | 0.17 |
 | F_L16_bc250.376_L16_beta1000 | 0.1 | 141.6 | 0.08 | never | 0.29 |
+| F_L16_bc306.626_L16_beta1225 | 2.2 | never | 0.19 | never | 0.18 |
 | F_L16_bc375.375_L16_beta1500 | 0.1 | 0.0 | 0.09 | never | 0.35 |
+| F_L16_bc437.875_L16_beta1750 | 2.1 | 5.9 | 0.10 | never | 0.24 |
 | F_L16_bc500.375_L16_beta2000 | 0.1 | never | 0.08 | never | 0.40 |
+| F_L16_bc650.375_L16_beta2600 | 2.2 | never | 0.01 | never | 0.24 |
 
 ## Fitted relaxation times across starts
 
@@ -50,20 +66,36 @@ Exponential fits C + A exp(-t/tau) to the ensemble-mean plaquette and W(2x2) rel
 
 | case | obs | tau: diffusion seed | tau: hot start | tau: cold start |
 |---|---|---|---|---|
+| F_L16_bc62.8782_L16_beta250 | plaquette | 2.5 +- 0.5 | 1.6 +- 0.0 | 4.4 +- 0.2 |
+| F_L16_bc62.8782_L16_beta250 | wilson_2x2 | 1.9 +- 1.2 | 3.4 +- 0.1 | 5.3 +- 0.3 |
 | F_L16_bc75.3776_L16_beta300 | plaquette | 8.2 +- 1.4 | 1.7 +- 0.0 | 43.0 +- 1.6 |
 | F_L16_bc75.3776_L16_beta300 | wilson_2x2 | 18.2 +- 7.6 | 4.0 +- 0.1 | 27.9 +- 1.1 |
+| F_L16_bc87.8773_L16_beta350 | plaquette | 63.4 +- 39.1 | 1.6 +- 0.0 | 23.0 +- 0.9 |
+| F_L16_bc87.8773_L16_beta350 | wilson_2x2 | no measurable decay (starts at plateau; tau unconstrained) | 4.0 +- 0.1 | 9.7 +- 0.4 |
 | F_L16_bc100.377_L16_beta400 | plaquette | 10.7 +- 2.0 | 1.6 +- 0.0 | 10.4 +- 0.5 |
 | F_L16_bc100.377_L16_beta400 | wilson_2x2 | unreliable (tau exceeds window) | 3.4 +- 0.0 | 8.1 +- 0.4 |
+| F_L16_bc117.877_L16_beta470 | plaquette | 3.1 +- 0.4 | 1.6 +- 0.0 | 5.4 +- 0.1 |
+| F_L16_bc117.877_L16_beta470 | wilson_2x2 | 2.8 +- 1.2 | 3.6 +- 0.1 | 4.8 +- 0.1 |
 | F_L16_bc137.876_L16_beta550 | plaquette | no measurable decay (starts at plateau; tau unconstrained) | 1.6 +- 0.0 | 5.5 +- 0.2 |
 | F_L16_bc137.876_L16_beta550 | wilson_2x2 | 3.9 +- 1.7 | 4.5 +- 0.1 | 5.6 +- 0.2 |
+| F_L16_bc162.876_L16_beta650 | plaquette | 1.6 +- 0.5 | 1.6 +- 0.0 | 4.1 +- 0.2 |
+| F_L16_bc162.876_L16_beta650 | wilson_2x2 | no measurable decay (starts at plateau; tau unconstrained) | 3.5 +- 0.1 | 74.7 +- 4.0 |
 | F_L16_bc187.876_L16_beta750 | plaquette | unconstrained fit (tau error exceeds tau) | 1.6 +- 0.0 | 2.2 +- 0.1 |
 | F_L16_bc187.876_L16_beta750 | wilson_2x2 | 24.8 +- 24.6 | 3.8 +- 0.1 | 1.4 +- 0.1 |
+| F_L16_bc217.876_L16_beta870 | plaquette | 4.5 +- 2.2 | 1.6 +- 0.0 | 28.5 +- 1.5 |
+| F_L16_bc217.876_L16_beta870 | wilson_2x2 | 3.2 +- 1.0 | 4.7 +- 0.2 | 4.8 +- 0.2 |
 | F_L16_bc250.376_L16_beta1000 | plaquette | unreliable (tau exceeds window) | 1.7 +- 0.0 | 2.3 +- 0.1 |
 | F_L16_bc250.376_L16_beta1000 | wilson_2x2 | no measurable decay (starts at plateau; tau unconstrained) | 3.4 +- 0.1 | 2.9 +- 0.1 |
+| F_L16_bc306.626_L16_beta1225 | plaquette | 14.2 +- 3.4 | 1.6 +- 0.0 | 12.3 +- 0.5 |
+| F_L16_bc306.626_L16_beta1225 | wilson_2x2 | 17.2 +- 6.6 | 4.3 +- 0.1 | 22.5 +- 1.0 |
 | F_L16_bc375.375_L16_beta1500 | plaquette | 10.0 +- 1.8 | 1.6 +- 0.0 | 4.7 +- 0.2 |
 | F_L16_bc375.375_L16_beta1500 | wilson_2x2 | 0.7 +- 0.3 | 3.6 +- 0.1 | 2.0 +- 0.1 |
+| F_L16_bc437.875_L16_beta1750 | plaquette | 22.1 +- 5.7 | 1.6 +- 0.0 | 14.7 +- 0.6 |
+| F_L16_bc437.875_L16_beta1750 | wilson_2x2 | 37.8 +- 28.1 | 3.5 +- 0.1 | 7.7 +- 0.4 |
 | F_L16_bc500.375_L16_beta2000 | plaquette | 3.5 +- 0.3 | 1.5 +- 0.0 | 4.5 +- 0.2 |
 | F_L16_bc500.375_L16_beta2000 | wilson_2x2 | 3.5 +- 0.8 | 2.8 +- 0.1 | 4.9 +- 0.2 |
+| F_L16_bc650.375_L16_beta2600 | plaquette | 2.8 +- 0.2 | 1.6 +- 0.0 | 7.4 +- 0.3 |
+| F_L16_bc650.375_L16_beta2600 | wilson_2x2 | 5.3 +- 0.4 | 2.8 +- 0.1 | 10.6 +- 0.3 |
 
 t_therm and burn-in are the slowest Wilson-loop observable (plaquette, W(2x2), W(4x4)); topology is stricter still for the fresh chains: their Q^2 **never** reaches the exact value at the frozen rungs, while the diffusion seed inherits the correct topological sector from the coarse ensemble it was generated from (see the Q^2 panels and per-rung tables below).
 
@@ -74,6 +106,80 @@ Thermalization time `t_therm` = first trajectory at which the ensemble-mean z-sc
 'never' = the ensemble mean was still outside |z| <= 2 of the exact value after the full baseline budget; the per-rung sections quote the z-score it plateaued at. For hot starts at the large-beta rungs this is not a budget problem but a physical one: a random start freezes into a random topological sector (<Q^2> of order tens), plain HMC can never change Q at these couplings (tunneling is suppressed ~exp(-2 beta)), and the wrong sector biases every Wilson loop by an amount that never decays. Cold starts sit in the single sector Q = 0, so their Wilson loops do eventually converge, but <Q^2> stays pinned at 0 forever.
 
 None of the exact values in this report come from fine-lattice HMC: the ground truth is the character expansion of 2D compact U(1) (`diffusion/lgt/exact.py`), which gives every Wilson loop, P(Q) and chi_top in closed form at finite volume. Each diffusion seed here is one inverse-RG step from a direct-HMC base ensemble at the matched coarse coupling beta_c (L=16), where HMC mixes well -- which is precisely why it can start chains in regions standard HMC cannot reach.
+
+## F_L16_bc62.8782_L16_beta250
+
+HMC: step size 0.0253, 40 leapfrog steps, acceptance seed/hot/cold = 0.986/0.986/0.988. Diffusion-seed batch: 64 chains x 96 trajectories (0.13 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta250/F_L16_bc62.8782_L16_beta250_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 29.31 +- 1.77, wilson_2x2 = 43.63 +- 1.47, wilson_4x4 = 45.66 +- 1.48, wilson_6x6 = 34.62 +- 2.43. Topology: hot-start HMC L=16 beta=250 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 6; the cold start ended the 640-trajectory budget still at Q^2 at |z| ~ 8840.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9982 | 1.724e-05 | 0.998 | 12.64 | 0.998 | 1.77e-05 | 8.342 | 2.914e-10 |  |
+| wilson_1x1 | 0.9982 | 1.724e-05 | 0.998 | 12.64 | 0.998 | 1.77e-05 | 8.342 | 2.914e-10 |  |
+| wilson_1x2 | 0.9964 | 3.956e-05 | 0.996 | 8.412 | 0.9961 | 4.155e-05 | 3.807 | 4.659e-05 |  |
+| wilson_2x2 | 0.9925 | 0.0001126 | 0.9921 | 3.093 | 0.9925 | 9.226e-05 | -0.01906 | 0.2811 |  |
+| wilson_2x3 | 0.989 | 0.0001843 | 0.9883 | 3.681 | 0.9889 | 0.000176 | 0.2747 | 0.4535 |  |
+| wilson_3x3 | 0.9838 | 0.0003351 | 0.9827 | 3.021 | 0.984 | 0.0002733 | -0.4781 | 0.2811 |  |
+| wilson_3x4 | 0.9787 | 0.0004625 | 0.9773 | 2.974 | 0.9786 | 0.000416 | 0.2639 | 0.6123 |  |
+| wilson_4x4 | 0.9721 | 0.0006488 | 0.9704 | 2.633 | 0.9717 | 0.000536 | 0.4116 | 0.6123 |  |
+| wilson_4x5 | 0.9658 | 0.0008286 | 0.9637 | 2.485 | 0.9651 | 0.0006887 | 0.6114 | 0.2464 |  |
+| wilson_5x5 | 0.959 | 0.001143 | 0.9558 | 2.791 | 0.9576 | 0.0008528 | 0.9613 | 0.1015 |  |
+| wilson_5x6 | 0.9516 | 0.001421 | 0.9483 | 2.301 | 0.9501 | 0.001009 | 0.8594 | 0.2464 |  |
+| wilson_6x6 | 0.9445 | 0.001954 | 0.9399 | 2.361 | 0.9423 | 0.001218 | 0.9699 | 0.03572 |  |
+| wilson_6x7 | 0.9369 | 0.002399 | 0.9321 | 2.02 | 0.935 | 0.001342 | 0.697 | 0.08625 |  |
+| wilson_7x7 | 0.9299 | 0.003024 | 0.9237 | 2.057 | 0.9279 | 0.001455 | 0.5896 | 0.04298 |  |
+| wilson_7x8 | 0.9233 | 0.003494 | 0.9161 | 2.073 | 0.9206 | 0.001529 | 0.7039 | 0.04298 |  |
+| wilson_8x8 | 0.9168 | 0.003866 | 0.9083 | 2.203 | 0.914 | 0.001681 | 0.6689 | 0.07294 |  |
+| creutz_2 | 0.002032 | 6.228e-05 | 0.001934 | 1.585 |  |  |  |  |  |
+| creutz_3 | 0.0018 | 0.0001558 | 0.001808 | -0.0523 |  |  |  |  |  |
+| creutz_4 | 0.001645 | 0.0002741 | 0.00162 | 0.08982 |  |  |  |  |  |
+| creutz_5 | 0.0005484 | 0.0004666 | 0.00137 | -1.761 |  |  |  |  |  |
+| creutz_6 | -0.0002845 | 0.0005902 | 0.001057 | -2.272 |  |  |  |  |  |
+| creutz_7 | -0.0005516 | 0.0007748 | 0.000681 | -1.591 |  |  |  |  |  |
+| creutz_8 | -4.739e-05 | 0.001026 | 0.0002427 | -0.2826 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 8.84e-09 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 3.453e-11 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 5.658e-07 | nan | 2 | nan |  |  |  |  | 1 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.998 | 2.045e-05 | 0.998 | 0.2293 | 0.998 | 1.77e-05 | -0.2644 | 0.9433 |  |
+| wilson_1x1 | 0.998 | 2.045e-05 | 0.998 | 0.2293 | 0.998 | 1.77e-05 | -0.2644 | 0.9433 |  |
+| wilson_1x2 | 0.9961 | 4.783e-05 | 0.996 | 0.8381 | 0.9961 | 4.155e-05 | -1.173 | 0.4056 |  |
+| wilson_2x2 | 0.9923 | 0.0001107 | 0.9921 | 1.463 | 0.9925 | 9.226e-05 | -1.312 | 0.1614 |  |
+| wilson_2x3 | 0.9887 | 0.0001716 | 0.9883 | 2.279 | 0.9889 | 0.000176 | -0.8852 | 0.1867 |  |
+| wilson_3x3 | 0.9835 | 0.0002789 | 0.9827 | 2.653 | 0.984 | 0.0002733 | -1.227 | 0.08625 |  |
+| wilson_3x4 | 0.9786 | 0.0004701 | 0.9773 | 2.732 | 0.9786 | 0.000416 | 0.1166 | 0.7231 |  |
+| wilson_4x4 | 0.9721 | 0.0006897 | 0.9704 | 2.49 | 0.9717 | 0.000536 | 0.407 | 0.5575 |  |
+| wilson_4x5 | 0.9666 | 0.001005 | 0.9637 | 2.814 | 0.9651 | 0.0006887 | 1.172 | 0.5575 |  |
+| wilson_5x5 | 0.9595 | 0.001348 | 0.9558 | 2.775 | 0.9576 | 0.0008528 | 1.205 | 0.1867 |  |
+| wilson_5x6 | 0.9534 | 0.001762 | 0.9483 | 2.879 | 0.9501 | 0.001009 | 1.626 | 0.119 |  |
+| wilson_6x6 | 0.9453 | 0.002204 | 0.9399 | 2.456 | 0.9423 | 0.001218 | 1.205 | 0.08625 |  |
+| wilson_6x7 | 0.9387 | 0.002541 | 0.9321 | 2.606 | 0.935 | 0.001342 | 1.284 | 0.02956 |  |
+| wilson_7x7 | 0.9305 | 0.003056 | 0.9237 | 2.238 | 0.9279 | 0.001455 | 0.7675 | 0.06142 |  |
+| wilson_7x8 | 0.9239 | 0.003493 | 0.9161 | 2.25 | 0.9206 | 0.001529 | 0.8656 | 0.119 |  |
+| wilson_8x8 | 0.9167 | 0.003943 | 0.9083 | 2.128 | 0.914 | 0.001681 | 0.6281 | 0.119 |  |
+| creutz_2 | 0.001846 | 7.187e-05 | 0.001934 | -1.217 |  |  |  |  |  |
+| creutz_3 | 0.001683 | 0.0001323 | 0.001808 | -0.9446 |  |  |  |  |  |
+| creutz_4 | 0.001727 | 0.000243 | 0.00162 | 0.4375 |  |  |  |  |  |
+| creutz_5 | 0.001557 | 0.0004106 | 0.00137 | 0.4567 |  |  |  |  |  |
+| creutz_6 | 0.002078 | 0.0004461 | 0.001057 | 2.288 |  |  |  |  |  |
+| creutz_7 | 0.001717 | 0.0006601 | 0.000681 | 1.569 |  |  |  |  |  |
+| creutz_8 | 0.0007587 | 0.0008913 | 0.0002427 | 0.5789 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 8.84e-09 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 3.453e-11 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 5.658e-07 | nan | 2 | nan |  |  |  |  | 1 |
 
 ## F_L16_bc75.3776_L16_beta300
 
@@ -149,6 +255,80 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 7.311e-13 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 1.198e-08 | nan | 2 | nan |  |  |  |  | 1 |
 
+## F_L16_bc87.8773_L16_beta350
+
+HMC: step size 0.0214, 47 leapfrog steps, acceptance seed/hot/cold = 0.990/0.983/0.988. Diffusion-seed batch: 64 chains x 96 trajectories (0.10 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta350/F_L16_bc87.8773_L16_beta350_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 23.42 +- 1.61, wilson_2x2 = 10.57 +- 1.08, wilson_4x4 = 1.54 +- 0.11, wilson_6x6 = 0.91 +- 0.03. Topology: hot-start HMC L=16 beta=350 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 5.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9987 | 1.895e-05 | 0.9986 | 6.242 | 0.9986 | 1.042e-05 | 2.418 | 0.002761 |  |
+| wilson_1x1 | 0.9987 | 1.895e-05 | 0.9986 | 6.242 | 0.9986 | 1.042e-05 | 2.418 | 0.002761 |  |
+| wilson_1x2 | 0.9973 | 3.949e-05 | 0.9972 | 3.37 | 0.9973 | 2.854e-05 | -0.3058 | 0.9671 |  |
+| wilson_2x2 | 0.9944 | 0.0001038 | 0.9944 | -0.03937 | 0.9947 | 8.421e-05 | -2.457 | 0.02956 |  |
+| wilson_2x3 | 0.9915 | 0.0001748 | 0.9917 | -0.9132 | 0.9921 | 0.0001519 | -2.452 | 0.01326 |  |
+| wilson_3x3 | 0.9873 | 0.0003169 | 0.9877 | -1.075 | 0.9883 | 0.0002625 | -2.503 | 0.02435 |  |
+| wilson_3x4 | 0.983 | 0.000439 | 0.9838 | -1.764 | 0.9847 | 0.0004087 | -2.9 | 0.01631 |  |
+| wilson_4x4 | 0.9778 | 0.0006833 | 0.9788 | -1.362 | 0.9804 | 0.000539 | -2.941 | 0.004418 |  |
+| wilson_4x5 | 0.9726 | 0.0008524 | 0.974 | -1.571 | 0.976 | 0.0007186 | -3.013 | 0.0035 |  |
+| wilson_5x5 | 0.967 | 0.001171 | 0.9682 | -1.097 | 0.9714 | 0.0009115 | -2.974 | 0.01631 |  |
+| wilson_5x6 | 0.9612 | 0.001372 | 0.9628 | -1.182 | 0.9663 | 0.001132 | -2.855 | 0.02435 |  |
+| wilson_6x6 | 0.9548 | 0.001802 | 0.9567 | -1.044 | 0.9606 | 0.001443 | -2.489 | 0.01997 |  |
+| wilson_6x7 | 0.9485 | 0.002076 | 0.951 | -1.191 | 0.9556 | 0.001678 | -2.657 | 0.02956 |  |
+| wilson_7x7 | 0.9424 | 0.002509 | 0.9449 | -0.9837 | 0.9507 | 0.002142 | -2.516 | 0.01074 |  |
+| wilson_7x8 | 0.9361 | 0.002822 | 0.9393 | -1.156 | 0.9466 | 0.002337 | -2.888 | 0.01326 |  |
+| wilson_8x8 | 0.9307 | 0.003159 | 0.9336 | -0.9139 | 0.9424 | 0.002781 | -2.761 | 0.01074 |  |
+| creutz_2 | 0.001533 | 5.651e-05 | 0.00138 | 2.699 |  |  |  |  |  |
+| creutz_3 | 0.001318 | 9.921e-05 | 0.001291 | 0.2724 |  |  |  |  |  |
+| creutz_4 | 0.0008778 | 0.0002006 | 0.001157 | -1.391 |  |  |  |  |  |
+| creutz_5 | 0.0005043 | 0.0003262 | 0.000978 | -1.452 |  |  |  |  |  |
+| creutz_6 | 0.0006798 | 0.0003971 | 0.0007544 | -0.188 |  |  |  |  |  |
+| creutz_7 | -0.0001375 | 0.0004615 | 0.0004862 | -1.352 |  |  |  |  |  |
+| creutz_8 | -0.001069 | 0.0006609 | 0.0001732 | -1.879 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 3.975e-12 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 1.553e-14 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 2.538e-10 | nan | 2 | nan |  |  |  |  | 1 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9986 | 1.824e-05 | 0.9986 | 0.4537 | 0.9986 | 1.042e-05 | -2.748 | 0.002761 |  |
+| wilson_1x1 | 0.9986 | 1.824e-05 | 0.9986 | 0.4537 | 0.9986 | 1.042e-05 | -2.748 | 0.002761 |  |
+| wilson_1x2 | 0.9972 | 3.711e-05 | 0.9972 | 0.0751 | 0.9973 | 2.854e-05 | -3.101 | 0.002168 |  |
+| wilson_2x2 | 0.9943 | 8.858e-05 | 0.9944 | -0.9307 | 0.9947 | 8.421e-05 | -3.328 | 0.001695 |  |
+| wilson_2x3 | 0.9915 | 0.000151 | 0.9917 | -0.9473 | 0.9921 | 0.0001519 | -2.574 | 0.04298 |  |
+| wilson_3x3 | 0.9873 | 0.0002655 | 0.9877 | -1.477 | 0.9883 | 0.0002625 | -2.897 | 0.02435 |  |
+| wilson_3x4 | 0.9831 | 0.0004095 | 0.9838 | -1.537 | 0.9847 | 0.0004087 | -2.756 | 0.06142 |  |
+| wilson_4x4 | 0.9778 | 0.0006097 | 0.9788 | -1.61 | 0.9804 | 0.000539 | -3.208 | 0.01326 |  |
+| wilson_4x5 | 0.9725 | 0.0008231 | 0.974 | -1.816 | 0.976 | 0.0007186 | -3.217 | 0.02435 |  |
+| wilson_5x5 | 0.9663 | 0.001101 | 0.9682 | -1.761 | 0.9714 | 0.0009115 | -3.545 | 0.008658 |  |
+| wilson_5x6 | 0.9602 | 0.001462 | 0.9628 | -1.792 | 0.9663 | 0.001132 | -3.286 | 0.01326 |  |
+| wilson_6x6 | 0.9533 | 0.001899 | 0.9567 | -1.79 | 0.9606 | 0.001443 | -3.045 | 0.008658 |  |
+| wilson_6x7 | 0.9471 | 0.002338 | 0.951 | -1.691 | 0.9556 | 0.001678 | -2.979 | 0.01074 |  |
+| wilson_7x7 | 0.9401 | 0.00281 | 0.9449 | -1.722 | 0.9507 | 0.002142 | -3.021 | 0.01631 |  |
+| wilson_7x8 | 0.9344 | 0.003324 | 0.9393 | -1.469 | 0.9466 | 0.002337 | -3.003 | 0.01326 |  |
+| wilson_8x8 | 0.9282 | 0.003717 | 0.9336 | -1.457 | 0.9424 | 0.002781 | -3.048 | 0.005553 |  |
+| creutz_2 | 0.001461 | 5.644e-05 | 0.00138 | 1.421 |  |  |  |  |  |
+| creutz_3 | 0.001482 | 0.0001106 | 0.001291 | 1.73 |  |  |  |  |  |
+| creutz_4 | 0.001277 | 0.0001867 | 0.001157 | 0.6428 |  |  |  |  |  |
+| creutz_5 | 0.0009145 | 0.0002839 | 0.000978 | -0.2234 |  |  |  |  |  |
+| creutz_6 | 0.0008686 | 0.0004124 | 0.0007544 | 0.2768 |  |  |  |  |  |
+| creutz_7 | 0.0008496 | 0.0005759 | 0.0004862 | 0.631 |  |  |  |  |  |
+| creutz_8 | 0.0007032 | 0.0007477 | 0.0001732 | 0.7088 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 3.975e-12 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 1.553e-14 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 2.538e-10 | nan | 2 | nan |  |  |  |  | 1 |
+
 ## F_L16_bc100.377_L16_beta400
 
 HMC: step size 0.0200, 50 leapfrog steps, acceptance seed/hot/cold = 0.989/0.979/0.989. Diffusion-seed batch: 64 chains x 96 trajectories (0.20 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
@@ -222,6 +402,80 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | Q^2 | 0 | 0 | 8.168e-14 | inf | 0 | 0 | 0 | 1 |  |
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 3.191e-16 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 5.227e-12 | nan | 2 | nan |  |  |  |  | 1 |
+
+## F_L16_bc117.877_L16_beta470
+
+HMC: step size 0.0185, 54 leapfrog steps, acceptance seed/hot/cold = 0.989/0.978/0.989. Diffusion-seed batch: 64 chains x 96 trajectories (0.12 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta470/F_L16_bc117.877_L16_beta470_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 4.62 +- 0.36, wilson_2x2 = 4.21 +- 0.40, wilson_4x4 = 2.47 +- 0.23, wilson_6x6 = 1.18 +- 0.05. Topology: hot-start HMC L=16 beta=470 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 6.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9991 | 7.953e-06 | 0.9989 | 13.95 | 0.9989 | 8.476e-06 | 9.007 | 8.851e-09 |  |
+| wilson_1x1 | 0.9991 | 7.953e-06 | 0.9989 | 13.95 | 0.9989 | 8.476e-06 | 9.007 | 8.851e-09 |  |
+| wilson_1x2 | 0.9981 | 2.305e-05 | 0.9979 | 7.379 | 0.9979 | 1.673e-05 | 6.872 | 4.659e-05 |  |
+| wilson_2x2 | 0.996 | 6.193e-05 | 0.9958 | 3.691 | 0.9957 | 5.325e-05 | 4.563 | 6.306e-05 |  |
+| wilson_2x3 | 0.9942 | 0.0001225 | 0.9938 | 3.058 | 0.9935 | 0.000107 | 3.866 | 0.001695 |  |
+| wilson_3x3 | 0.9914 | 0.000205 | 0.9908 | 2.927 | 0.9903 | 0.0001793 | 4.123 | 0.008658 |  |
+| wilson_3x4 | 0.9886 | 0.0003116 | 0.9879 | 2.38 | 0.9871 | 0.0002886 | 3.67 | 0.01074 |  |
+| wilson_4x4 | 0.985 | 0.0004688 | 0.9842 | 1.765 | 0.9833 | 0.0004445 | 2.582 | 0.02956 |  |
+| wilson_4x5 | 0.9815 | 0.0006084 | 0.9806 | 1.631 | 0.9794 | 0.0005675 | 2.554 | 0.1867 |  |
+| wilson_5x5 | 0.9773 | 0.0008114 | 0.9763 | 1.24 | 0.9754 | 0.000786 | 1.626 | 0.3192 |  |
+| wilson_5x6 | 0.9734 | 0.001032 | 0.9722 | 1.13 | 0.9713 | 0.00095 | 1.449 | 0.3192 |  |
+| wilson_6x6 | 0.969 | 0.001322 | 0.9676 | 1.06 | 0.9672 | 0.001225 | 0.9878 | 0.5575 |  |
+| wilson_6x7 | 0.9649 | 0.001581 | 0.9633 | 0.9933 | 0.9633 | 0.001481 | 0.718 | 0.5044 |  |
+| wilson_7x7 | 0.9606 | 0.001866 | 0.9587 | 1.01 | 0.9591 | 0.001674 | 0.5774 | 0.3192 |  |
+| wilson_7x8 | 0.9562 | 0.002184 | 0.9545 | 0.805 | 0.9552 | 0.001945 | 0.3396 | 0.6123 |  |
+| wilson_8x8 | 0.9523 | 0.002459 | 0.9502 | 0.8674 | 0.9507 | 0.00217 | 0.4748 | 0.6679 |  |
+| creutz_2 | 0.001028 | 3.876e-05 | 0.001028 | 0.00565 |  |  |  |  |  |
+| creutz_3 | 0.0008798 | 8.158e-05 | 0.000961 | -0.9948 |  |  |  |  |  |
+| creutz_4 | 0.0009155 | 0.0001315 | 0.0008611 | 0.4136 |  |  |  |  |  |
+| creutz_5 | 0.0008795 | 0.0002023 | 0.000728 | 0.7488 |  |  |  |  |  |
+| creutz_6 | 0.0004832 | 0.0002503 | 0.0005616 | -0.3132 |  |  |  |  |  |
+| creutz_7 | 0.0002096 | 0.0003457 | 0.0003619 | -0.4406 |  |  |  |  |  |
+| creutz_8 | -0.0003958 | 0.00046 | 0.000129 | -1.141 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 3.272e-14 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 1.278e-16 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 2.327e-13 | nan | 2 | nan |  |  |  |  | 1 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.999 | 1.351e-05 | 0.9989 | 0.7891 | 0.9989 | 8.476e-06 | 0.2766 | 0.5044 |  |
+| wilson_1x1 | 0.999 | 1.351e-05 | 0.9989 | 0.7891 | 0.9989 | 8.476e-06 | 0.2766 | 0.5044 |  |
+| wilson_1x2 | 0.9979 | 3.511e-05 | 0.9979 | 1.01 | 0.9979 | 1.673e-05 | 1.571 | 0.3192 |  |
+| wilson_2x2 | 0.9959 | 7.968e-05 | 0.9958 | 0.8526 | 0.9957 | 5.325e-05 | 2.213 | 0.01631 |  |
+| wilson_2x3 | 0.9939 | 0.0001382 | 0.9938 | 0.5557 | 0.9935 | 0.000107 | 1.893 | 0.1015 |  |
+| wilson_3x3 | 0.9909 | 0.0002038 | 0.9908 | 0.4022 | 0.9903 | 0.0001793 | 2.228 | 0.07294 |  |
+| wilson_3x4 | 0.988 | 0.0002889 | 0.9879 | 0.3656 | 0.9871 | 0.0002886 | 2.26 | 0.1867 |  |
+| wilson_4x4 | 0.9843 | 0.0003992 | 0.9842 | 0.3149 | 0.9833 | 0.0004445 | 1.617 | 0.3192 |  |
+| wilson_4x5 | 0.9807 | 0.0005739 | 0.9806 | 0.2099 | 0.9794 | 0.0005675 | 1.553 | 0.06142 |  |
+| wilson_5x5 | 0.9762 | 0.0007584 | 0.9763 | -0.02967 | 0.9754 | 0.000786 | 0.7396 | 0.3192 |  |
+| wilson_5x6 | 0.9722 | 0.0009564 | 0.9722 | 0.02949 | 0.9713 | 0.00095 | 0.6637 | 0.1614 |  |
+| wilson_6x6 | 0.9673 | 0.00121 | 0.9676 | -0.2747 | 0.9672 | 0.001225 | 0.02722 | 0.7231 |  |
+| wilson_6x7 | 0.9629 | 0.001459 | 0.9633 | -0.2619 | 0.9633 | 0.001481 | -0.1909 | 0.6679 |  |
+| wilson_7x7 | 0.9582 | 0.001792 | 0.9587 | -0.2615 | 0.9591 | 0.001674 | -0.3688 | 0.7766 |  |
+| wilson_7x8 | 0.9542 | 0.001982 | 0.9545 | -0.1422 | 0.9552 | 0.001945 | -0.3769 | 0.7766 |  |
+| wilson_8x8 | 0.9497 | 0.00224 | 0.9502 | -0.1935 | 0.9507 | 0.00217 | -0.3236 | 0.8269 |  |
+| creutz_2 | 0.00102 | 4.477e-05 | 0.001028 | -0.1742 |  |  |  |  |  |
+| creutz_3 | 0.0009646 | 7.523e-05 | 0.000961 | 0.04856 |  |  |  |  |  |
+| creutz_4 | 0.0008646 | 0.0001448 | 0.0008611 | 0.02372 |  |  |  |  |  |
+| creutz_5 | 0.000869 | 0.0002248 | 0.000728 | 0.6271 |  |  |  |  |  |
+| creutz_6 | 0.0009861 | 0.0003297 | 0.0005616 | 1.288 |  |  |  |  |  |
+| creutz_7 | 0.0004009 | 0.0004206 | 0.0003619 | 0.09275 |  |  |  |  |  |
+| creutz_8 | 0.0004835 | 0.0005525 | 0.000129 | 0.6416 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 3.272e-14 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 1.278e-16 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 2.327e-13 | nan | 2 | nan |  |  |  |  | 1 |
 
 ## F_L16_bc137.876_L16_beta550
 
@@ -297,6 +551,80 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 9.372e-15 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 1.706e-11 | nan | 2 | nan |  |  |  |  | 1 |
 
+## F_L16_bc162.876_L16_beta650
+
+HMC: step size 0.0157, 64 leapfrog steps, acceptance seed/hot/cold = 0.987/0.974/0.987. Diffusion-seed batch: 64 chains x 96 trajectories (0.13 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta650/F_L16_bc162.876_L16_beta650_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 32.19 +- 1.49, wilson_2x2 = 39.68 +- 1.35, wilson_4x4 = 8.39 +- 1.01, wilson_6x6 = 2.55 +- 0.38. Topology: hot-start HMC L=16 beta=650 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 5.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9993 | 9.055e-06 | 0.9992 | 5.384 | 0.9993 | 7.026e-06 | 0.4478 | 0.9929 |  |
+| wilson_1x1 | 0.9993 | 9.055e-06 | 0.9992 | 5.384 | 0.9993 | 7.026e-06 | 0.4478 | 0.9929 |  |
+| wilson_1x2 | 0.9985 | 2.094e-05 | 0.9985 | 2.74 | 0.9986 | 2.015e-05 | -1.808 | 0.02956 |  |
+| wilson_2x2 | 0.997 | 4.507e-05 | 0.997 | 1.053 | 0.9973 | 4.019e-05 | -4.711 | 4.96e-06 |  |
+| wilson_2x3 | 0.9955 | 7.929e-05 | 0.9955 | 0.4338 | 0.996 | 7.1e-05 | -4.034 | 0.001023 |  |
+| wilson_3x3 | 0.9933 | 0.0001372 | 0.9933 | 0.02497 | 0.9938 | 0.0001257 | -2.617 | 0.07294 |  |
+| wilson_3x4 | 0.9911 | 0.0001922 | 0.9912 | -0.5764 | 0.9918 | 0.0002105 | -2.484 | 0.119 |  |
+| wilson_4x4 | 0.9882 | 0.0002837 | 0.9885 | -1.078 | 0.9891 | 0.0003138 | -2.101 | 0.1015 |  |
+| wilson_4x5 | 0.9856 | 0.0003688 | 0.9859 | -0.908 | 0.9867 | 0.0004304 | -1.971 | 0.1389 |  |
+| wilson_5x5 | 0.9823 | 0.0005061 | 0.9828 | -0.9232 | 0.9839 | 0.0005903 | -2.035 | 0.04298 |  |
+| wilson_5x6 | 0.9792 | 0.0006589 | 0.9798 | -0.9154 | 0.9811 | 0.0007701 | -1.873 | 0.06142 |  |
+| wilson_6x6 | 0.9759 | 0.0008243 | 0.9765 | -0.7194 | 0.9777 | 0.0009847 | -1.421 | 0.05149 |  |
+| wilson_6x7 | 0.9725 | 0.001049 | 0.9733 | -0.7531 | 0.9742 | 0.001227 | -1.043 | 0.02956 |  |
+| wilson_7x7 | 0.9692 | 0.001229 | 0.97 | -0.6198 | 0.9702 | 0.001478 | -0.5251 | 0.03572 |  |
+| wilson_7x8 | 0.9658 | 0.001476 | 0.9669 | -0.7589 | 0.9669 | 0.001709 | -0.5062 | 0.07294 |  |
+| wilson_8x8 | 0.9627 | 0.001678 | 0.9637 | -0.6308 | 0.9633 | 0.001917 | -0.241 | 0.1015 |  |
+| creutz_2 | 0.0007613 | 2.837e-05 | 0.0007428 | 0.6531 |  |  |  |  |  |
+| creutz_3 | 0.0007127 | 6.404e-05 | 0.0006946 | 0.2816 |  |  |  |  |  |
+| creutz_4 | 0.0007051 | 0.0001169 | 0.0006225 | 0.707 |  |  |  |  |  |
+| creutz_5 | 0.0006319 | 0.0001598 | 0.0005262 | 0.6614 |  |  |  |  |  |
+| creutz_6 | 0.0002575 | 0.0002459 | 0.000406 | -0.6036 |  |  |  |  |  |
+| creutz_7 | 3.08e-05 | 0.0003061 | 0.0002616 | -0.7541 |  |  |  |  |  |
+| creutz_8 | -0.0003403 | 0.0003641 | 9.322e-05 | -1.19 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 1.246e-10 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 4.868e-13 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 8.863e-10 | nan | 2 | nan |  |  |  |  | 1 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9992 | 9.609e-06 | 0.9992 | -0.7336 | 0.9993 | 7.026e-06 | -4.257 | 0.0002682 |  |
+| wilson_1x1 | 0.9992 | 9.609e-06 | 0.9992 | -0.7336 | 0.9993 | 7.026e-06 | -4.257 | 0.0002682 |  |
+| wilson_1x2 | 0.9985 | 2.118e-05 | 0.9985 | -0.5142 | 0.9986 | 2.015e-05 | -4.133 | 0.00132 |  |
+| wilson_2x2 | 0.9969 | 4.613e-05 | 0.997 | -1.304 | 0.9973 | 4.019e-05 | -6.408 | 1.083e-09 |  |
+| wilson_2x3 | 0.9954 | 7.919e-05 | 0.9955 | -0.6756 | 0.996 | 7.1e-05 | -4.863 | 0.0006067 |  |
+| wilson_3x3 | 0.9933 | 0.0001369 | 0.9933 | -0.6065 | 0.9938 | 0.0001257 | -3.085 | 0.119 |  |
+| wilson_3x4 | 0.9912 | 0.0001971 | 0.9912 | -0.2848 | 0.9918 | 0.0002105 | -2.265 | 0.3607 |  |
+| wilson_4x4 | 0.9884 | 0.0003108 | 0.9885 | -0.5336 | 0.9891 | 0.0003138 | -1.695 | 0.6123 |  |
+| wilson_4x5 | 0.9859 | 0.0004359 | 0.9859 | 0.03599 | 0.9867 | 0.0004304 | -1.251 | 0.5575 |  |
+| wilson_5x5 | 0.9829 | 0.0005774 | 0.9828 | 0.1782 | 0.9839 | 0.0005903 | -1.225 | 0.1867 |  |
+| wilson_5x6 | 0.9801 | 0.0007618 | 0.9798 | 0.3667 | 0.9811 | 0.0007701 | -0.9377 | 0.8269 |  |
+| wilson_6x6 | 0.977 | 0.0009477 | 0.9765 | 0.5684 | 0.9777 | 0.0009847 | -0.5075 | 0.5575 |  |
+| wilson_6x7 | 0.974 | 0.001139 | 0.9733 | 0.5858 | 0.9742 | 0.001227 | -0.1349 | 0.5575 |  |
+| wilson_7x7 | 0.9709 | 0.001373 | 0.97 | 0.6868 | 0.9702 | 0.001478 | 0.3445 | 0.6123 |  |
+| wilson_7x8 | 0.9679 | 0.001576 | 0.9669 | 0.6417 | 0.9669 | 0.001709 | 0.4251 | 0.2464 |  |
+| wilson_8x8 | 0.9649 | 0.001799 | 0.9637 | 0.6655 | 0.9633 | 0.001917 | 0.6244 | 0.3192 |  |
+| creutz_2 | 0.0007883 | 2.933e-05 | 0.0007428 | 1.554 |  |  |  |  |  |
+| creutz_3 | 0.0007311 | 6.66e-05 | 0.0006946 | 0.5476 |  |  |  |  |  |
+| creutz_4 | 0.0007606 | 0.0001037 | 0.0006225 | 1.332 |  |  |  |  |  |
+| creutz_5 | 0.0006212 | 0.0001406 | 0.0005262 | 0.675 |  |  |  |  |  |
+| creutz_6 | 0.00032 | 0.0002123 | 0.000406 | -0.4052 |  |  |  |  |  |
+| creutz_7 | 0.0001099 | 0.0002968 | 0.0002616 | -0.5111 |  |  |  |  |  |
+| creutz_8 | -2.838e-05 | 0.0003589 | 9.322e-05 | -0.3389 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 1.246e-10 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 4.868e-13 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 8.863e-10 | nan | 2 | nan |  |  |  |  | 1 |
+
 ## F_L16_bc187.876_L16_beta750
 
 HMC: step size 0.0146, 68 leapfrog steps, acceptance seed/hot/cold = 0.986/0.919/0.988. Diffusion-seed batch: 64 chains x 96 trajectories (0.26 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
@@ -370,6 +698,80 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | Q^2 | 0 | 0 | 2.06e-09 | inf | 0 | 0 | 0 | 1 |  |
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 8.047e-12 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 1.465e-08 | nan | 2 | nan |  |  |  |  | 1 |
+
+## F_L16_bc217.876_L16_beta870
+
+HMC: step size 0.0136, 74 leapfrog steps, acceptance seed/hot/cold = 0.988/0.784/0.988. Diffusion-seed batch: 64 chains x 96 trajectories (0.16 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta870/F_L16_bc217.876_L16_beta870_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 28.55 +- 1.94, wilson_2x2 = 13.35 +- 1.53, wilson_4x4 = 4.44 +- 0.88, wilson_6x6 = 2.67 +- 0.82. Topology: hot-start HMC L=16 beta=870 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 7; the cold start ended the 640-trajectory budget still at Q^2 at |z| ~ 24272.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9994 | 8.918e-06 | 0.9994 | -1.403 | 0.9994 | 4.817e-06 | -3.006 | 0.000114 |  |
+| wilson_1x1 | 0.9994 | 8.918e-06 | 0.9994 | -1.403 | 0.9994 | 4.817e-06 | -3.006 | 0.000114 |  |
+| wilson_1x2 | 0.9988 | 1.836e-05 | 0.9989 | -1.917 | 0.9989 | 7.614e-06 | -4.26 | 0.0001523 |  |
+| wilson_2x2 | 0.9976 | 3.459e-05 | 0.9977 | -4.124 | 0.9978 | 2.009e-05 | -5.635 | 0.0002025 |  |
+| wilson_2x3 | 0.9964 | 6.93e-05 | 0.9966 | -3.764 | 0.9968 | 3.887e-05 | -5.27 | 4.659e-05 |  |
+| wilson_3x3 | 0.9946 | 0.0001271 | 0.995 | -3.051 | 0.9952 | 6.58e-05 | -3.876 | 0.002168 |  |
+| wilson_3x4 | 0.9928 | 0.0002006 | 0.9934 | -3.244 | 0.9937 | 0.0001074 | -4.044 | 0.002761 |  |
+| wilson_4x4 | 0.9904 | 0.000309 | 0.9914 | -3.215 | 0.9916 | 0.0001585 | -3.487 | 0.006949 |  |
+| wilson_4x5 | 0.9881 | 0.000429 | 0.9895 | -3.053 | 0.9897 | 0.0002395 | -3.269 | 0.001695 |  |
+| wilson_5x5 | 0.9854 | 0.00057 | 0.9871 | -2.988 | 0.9873 | 0.0003208 | -2.837 | 0.01326 |  |
+| wilson_5x6 | 0.983 | 0.0007002 | 0.9849 | -2.763 | 0.9851 | 0.0004379 | -2.646 | 0.002761 |  |
+| wilson_6x6 | 0.9801 | 0.0008775 | 0.9824 | -2.588 | 0.9824 | 0.0005426 | -2.233 | 0.008658 |  |
+| wilson_6x7 | 0.9776 | 0.001057 | 0.98 | -2.257 | 0.9801 | 0.0007071 | -1.983 | 0.02956 |  |
+| wilson_7x7 | 0.9748 | 0.001239 | 0.9775 | -2.166 | 0.9775 | 0.000832 | -1.803 | 0.04298 |  |
+| wilson_7x8 | 0.9723 | 0.001452 | 0.9752 | -1.961 | 0.9753 | 0.0009778 | -1.703 | 0.1389 |  |
+| wilson_8x8 | 0.9696 | 0.001597 | 0.9728 | -1.977 | 0.973 | 0.001049 | -1.753 | 0.1867 |  |
+| creutz_2 | 0.0006399 | 2.239e-05 | 0.0005548 | 3.798 |  |  |  |  |  |
+| creutz_3 | 0.0005282 | 5.191e-05 | 0.0005189 | 0.1796 |  |  |  |  |  |
+| creutz_4 | 0.000547 | 8.515e-05 | 0.000465 | 0.9633 |  |  |  |  |  |
+| creutz_5 | 0.000473 | 0.0001312 | 0.0003931 | 0.6095 |  |  |  |  |  |
+| creutz_6 | 0.0004119 | 0.0001487 | 0.0003032 | 0.7309 |  |  |  |  |  |
+| creutz_7 | 0.0003849 | 0.0002241 | 0.0001954 | 0.8454 |  |  |  |  |  |
+| creutz_8 | 0.000221 | 0.0003096 | 6.963e-05 | 0.4888 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 2.427e-08 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 9.481e-11 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 1.726e-07 | nan | 2 | nan |  |  |  |  | 1 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9994 | 6.99e-06 | 0.9994 | 0.6135 | 0.9994 | 4.817e-06 | -1.611 | 0.01997 |  |
+| wilson_1x1 | 0.9994 | 6.99e-06 | 0.9994 | 0.6135 | 0.9994 | 4.817e-06 | -1.611 | 0.01997 |  |
+| wilson_1x2 | 0.9989 | 1.731e-05 | 0.9989 | 0.06045 | 0.9989 | 7.614e-06 | -2.56 | 0.03572 |  |
+| wilson_2x2 | 0.9977 | 4.696e-05 | 0.9977 | 0.2307 | 0.9978 | 2.009e-05 | -1.408 | 0.1614 |  |
+| wilson_2x3 | 0.9967 | 7.493e-05 | 0.9966 | 0.4519 | 0.9968 | 3.887e-05 | -1.469 | 0.4535 |  |
+| wilson_3x3 | 0.9951 | 0.0001256 | 0.995 | 1.028 | 0.9952 | 6.58e-05 | -0.2668 | 0.6123 |  |
+| wilson_3x4 | 0.9937 | 0.0001841 | 0.9934 | 1.231 | 0.9937 | 0.0001074 | -0.201 | 0.5575 |  |
+| wilson_4x4 | 0.9917 | 0.0002756 | 0.9914 | 1.038 | 0.9916 | 0.0001585 | 0.2159 | 0.8723 |  |
+| wilson_4x5 | 0.9899 | 0.0003613 | 0.9895 | 1.139 | 0.9897 | 0.0002395 | 0.266 | 0.7231 |  |
+| wilson_5x5 | 0.9875 | 0.0005091 | 0.9871 | 0.8498 | 0.9873 | 0.0003208 | 0.4649 | 0.9671 |  |
+| wilson_5x6 | 0.9856 | 0.0006043 | 0.9849 | 1.138 | 0.9851 | 0.0004379 | 0.5853 | 0.9433 |  |
+| wilson_6x6 | 0.9831 | 0.0007783 | 0.9824 | 0.9862 | 0.9824 | 0.0005426 | 0.7742 | 0.8269 |  |
+| wilson_6x7 | 0.981 | 0.0008673 | 0.98 | 1.183 | 0.9801 | 0.0007071 | 0.7948 | 0.8269 |  |
+| wilson_7x7 | 0.9787 | 0.00104 | 0.9775 | 1.155 | 0.9775 | 0.000832 | 0.8962 | 0.7231 |  |
+| wilson_7x8 | 0.9765 | 0.001128 | 0.9752 | 1.195 | 0.9753 | 0.0009778 | 0.8127 | 0.8269 |  |
+| wilson_8x8 | 0.9743 | 0.001325 | 0.9728 | 1.151 | 0.973 | 0.001049 | 0.7882 | 0.7231 |  |
+| creutz_2 | 0.0005418 | 2.232e-05 | 0.0005548 | -0.5848 |  |  |  |  |  |
+| creutz_3 | 0.0004462 | 4.697e-05 | 0.0005189 | -1.548 |  |  |  |  |  |
+| creutz_4 | 0.000503 | 6.672e-05 | 0.000465 | 0.5697 |  |  |  |  |  |
+| creutz_5 | 0.000498 | 0.0001183 | 0.0003931 | 0.8867 |  |  |  |  |  |
+| creutz_6 | 0.0004795 | 0.0001684 | 0.0003032 | 1.047 |  |  |  |  |  |
+| creutz_7 | 0.0002785 | 0.0002421 | 0.0001954 | 0.3433 |  |  |  |  |  |
+| creutz_8 | 3.739e-05 | 0.0003176 | 6.963e-05 | -0.1015 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 2.427e-08 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 9.481e-11 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 1.726e-07 | nan | 2 | nan |  |  |  |  | 1 |
 
 ## F_L16_bc250.376_L16_beta1000
 
@@ -445,6 +847,80 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 6.988e-10 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 1.307e-06 | nan | 2 | nan |  |  |  |  | 1 |
 
+## F_L16_bc306.626_L16_beta1225
+
+HMC: step size 0.0114, 87 leapfrog steps, acceptance seed/hot/cold = 0.984/0.876/0.986. Diffusion-seed batch: 64 chains x 96 trajectories (0.17 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta1225/F_L16_bc306.626_L16_beta1225_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 30.71 +- 2.04, wilson_2x2 = 32.70 +- 2.08, wilson_4x4 = 10.07 +- 1.28, wilson_6x6 = 2.26 +- 0.25. Topology: hot-start HMC L=16 beta=1225 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 6; the cold start ended the 640-trajectory budget still at Q^2 at |z| ~ 2188594.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9996 | 5.32e-06 | 0.9996 | -6.735 | 0.9996 | 3.309e-06 | -7.786 | 4.534e-10 |  |
+| wilson_1x1 | 0.9996 | 5.32e-06 | 0.9996 | -6.735 | 0.9996 | 3.309e-06 | -7.786 | 4.534e-10 |  |
+| wilson_1x2 | 0.9991 | 1.318e-05 | 0.9992 | -5.493 | 0.9992 | 8.651e-06 | -6.896 | 4.763e-11 |  |
+| wilson_2x2 | 0.9982 | 3.144e-05 | 0.9984 | -4.728 | 0.9985 | 1.384e-05 | -7.396 | 1.663e-09 |  |
+| wilson_2x3 | 0.9974 | 5.426e-05 | 0.9976 | -3.698 | 0.9978 | 2.714e-05 | -5.697 | 2.952e-07 |  |
+| wilson_3x3 | 0.9962 | 9.875e-05 | 0.9965 | -2.919 | 0.9966 | 4.571e-05 | -4.187 | 0.0002682 |  |
+| wilson_3x4 | 0.995 | 0.000149 | 0.9953 | -2.573 | 0.9955 | 6.639e-05 | -3.33 | 0.008658 |  |
+| wilson_4x4 | 0.9934 | 0.0002093 | 0.9939 | -2.47 | 0.994 | 9.206e-05 | -2.901 | 0.06142 |  |
+| wilson_4x5 | 0.9919 | 0.0002956 | 0.9925 | -2.044 | 0.9927 | 0.0001166 | -2.454 | 0.215 |  |
+| wilson_5x5 | 0.9902 | 0.0003916 | 0.9908 | -1.649 | 0.991 | 0.0001637 | -1.96 | 0.3607 |  |
+| wilson_5x6 | 0.9886 | 0.0005036 | 0.9892 | -1.344 | 0.9896 | 0.000201 | -1.849 | 0.4535 |  |
+| wilson_6x6 | 0.9867 | 0.0006274 | 0.9874 | -1.166 | 0.9878 | 0.0002607 | -1.626 | 0.7231 |  |
+| wilson_6x7 | 0.9851 | 0.0007575 | 0.9858 | -0.9248 | 0.9863 | 0.0003356 | -1.513 | 0.4056 |  |
+| wilson_7x7 | 0.9832 | 0.0008866 | 0.984 | -0.8388 | 0.9845 | 0.0004034 | -1.37 | 0.7231 |  |
+| wilson_7x8 | 0.9815 | 0.001024 | 0.9823 | -0.7401 | 0.9829 | 0.000505 | -1.204 | 0.7231 |  |
+| wilson_8x8 | 0.9798 | 0.0011 | 0.9806 | -0.6867 | 0.9813 | 0.0005884 | -1.17 | 0.7766 |  |
+| creutz_2 | 0.0004338 | 1.598e-05 | 0.000394 | 2.489 |  |  |  |  |  |
+| creutz_3 | 0.0004045 | 3.82e-05 | 0.0003685 | 0.9424 |  |  |  |  |  |
+| creutz_4 | 0.0003697 | 5.675e-05 | 0.0003302 | 0.6956 |  |  |  |  |  |
+| creutz_5 | 0.0002334 | 7.795e-05 | 0.0002791 | -0.5866 |  |  |  |  |  |
+| creutz_6 | 0.0002396 | 0.000105 | 0.0002153 | 0.2308 |  |  |  |  |  |
+| creutz_7 | 0.0002141 | 0.0001504 | 0.0001388 | 0.501 |  |  |  |  |  |
+| creutz_8 | 3.276e-05 | 0.0001888 | 4.945e-05 | -0.08839 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 2.189e-06 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 8.549e-09 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 1.798e-05 | nan | 2 | nan |  |  |  |  | 1 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9996 | 4.854e-06 | 0.9996 | -0.2819 | 0.9996 | 3.309e-06 | -2.438 | 0.1614 |  |
+| wilson_1x1 | 0.9996 | 4.854e-06 | 0.9996 | -0.2819 | 0.9996 | 3.309e-06 | -2.438 | 0.1614 |  |
+| wilson_1x2 | 0.9992 | 1.115e-05 | 0.9992 | 0.472 | 0.9992 | 8.651e-06 | -2.201 | 0.02956 |  |
+| wilson_2x2 | 0.9984 | 2.888e-05 | 0.9984 | -0.2965 | 0.9985 | 1.384e-05 | -3.56 | 0.00132 |  |
+| wilson_2x3 | 0.9976 | 4.815e-05 | 0.9976 | 0.384 | 0.9978 | 2.714e-05 | -2.289 | 0.005553 |  |
+| wilson_3x3 | 0.9965 | 8.305e-05 | 0.9965 | 0.398 | 0.9966 | 4.571e-05 | -1.416 | 0.2464 |  |
+| wilson_3x4 | 0.9954 | 0.0001283 | 0.9953 | 0.3948 | 0.9955 | 6.639e-05 | -0.756 | 0.5575 |  |
+| wilson_4x4 | 0.994 | 0.0001789 | 0.9939 | 0.7582 | 0.994 | 9.206e-05 | -0.05286 | 0.8269 |  |
+| wilson_4x5 | 0.9926 | 0.0002436 | 0.9925 | 0.5518 | 0.9927 | 0.0001166 | -0.1523 | 0.9833 |  |
+| wilson_5x5 | 0.991 | 0.0002994 | 0.9908 | 0.5136 | 0.991 | 0.0001637 | -0.0945 | 0.8269 |  |
+| wilson_5x6 | 0.9893 | 0.0003911 | 0.9892 | 0.26 | 0.9896 | 0.000201 | -0.5097 | 0.9115 |  |
+| wilson_6x6 | 0.9876 | 0.0004756 | 0.9874 | 0.2985 | 0.9878 | 0.0002607 | -0.4265 | 0.8269 |  |
+| wilson_6x7 | 0.9859 | 0.0005856 | 0.9858 | 0.3077 | 0.9863 | 0.0003356 | -0.552 | 0.3607 |  |
+| wilson_7x7 | 0.9843 | 0.0006672 | 0.984 | 0.568 | 0.9845 | 0.0004034 | -0.2721 | 0.9115 |  |
+| wilson_7x8 | 0.9827 | 0.0007528 | 0.9823 | 0.5705 | 0.9829 | 0.000505 | -0.2071 | 0.6679 |  |
+| wilson_8x8 | 0.9811 | 0.0008423 | 0.9806 | 0.6546 | 0.9813 | 0.0005884 | -0.1487 | 0.9115 |  |
+| creutz_2 | 0.0004145 | 1.623e-05 | 0.000394 | 1.262 |  |  |  |  |  |
+| creutz_3 | 0.0003809 | 3.234e-05 | 0.0003685 | 0.3855 |  |  |  |  |  |
+| creutz_4 | 0.0002623 | 4.967e-05 | 0.0003302 | -1.366 |  |  |  |  |  |
+| creutz_5 | 0.0002584 | 8.841e-05 | 0.0002791 | -0.2344 |  |  |  |  |  |
+| creutz_6 | 0.0001221 | 0.0001231 | 0.0002153 | -0.7575 |  |  |  |  |  |
+| creutz_7 | -2.449e-05 | 0.0001758 | 0.0001388 | -0.9287 |  |  |  |  |  |
+| creutz_8 | -2.338e-05 | 0.000208 | 4.945e-05 | -0.3502 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 2.189e-06 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 8.549e-09 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 1.798e-05 | nan | 2 | nan |  |  |  |  | 1 |
+
 ## F_L16_bc375.375_L16_beta1500
 
 HMC: step size 0.0103, 97 leapfrog steps, acceptance seed/hot/cold = 0.985/0.648/0.987. Diffusion-seed batch: 64 chains x 96 trajectories (0.36 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
@@ -519,6 +995,80 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 6.232e-08 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 0.0001391 | nan | 2 | nan |  |  |  |  | 0.9999 |
 
+## F_L16_bc437.875_L16_beta1750
+
+HMC: step size 0.0096, 105 leapfrog steps, acceptance seed/hot/cold = 0.982/0.368/0.983. Diffusion-seed batch: 64 chains x 96 trajectories (0.22 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta1750/F_L16_bc437.875_L16_beta1750_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 13.07 +- 2.01, wilson_2x2 = 11.33 +- 1.96, wilson_4x4 = 7.80 +- 1.86, wilson_6x6 = 8.52 +- 1.88. Topology: hot-start HMC L=16 beta=1750 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at Q^2 at |z| ~ 6; the cold start ended the 640-trajectory budget still at Q^2 at |z| ~ 55082440.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9997 | 4.386e-06 | 0.9997 | -6.909 | 0.9997 | 2.694e-06 | -5.424 | 4.96e-06 |  |
+| wilson_1x1 | 0.9997 | 4.386e-06 | 0.9997 | -6.909 | 0.9997 | 2.694e-06 | -5.424 | 4.96e-06 |  |
+| wilson_1x2 | 0.9994 | 9.261e-06 | 0.9994 | -4.788 | 0.9994 | 7.304e-06 | -3.176 | 0.01631 |  |
+| wilson_2x2 | 0.9988 | 1.823e-05 | 0.9989 | -3.926 | 0.9989 | 1.423e-05 | -3.257 | 0.03572 |  |
+| wilson_2x3 | 0.9982 | 3.159e-05 | 0.9983 | -3.72 | 0.9983 | 2.238e-05 | -3.238 | 0.06142 |  |
+| wilson_3x3 | 0.9974 | 5.234e-05 | 0.9975 | -2.631 | 0.9976 | 4.266e-05 | -3.056 | 0.03572 |  |
+| wilson_3x4 | 0.9965 | 7.717e-05 | 0.9967 | -3.405 | 0.9968 | 6.116e-05 | -3.626 | 0.004418 |  |
+| wilson_4x4 | 0.9953 | 0.0001167 | 0.9957 | -3.416 | 0.9959 | 8.938e-05 | -3.981 | 0.002761 |  |
+| wilson_4x5 | 0.9942 | 0.0001655 | 0.9947 | -3.296 | 0.995 | 0.0001156 | -3.872 | 0.0002682 |  |
+| wilson_5x5 | 0.9929 | 0.0002148 | 0.9936 | -3.122 | 0.9939 | 0.0001532 | -3.959 | 0.008658 |  |
+| wilson_5x6 | 0.9916 | 0.0002748 | 0.9925 | -3.018 | 0.9929 | 0.000205 | -3.629 | 0.005553 |  |
+| wilson_6x6 | 0.9902 | 0.0003381 | 0.9912 | -2.971 | 0.9917 | 0.000252 | -3.587 | 0.01997 |  |
+| wilson_6x7 | 0.9887 | 0.000416 | 0.99 | -3.058 | 0.9905 | 0.0003196 | -3.322 | 0.01326 |  |
+| wilson_7x7 | 0.9871 | 0.0004789 | 0.9887 | -3.366 | 0.9894 | 0.0003557 | -3.75 | 0.01997 |  |
+| wilson_7x8 | 0.9856 | 0.0005442 | 0.9876 | -3.599 | 0.9882 | 0.0004214 | -3.689 | 0.004418 |  |
+| wilson_8x8 | 0.9842 | 0.0005956 | 0.9864 | -3.638 | 0.9872 | 0.0004575 | -4.003 | 0.001695 |  |
+| creutz_2 | 0.000289 | 1.139e-05 | 0.0002757 | 1.162 |  |  |  |  |  |
+| creutz_3 | 0.0002321 | 2.256e-05 | 0.0002579 | -1.142 |  |  |  |  |  |
+| creutz_4 | 0.0002422 | 3.48e-05 | 0.0002311 | 0.3188 |  |  |  |  |  |
+| creutz_5 | 0.0001737 | 6.726e-05 | 0.0001954 | -0.3222 |  |  |  |  |  |
+| creutz_6 | 0.0001681 | 7.412e-05 | 0.0001507 | 0.2345 |  |  |  |  |  |
+| creutz_7 | 0.000171 | 0.0001092 | 9.713e-05 | 0.6765 |  |  |  |  |  |
+| creutz_8 | -0.0001053 | 0.0001784 | 3.461e-05 | -0.7838 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 5.508e-05 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 2.152e-07 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 0.0004939 | nan | 2 | nan |  |  |  |  | 0.9998 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9997 | 2.589e-06 | 0.9997 | -0.5379 | 0.9997 | 2.694e-06 | 0.264 | 0.8269 |  |
+| wilson_1x1 | 0.9997 | 2.589e-06 | 0.9997 | -0.5379 | 0.9997 | 2.694e-06 | 0.264 | 0.8269 |  |
+| wilson_1x2 | 0.9994 | 6.3e-06 | 0.9994 | 0.3462 | 0.9994 | 7.304e-06 | 0.9399 | 0.5575 |  |
+| wilson_2x2 | 0.9989 | 1.686e-05 | 0.9989 | 1.021 | 0.9989 | 1.423e-05 | 0.6096 | 0.9433 |  |
+| wilson_2x3 | 0.9983 | 2.697e-05 | 0.9983 | 0.355 | 0.9983 | 2.238e-05 | 0.04996 | 0.9833 |  |
+| wilson_3x3 | 0.9975 | 5.194e-05 | 0.9975 | 0.3546 | 0.9976 | 4.266e-05 | -0.7479 | 0.4056 |  |
+| wilson_3x4 | 0.9967 | 7.335e-05 | 0.9967 | 0.1559 | 0.9968 | 6.116e-05 | -0.8668 | 0.3192 |  |
+| wilson_4x4 | 0.9957 | 0.0001122 | 0.9957 | -0.01596 | 0.9959 | 8.938e-05 | -1.312 | 0.3607 |  |
+| wilson_4x5 | 0.9948 | 0.0001515 | 0.9947 | 0.1166 | 0.995 | 0.0001156 | -1.146 | 0.4535 |  |
+| wilson_5x5 | 0.9936 | 0.0002194 | 0.9936 | 0.2485 | 0.9939 | 0.0001532 | -1.193 | 0.7766 |  |
+| wilson_5x6 | 0.9925 | 0.0002831 | 0.9925 | 0.1618 | 0.9929 | 0.000205 | -1.056 | 0.6679 |  |
+| wilson_6x6 | 0.9912 | 0.0003474 | 0.9912 | 0.1211 | 0.9917 | 0.000252 | -1.087 | 0.8269 |  |
+| wilson_6x7 | 0.9901 | 0.0004205 | 0.99 | 0.1087 | 0.9905 | 0.0003196 | -0.8041 | 0.6123 |  |
+| wilson_7x7 | 0.9889 | 0.0005057 | 0.9887 | 0.2268 | 0.9894 | 0.0003557 | -0.8253 | 0.7231 |  |
+| wilson_7x8 | 0.9878 | 0.0005829 | 0.9876 | 0.3627 | 0.9882 | 0.0004214 | -0.5132 | 0.8269 |  |
+| wilson_8x8 | 0.9866 | 0.0006663 | 0.9864 | 0.3653 | 0.9872 | 0.0004575 | -0.738 | 0.8723 |  |
+| creutz_2 | 0.0002643 | 1.157e-05 | 0.0002757 | -0.9911 |  |  |  |  |  |
+| creutz_3 | 0.0002414 | 2.312e-05 | 0.0002579 | -0.7139 |  |  |  |  |  |
+| creutz_4 | 0.0002374 | 3.44e-05 | 0.0002311 | 0.1826 |  |  |  |  |  |
+| creutz_5 | 0.0001778 | 5.697e-05 | 0.0001954 | -0.3082 |  |  |  |  |  |
+| creutz_6 | 0.0001457 | 8.637e-05 | 0.0001507 | -0.05804 |  |  |  |  |  |
+| creutz_7 | 3.1e-05 | 0.0001084 | 9.713e-05 | -0.6098 |  |  |  |  |  |
+| creutz_8 | 9.998e-05 | 0.0001315 | 3.461e-05 | 0.497 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 5.508e-05 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 2.152e-07 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 0.0004939 | nan | 2 | nan |  |  |  |  | 0.9998 |
+
 ## F_L16_bc500.375_L16_beta2000
 
 HMC: step size 0.0089, 112 leapfrog steps, acceptance seed/hot/cold = 0.988/0.097/0.987. Diffusion-seed batch: 64 chains x 96 trajectories (0.42 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
@@ -592,3 +1142,77 @@ Where 'never' stood at the end: the hot start ended the 640-trajectory budget st
 | Q^2 | 0 | 0 | 0.0001376 | inf | 0 | 0 | 0 | 1 |  |
 | chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 5.374e-07 | inf | 0 | 0 | 0 |  |  |
 | Q histogram vs exact P(Q) | 0.001256 | nan | 2 | nan |  |  |  |  | 0.9994 |
+
+## F_L16_bc650.375_L16_beta2600
+
+HMC: step size 0.0078, 127 leapfrog steps, acceptance seed/hot/cold = 0.974/0.013/0.977. Diffusion-seed batch: 64 chains x 96 trajectories (0.27 s/traj for the whole batch); baselines: 64 chains x 640 trajectories.
+
+![relaxation](L16_beta2600/F_L16_bc650.375_L16_beta2600_relaxation.png)
+
+tau_int (hot-start chains, second half): plaquette = 1.52 +- 0.75, wilson_2x2 = 1.52 +- 0.75, wilson_4x4 = 1.52 +- 0.75, wilson_6x6 = 1.55 +- 0.77. Topology: hot-start HMC L=16 beta=2600 -> **frozen** (no tunneling).
+
+Where 'never' stood at the end: the hot start ended the 640-trajectory budget still at plaquette at |z| ~ 35, wilson_2x2 at |z| ~ 31, wilson_6x6 at |z| ~ 37, Q^2 at |z| ~ 6; the cold start ended the 640-trajectory budget still at Q^2 at |z| ~ 585385792.
+
+### Diagnostics: raw diffusion output (before any HMC)
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9997 | 3.99e-06 | 0.9998 | -31.85 | 0.9998 | 1.462e-06 | -29.85 | 2.804e-35 |  |
+| wilson_1x1 | 0.9997 | 3.99e-06 | 0.9998 | -31.85 | 0.9998 | 1.462e-06 | -29.85 | 2.804e-35 |  |
+| wilson_1x2 | 0.9994 | 9.49e-06 | 0.9996 | -21.65 | 0.9996 | 4.419e-06 | -20.03 | 9.635e-32 |  |
+| wilson_2x2 | 0.999 | 1.723e-05 | 0.9992 | -17 | 0.9992 | 1.045e-05 | -14.88 | 7.563e-23 |  |
+| wilson_2x3 | 0.9985 | 3.389e-05 | 0.9989 | -10.92 | 0.9989 | 1.769e-05 | -9.835 | 3.375e-15 |  |
+| wilson_3x3 | 0.9979 | 4.561e-05 | 0.9983 | -8.886 | 0.9983 | 3.181e-05 | -7.11 | 2.515e-06 |  |
+| wilson_3x4 | 0.9973 | 7.184e-05 | 0.9978 | -7.006 | 0.9978 | 4.959e-05 | -5.237 | 0.0002025 |  |
+| wilson_4x4 | 0.9965 | 9.461e-05 | 0.9971 | -6.048 | 0.997 | 7.805e-05 | -3.93 | 0.004418 |  |
+| wilson_4x5 | 0.9958 | 0.0001248 | 0.9965 | -5.241 | 0.9963 | 0.0001059 | -3.16 | 0.01997 |  |
+| wilson_5x5 | 0.995 | 0.0001387 | 0.9957 | -4.96 | 0.9954 | 0.0001441 | -2.334 | 0.02435 |  |
+| wilson_5x6 | 0.9941 | 0.0001824 | 0.9949 | -4.313 | 0.9947 | 0.0001789 | -2.032 | 0.1867 |  |
+| wilson_6x6 | 0.9933 | 0.0002022 | 0.9941 | -3.751 | 0.9938 | 0.0002278 | -1.458 | 0.1614 |  |
+| wilson_6x7 | 0.9925 | 0.0002622 | 0.9933 | -3.013 | 0.9929 | 0.0002788 | -1.209 | 0.08625 |  |
+| wilson_7x7 | 0.9917 | 0.000307 | 0.9924 | -2.292 | 0.992 | 0.0003381 | -0.7497 | 0.119 |  |
+| wilson_7x8 | 0.991 | 0.0003746 | 0.9916 | -1.687 | 0.9911 | 0.0003907 | -0.2416 | 0.8723 |  |
+| wilson_8x8 | 0.9904 | 0.0004003 | 0.9908 | -1.015 | 0.9903 | 0.0004397 | 0.2175 | 0.9115 |  |
+| creutz_2 | 0.0001947 | 1.085e-05 | 0.0001856 | 0.8449 |  |  |  |  |  |
+| creutz_3 | 0.0001317 | 1.925e-05 | 0.0001736 | -2.175 |  |  |  |  |  |
+| creutz_4 | 0.0001266 | 2.743e-05 | 0.0001555 | -1.055 |  |  |  |  |  |
+| creutz_5 | 8.358e-05 | 4.506e-05 | 0.0001315 | -1.063 |  |  |  |  |  |
+| creutz_6 | -2.604e-05 | 6.08e-05 | 0.0001014 | -2.096 |  |  |  |  |  |
+| creutz_7 | -5.376e-05 | 9.532e-05 | 6.537e-05 | -1.25 |  |  |  |  |  |
+| creutz_8 | -0.0001324 | 0.0001114 | 2.329e-05 | -1.397 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 0.0005854 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 2.287e-06 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 0.005475 | nan | 2 | nan |  |  |  |  | 0.9973 |
+
+### Diagnostics: the same configs after 96 HMC trajectories
+
+| observable | value | error | exact | z_exact | reference | ref_error | z_ref | ks_p | chi2_p |
+|---|---|---|---|---|---|---|---|---|---|
+| plaquette | 0.9998 | 2.591e-06 | 0.9998 | -1.39 | 0.9998 | 1.462e-06 | -1.135 | 0.04298 |  |
+| wilson_1x1 | 0.9998 | 2.591e-06 | 0.9998 | -1.39 | 0.9998 | 1.462e-06 | -1.135 | 0.04298 |  |
+| wilson_1x2 | 0.9996 | 4.541e-06 | 0.9996 | -1.1 | 0.9996 | 4.419e-06 | -1.462 | 0.05149 |  |
+| wilson_2x2 | 0.9992 | 1.462e-05 | 0.9992 | -1.26 | 0.9992 | 1.045e-05 | -1.408 | 0.1614 |  |
+| wilson_2x3 | 0.9988 | 2.615e-05 | 0.9989 | -1.269 | 0.9989 | 1.769e-05 | -1.238 | 0.4056 |  |
+| wilson_3x3 | 0.9983 | 4.417e-05 | 0.9983 | -1.465 | 0.9983 | 3.181e-05 | -1.006 | 0.2464 |  |
+| wilson_3x4 | 0.9977 | 6.702e-05 | 0.9978 | -1.354 | 0.9978 | 4.959e-05 | -0.5361 | 0.5044 |  |
+| wilson_4x4 | 0.997 | 8.842e-05 | 0.9971 | -1.282 | 0.997 | 7.805e-05 | -0.1971 | 0.6123 |  |
+| wilson_4x5 | 0.9963 | 0.0001185 | 0.9965 | -1.293 | 0.9963 | 0.0001059 | -0.102 | 0.5044 |  |
+| wilson_5x5 | 0.9955 | 0.0001465 | 0.9957 | -1.17 | 0.9954 | 0.0001441 | 0.2429 | 0.4056 |  |
+| wilson_5x6 | 0.9947 | 0.0001822 | 0.9949 | -0.9355 | 0.9947 | 0.0001789 | 0.3809 | 0.4056 |  |
+| wilson_6x6 | 0.9939 | 0.0002079 | 0.9941 | -0.9353 | 0.9938 | 0.0002278 | 0.3886 | 0.215 |  |
+| wilson_6x7 | 0.9931 | 0.0002432 | 0.9933 | -0.6469 | 0.9929 | 0.0002788 | 0.4594 | 0.2811 |  |
+| wilson_7x7 | 0.9922 | 0.000295 | 0.9924 | -0.7156 | 0.992 | 0.0003381 | 0.3344 | 0.5575 |  |
+| wilson_7x8 | 0.9914 | 0.0003393 | 0.9916 | -0.5817 | 0.9911 | 0.0003907 | 0.587 | 0.6123 |  |
+| wilson_8x8 | 0.9905 | 0.0004114 | 0.9908 | -0.7942 | 0.9903 | 0.0004397 | 0.3471 | 0.8723 |  |
+| creutz_2 | 0.0001976 | 7.407e-06 | 0.0001856 | 1.625 |  |  |  |  |  |
+| creutz_3 | 0.0001904 | 1.271e-05 | 0.0001736 | 1.324 |  |  |  |  |  |
+| creutz_4 | 0.0001521 | 2.771e-05 | 0.0001555 | -0.1221 |  |  |  |  |  |
+| creutz_5 | 0.00011 | 4.403e-05 | 0.0001315 | -0.4883 |  |  |  |  |  |
+| creutz_6 | 0.0001266 | 5.751e-05 | 0.0001014 | 0.4377 |  |  |  |  |  |
+| creutz_7 | 0.0001569 | 7.635e-05 | 6.537e-05 | 1.199 |  |  |  |  |  |
+| creutz_8 | 0.0001677 | 0.0001025 | 2.329e-05 | 1.409 |  |  |  |  |  |
+| Q | 0 | 0 | 0 | 0 | 0 | 0 | 0 | 1 |  |
+| Q^2 | 0 | 0 | 0.0005854 | inf | 0 | 0 | 0 | 1 |  |
+| chi_top ((<Q^2>-<Q>^2)/V) | 0 | 0 | 2.287e-06 | inf | 0 | 0 | 0 |  |  |
+| Q histogram vs exact P(Q) | 0.005475 | nan | 2 | nan |  |  |  |  | 0.9973 |
