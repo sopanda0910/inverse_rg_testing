@@ -696,9 +696,20 @@ def run_rung(
         "hot start": build_series_dict(hot_raw),
         "cold start": build_series_dict(cold_raw),
     }
-    subsample = np.random.default_rng(int(config["seed"]) + index).choice(
+    # SORTED, and that is load-bearing rather than cosmetic. `choice` returns
+    # the drawn indices in random ORDER, and `fit_relaxation_time`'s bootstrap
+    # resamples chains BY INDEX -- so an unsorted subsample makes `tau_err`, and
+    # hence the `tau_hat / tau_err >= 2` significance gate, depend on the
+    # permutation. Measured on the real series (2026-09-08): the beta=300 seed
+    # plaquette returned `inf` under five of eight chain orderings and tau=68.4
+    # under the other three, i.e. the resolved/unresolved verdict itself was an
+    # RNG draw. Sorting preserves WHICH chains are selected (the point of the
+    # subsample -- matching the baseline's chain count) while removing the
+    # order dependence. u2's 28_crossover_scan.py never had this bug because it
+    # passes its series to the fit in natural chain order.
+    subsample = np.sort(np.random.default_rng(int(config["seed"]) + index).choice(
         seed_configs.shape[0], size=min(n_chains_base, seed_configs.shape[0]), replace=False
-    )
+    ))
     t_therm_series = dict(all_series)
     t_therm_series["diffusion seed"] = {
         k: v[:, subsample] for k, v in all_series["diffusion seed"].items()

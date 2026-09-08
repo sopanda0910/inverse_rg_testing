@@ -51,12 +51,22 @@ CHECKPOINTS = [
     ("wide2000", ["out/u1_2d/coverage_scan/wide2000_L16target/wide2000/crossover_window.json"],
      "#009E73", 2000.0, "wide2000 (beta_max=2000, same capacity)"),
     # wide2000_dense: density-matched twin of wide2000 (adds 30 supplement
-    # rungs, out/u1_2d/data_random_2000/, on top of wide2000's own rungs),
-    # same capacity, evaluated on the identical 7 matched couplings -- see
-    # CHECKPOINTS' header comment above and sec:coverage-u1's density-vs-range
-    # paragraph.
-    ("wide2000_dense", ["out/u1_2d/coverage_scan/wide2000_dense_L16target/crossover_window.json"],
+    # rungs on top of wide2000's own), same capacity, evaluated on the
+    # identical 7 matched couplings. This is the FINAL build of that
+    # checkpoint -- its supplement rungs carry topological coverage. An
+    # earlier sector-empty build exists in
+    # coverage_scan/wide2000_dense_L16target/ and is NOT published: it
+    # scores identically at all 7 couplings, so it is a debugging artifact
+    # rather than a second arm.
+    ("wide2000_dense",
+     ["out/u1_2d/coverage_scan/wide2000_dense_sectorfix_L16target/crossover_window.json"],
      "#CC79A7", 2000.0, "wide2000_dense (beta_max=2000, density-matched)"),
+    # wide2000_dense_sectorfix: the SAME configuration as wide2000_dense,
+    # retrained after the 30 supplement rungs were regenerated with
+    # topological coverage (each spans 5 sectors instead of 1). Evaluated on
+    # the identical 7 matched couplings, so this pair is a clean A/B on
+    # sector coverage in the training data alone. The u2 analogue of the same
+    # intervention is Table tab:volume_scaling's wide_dense rows.
 ]
 
 

@@ -1,6 +1,6 @@
 # u2 appendix figure manifest
 
-Assembled 2026-09-07 12:03 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py`.
+Assembled 2026-09-08 06:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py`.
 
 `source mtime` is the figure's own; `newest input` is the most recently modified file it was drawn from. A figure whose input is newer than itself is stale, which is what `--check` gates on.
 
@@ -43,10 +43,10 @@ Assembled 2026-09-07 12:03 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py
 | fig29_observable_scan.png | `43_observable_scan.py` | `d788b4255a15` | 2026-09-01 17:24 | `observable_scan\observable_scan.json` |
 | fig30_multi_lift.png | `46_multi_lift_figure.py` | `b0b5b9fb67db` | 2026-08-22 10:14 | `multi_lift_incov\multi_lift_r0.json` |
 | fig31_seed_vs_classical_significance.png | `56_seed_benchmark_cross_beta_figure.py` | `0792cf308141` | 2026-09-02 13:51 | `seed_benchmark_rung0\observable_stats.json` |
-| fig57_cost_efficiency.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default` | `503aecec2dc1` | 2026-09-07 12:02 | `coverage_scan_relaxation\default\crossover_L64_topo.json` |
-| fig57b_cost_efficiency_wide.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/wide --train-model-beta-max 2000` | `b2e6ac50e0fb` | 2026-09-07 12:02 | `coverage_scan_relaxation\wide\crossover_L64_topo.json` |
-| fig59_coverage_comparison.png | `59_coverage_comparison_figure.py --fine-size 32` | `9239dfda6c9f` | 2026-09-07 12:01 | `coverage_scan_relaxation\wide_dense\crossover_topo.json` |
-| fig59b_coverage_comparison_L64.png | `59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png` | `2019c8ef4e24` | 2026-09-07 12:01 | `coverage_scan_relaxation\wide_dense\crossover_L64_topo.json` |
+| fig57_cost_efficiency.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default` | `bb85f9880dbd` | 2026-09-08 06:38 | `coverage_scan_relaxation\default\crossover_L64_topo.json` |
+| fig57b_cost_efficiency_wide.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/wide --train-model-beta-max 2000` | `061c5c2ad174` | 2026-09-07 23:44 | `coverage_scan_relaxation\wide\crossover_L64_topo.json` |
+| fig59_coverage_comparison.png | `59_coverage_comparison_figure.py --fine-size 32` | `be69c2f2b829` | 2026-09-08 06:37 | `coverage_scan_relaxation\wide_dense\crossover_topo.json` |
+| fig59b_coverage_comparison_L64.png | `59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png` | `5705dce21728` | 2026-09-08 06:37 | `coverage_scan_relaxation\wide_dense\crossover_L64_topo.json` |
 
 ## Present but deliberately not tracked
 
