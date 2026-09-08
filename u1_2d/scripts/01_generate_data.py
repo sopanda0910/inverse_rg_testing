@@ -13,7 +13,7 @@ import torch
 from u1_2d.lgt import make_action, run_hmc_ensemble, block_links, match_coarse_beta
 from u1_2d.lgt.blocking import villain_blocked_beta
 from u1_2d.lgt.hmc import adapted_hmc_params
-from u1_2d.lgt.lattice import wrap
+from u1_2d.lgt.lattice import topological_charge, wrap
 from u1_2d.lgt.local_updates import instanton_field, retherm_sweeps
 from u1_2d.utils import (
     configure_device,
@@ -57,9 +57,25 @@ def generate_rung(rung: dict, data_cfg: dict, action_type: str, device: str) -> 
         f"acceptance {stats.acceptance_rate:.3f}, {'hot' if hot_start else 'cold'} start, "
         f"burn-in {burn_in}, {time.time()-t0:.0f}s"
     )
-    fraction = float(rung.get("sector_augment", 0.0))
+    # FALL BACK TO THE DATA-LEVEL VALUE, matching u2_2d/scripts/01_generate_data.py.
+    # Until 2026-09-07 this read the per-rung key ONLY, so a config setting
+    # `sector_augment` once at the `data:` level -- the obvious way to apply it
+    # to every rung, and exactly how u2's configs are written -- was silently
+    # ignored: no error, no warning, just 30 regenerated ensembles that were
+    # bit-for-bit as sector-empty as the ones they replaced (all 30 at a single
+    # topological sector, <Q^2> = 0.000). The two packages diverging on
+    # something this small is the failure mode docs/PARITY_U1_U2.md exists to
+    # catch; it is fixed here rather than worked around in the config.
+    fraction = float(rung.get("sector_augment",
+                              data_cfg.get("sector_augment", 0.0)))
     if fraction > 0:
         configs = sector_augment(configs, action, fraction)
+        n_sectors = len(torch.unique(topological_charge(configs).round()))
+        print(f"    sector augmentation at {fraction:g}: ensemble now spans "
+              f"{n_sectors} topological sector(s)")
+        if n_sectors < 2:
+            print("    WARNING: augmentation requested but the ensemble still "
+                  "occupies ONE sector -- coverage was not achieved")
     return configs
 
 

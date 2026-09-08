@@ -186,7 +186,11 @@ def _fit_exp_once(t: np.ndarray, mean: np.ndarray, sem: np.ndarray,
 
     pred = target + popt[0] * np.exp(-t / max(popt[1], 1e-6))
     chi2_exp = float(np.sum(((mean - pred) / sem) ** 2))
-    if chi2_flat - chi2_exp < 6.0:
+    # chi2_dist.ppf(0.95, 2) = 5.991 -- Wilks' theorem at the 95% level for
+    # the 2 extra parameters (A, tau) this single-observable fit adds over
+    # the flat null. Written as the formula rather than as 6.0 so it is
+    # visibly the same criterion the joint fit uses, not a coincidence.
+    if chi2_flat - chi2_exp < chi2_dist.ppf(0.95, 2):
         return 0.0
 
     tau = float(popt[1])
@@ -435,6 +439,17 @@ def fit_joint_relaxation_time(series: dict, targets: dict, record_every: int,
     # every table), so gate on it directly: healthy fits from the real
     # failure case sit at chi2/dof ~1-3, the genuine failures at ~40-9000 --
     # a wide, unambiguous gap, so the exact multiple chosen is not sensitive.
+    #
+    # CALIBRATED 2026-09-07, `82_calibrate_fit_veto.py`, so the threshold is a
+    # measured false-rejection rate rather than a round number. On a synthetic
+    # null where the exponential is TRUE by construction, with AR(1)
+    # autocorrelation in simulation time matched to the real chains (1600
+    # replicas, rho = 0 to 0.9, tau = 5 to 20): median chi2/dof 0.76-1.04,
+    # p99 1.28-1.65, MAX 1.68, and false-rejection 0/1600 at both 3 and 5.
+    # In the real data the two populations do not overlap at all -- 121 seed
+    # fits span 0.07-2.8, 322 classical fits span 3.26-9108 -- so every
+    # threshold in [2.8, 3.26] classifies identically and 5 sits
+    # deliberately on the conservative side of that gap.
     if tau_hat not in (0.0, float("inf")) and math.isfinite(tau_hat):
         if chi2_per_dof > 5.0:
             return {"tau": float("nan"), "tau_err": tau_err,
@@ -701,7 +716,16 @@ def main() -> int:
         # Prefer the cold chain where it genuinely equilibrated with room to
         # spare -- that is u1's estimator and keeps the two studies comparable --
         # and fall back to the seeded chain where it did not.
-        cold_ok = math.isfinite(cold) and cold < 0.5 * n_traj and taus.get("cold start")
+        # Use the cold chain as the interval source only where its own
+        # relaxation fit is BOTH resolved and accepted by the goodness-of-fit
+        # test. This replaced an invented `cold < 0.5 * n_traj` rule on
+        # 2026-09-07: that rule was a crude proxy for "equilibrated with room
+        # to spare", and the calibrated fit-quality gate answers the same
+        # question directly. Verified redundant before removal -- dropping the
+        # 0.5 knob changes the interval source on 0 of 176 records, because
+        # every arm it would have excluded is already rejected by the veto.
+        cold_fit_ok = record.get("t_therm_fit_quality_ok", {}).get("cold start", True)
+        cold_ok = math.isfinite(cold) and cold_fit_ok and taus.get("cold start")
         source = "cold start" if cold_ok else "diffusion seed"
         tau = taus.get(source)
         record["interval_source"] = source

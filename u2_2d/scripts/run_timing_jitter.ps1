@@ -8,14 +8,24 @@ $py = ".venv\Scripts\python.exe"
 # no other python process is running, then start.
 "$(Get-Date) waiting for an idle GPU before timing" *>> $log
 while ($true) {
-    # Match only THIS PROJECT's interpreter. The first version tested for any
-    # python.exe at all, which would have waited forever: an unrelated project
-    # on this machine was running its own venv's python the whole time, and it
-    # is not GPU-contending work this job needs to avoid.
-    $others = @(Get-CimInstance Win32_Process -Filter "Name='python.exe'" |
-                Where-Object { $_.CommandLine -like "*inverse_rg_testing*" -and
-                               $_.CommandLine -notlike "*77_timing_jitter*" })
-    if ($others.Count -eq 0) { break }
+    # GATE ON LIVE CUDA CONTEXTS, NOT ON "IS ANY PROJECT PYTHON RUNNING".
+    #
+    # Two failures produced this, in order. The first gate matched ANY
+    # python.exe, which would have waited forever because an unrelated
+    # project on this machine runs its own python continuously. Narrowing
+    # it to this project's interpreter then DEADLOCKED on gpu_monitor.py:
+    # the monitor added to watch for GPU contention is itself a project
+    # python process that never exits, so it blocked the very job it was
+    # supposed to protect -- the GPU sat idle from 01:06 to 07:55 while this
+    # script waited on a process that uses no GPU at all.
+    #
+    # The property actually wanted is "no CUDA context but mine", which
+    # gpu_monitor exposes directly. A process list was always a proxy for
+    # it, and every proxy failure above came from something that is a
+    # project process but not a GPU one.
+    $n = & $py "u2_2d\scripts\gpu_monitor.py" --once 2>$null |
+         Select-String -Pattern 'ours=(\d+)' | ForEach-Object { $_.Matches[0].Groups[1].Value }
+    if ([int]$n -eq 0) { break }
     Start-Sleep -Seconds 120
 }
 "$(Get-Date) GPU idle, starting $($args.Count) timing repeats" *>> $log

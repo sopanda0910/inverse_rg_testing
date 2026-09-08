@@ -56,6 +56,12 @@ CHECKPOINTS = [
      "default (12 fixed rungs)"),
     ("wide", ["out/u2_2d/coverage_scan_relaxation/wide"], "#009E73", 2000.0,
      "wide (trained to model beta ~2000)"),
+    # wide_dense: wide's density-matched twin, added 2026-09-07 once its own
+    # L=64 rounds completed. Same corrected estimator as default/wide/cov60,
+    # so it belongs on this axis; it is the independent replication of wide's
+    # L=64 result on a separately-trained checkpoint.
+    ("wide_dense", ["out/u2_2d/coverage_scan_relaxation/wide_dense"], "#7570B3", 2000.0,
+     "wide_dense (wide + 31 density-matched rungs)"),
     ("cov60", ["out/u2_2d/coverage_scan_relaxation/cov60"], "#CC79A7", 56.83,
      "cov60 (capped at model beta ~60, matching u1_2d)"),
     ("v2", ["out/u2_2d/coverage_scan/v2"], "#D55E00", 107.5,

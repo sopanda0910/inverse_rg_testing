@@ -312,11 +312,47 @@ Chain-bootstrapped |z| against the exact closed form, diffusion seed vs. cold vs
 
 *Drawn by `u2_2d/scripts/56_seed_benchmark_cross_beta_figure.py`.*
 
+## Appendix U2-D2. Training coverage, and what it buys across volume
+
+Cost-efficiency against fine coupling for checkpoints differing only in training coverage. The pair of volumes is the point: at L=32 the checkpoints are not reliably separated, at L=64 they separate decisively, and no checkpoint is trained at L=64 at all.
+
+### Figure U2-35: `fig57_cost_efficiency.png`
+
+![fig57_cost_efficiency.png](figures/fig57_cost_efficiency.png)
+
+Steady-state cost-efficiency (HMC decorrelation interval divided by the seed's fitted relaxation time) vs. fine coupling for the deployed checkpoint, both HMC rounds, both volumes. Above 1 the seed is cheaper than continuing a chain.
+
+*Drawn by `u2_2d/scripts/57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default`.*
+
+### Figure U2-36: `fig57b_cost_efficiency_wide.png`
+
+![fig57b_cost_efficiency_wide.png](figures/fig57b_cost_efficiency_wide.png)
+
+The same curve for the wide checkpoint (trained to model beta ~2000), which resolves a finite relaxation time at 15 of 16 L=64 couplings against the deployed checkpoint's 7.
+
+*Drawn by `u2_2d/scripts/57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/wide --train-model-beta-max 2000`.*
+
+### Figure U2-37: `fig59_coverage_comparison.png`
+
+![fig59_coverage_comparison.png](figures/fig59_coverage_comparison.png)
+
+Cost-efficiency vs. fine coupling at L=32 for four checkpoints differing only in training coverage, each checkpoint's own coverage edge marked in its own colour. At this volume the four are not reliably separated -- see fig59b.
+
+*Drawn by `u2_2d/scripts/59_coverage_comparison_figure.py --fine-size 32`.*
+
+### Figure U2-38: `fig59b_coverage_comparison_L64.png`
+
+![fig59b_coverage_comparison_L64.png](figures/fig59b_coverage_comparison_L64.png)
+
+The same comparison at L=64, where the checkpoints separate decisively: the two wide-coverage checkpoints resolve at 15/16 and 14/16 couplings, the two narrow ones at 7/16 and 3/16. No checkpoint is trained at L=64, and wide's coverage extension is entirely at L=8, so what transfers across volume is coupling coverage.
+
+*Drawn by `u2_2d/scripts/59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png`.*
+
 ## Appendix U2-E. Cost and tuning
 
 Cost claims, and the two knobs that were measured rather than assumed.
 
-### Figure U2-35: `fig14_sampler_steps.png`
+### Figure U2-39: `fig14_sampler_steps.png`
 
 ![fig14_sampler_steps.png](figures/fig14_sampler_steps.png)
 
@@ -324,7 +360,7 @@ Cost and accuracy against the number of reverse-diffusion steps. Read the RUNG 0
 
 *Drawn by `u2_2d/scripts/16_cost_figures.py`.*
 
-### Figure U2-36: `fig25_retherm_scan.png`
+### Figure U2-40: `fig25_retherm_scan.png`
 
 ![fig25_retherm_scan.png](figures/fig25_retherm_scan.png)
 
@@ -332,7 +368,7 @@ Observable error against rethermalization sweep count. Note the retraction recor
 
 *Drawn by `u2_2d/scripts/33_retherm_scan.py`.*
 
-### Figure U2-37: `fig15_prolongator.png`
+### Figure U2-41: `fig15_prolongator.png`
 
 ![fig15_prolongator.png](figures/fig15_prolongator.png)
 

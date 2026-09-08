@@ -1,17 +1,17 @@
 # u2 appendix figure manifest
 
-Assembled 2026-09-02 14:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py`.
+Assembled 2026-09-07 12:03 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py`.
 
 `source mtime` is the figure's own; `newest input` is the most recently modified file it was drawn from. A figure whose input is newer than itself is stale, which is what `--check` gates on.
 
 | figure | drawn by | sha256 (12) | figure mtime | newest input |
 |---|---|---|---|---|
-| fig1_det_density_L32_beta105.651.png | `06_figures.py --config u2_2d/configs/default.yaml` | `adc201c95e9a` | 2026-09-01 17:54 | `data\u2_L16_beta14.pt` |
-| fig1_det_density_L64_beta416.524.png | `06_figures.py --config u2_2d/configs/default.yaml` | `c5220040381a` | 2026-09-01 17:58 | `data\u2_L16_beta14.pt` |
-| fig2_sectors_L32_beta105.651.png | `06_figures.py --config u2_2d/configs/default.yaml` | `7f2a25328a13` | 2026-09-01 17:54 | `data\u2_L16_beta14.pt` |
-| fig2_sectors_L64_beta416.524.png | `06_figures.py --config u2_2d/configs/default.yaml` | `bba4e3ca4bca` | 2026-09-01 17:58 | `data\u2_L16_beta14.pt` |
-| fig3_area_law_L32_beta105.651.png | `06_figures.py --config u2_2d/configs/default.yaml` | `0353b47006a7` | 2026-09-01 17:54 | `data\u2_L16_beta14.pt` |
-| fig3_area_law_L64_beta416.524.png | `06_figures.py --config u2_2d/configs/default.yaml` | `f58fd6a889a7` | 2026-09-01 17:58 | `data\u2_L16_beta14.pt` |
+| fig1_det_density_L32_beta105.651.png | `06_figures.py --config u2_2d/configs/default.yaml` | `adc201c95e9a` | 2026-09-01 17:54 | `ladder\summary.json` |
+| fig1_det_density_L64_beta416.524.png | `06_figures.py --config u2_2d/configs/default.yaml` | `c5220040381a` | 2026-09-01 17:58 | `ladder\summary.json` |
+| fig2_sectors_L32_beta105.651.png | `06_figures.py --config u2_2d/configs/default.yaml` | `7f2a25328a13` | 2026-09-01 17:54 | `ladder\summary.json` |
+| fig2_sectors_L64_beta416.524.png | `06_figures.py --config u2_2d/configs/default.yaml` | `bba4e3ca4bca` | 2026-09-01 17:58 | `ladder\summary.json` |
+| fig3_area_law_L32_beta105.651.png | `06_figures.py --config u2_2d/configs/default.yaml` | `0353b47006a7` | 2026-09-01 17:54 | `ladder\summary.json` |
+| fig3_area_law_L64_beta416.524.png | `06_figures.py --config u2_2d/configs/default.yaml` | `f58fd6a889a7` | 2026-09-01 17:58 | `ladder\summary.json` |
 | fig4_beta_matching.png | `06_figures.py` | `57d134e369a5` | 2026-09-01 17:53 | `none (analytic)` |
 | fig5_ladder.png | `06_figures.py --config u2_2d/configs/default.yaml` | `d273637333f9` | 2026-09-01 17:53 | `ladder\summary.json` |
 | fig06_seed_quality.png | `10_paper_figures.py` | `55e4ab6d2bd2` | 2026-09-01 22:08 | `seed_benchmark\seed_benchmark.json` |
@@ -24,12 +24,12 @@ Assembled 2026-09-02 14:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py
 | fig13_cost.png | `16_cost_figures.py` | `88af2362b922` | 2026-09-01 23:40 | `seed_benchmark\cost.json` |
 | fig14_sampler_steps.png | `16_cost_figures.py` | `a380cfffe8b6` | 2026-09-01 23:40 | `sampler_steps\sampler_steps.json` |
 | fig15_prolongator.png | `20_prolongator_figure.py` | `79326e066c8e` | 2026-09-01 17:59 | `prolongator_L64\prolongator.json` |
-| fig16_distributions_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `b88e86340442` | 2026-09-01 17:51 | `data\u2_L16_beta14.pt` |
-| fig16_distributions_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `6d54f7399653` | 2026-09-01 17:56 | `data\u2_L16_beta14.pt` |
-| fig17_z_distribution_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `c4c526c13d0c` | 2026-09-01 17:51 | `data\u2_L16_beta14.pt` |
-| fig17_z_distribution_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `f4554c80988f` | 2026-09-01 17:56 | `data\u2_L16_beta14.pt` |
-| fig18_z_vs_loop_area_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `bb6e07c9c55b` | 2026-09-01 17:51 | `data\u2_L16_beta14.pt` |
-| fig18_z_vs_loop_area_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `aacf98faeffd` | 2026-09-01 17:56 | `data\u2_L16_beta14.pt` |
+| fig16_distributions_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `b88e86340442` | 2026-09-01 17:51 | `ladder\summary.json` |
+| fig16_distributions_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `6d54f7399653` | 2026-09-01 17:56 | `ladder\summary.json` |
+| fig17_z_distribution_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `c4c526c13d0c` | 2026-09-01 17:51 | `ladder\summary.json` |
+| fig17_z_distribution_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `f4554c80988f` | 2026-09-01 17:56 | `ladder\summary.json` |
+| fig18_z_vs_loop_area_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `bb6e07c9c55b` | 2026-09-01 17:51 | `ladder\summary.json` |
+| fig18_z_vs_loop_area_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `aacf98faeffd` | 2026-09-01 17:56 | `ladder\summary.json` |
 | fig19_freezing.png | `27_freezing_figure.py` | `4d5258e7fffa` | 2026-09-01 22:09 | `seed_benchmark\seed_benchmark.json` |
 | fig20_honest_distributions_L64_beta416.524.png | `29_honest_distributions.py --config u2_2d/configs/default.yaml` | `25c171f55f77` | 2026-09-02 01:58 | `freezing_arms\freezing_arms.json` |
 | fig21_seed_quality.png | `30_seed_quality_figure.py` | `457bcffe2fd6` | 2026-08-22 01:17 | `crossover\topo_c.json` |
@@ -43,6 +43,10 @@ Assembled 2026-09-02 14:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py
 | fig29_observable_scan.png | `43_observable_scan.py` | `d788b4255a15` | 2026-09-01 17:24 | `observable_scan\observable_scan.json` |
 | fig30_multi_lift.png | `46_multi_lift_figure.py` | `b0b5b9fb67db` | 2026-08-22 10:14 | `multi_lift_incov\multi_lift_r0.json` |
 | fig31_seed_vs_classical_significance.png | `56_seed_benchmark_cross_beta_figure.py` | `0792cf308141` | 2026-09-02 13:51 | `seed_benchmark_rung0\observable_stats.json` |
+| fig57_cost_efficiency.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default` | `503aecec2dc1` | 2026-09-07 12:02 | `coverage_scan_relaxation\default\crossover_L64_topo.json` |
+| fig57b_cost_efficiency_wide.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/wide --train-model-beta-max 2000` | `b2e6ac50e0fb` | 2026-09-07 12:02 | `coverage_scan_relaxation\wide\crossover_L64_topo.json` |
+| fig59_coverage_comparison.png | `59_coverage_comparison_figure.py --fine-size 32` | `9239dfda6c9f` | 2026-09-07 12:01 | `coverage_scan_relaxation\wide_dense\crossover_topo.json` |
+| fig59b_coverage_comparison_L64.png | `59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png` | `2019c8ef4e24` | 2026-09-07 12:01 | `coverage_scan_relaxation\wide_dense\crossover_L64_topo.json` |
 
 ## Present but deliberately not tracked
 

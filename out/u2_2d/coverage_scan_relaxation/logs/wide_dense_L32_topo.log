@@ -42,3 +42,5 @@ WINDING round: charge_step=1, interval=5
   b=  537.38 (model 134.35) <Q^2>ex=0.132  seed=   0.0 cold=   nan hot=   nan  n= 200  iv=  3.8(diff)  flips=  325  HMC healthy   [866s]
   b=  790.87 (model 197.72) <Q^2>ex=0.043  seed=   inf cold=   nan hot=   nan  n= 150  iv=  3.5(diff)  flips=   81  HMC healthy   [747s]
   b= 1065.40 (model 266.35) <Q^2>ex=0.012  seed=   inf cold=   nan hot=   nan  n= 150  iv=  3.3(diff)  flips=   13  HMC healthy   [939s]
+  b= 1623.19 (model 405.80) <Q^2>ex=0.001  seed=   inf cold=   nan hot=   nan  n= 150  iv=  3.7(diff)  flips=    0  Q frozen      [1022s]
+wrote out\u2_2d\coverage_scan_relaxation\wide_dense\crossover_topo.json

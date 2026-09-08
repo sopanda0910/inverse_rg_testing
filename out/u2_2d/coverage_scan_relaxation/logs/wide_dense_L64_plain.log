@@ -25,3 +25,10 @@ L_c = 32 -> L_f = 64; 8 couplings: 8.3757, 12.1743, 25.0485, 45.0584, 79.1213, 1
 PLAIN round: no topological updates in any arm
   b=   25.29 (model   6.35) <Q^2>ex=17.901  seed=  35.3 cold=   nan hot=   nan  n= 400  iv=  7.7(diff)  flips=    0  Q frozen      [1635s]
   b=   41.46 (model  10.38) <Q^2>ex=10.532  seed=  29.3 cold=   nan hot=   nan  n= 400  iv=  8.6(diff)  flips=    0  Q frozen      [1963s]
+  b=   93.79 (model  23.45) <Q^2>ex=4.522  seed=   0.0 cold=   nan hot=   inf  n= 400  iv=  8.0(diff)  flips=    0  Q frozen      [2756s]
+  b=  174.03 (model  43.51) <Q^2>ex=2.413  seed=   0.0 cold=   nan hot=   nan  n= 200  iv=  6.3(diff)  flips=    0  Q frozen      [1822s]
+  b=  310.38 (model  77.60) <Q^2>ex=1.346  seed=  23.3 cold=   nan hot=   inf  n= 200  iv=  5.3(diff)  flips=    0  Q frozen      [2728s]
+  b=  636.85 (model 159.21) <Q^2>ex=0.654  seed=   inf cold=   nan hot=   nan  n= 150  iv=  6.3(diff)  flips=    0  Q frozen      [2937s]
+  b= 1094.89 (model 273.72) <Q^2>ex=0.373  seed=  37.1 cold=   nan hot=   nan  n= 150  iv=  4.4(diff)  flips=    0  Q frozen      [3701s]
+  b= 1660.08 (model 415.02) <Q^2>ex=0.215  seed=  54.9 cold=   nan hot=   inf  n= 150  iv=  4.5(diff)  flips=    0  Q frozen      [4561s]
+wrote out\u2_2d\coverage_scan_relaxation\wide_dense\crossover_L64.json

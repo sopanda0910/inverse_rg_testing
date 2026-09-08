@@ -1,0 +1,390 @@
+{
+  "beta": 416.524,
+  "lattice_size": 64,
+  "n_chains": 64,
+  "n_trajectories": 50,
+  "plaquette_exact": 0.9951954459438838,
+  "tau_int_plaquette_seeded": 0.9977878051785276,
+  "independent_interval_trajectories": 1.9955756103570552,
+  "arms": [
+    {
+      "arm": "A_diffusion_seed",
+      "seconds": 34.80208992958069,
+      "seconds_per_trajectory": 0.6960417985916137,
+      "plaquette_initial": 0.9952056407928467,
+      "plaquette_final": 0.99518883228302,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 1.0244067137232804e-05,
+      "plaquette_final_rel": -6.645589959886067e-06,
+      "loops_final": {
+        "wilson_1x1": 0.99518883228302,
+        "wilson_2x2": 0.9808750152587891,
+        "wilson_4x4": 0.9256525635719299,
+        "wilson_8x8": 0.7344812154769897
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 0.9952056407928467,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9951977729797363,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.995199978351593,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9952108860015869,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9952011108398438,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9951910972595215,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9951896071434021,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9951938986778259,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9951947927474976,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9951926469802856,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.99518883228302,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        }
+      ]
+    },
+    {
+      "arm": "E_diffusion_plus_winding",
+      "seconds": 34.657315254211426,
+      "seconds_per_trajectory": 0.6931463050842285,
+      "plaquette_initial": 0.9952056407928467,
+      "plaquette_final": 0.9951932430267334,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 1.0244067137232804e-05,
+      "plaquette_final_rel": -2.213552281915554e-06,
+      "loops_final": {
+        "wilson_1x1": 0.9951932430267334,
+        "wilson_2x2": 0.9809197187423706,
+        "wilson_4x4": 0.9259051084518433,
+        "wilson_8x8": 0.733090877532959
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_sectors_visited": 7,
+        "exact_probability_covered": 0.9997269154882388,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1,
+          3
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 1.140625,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2
+        ],
+        "n_sectors_visited": 6,
+        "exact_probability_covered": 0.9952739640757369,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1
+        ]
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 0.9952056407928467,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9952003955841064,
+          "q_squared": 0.890625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9952021837234497,
+          "q_squared": 0.703125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9951954483985901,
+          "q_squared": 1.015625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.9951943159103394,
+          "q_squared": 1.140625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9951950311660767,
+          "q_squared": 1.265625,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9951972961425781,
+          "q_squared": 1.203125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9952032566070557,
+          "q_squared": 1.515625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9951993823051453,
+          "q_squared": 1.265625,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9951922297477722,
+          "q_squared": 1.078125,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9951932430267334,
+          "q_squared": 1.328125,
+          "n_sectors": 6
+        }
+      ]
+    },
+    {
+      "arm": "G_cold_plus_odd_winding",
+      "seconds": 102.99292635917664,
+      "seconds_per_trajectory": 2.0598585271835326,
+      "plaquette_initial": 1.0,
+      "plaquette_final": 0.9953156113624573,
+      "plaquette_exact": 0.9951954459438838,
+      "plaquette_initial_rel": 0.004827749238301093,
+      "plaquette_final_rel": 0.00012074554708152441,
+      "loops_final": {
+        "wilson_1x1": 0.9953156113624573,
+        "wilson_2x2": 0.9813913106918335,
+        "wilson_4x4": 0.9279293417930603,
+        "wilson_8x8": 0.7407659888267517
+      },
+      "loops_exact": {
+        "wilson_1x1": 0.9951954459601974,
+        "wilson_2x2": 0.9809198431824809,
+        "wilson_4x4": 0.9258360348628291,
+        "wilson_8x8": 0.7347444606633602
+      },
+      "topology": {
+        "q_squared": 0.9886363636363636,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          -3,
+          -2,
+          -1,
+          0,
+          1,
+          2,
+          3
+        ],
+        "n_sectors_visited": 7,
+        "exact_probability_covered": 0.9997269154882388,
+        "odd_sectors_visited": [
+          -3,
+          -1,
+          1,
+          3
+        ]
+      },
+      "topology_initial": {
+        "q_squared": 0.0,
+        "q_squared_exact": 1.0011887008808318,
+        "sectors_visited": [
+          0
+        ],
+        "n_sectors_visited": 1,
+        "exact_probability_covered": 0.3987053665786871,
+        "odd_sectors_visited": []
+      },
+      "history": [
+        {
+          "trajectory": 0,
+          "plaquette": 1.0,
+          "q_squared": 0.0,
+          "n_sectors": 1
+        },
+        {
+          "trajectory": 5,
+          "plaquette": 0.9955409169197083,
+          "q_squared": 0.921875,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 10,
+          "plaquette": 0.9954453706741333,
+          "q_squared": 1.328125,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 15,
+          "plaquette": 0.9953945875167847,
+          "q_squared": 1.25,
+          "n_sectors": 7
+        },
+        {
+          "trajectory": 20,
+          "plaquette": 0.995386004447937,
+          "q_squared": 0.9375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 25,
+          "plaquette": 0.9953564405441284,
+          "q_squared": 1.234375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 30,
+          "plaquette": 0.9953478574752808,
+          "q_squared": 1.109375,
+          "n_sectors": 6
+        },
+        {
+          "trajectory": 35,
+          "plaquette": 0.9953384399414062,
+          "q_squared": 1.28125,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 40,
+          "plaquette": 0.9953239560127258,
+          "q_squared": 0.765625,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 45,
+          "plaquette": 0.9953168630599976,
+          "q_squared": 0.984375,
+          "n_sectors": 5
+        },
+        {
+          "trajectory": 50,
+          "plaquette": 0.9953156113624573,
+          "q_squared": 1.0625,
+          "n_sectors": 5
+        }
+      ]
+    }
+  ]
+}

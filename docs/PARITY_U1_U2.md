@@ -452,3 +452,26 @@ u1's spans beta 6 to 518 with a much flatter spread. So the reversal is a
 property of the RANGE, not of either code -- which is the strongest argument for
 section 5 item 4 as a standing rule rather than a u2 footnote.
 
+
+## 1d. `sector_augment` config resolution -- FIXED 2026-09-07
+
+u2's `01_generate_data.py` resolved `sector_augment` as
+`rung.get(...)` falling back to `data_cfg.get(...)`; u1's read the per-rung
+key ONLY. So a u1 config setting `sector_augment` once at the `data:` level
+-- the obvious way to apply it to every rung, and exactly how u2's configs
+are written -- was silently ignored. No error, no warning.
+
+**Measured cost of the divergence.** 30 u1 supplement rungs were regenerated
+on 2026-09-07 specifically to add topological coverage, took ~70 minutes of
+6-way sharded CPU, and came out with all 30 at a SINGLE sector and
+`<Q^2> = 0.000` -- identical in coverage to the ensembles they replaced. The
+run reported success at every level: shards exited 0, the merge wrote 30
+entries, the wrapper logged DONE. It was caught only by measuring the charge
+histogram of the output afterwards.
+
+Fixed by giving u1 the same fallback, plus a printed sector count and an
+explicit WARNING when augmentation is requested and the result still spans
+one sector. **Lesson worth generalizing: a data-generation flag that silently
+does nothing is indistinguishable from success in every log this project
+writes. Verify the PROPERTY the flag was supposed to produce, not the exit
+code.**

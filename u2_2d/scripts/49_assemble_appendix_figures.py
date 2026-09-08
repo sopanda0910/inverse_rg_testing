@@ -269,6 +269,56 @@ FIGURES: dict[str, tuple[str, list[str], str]] = {
         "Every diffusion-seeded bar sits within 2.5 sigma of exact at every "
         "loop size and both couplings; every cold/hot-started bar is "
         "6 sigma-600 sigma off, winding move or not."),
+    # Coverage / cost-efficiency figures. UNTRACKED until 2026-09-07, and the
+    # gap was not harmless: fig59 is the paper's main coverage figure and had
+    # been stale for two days (drawn 09-05, while every wide_dense JSON it
+    # reads was regenerated 09-06/09-07 under the corrected chi2-vetoed
+    # estimator, and its L=64 data did not exist at all when it was drawn).
+    # The checker reported "figure directory is consistent" throughout,
+    # because untracked means unexamined -- which is exactly why the manifest
+    # prints an untracked list rather than ignoring stray files.
+    "fig57_cost_efficiency.png": (
+        "57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default",
+        ["coverage_scan_relaxation/default/crossover.json",
+         "coverage_scan_relaxation/default/crossover_topo.json",
+         "coverage_scan_relaxation/default/crossover_L64.json",
+         "coverage_scan_relaxation/default/crossover_L64_topo.json"],
+        "Steady-state cost-efficiency (HMC decorrelation interval divided by "
+        "the seed's fitted relaxation time) vs. fine coupling for the deployed "
+        "checkpoint, both HMC rounds, both volumes. Above 1 the seed is "
+        "cheaper than continuing a chain."),
+    "fig57b_cost_efficiency_wide.png": (
+        "57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/wide "
+        "--train-model-beta-max 2000",
+        ["coverage_scan_relaxation/wide/crossover.json",
+         "coverage_scan_relaxation/wide/crossover_topo.json",
+         "coverage_scan_relaxation/wide/crossover_L64.json",
+         "coverage_scan_relaxation/wide/crossover_L64_topo.json"],
+        "The same curve for the wide checkpoint (trained to model beta ~2000), "
+        "which resolves a finite relaxation time at 15 of 16 L=64 couplings "
+        "against the deployed checkpoint's 7."),
+    "fig59_coverage_comparison.png": (
+        "59_coverage_comparison_figure.py --fine-size 32",
+        ["coverage_scan_relaxation/default/crossover_topo.json",
+         "coverage_scan_relaxation/wide/crossover_topo.json",
+         "coverage_scan_relaxation/wide_dense/crossover_topo.json",
+         "coverage_scan_relaxation/cov60/crossover_topo.json"],
+        "Cost-efficiency vs. fine coupling at L=32 for four checkpoints "
+        "differing only in training coverage, each checkpoint's own coverage "
+        "edge marked in its own colour. At this volume the four are not "
+        "reliably separated -- see fig59b."),
+    "fig59b_coverage_comparison_L64.png": (
+        "59_coverage_comparison_figure.py --fine-size 64 "
+        "--out out/u2_2d/figures/fig59b_coverage_comparison_L64.png",
+        ["coverage_scan_relaxation/default/crossover_L64_topo.json",
+         "coverage_scan_relaxation/wide/crossover_L64_topo.json",
+         "coverage_scan_relaxation/wide_dense/crossover_L64_topo.json",
+         "coverage_scan_relaxation/cov60/crossover_L64_topo.json"],
+        "The same comparison at L=64, where the checkpoints separate "
+        "decisively: the two wide-coverage checkpoints resolve at 15/16 and "
+        "14/16 couplings, the two narrow ones at 7/16 and 3/16. No checkpoint "
+        "is trained at L=64, and wide's coverage extension is entirely at "
+        "L=8, so what transfers across volume is coupling coverage."),
 }
 
 # Where each figure sits in the paper. The order here is the order of
@@ -321,6 +371,13 @@ SECTIONS: list[tuple[str, str, list[str]]] = [
       "fig18_z_vs_loop_area_L64_beta416.524.png",
       "fig22_division_of_labour.png", "fig23_dissociation.png",
       "fig24_kl_per_site.png", "fig31_seed_vs_classical_significance.png"]),
+    ("Appendix U2-D2. Training coverage, and what it buys across volume",
+     "Cost-efficiency against fine coupling for checkpoints differing only in "
+     "training coverage. The pair of volumes is the point: at L=32 the "
+     "checkpoints are not reliably separated, at L=64 they separate decisively, "
+     "and no checkpoint is trained at L=64 at all.",
+     ["fig57_cost_efficiency.png", "fig57b_cost_efficiency_wide.png",
+      "fig59_coverage_comparison.png", "fig59b_coverage_comparison_L64.png"]),
     ("Appendix U2-E. Cost and tuning",
      "Cost claims, and the two knobs that were measured rather than assumed.",
      ["fig14_sampler_steps.png", "fig25_retherm_scan.png",
