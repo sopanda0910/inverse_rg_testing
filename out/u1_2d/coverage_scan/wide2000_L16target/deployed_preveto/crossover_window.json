@@ -2,6 +2,18 @@
   "rows": [
     {
       "L": 16,
+      "beta": 250.00007961422057,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 91.90719867819834,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 299.99983104380385,
       "regime": "Q frozen",
       "seed": 80.45153520042274,
@@ -9,6 +21,18 @@
       "cold": 8.636364538457723,
       "interval": 88.27099833071176,
       "speedup": 0.1073486604940802,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 350.0001599476768,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 46.837733454613875,
+      "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false
     },
@@ -26,6 +50,18 @@
     },
     {
       "L": 16,
+      "beta": 470.00008957397824,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 9.766819303475867,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 549.9998733788032,
       "regime": "Q frozen",
       "seed": 13.185308228424779,
@@ -33,6 +69,18 @@
       "cold": 4.30149402585712,
       "interval": 15.054770718037744,
       "speedup": 0.32623386206353483,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 649.9999602963343,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 79.3632861530825,
+      "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false
     },
@@ -50,6 +98,18 @@
     },
     {
       "L": 16,
+      "beta": 869.9999902278433,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 47.424622852736775,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 1000.0000615288142,
       "regime": "Q frozen",
       "seed": 16.656682472962082,
@@ -57,6 +117,18 @@
       "cold": 2.8020768014677486,
       "interval": 17.75057077343357,
       "speedup": 0.16822538377712445,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 1224.9998400130362,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 65.40179330244618,
+      "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false
     },
@@ -74,6 +146,18 @@
     },
     {
       "L": 16,
+      "beta": 1749.9998099010156,
+      "regime": "Q frozen",
+      "seed": 41.392261420744184,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 25.13386112259867,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 2000.0000341458128,
       "regime": "Q frozen",
       "seed": 42.59274741343182,
@@ -81,6 +165,18 @@
       "cold": 3.816762888440949,
       "interval": 13.410094570652076,
       "speedup": 0.08961062904426106,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 2599.999996090544,
+      "regime": "Q frozen",
+      "seed": 85.85347095828006,
+      "hot": Infinity,
+      "cold": NaN,
+      "interval": 3.045801787198596,
+      "speedup": Infinity,
       "q_frozen": true,
       "speedup_is_bound": false
     }

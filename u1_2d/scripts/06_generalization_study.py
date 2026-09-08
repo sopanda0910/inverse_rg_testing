@@ -197,6 +197,25 @@ F_CASES = [
     (8, 250.3758),
     (8, 375.3755),
     (8, 500.3754),
+    # WIDENED EVALUATION GRID, added 2026-09-08. The seven cases above were
+    # chosen to land ON wide2000's trained fine rungs (300, 400, 550, 750,
+    # 1000, 1500, 2000), which is the right choice for asking whether a
+    # checkpoint works where it was trained, but it leaves only seven paired
+    # points -- too few for the coverage comparison in the paper's
+    # sec:coverage-u1 to resolve anything (every exact sign test came back
+    # p >= 0.625). These eight interleave the GAPS between those rungs, plus
+    # one below the covered range (fine 250) and one past the 2000 ceiling
+    # (fine 2600) where a coverage effect should be largest. Coarse betas are
+    # brentq inversions of approx_matched_fine_beta onto fine beta targets
+    # 250, 350, 470, 650, 870, 1225, 1750, 2600.
+    (8, 62.8782),
+    (8, 87.8773),
+    (8, 117.8767),
+    (8, 162.8762),
+    (8, 217.8759),
+    (8, 306.6256),
+    (8, 437.8754),
+    (8, 650.3753),
 ]
 B_TARGET_BETAS = [6.0, 10.0, 16.0, 20.0, 30.0, 55.0237]
 MATCHED_PAIR = (4.0, 14.1464)

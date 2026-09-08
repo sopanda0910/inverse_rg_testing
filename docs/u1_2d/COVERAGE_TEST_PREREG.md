@@ -75,3 +75,82 @@ better at 7/7 (median 10.7×, p = 0.0156) and `wide2000_dense` better at 7/7
 of a rule chosen partly by looking at them. The eight new couplings are the
 confirmatory sample, and the paper should report the 15-coupling result with
 this history stated.
+
+---
+
+## OUTCOME (added 2026-09-08 11:20, after the eight new couplings were scored)
+
+The analysis above was run as specified. Nothing in the plan was changed after
+seeing the data; the one deviation is noted at the end.
+
+### Primary endpoint `Z`, paired over all 15 couplings
+
+| comparison | wins | median ratio (bootstrap CI) | Wilcoxon p |
+|---|---|---|---|
+| `deployed` vs `wide2000` | **15/15** | 9.4x [6.9, 21.9] | 1e-4 |
+| `deployed` vs `wide2000_dense` | **15/15** | 8.7x [7.6, 18.1] | 1e-4 |
+| `wide2000` vs `wide2000_dense` | 6/15 | 0.9x [0.8, 1.2] | 0.80 |
+
+### The pre-specified off-rung subgroup (the confirmatory sample)
+
+| comparison | wins | median ratio | Wilcoxon p |
+|---|---|---|---|
+| `deployed` vs `wide2000` | **8/8** | 8.1x [4.6, 21.9] | 0.0078 |
+| `deployed` vs `wide2000_dense` | **8/8** | 8.2x [6.8, 12.7] | 0.0078 |
+| `wide2000` vs `wide2000_dense` | 4/8 | 0.9x [0.6, 1.5] | 0.95 |
+
+`p = 0.0078` is the smallest value a two-sided signed-rank test can return at
+n = 8 (2/2^8), so the test is SATURATED, not marginal -- it cannot report more
+evidence than this at eight pairs.
+
+Relative deviation agrees and is larger throughout (37-45x off-rung), so
+nothing turns on the choice of normalisation here.
+
+### Verdict against the pre-registered falsification criteria
+
+Neither fired. The wide checkpoints beat `deployed`, and they beat it on the
+off-rung subgroup specifically -- so this is not "wide only works where it was
+trained".
+
+**Coverage WIDTH is confirmed. Coverage DENSITY is not resolved in U(1)**
+(0.9x, CI straddling 1 on every cut). U(1) supports width only; U(2) resolves
+density separately over 44 couplings, and the two studies should be read as
+agreeing on width and silent-versus-positive on density.
+
+### The secondary binary endpoint, for the record
+
+`deployed` "resolves" at 8/15 against `wide2000`'s 3/15 -- the checkpoint
+whose seeds sit 59-78 sigma from exact scores nearly three times as many
+"successes" as the one whose seeds sit at 1-32 sigma. That is the inversion
+this pre-registration was written to escape, displayed rather than hidden.
+
+### Deviation from plan
+
+The shared script `84_raw_seed_quality.py` had labelled PPM as primary,
+inherited from the U(2) work. This document fixes `Z` as primary, and `Z` is
+what is reported as primary above. The script now prints both, always, with
+`Z` labelled as the pre-registered primary, so the choice cannot be made
+after seeing the numbers. Both point the same way in this test.
+
+### What this changed downstream
+
+Re-scoring both theories on this endpoint changed three claims that had been
+resting on the inverted indicator, all now corrected in `paper/current.tex`:
+
+- The **abstract** claimed checkpoints were "indistinguishable at 32x32 and
+  separate decisively at 64x64". That pattern is an artifact of the finite-tau
+  column. On seed distance the ordering is the same at both volumes and
+  separates 4-10x at L=32 already; what actually grows with volume is the
+  MAGNITUDE (wide vs default 1.6x at L=32, 3.2x at L=64).
+- The **U(2) density paragraph** concluded "density was not the missing
+  ingredient". On this endpoint `wide_dense` beats `wide` at 35/44 (2.0x,
+  p<1e-4), concentrated entirely inside coverage (27/30) and absent past the
+  ceiling (8/14, p=0.36). Range and density act in different places.
+- The **coverage-empty-rung mechanism** argued a regression from `wide`
+  resolving a finite tau while `wide_dense` did not. The regression is real --
+  Z 0.45/0.39 against 6.31/5.96 at that coupling -- so the conclusion stood,
+  but the evidence needed replacing.
+
+The sector-augmentation intervention null was also re-scored and HOLDS:
+U(2) median ratio 1.0x (p=0.27, n=44), U(1) 0.9x with the marginal signal
+pointing away from the intervention (n=7).

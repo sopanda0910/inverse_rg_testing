@@ -2,6 +2,18 @@
   "rows": [
     {
       "L": 16,
+      "beta": 250.00007961422057,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 91.3216444344349,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 299.99983104380385,
       "regime": "Q frozen",
       "seed": Infinity,
@@ -11,6 +23,18 @@
       "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 350.0001599476768,
+      "regime": "Q frozen",
+      "seed": 0.0,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 46.837733454613875,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": true
     },
     {
       "L": 16,
@@ -26,12 +50,36 @@
     },
     {
       "L": 16,
+      "beta": 470.00008957397824,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 9.242210801074705,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 549.9998733788032,
       "regime": "Q frozen",
       "seed": Infinity,
       "hot": NaN,
       "cold": NaN,
       "interval": 15.054770718037744,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 649.9999602963343,
+      "regime": "Q frozen",
+      "seed": 349.74798690460796,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 79.3632861530825,
       "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false
@@ -50,12 +98,36 @@
     },
     {
       "L": 16,
+      "beta": 869.9999902278433,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 57.105998479737394,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 1000.0000615288142,
       "regime": "Q frozen",
       "seed": 477.9228546099867,
       "hot": NaN,
       "cold": 2.8020768014677486,
       "interval": 17.75057077343357,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 1224.9998400130362,
+      "regime": "Q frozen",
+      "seed": Infinity,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 65.40179330244618,
       "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false
@@ -74,12 +146,36 @@
     },
     {
       "L": 16,
+      "beta": 1749.9998099010156,
+      "regime": "Q frozen",
+      "seed": 26.45366538560855,
+      "hot": NaN,
+      "cold": NaN,
+      "interval": 26.134026463815886,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
       "beta": 2000.0000341458128,
       "regime": "Q frozen",
       "seed": Infinity,
       "hot": NaN,
       "cold": NaN,
       "interval": 13.410094570652076,
+      "speedup": NaN,
+      "q_frozen": true,
+      "speedup_is_bound": false
+    },
+    {
+      "L": 16,
+      "beta": 2599.999996090544,
+      "regime": "Q frozen",
+      "seed": NaN,
+      "hot": Infinity,
+      "cold": NaN,
+      "interval": 3.045801787198596,
       "speedup": NaN,
       "q_frozen": true,
       "speedup_is_bound": false

@@ -1,0 +1,6 @@
+shard 3/4: 3 cases
+3 matched-pair cases, output -> out\u1_2d\coverage_scan\wide2000_L16target\wide2000\thermalization
+F_L16_bc100.377_L16_beta400: benchmark cached, reusing series/summary
+F_L16_bc187.876_L16_beta750: benchmark cached, reusing series/summary
+F_L16_bc375.375_L16_beta1500: benchmark cached, reusing series/summary
+shard done; aggregates deferred. Merge with the same command minus --shard (keep --skip-cached).

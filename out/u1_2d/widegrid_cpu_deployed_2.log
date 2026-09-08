@@ -1,0 +1,31 @@
+shard 2/4: 4 cases
+4 matched-pair cases, output -> out\u1_2d\coverage_scan\wide2000_L16target\deployed\thermalization
+F_L16_bc87.8773_L16_beta350: sampling 64 raw seeds from wilson_L8_beta87.8773.pt
+    sampled in 146s
+
+=== F_L16_bc87.8773_L16_beta350: step_size=0.0214, n_steps=47 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 64 chains x 640 trajectories
+cold start: 64 chains x 640 trajectories
+F_L16_bc162.876_L16_beta650: sampling 64 raw seeds from wilson_L8_beta162.876.pt
+    sampled in 142s
+
+=== F_L16_bc162.876_L16_beta650: step_size=0.0157, n_steps=64 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 64 chains x 640 trajectories
+cold start: 64 chains x 640 trajectories
+F_L16_bc306.626_L16_beta1225: sampling 64 raw seeds from wilson_L8_beta306.626.pt
+    sampled in 141s
+
+=== F_L16_bc306.626_L16_beta1225: step_size=0.0114, n_steps=87 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 64 chains x 640 trajectories
+cold start: 64 chains x 640 trajectories
+F_L16_bc650.375_L16_beta2600: sampling 64 raw seeds from wilson_L8_beta650.375.pt
+    sampled in 141s
+
+=== F_L16_bc650.375_L16_beta2600: step_size=0.0078, n_steps=127 ===
+diffusion seed: 64 chains x 96 trajectories
+hot start: 64 chains x 640 trajectories
+cold start: 64 chains x 640 trajectories
+shard done; aggregates deferred. Merge with the same command minus --shard (keep --skip-cached).
