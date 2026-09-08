@@ -77,7 +77,9 @@ def _loop_area(name: str) -> int | None:
 def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
                          path: Path) -> None:
     """Wilson loops at four areas, plus P(Q) and |Q|, four arms each."""
-    fig, axes = plt.subplots(2, 3, figsize=(6.9, 3.52))
+    # 2x3 at 6.9x3.52in gave ~2.3x1.76in panels, too small for a
+    # four-entry legend to sit anywhere but on top of the histograms.
+    fig, axes = plt.subplots(2, 3, figsize=(10.2, 6.0))
     flat = axes.ravel()
 
     for ax, name in zip(flat[:4], PANEL_LOOPS):
@@ -86,36 +88,39 @@ def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
         lo = min(a.min() for a in arrays.values())
         hi = max(a.max() for a in arrays.values())
         bins = np.linspace(lo, hi, 40)
+        sig = []
         if "pre" in arrays:
             ax.hist(arrays["pre"], bins=bins, density=True, alpha=0.45,
-                    color=C_PRE, label=f"pre-retherm ({arrays['pre'].std():.1e})")
+                    color=C_PRE, label="pre-retherm")
+            sig.append((f"pre  {arrays['pre'].std():.1e}", C_PRE))
         if "post" in arrays:
             ax.hist(arrays["post"], bins=bins, density=True, alpha=0.55,
-                    color=C_POST, label=f"post-retherm ({arrays['post'].std():.1e})")
+                    color=C_POST, label="post-retherm")
+            sig.append((f"post {arrays['post'].std():.1e}", C_POST))
         if "hmc" in arrays:
             ax.hist(arrays["hmc"], bins=bins, density=True, histtype="step",
-                    color=C_HMC, lw=1.7,
-                    label=f"HMC ({arrays['hmc'].std():.1e})")
+                    color=C_HMC, lw=1.7, label="HMC")
+            sig.append((f"HMC  {arrays['hmc'].std():.1e}", C_HMC))
         if name in exact:
             ax.axvline(exact[name], color=C_EXACT, lw=1.3, ls="--",
                        label="exact mean")
+        # The per-arm standard deviation is why each panel used to carry its
+        # own legend. As a corner annotation it costs three short lines
+        # instead of a four-row box, so the legend can be shared figure-wide.
+        for j, (txt, col) in enumerate(sig):
+            ax.text(0.02, 0.96 - 0.115 * j, txt, transform=ax.transAxes,
+                    fontsize=6.5, color=col, va="top", ha="left",
+                    family="monospace")
         ax.set_title(name.replace("wilson_", "W ").replace("plaquette", "W 1x1"),
                      fontsize=10)
         ax.set_xlabel(r"$\frac{1}{2}\,\mathrm{ReTr}\,W$")
-        # frameon=True with an opaque-ish backing, NOT the project's usual
-        # frameon=False -- unlike a line/scatter plot with a free corner,
-        # these panels overlay two semi-transparent histograms plus a step
-        # histogram that together cover nearly the whole panel, so there is
-        # no location "best" can pick without landing on dense bars. Without
-        # a background the legend text became illegible, overlapping the
-        # peak bars directly (caught 2026-09-03 on fig16_distributions_
-        # L64_beta416.524.png). A white, mostly-opaque box behind the text
-        # fixes legibility regardless of where the data happens to peak.
-        ax.legend(frameon=True, fontsize=7, facecolor="white",
-                  framealpha=0.85, edgecolor="none")
+        # No per-panel legend: these panels overlay two semi-transparent
+        # histograms plus a step histogram covering nearly the whole area, so
+        # there is no corner "best" can pick without landing on dense bars.
+        # One shared legend sits under the figure instead.
         ax.grid(alpha=0.2)
         ax.xaxis.set_major_locator(plt.MaxNLocator(4))
-        ax.tick_params(axis="x", labelrotation=25, labelsize=8)
+        ax.tick_params(axis="x", labelrotation=0, labelsize=8)
     flat[0].set_ylabel("density")
     flat[3].set_ylabel("")
 
@@ -166,11 +171,14 @@ def figure_distributions(meas: dict, exact: dict, beta: float, size: int,
               edgecolor="none")
     ax.grid(alpha=0.2, axis="y")
 
+    handles, labels_ = flat[0].get_legend_handles_labels()
+    fig.legend(handles, labels_, loc="lower center", ncol=len(handles),
+               frameon=False, fontsize=9, bbox_to_anchor=(0.5, -0.005))
     fig.suptitle(
         f"Observable distributions: $L = {size}$, " r"$\beta$ = " f"{beta:g}"
         "  —  rethermalization repairs the lift, so `pre` is the model",
-        y=1.01)
-    fig.tight_layout()
+        y=0.995, fontsize=12)
+    fig.tight_layout(rect=(0, 0.045, 1, 0.965))
     fig.savefig(path, dpi=315, bbox_inches="tight")
     plt.close(fig)
 
