@@ -97,7 +97,7 @@ def tail(a: np.ndarray) -> np.ndarray:
 def load_u1():
     z = np.load(U1_SERIES)
     arms = {}
-    for arm, key in (("seed", "diffusion seed"), ("cold", "cold start"),
+    for arm, key in (("lift", "diffusion seed"), ("cold", "cold start"),
                      ("hot", "hot start")):
         arms[arm] = {k: tail(z[f"{key}|{k}"]) for k, _, _ in U1_LOOPS}
     exact = {k: u1_exact(218.5802136261687, a, lattice_size=32)
@@ -106,7 +106,7 @@ def load_u1():
 
 
 def load_u2():
-    files = {"seed": "arm_A_diffusion_seed", "cold": "arm_B_cold_start",
+    files = {"lift": "arm_A_diffusion_seed", "cold": "arm_B_cold_start",
              "hot": "arm_C_hot_start"}
     arms = {}
     for arm, stem in files.items():
@@ -119,11 +119,11 @@ def load_u2():
 
 
 def panel(ax, arms, exact, key, label, xlim=6.0):
-    ref = arms["seed"][key].std()
+    ref = arms["lift"][key].std()
     ex = exact[key]
     bins = np.linspace(-xlim, xlim, 61)
 
-    for arm, colour, style in (("seed", SEED_C, "fill"), ("cold", COLD_C, "step"),
+    for arm, colour, style in (("lift", SEED_C, "fill"), ("cold", COLD_C, "step"),
                                ("hot", HOT_C, "step")):
         v = (arms[arm][key] - ex) / ref
         inside = v[(v > -xlim) & (v < xlim)]
@@ -169,7 +169,7 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
     w_hot = arms["hot"][key].std() / ref
     ax.text(0.985, 0.88,
             r"$\sigma_{\rm cfg}=$" + f"{ref:.1e}"
-            + f"\nwidth/seed\ncold {w_cold:.2f}\nhot {w_hot:.1f}",
+            + f"\nwidth/lift\ncold {w_cold:.2f}\nhot {w_hot:.1f}",
             transform=ax.transAxes, ha="right", va="top", fontsize=7.5,
             color=MUTED, linespacing=1.4)
 
@@ -180,15 +180,15 @@ def load_charges():
     from u2_2d.lgt.exact import det_topological_charge_distribution as u2_pq
 
     z = np.load(U1_TOPO_SERIES)
-    u1 = {a: tail(z[f"{k}|Q"]) for a, k in (("seed", "diffusion seed"),
+    u1 = {a: tail(z[f"{k}|Q"]) for a, k in (("lift", "diffusion seed"),
                                             ("cold", "cold start"),
                                             ("hot", "hot start"))}
     u1_chains = {a: np.asarray(z[f"{k}|Q"])[np.asarray(z[f"{k}|Q"]).shape[0] // 2:]
-                 for a, k in (("seed", "diffusion seed"), ("cold", "cold start"),
+                 for a, k in (("lift", "diffusion seed"), ("cold", "cold start"),
                               ("hot", "hot start"))}
     qv1, pq1 = u1_pq(U1_TOPO_BETA, U1_L, "wilson")
 
-    files = {"seed": "arm_A_diffusion_seed", "cold": "arm_B_cold_start",
+    files = {"lift": "arm_A_diffusion_seed", "cold": "arm_B_cold_start",
              "hot": "arm_C_hot_start"}
     u2, u2_chains = {}, {}
     for arm, stem in files.items():
@@ -215,7 +215,7 @@ def topo_panel(ax, arms, chains, qv, pq, title, volume, qmax=5, rng=None):
     exact_q2 = float((qv ** 2 * pq).sum())
 
     width = 0.26
-    for k, (arm, colour) in enumerate((("seed", SEED_C), ("cold", COLD_C),
+    for k, (arm, colour) in enumerate((("lift", SEED_C), ("cold", COLD_C),
                                        ("hot", HOT_C))):
         v = np.rint(arms[arm]).astype(int)
         frac = np.array([(v == q).mean() for q in qs])
@@ -241,13 +241,13 @@ def topo_panel(ax, arms, chains, qv, pq, title, volume, qmax=5, rng=None):
     ax.tick_params(colors=MUTED, labelsize=8.5)
 
     lines = [r"$\langle Q^2\rangle$ / exact", f"exact  {exact_q2:.3f}"]
-    for arm, colour in (("seed", SEED_C), ("cold", COLD_C), ("hot", HOT_C)):
+    for arm, colour in (("lift", SEED_C), ("cold", COLD_C), ("hot", HOT_C)):
         per_chain = (chains[arm] ** 2).mean(axis=0)
         m = float(per_chain.mean())
         idx = rng.integers(0, per_chain.size, size=(4000, per_chain.size))
         err = float(per_chain[idx].mean(axis=1).std())
         zs = (m - exact_q2) / err if err > 0 else np.inf
-        lines.append(f"{arm}  {m / exact_q2:.2f}   ({zs:+.1f}$\\sigma$)"
+        lines.append(f"{arm}  {m / exact_q2:.2f}"
                      if np.isfinite(zs) else f"{arm}  0.00   (frozen)")
     ax.text(0.03, 0.97, "\n".join(lines), transform=ax.transAxes, ha="left",
             va="top", fontsize=8.0, color=MUTED, linespacing=1.5)
@@ -264,7 +264,7 @@ def figure_topology(out_path):
                r"2D U(2),  $L=64,\ \beta=416.52$", U2_L ** 2, rng=rng)
     axes[0].set_ylabel(r"$P(Q)$", fontsize=9.5, color=INK)
 
-    handles = [plt.Line2D([], [], color=SEED_C, lw=6, alpha=0.85, label="diffusion seed"),
+    handles = [plt.Line2D([], [], color=SEED_C, lw=6, alpha=0.85, label="preconditioned"),
                plt.Line2D([], [], color=COLD_C, lw=6, alpha=0.85, label="cold start"),
                plt.Line2D([], [], color=HOT_C, lw=6, alpha=0.85, label="hot start"),
                plt.Line2D([], [], color=INK, lw=1.4, marker="o", ms=4, label="exact")]
@@ -307,14 +307,15 @@ def main() -> int:
         ax.set_xlabel(r"$(W - W_{\rm exact})\,/\,\sigma_{\rm cfg}$",
                       fontsize=8.5, color=INK)
 
-    handles = [plt.Line2D([], [], color=SEED_C, lw=3, alpha=0.7, label="diffusion seed"),
+    handles = [plt.Line2D([], [], color=SEED_C, lw=3, alpha=0.7, label="preconditioned"),
                plt.Line2D([], [], color=COLD_C, lw=2, label="cold start"),
                plt.Line2D([], [], color=HOT_C, lw=2, label="hot start"),
                plt.Line2D([], [], color=INK, lw=1.2, ls="--", label="exact")]
     fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False,
                fontsize=8.5, bbox_to_anchor=(0.5, -0.035))
 
-    fig.suptitle("The seed reproduces the equilibrium distribution, not just its mean",
+    fig.suptitle("The preconditioned configuration reproduces the equilibrium "
+                 "distribution, not just its mean",
                  fontsize=10.5, color=INK, y=1.0)
     fig.tight_layout()
 
@@ -329,9 +330,9 @@ def main() -> int:
     for name, arms, ex, loops in (("u1", u1_arms, u1_ex, U1_LOOPS),
                                   ("u2", u2_arms, u2_ex, U2_LOOPS)):
         for key, _, label in loops:
-            ref = arms["seed"][key].std()
+            ref = arms["lift"][key].std()
             row = [f"{name} {key:12s}"]
-            for arm in ("seed", "cold", "hot"):
+            for arm in ("lift", "cold", "hot"):
                 v = arms[arm][key]
                 row.append(f"{arm}: c={(v.mean() - ex[key]) / ref:+7.2f} "
                            f"w={v.std() / ref:6.2f}")

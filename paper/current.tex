@@ -20,43 +20,57 @@ floatfix]{revtex4-2}
 
 \graphicspath{{figures/}}
 
+% REVTeX turns on \flushbottom in twocolumn mode, which forces both
+% columns to end on the same baseline by stretching the glue between
+% paragraphs. On a sparse column that shows up as visibly uneven gaps around
+% individual paragraphs. Let the columns end where they end instead.
+\raggedbottom
+
 \begin{document}
 
 \title{Diffusion models as preconditioners for hybrid Monte Carlo in
 lattice gauge theory}
 
+% REQUIRED BEFORE SUBMISSION -- the class option `superscriptaddress' expects
+% an \affiliation after each \author, and with none present REVTeX typesets the
+% byline with no institutions at all and gives no warning. Fill these in and
+% uncomment; add \email{} on the corresponding author.
 \author{Shivam Panda}
+% \affiliation{}
 \author{Jinchen He}
+% \affiliation{}
 \author{Yong Zhao}
-\affiliation{Physics Division, Argonne National Laboratory,
-Lemont, Illinois 60439, USA}
+% \affiliation{}
 
 \begin{abstract}
 Hybrid Monte Carlo (HMC) sampling of lattice gauge fields suffers from critical
 slowing down, and its topological charge can freeze entirely at small lattice
-spacing. We remove that limitation at the start of the chain. A diffusion model
+spacing. We show that a diffusion model used as a preconditioner can bypass
+topological freezing: the chain is handed a starting configuration whose
+topology is already correct, so it is never asked to sample a quantity it
+cannot move. The diffusion model
 performs an inverse renormalization-group step, lifting a coarse configuration
 to a fine one, and its output preconditions the HMC chain in place of a cold or
 hot start. The topological charge is transported from the coarse configuration
 rather than generated, so it is correct by construction. In 2D U(1) and U(2) the
 method delivers configurations at $\beta \approx 1660$ on a $128\times128$
-lattice, sixteen times the linear size of its $8\times8$ base. Transport is
-exact at every rung, so the charge they carry is drawn at $\beta \approx 3.5$,
-where HMC still moves freely between sectors. After $400$ trajectories the
-delivered ensemble matches the exact closed form to one part in $10^{6}$ on the
-plaquette and three parts in $10^{4}$ on an $8\times8$ Wilson loop; a cold start
-over the same budget is $51$ and $7600$ parts per million from exact, with a
-topological charge that has not moved at all. Measured in trajectories per
+lattice, eight times the linear size of the $16\times16$ base it climbs from.
+Transport is exact at every rung, so the charge is sampled once at $\beta = 28$,
+where an exact winding update still moves it, and carried unchanged to a
+coupling where neither plain nor winding-update HMC equilibrates.
+After $400$ trajectories the delivered ensemble matches the exact closed form
+to $1$ part per million on the plaquette and $340$ on an $8\times8$ Wilson
+loop, against $51$ and $7600$ parts per million for a cold start over the same
+budget, whose topological charge never moves. Measured in trajectories per
 independent configuration, the preconditioned chain is unboundedly cheaper than
-plain HMC above model coupling $\beta \approx 6$, where HMC supplies no
-independent configurations at any budget. Against HMC with an exact winding
-update, the strongest classical sampler this theory admits, it is roughly
-break-even below model $\beta \approx 22$ and unbounded above it, where that
-baseline stops equilibrating. What training must cover is the coupling, not the
-volume: widening the trained range carries the method from failing above model
-$\beta \approx 100$ to working at every coupling tested, up to model
-$\beta \approx 415$, while per-configuration accuracy is unchanged at four times
-the volume.
+plain HMC above $\beta \approx 25$, where HMC supplies no independent
+configurations at any budget. Against HMC with an exact winding update, the
+strongest classical sampler this theory admits, it is roughly break-even below
+$\beta \approx 90$ and unbounded above it, where that baseline stops
+equilibrating. Widening the trained range from $\beta \approx 416$ to $\beta \approx 2000$
+carries the method from failing above its old ceiling to working at every
+coupling tested, out to $\beta \approx 1660$, and per-configuration accuracy
+does not degrade at four times the volume.
 \end{abstract}
 
 \maketitle
@@ -64,12 +78,11 @@ the volume.
 \section{Introduction}
 \label{sec:intro}
 Lattice Quantum Chromodynamics (QCD) discretizes the strong interaction
-non-perturbatively. Configurations --- 4D grids carrying an SU(3) matrix on
-every edge, together with a dynamical fermion field --- are sampled from the
+non-perturbatively. Configurations, 4D grids carrying an SU(3) matrix on
+every edge, together with a dynamical fermion field, are sampled from the
 Boltzmann distribution $p(\phi)\propto e^{-S[\phi]}$ in the lattice action $S$,
 and observables are Monte Carlo estimates over that ensemble.
 
-Two things make that sampling hard, and both worsen toward the continuum limit.
 The cost of Hybrid Monte Carlo (HMC) grows close to exponentially as the lattice
 spacing shrinks, a phenomenon known as critical slowing down
 \cite{schaefer2011}; and generation separately suffers from topological freezing, where large action barriers leave
@@ -83,11 +96,12 @@ independently from the Haar measure on the gauge group. Neither carries any
 information about the target, so a chain begun from either must run for a
 thermalization time $t_{\rm therm}$ before its samples are usable. We show that
 $t_{\rm therm}$ can be cut from hundreds of trajectories to a few, or to zero,
-by using a diffusion model as a preconditioner instead. The model performs an
-inverse renormalization-group step, lifting a configuration at a coarse lattice
-spacing to one at a fine spacing, and the topological charge of the result is
-transported from the coarse configuration rather than generated, so it is
-correct by construction whatever the model has learned about topology.
+by using a diffusion model as a preconditioner instead. The model inverts one
+renormalization-group step: it takes a configuration on an $L\times L$ lattice
+at coupling $\beta$ and generates one on $2L\times2L$ at roughly $4\beta$,
+conditioned on the coarse configuration it came from. Iterating that climb
+reaches lattices and couplings where direct sampling has stalled, while the
+charge is not generated at any rung but carried up from the base exactly.
 
 Full QCD being expensive, we work in 2D U(1) and 2D U(2), which keep the
 features that matter and are exactly solvable, so every output can be scored
@@ -103,13 +117,18 @@ reverse diffusion as a stochastic-quantization scheme for lattice field theory
 \cite{zhu2024} and then conditioned it on the coupling \cite{zhu2025}, and
 Aarts et al.\ generalized to non-abelian 2D U(2)/SU(2) with an equivariant
 architecture \cite{aarts2026}. In each of these the learned model is the
-sampler and the ensemble it produces is the result. A separate line of work
+sampler and the ensemble it produces is the result, which places
+the burden of correctness on the model at the target volume. How that burden
+grows with volume is an open question for the field: for normalizing flows in
+particular, whether a useful acceptance rate can be held at lattice-QCD scale is
+unsettled \cite{abbott2023}. \sect{u1obs} reports where our own volume
+dependence lies. A separate line of work
 starts HMC from a constructed configuration instead: Detmold and Endres
 \cite{detmoldendres2015,detmoldendres2016} built a renormalization-group-matched
 coarse-to-fine map, started HMC from its output, and measured rethermalization
 against cold and hot starts, for pure Yang--Mills and then with fermions.
 
-\sect{setup} fixes notation and defines the classical baselines, \sect{method}
+This paper is organized as follows: \sect{setup} fixes notation and defines the classical baselines, \sect{method}
 gives the method, \sect{seedquality} and \sect{coverage} report what the
 preconditioner is worth and what training must cover, and \sect{conclusions}
 asks what carries over to full QCD.
@@ -162,10 +181,7 @@ The topological charge is the wrapped plaquette sum,
 \end{equation}
 where $\mathrm{wrap}(\alpha) \equiv \mathrm{atan2}(\sin\alpha,\cos\alpha)$
 returns the representative in $(-\pi,\pi]$, the two-argument arctangent being
-what resolves the quadrant. Without the
-wrapping the sum would vanish identically, every link appearing once with each
-sign; the wrapping instead adds a compensating $2\pi n$ to any plaquette outside
-the principal branch, leaving $Q$ an exact integer.
+what resolves the quadrant.
 
 For U(2), $Q$ is defined by the same formula applied to the determinant plaquette
 phase, $\alpha_x = \mathrm{wrap}(\arg\det U_{x,p})$. Because SU(2) matrices have
@@ -189,23 +205,21 @@ transferred to U(2) (\sect{instanton_updates_classical}).
 \subsection{Topological freezing, and HMC}
 \label{sec:freezing}
 
-Because $Q$ is defined by the wrapped sum of plaquettes, it can only change if some
+Since $Q$ is defined by the wrapped sum of plaquettes, it can only change if some
 $\theta_{x,p}$ is pushed past $\pm\pi$. At large $\beta$ every plaquette angle
-clusters near zero due to the Wilson actions in Eq.~\eqref{eq:action-u1}. Therefore, changing $Q$ requires an intermediate configuration with
+clusters near zero due to the Wilson actions in Eq.~\eqref{eq:action-u1}.
+Therefore, changing $Q$ requires an intermediate configuration with
 some $\theta_{x,p}$ near $\pm\pi$, costing $\Delta S = 2\beta$, through purely
 local updates and accepted with probability $\sim e^{-2\beta}$. That exponential
 suppression is the root cause of topological freezing, and it worsens toward the
 continuum limit as $\beta$ grows. By Eq.~\eqref{eq:det-plaquette} the mechanism
 is identical in U(2).
 
-Configurations are generated by HMC \cite{duane1987,neal2011}, discretized by the
-Omelyan integrator \cite{omelyan2003} for U(1) and by an exponential-map leapfrog
-for the group-valued U(2) fields. The whole trajectory is offered as a single
-Metropolis proposal, which is what guarantees sampling from the Boltzmann
-distribution despite the integrator's discretization error; after burn-in,
-configurations are kept at intervals set by the integrated autocorrelation time
-$\tau_{\rm int}$, and observables are averaged over them.
-\sect{relaxation-correction} fixes the convention used here.
+Configurations are generated by HMC \cite{duane1987,neal2011}, discretized by
+the Omelyan integrator \cite{omelyan2003} for U(1) and by an exponential-map
+leapfrog for the group-valued U(2) fields. The whole trajectory is offered as a
+single Metropolis proposal, which is what guarantees sampling from the Boltzmann
+distribution despite the integrator's discretization error.
 
 \subsection{The classical baseline: winding updates}
 \label{sec:instanton_updates_classical}
@@ -223,7 +237,7 @@ $\psi$. The SU(2) sector integrates out of the action exactly, plaquette by
 plaquette against Haar measure, which is a 2D solvability statement with no
 analogue in $D>2$ or with fermions. That integral gives the closed-form marginal
 weight $w_{\det}(\alpha;\beta)=2I_1(z)/z$, $z=\beta\cos(\alpha/2)$
-(Appendix~\ref{app:su2-marginal}).
+(\sect{u2-extension}).
 
 The U(1) instanton transfers to U(2), but only halfway. A purely central phase shift
 $\theta\to\theta+\lambda$ commutes with the SU(2) sector entirely and is
@@ -233,24 +247,20 @@ $2\lambda$ and $Q$ by exactly two. Every proposal changes $Q$ by two, so it
 cannot change the parity of $Q$, meaning whether $Q$ is even or odd: a chain
 under this move stays for its whole history in the parity class it started in.
 We call it the even-only move, and a move that crosses between the two classes a
-parity flip. Transferring the U(1) construction unchanged therefore reaches only
-half the sectors, and the other half needs a genuinely different method.
+parity flip.
 
 Reaching an odd sector from an even one takes three steps: (i) propose
 $\psi'=\psi\pm\lambda$, changing $Q$ by $\pm1$; (ii) accept with the Metropolis
 ratio of the marginal action alone, $\min(1,e^{-\Delta S_{\det}})$, discarding
 the SU(2) sector from the decision since it should be resampled; and (iii)
 resample $q\sim p(q\mid\psi')$ exactly by Creutz--Kennedy--Pendleton heatbath
-\cite{creutz1980,kennedypendleton1985}. We call this the marginal move. It is
-the only odd-capable instanton update available in 2D U(2), and it carries a
-real per-trajectory cost. Both moves preserve the Boltzmann distribution
-exactly, and both are used as classical baselines.
+\cite{creutz1980,kennedypendleton1985}. We call this the marginal move.
 
-At $L=64$ and $\beta=416.524$, 400 cold-started trajectories
+At $L=64$ and $\beta=416.524$, $200$ cold-started trajectories
 over 64 chains give zero accepted parity flips under the even-only move, so the
 measured odd-sector weight is $P(\mathrm{odd})=0$ against an exact $0.4929$.
 Under the marginal move the same budget gives $7661$ flips and
-$P(\mathrm{odd})=0.4939$. Table~\ref{tab:u2-joint-marginal} repeats the
+$P(\mathrm{odd})=0.4939$. \tb{classical} repeats the
 comparison at $L=16$ across three couplings.
 
 \section{Method}
@@ -275,21 +285,31 @@ with $\theta'$ the coarse link angle. This makes the coarse plaquette angle equa
 the wrapped sum of its four constituent fine sub-plaquettes exactly, and hence
 $Q_{\mathrm{coarse}} = Q_{\mathrm{fine}}$.
 
-Each coarse coupling is fixed by the exact matching condition
-$$\frac{I_1(\beta_c)}{I_0(\beta_c)} = \left[\frac{I_1(\beta_f)}{I_0(\beta_f)}\right]^{4},$$
-derived from the exact solvability of 2D Wilson theory
-\cite{migdal1975,drouffezuber1983}. Its large-$\beta$ expansion, $I_1/I_0\approx 1-1/(2\beta)$,
-recovers the tree-level $\beta_c\approx\beta_f/4$.
+Character matching, $I_1(\beta_c)/I_0(\beta_c) =
+[I_1(\beta_f)/I_0(\beta_f)]^{4}$, follows from the exact solvability of 2D
+Wilson theory \cite{migdal1975,drouffezuber1983} and reduces to the tree-level
+$\beta_c\approx\beta_f/4$ through $I_1/I_0\approx 1-1/(2\beta)$. It matches the
+plaquette, but the quantity we need preserved is the charge distribution.
 
-The ladder this defines has a property the method depends on: with
-$\beta_f=4\beta_c$ and $L_f=2L_c$ the combination $V/(4\pi^2\beta)$ is
-invariant, since doubling $L$ quadruples $V$ while the matched coarse coupling
-quarters $\beta$. That combination is the topological susceptibility times the
-volume \cite{bonatirossi2019}, which sets the scale of the charge distribution,
-and the exact finite-volume $\langle Q^2\rangle$ inherits the invariance to
-$4\%$ over the deployed ladder's four rungs. The whole drift sits in the first,
-strongest-coupling step, where the character match departs furthest from
-$\beta_c=\beta_f/4$.
+Because transport preserves $Q$ exactly, whatever $P(Q)$ the base
+ensemble carries is what every rung above it inherits, so a schedule that lets
+that distribution drift introduces a systematic no later rung can remove.
+
+How wide the distribution is, and hence how many sectors an ensemble populates,
+is measured by $\chi_t V$, the topological susceptibility times the volume,
+which is $\langle Q^2\rangle$ itself \cite{bonatirossi2019}: near
+$\chi_t V \approx 1$ the charge fluctuates by about one unit from configuration
+to configuration, and for $\chi_t V \ll 1$ almost every configuration sits at
+$Q=0$. To leading order $\chi_t V \approx V/(4\pi^2\beta_1)$, which the
+tree-level ladder does hold fixed, since doubling $L$ quadruples $V$ while the
+matched coarse coupling quarters $\beta$. Beyond leading order it does not: run
+the exact finite-volume $\langle Q^2\rangle$ up the tree-level ladder from the
+deployed base and it falls from $1.001$ to $0.927$ over four rungs, almost all
+of that in the first and strongest-coupling step. We therefore fix $\beta_f$ by requiring the
+exact $\langle Q^2\rangle$ itself to be preserved rather than the plaquette,
+which makes the invariance exact by construction: the deployed schedule holds
+$\langle Q^2\rangle = 1.00119$ at all four rungs, from $L=16$, $\beta=28$ to
+$L=128$, $\beta=1660$.
 
 At high $\beta$ the fine ensemble used to build training pairs is itself frozen
 in $Q$, with $\langle Q^2\rangle\ll1$, so HMC returns configurations almost
@@ -299,17 +319,26 @@ local structure looks like at that coupling. That is exactly what it needs,
 since at deployment a coarse input can carry any $Q$ and the transport step will
 impose it regardless.
 
-We manufacture the missing coverage rather than sampling it. For a fixed
-fraction of the fine ensemble at each high-$\beta$ rung, a charge shift is drawn
-uniformly from a small integer range. That many copies of the instanton field (\sect{instanton}) are added to
-the configuration, and the result is relaxed locally at fixed topology to remove
-the ultraviolet error the instanton leaves behind. We call this sector
-augmentation. Because it touches only a fixed fraction of each rung, the
-resulting sector frequencies do not match the closed-form $P(Q)$: what is bought
-is sector coverage, not correct sector weights.
+We manufacture the missing coverage rather than sampling it, by two mechanisms
+that we distinguish because only one of them needs the theory to be solvable.
+Sector augmentation takes a fixed fraction of the fine ensemble at a rung, draws
+a charge shift uniformly from a small integer range, adds that many copies of the
+instanton field (\sect{instanton}), and relaxes the result locally at fixed
+topology to remove the ultraviolet error the instanton leaves behind. It
+consults no closed form. The alternative is to draw a configuration's charge
+from the exact $P(Q)$ and impose it, which does.
 
 \subsection{Score network}
 \label{sec:scoring-network}
+
+\begin{figure*}[bt]
+  \centering
+  \includegraphics[width=0.9\linewidth]{u1_2d/45_architecture.png}
+  \caption{The gauge-covariant score network. Shown for the U(1)
+  network, $324{,}954$ parameters; the U(2) network is identical in structure
+  with $403{,}394$.}
+  \label{fig:architecture}
+\end{figure*}
 
 Diffusion models generate by reversing a noising process. A forward It\^o SDE
 $dx = f(x,t)dt + g(t)dW$ carries the data distribution to a tractable reference
@@ -359,17 +388,21 @@ Each link belongs to exactly two plaquettes with opposite orientation, so
 $\partial\theta_p/\partial\theta_\ell\in\{+1,-1,0\}$ and only two terms survive.
 Because $h_p$ is itself a function of gauge-invariant inputs, the score is gauge-covariant by construction.
 
-\begin{figure*}[bt]
-  \centering
-  \includegraphics[width=0.9\linewidth]{u1_2d/45_architecture.png}
-  \caption{The gauge-covariant score network. Shown for the U(1)
-  network, $324{,}954$ parameters; the U(2) network is identical in structure
-  with $403{,}394$.}
-  \label{fig:architecture}
-\end{figure*}
-
 \subsection{Reverse diffusion, and exact charge transport}
 \label{sec:reverse_diffusion}
+
+\begin{figure*}[bt]
+    \centering
+    \includegraphics[width=\linewidth]{reverse_diffusion_schematic.png}
+    \caption{The reverse-diffusion chain, for 2D U(1) and U(2)
+    (\sect{reverse_diffusion}). The spine runs right to left from a uniform
+    prior on the circle, $\phi_T$, to the lifted configuration $\phi_0$;
+    $s_\theta$ is the learned score, $\Delta_t=\sigma_t^2-\sigma_{t-1}^2$, and
+    each predictor step is followed by one Langevin corrector step (dashed). The
+    configuration it delivers has been through exact local rethermalization,
+    preceded in U(2) by the conditional SU(2) heatbath of \sect{u2-extension}.}
+    \label{fig:method_schematic}
+\end{figure*}
 
 The wrapped-Gaussian kernel is exactly the transition kernel of a driftless
 diffusion wrapped onto the circle, so $f\equiv0$ and
@@ -406,10 +439,11 @@ close the soft mechanisms got on their own.
 
 This is where the scheme parts company with diffusion models used as samplers
 \cite{zhu2024,zhu2025,aarts2026}. There the reverse diffusion produces the
-ensemble and correctness is restored by an accept/reject step wrapped around it,
-in \refcite{zhu2025} a Metropolis-adjusted Langevin (MALA) correction, so the
-score network has to be accurate enough to sample from and any error in it is
-paid for in acceptance rate. Here it is run once and handed to an ordinary HMC
+ensemble itself, and where exactness is enforced it comes from an accept/reject
+step wrapped around the model --- a Metropolis-adjusted Langevin (MALA)
+correction in \refcite{zhu2025}, an annealed Langevin variant of the same idea
+in \refcite{aarts2026} --- so the score network has to be accurate enough to
+sample from, and any error in it is paid for in acceptance rate. Here it is run once and handed to an ordinary HMC
 chain that carries the accept/reject itself, so the model never enters the
 stationary distribution and its errors cost trajectories rather than exactness.
 \refcite{zhu2025} also reports transfer to larger couplings and to untrained
@@ -423,27 +457,25 @@ transported exactly rather than left to relax, so the sector of the delivered
 configuration is right before the first trajectory rather than after enough of
 them.
 
+The settings are as follows. The U(1) network has $324{,}954$ parameters at
+hidden width $56$ and depth $4$; the U(2) one has $403{,}394$ at width $64$ and
+the same depth; both use $3\times3$ kernels. Training is denoising score
+matching under Adam, for $100$ epochs at batch size $16$ and learning rate
+$3\times10^{-4}$ in U(1) and $120$ epochs at batch size $32$ and
+$2\times10^{-4}$ in U(2), holding out a tenth of each training set for
+validation. The deployed U(2) checkpoint is trained on nine fixed $(L,\beta)$
+rungs and the deployed U(1) one on four fixed rungs plus $78$ couplings drawn
+at random below its ceiling; \sect{coverage} varies exactly this list and
+nothing else. Sampling uses $200$ ancestral steps, each followed by one
+Langevin corrector step, with the charge projection applied every ten steps
+below $\sigma=0.5$. The tail is $16$ local sweeps in U(1), and in U(2) $30$
+conditional SU(2) heatbath sweeps followed by $10$ local sweeps.
+
 The rethermalization tail separates the two things we score. The raw lift is the
 reverse diffusion output before it, and the delivered ensemble is what it
 returns. Both are reported wherever they differ, because cheap local sweeps
 repair ultraviolet error but cannot touch topology, so the accuracy demanded of
 the model is not the same at the two scales.
-
-\begin{figure*}[bt]
-    \centering
-    \includegraphics[width=\linewidth]{reverse_diffusion_schematic.png}
-    \caption{The reverse-diffusion chain, for 2D U(1) and U(2)
-    (\sect{reverse_diffusion}). The spine runs right to left from a uniform
-    prior on the circle, $\phi_T$, to the lifted configuration $\phi_0$;
-    $s_\theta$ is the learned score, $\Delta_t=\sigma_t^2-\sigma_{t-1}^2$, and
-    each predictor step is followed by one Langevin corrector step (dashed). The
-    coarse configuration enters twice: it conditions every score evaluation, and
-    its charge is imposed by adding $\Delta Q$ copies of the instanton field $I$
-    (dotted box), periodically during sampling rather than only at the end. The
-    configuration it delivers has been through exact local rethermalization,
-    preceded in U(2) by the conditional SU(2) heatbath of \sect{u2-extension}.}
-    \label{fig:method_schematic}
-\end{figure*}
 
 \subsection{Extension to U(2)}
 \label{sec:u2-extension}
@@ -463,19 +495,17 @@ single-plaquette weight is a von Mises distribution in $\alpha$ with
 concentration $\beta_1$, a one-parameter exponential family whose sufficient
 statistic is $\cos\alpha$, so minimising the Kullback--Leibler divergence from
 $w_{\det}$ onto that family is moment matching on $\cos\alpha$
-\cite{amarinagaoka2000}, and the resulting condition
-$$\frac{I_1(\beta_1)}{I_0(\beta_1)} =
-\frac{\displaystyle\int_{-\pi}^{\pi}\cos\alpha\;w_{\det}(\alpha;\beta_{U(2)})\,d\alpha}
-     {\displaystyle\int_{-\pi}^{\pi} w_{\det}(\alpha;\beta_{U(2)})\,d\alpha}$$
-is the textbook concentration estimate for the von Mises family, whose
-mean resultant length is $I_1/I_0$ \cite{mardiajupp2000}. It reduces to
-$\beta_1 = \beta_{U(2)}/4$ at large coupling (\app{su2-marginal}).
+\cite{amarinagaoka2000}, giving
+$$\frac{I_1(\beta_1)}{I_0(\beta_1)} = \langle\cos\alpha\rangle_{w_{\det}},$$
+the textbook concentration estimate for the von Mises family
+\cite{mardiajupp2000}. It reduces to $\beta_1=\beta_{U(2)}/4$ at large coupling.
 
-The raw coupling is $\beta_{U(2)}$ itself, the coefficient in the U(2) Wilson
-action of Eq.~\eqref{eq:action-u2}. The model coupling is $\beta_1$, the matched
-U(1) value the score network is conditioned on. Training coverage is always
-stated in model $\beta$, while ensembles and actions are stated in raw
-$\beta$.
+Two couplings therefore appear throughout. The \emph{raw} coupling is
+$\beta_{U(2)}$ itself, the coefficient in the U(2) Wilson action of
+Eq.~\eqref{eq:action-u2}; the \emph{model} coupling is $\beta_1$, the matched
+U(1) value the score network is conditioned on. Training coverage is stated in
+model $\beta$, while ensembles, actions and every coupling quoted in the results
+are raw $\beta$ unless said otherwise.
 
 The SU(2) sector needs no model. It cannot be generated on its own, because the
 U(2) action does not factorize into independent U(1) and SU(2) parts, so $q$
@@ -488,7 +518,7 @@ Creutz--Kennedy--Pendleton heatbath sweeps
 \cite{creutz1980,kennedypendleton1985}, which leave $\psi$, and hence $Q$,
 unchanged.
 
-\section{The result: Preconditioner quality}
+\section{Preconditioner quality}
 \label{sec:seedquality}
 
 Every comparison in this section is against a closed form rather than against
@@ -498,15 +528,19 @@ infrared structure, together with $P(Q)$ and the topological susceptibility $\ch
 follow from the single-plaquette character coefficients of each theory.
 Tables~\ref{tab:u1-exact-observables} and~\ref{tab:u2-exact-observables} in
 Appendix~\ref{app:exact} collect them. Local observables and topology are
-scored separately and never collapsed into one number. Accuracy is quoted as a
-relative deviation from the exact value, in parts per million (ppm).
+scored separately and never collapsed into one number, and each is quoted in
+one unit throughout. A Wilson loop is quoted as its relative deviation from
+exact, $(\text{mean}-\text{exact})/\text{exact}$, in parts per million (ppm).
+A charge variance is quoted as a ratio, $\langle Q^2\rangle$ over its exact
+value, since it is a variance rather than a mean and runs from zero to many
+times exact.
 
 \label{sec:relaxation-correction}
-The interval is the cost of one
-independent configuration in a Markov chain, $2\tau_{\rm int}$ with
-$\tau_{\rm int}$ the integrated autocorrelation time estimated by Sokal's
-automatic windowing \cite{madrassokal1988,wolff2004}, maximised over the scored
-observables (\app{stats}). The maximisation includes $Q^2$. A local observable decorrelates
+The interval $t_{\rm interval}$ is the cost of one independent configuration in
+a Markov chain, $2\tau_{\rm int}$ with $\tau_{\rm int}$ the integrated
+autocorrelation time estimated by Sokal's automatic windowing
+\cite{madrassokal1988,wolff2004}, maximised over the scored observables
+(\app{stats}). The maximisation includes $Q^2$. A local observable decorrelates
 perfectly well in a chain whose topology has not moved once, so an interval
 taken from the plaquette alone never sees freezing, and the cost of an
 independent \emph{configuration} is set by the slowest mode. A series that does
@@ -517,17 +551,22 @@ $\tau_{\rm int}$.
 The equilibration time $t_{\rm therm}$ follows Detmold and Endres
 \cite{detmoldendres2015,detmoldendres2016}: the first trajectory after which the
 bias against the exact value stays within two standard errors for five
-consecutive measurements, again maximised over observables. That window and that
-run length are the only conventions fixed by hand anywhere in this paper.
+consecutive measurements, maximised over the Wilson loops. Unlike the interval,
+it does not include $Q^2$, and the asymmetry is deliberate: a chain whose
+topology never moves has an exactly constant $Q^2$ and so never satisfies the
+criterion, which would make every classical equilibration time infinite and the
+comparison empty. Topology is not thereby excused --- it is scored separately,
+against the closed form, everywhere the two are reported. That window, that run
+length and this choice of observables are the only conventions fixed by hand
+anywhere in this paper.
 
-Burn-in is not on its own what we compare. A classical chain pays
-$t_{\rm therm}$ once and then an interval for every configuration after the
-first, so over an ensemble the burn-in amortizes away and the interval is what
+A classical chain pays $t_{\rm therm}$ once and then an interval for every configuration after the
+first, so over an ensemble the interval is what
 remains. Successive preconditioned chains descend from independent coarse
 configurations and owe no interval, but each pays its own $t_{\rm therm}$. The
 ratio of the two is the improvement factor,
 \begin{equation}
-    F = \frac{\text{interval}\ (\text{classical})}
+    F = \frac{t_{\rm interval}\ (\text{classical})}
              {t_{\rm therm}\ (\text{preconditioned})},
     \label{eq:improvement-factor}
 \end{equation}
@@ -540,10 +579,9 @@ The claim being tested is that the model produces a preconditioner, not a final
 configuration, so all four arms are scored after thermalization rather than on
 their raw output. An arm is one run of the benchmark, differing from the others
 only in its starting configuration and in which winding move is enabled, and all
-four --- the preconditioned chain and the cold, hot and winding-augmented
-classical starts --- are advanced by the same sampler for the same number of
-trajectories. What differs between them is how many trajectories thermalization
-takes, and whether it happens within budget at all.
+four (the preconditioned chain and the cold, hot and winding-augmented
+classical starts) are advanced by the same sampler for the same number of
+trajectories.
 
 The preconditioned configuration sits inside the exact plaquette's error band already at $t=0$, before
 any trajectory, at every coupling tested ($\beta_f = 4.44$ to $218.58$, a
@@ -556,22 +594,30 @@ $500$ and is still outside the band after $8000$ (Table~\ref{tab:u1_h2h}). The
 classical entry cost therefore rises by at least an order of magnitude across
 this range, while the lift's is zero throughout.
 
-The advantage survives a change of volume without degrading. At fixed
-$\beta_f=14.1464$ over $L=32$, $64$ and $128$, a $16\times$ range in sites that
-the ladder itself cannot cover at fixed coupling, the preconditioned plaquette
-sits $840$, $860$ and $790$ parts per million from exact. The accuracy is flat,
-which is what the architecture predicts: the network is fully convolutional and
+The accuracy survives a change of volume. At fixed $\beta_f=14.1464$ over
+$L=32$, $64$ and $128$, a $16\times$ range in sites that the ladder itself
+cannot cover at fixed coupling, the preconditioned plaquette sits $869$, $892$
+and $820$ parts per million from exact before any trajectory. That flatness is
+what the architecture predicts: the network is fully convolutional and
 conditioned on the coupling rather than on the lattice size, so nothing in it
-ties the map to the volumes it trained on.
+ties the map to the volumes it trained on. Topology is the exception, and we
+report it: $\langle Q^2\rangle$ sits $0.2$ and $1.1$ standard errors from exact
+at $L=32$ and $64$ but $3.4$ at $L=128$, the one resolved deviation in this
+scan. The cold arm is not an alternative there --- its charge never moves at any
+of the three volumes, so its $\langle Q^2\rangle$ is wrong by construction.
+
+The advantage in equilibration cost does not survive equally, and we state it
+separately because the two behave differently. Over the same three volumes the
+preconditioned chain needs $1$, $3$ and $30$ trajectories to equilibrate against
+a cold start's $168$, $400$ and $528$, so the ratio narrows from $168$ to $133$
+to $17.6$.
 
 \subsection{U(2)}
 \label{sec:u2obs}
-
 For 2D U(2) at $L=64$, $\beta=416.5$, \tb{u2_observables} gives every arm's
 mean Wilson loop after $400$ trajectories on $64$ chains, averaged over the
-settled half of each history and quoted as
-$(\text{mean}-\text{exact})/\text{exact}$ in parts per million, together with
-$\langle Q^2\rangle$ as a ratio to the exact $1.0012$. All three arms started
+settled half of each history, together with $\langle Q^2\rangle$ against an
+exact $1.0012$. All three arms started
 from a preconditioned configuration land within $1$~ppm of exact on the
 plaquette, $10$~ppm on $W(2\times2)$ and $1300$~ppm on $W(8\times8)$, and carry
 $\langle Q^2\rangle$ between $1.00$ and $1.14$ times exact. No classical arm
@@ -580,53 +626,62 @@ reaches both the local and the topological target.
 A cold start under the same sampler and the same budget is $51$, $229$ and
 $7644$~ppm high on those three loops, six to fifty times further from exact than
 the preconditioned arms depending on the loop size, and its topological charge
-has not moved once in the $400$ trajectories, so its $\langle Q^2\rangle$ is
-exactly zero rather than merely low. Adding a winding update repairs the charge
+never moves in the $400$ trajectories, so its $\langle Q^2\rangle$ is exactly
+zero times exact rather than merely small. Adding a winding update repairs the charge
 and only the charge: $\langle Q^2\rangle$ comes back to $0.89$ of exact under
 the even move and $0.98$ under the odd one, while the plaquette stays where it
-was, at $57$ and $56$~ppm. A hot start has not begun to equilibrate within the
-budget --- it is $63{,}000$~ppm ($6.3\%$) low on the plaquette and
-$990{,}000$~ppm ($99\%$) low on $W(8\times8)$, which is to say that loop is
-consistent with zero --- and it overshoots $\langle Q^2\rangle$ by a factor of
-$88$. Full tables are in \app{u2cov}.
+was, at $57$ and $56$~ppm. A hot start does not begin to equilibrate within the
+budget: it is $63{,}000$~ppm low on the plaquette and $990{,}000$~ppm low on
+$W(8\times8)$, which is to say that loop is consistent with zero, and it carries
+$\langle Q^2\rangle$ at $88$ times exact. Full tables are in \app{u2cov}.
 
 One variable governs where the preconditioner degrades: how far the test
 coupling sits from the couplings the checkpoint was trained on.
 \sect{coverage} measures it.
 
+\subsection{Distribution comparison}
+\label{sec:distributions}
+
+Everything above scores a mean. A preconditioner has to do more than that: the
+configurations it delivers are used individually, so their spread has to be the
+theory's too, and a mean can be right while the distribution behind it is not.
+\fig{uv_distributions} and \fig{topology_distributions} in \app{u2cov} compare
+the per-configuration distributions against the closed form, in both theories.
+
+Two things are visible there that a mean cannot show. On Wilson loops from the
+plaquette out to $W(8\times8)$, the preconditioned distribution is centred on
+exact, within $0.02\,\sigma_{\rm cfg}$ at every loop size, and its width matches
+that of an independently equilibrated cold chain to within $3\%$, so the spread
+is the theory's rather than an artefact of the model. The hot arm matches
+neither: it is displaced by $8$ to $1200\,\sigma_{\rm cfg}$, and its width is
+wrong by up to a factor of $25$ --- in both directions, since at the largest
+loop it is too narrow rather than too wide, that loop having collapsed to a
+value consistent with zero. And on $P(Q)$ the preconditioned histogram tracks
+the exact sector weights, while a cold start puts every configuration at $Q=0$
+and a hot start scatters more than half its weight beyond the plotted range at
+$L=64$.
+
 \subsection{Cost accounting}
 \label{sec:cost}
-
-Two qualifications attach to \Eq{improvement-factor} before it is read off a
-measurement.
-
-The first is that an interval counts only where the chain reached equilibrium at
-all. A chain that
-never gets there still decorrelates, perfectly happily, about the wrong
-distribution, and counting that as a supply of independent configurations is the
-error this accounting exists to avoid. Where a classical arm does not
-equilibrate within the budget its cost is infinite and the improvement factor is
-reported as a lower bound.
-
-The second is that the factor counts HMC trajectories on both sides and nothing
-else, so one cost sits outside it: producing the preconditioned configuration in
-the first place,
-which takes a base-ensemble chain at the bottom of the ladder plus one reverse
-diffusion per lift. On the hardware used here that overhead is comparable to
-the trajectories it saves, so the factor should be read as a statement about
-Markov-chain cost rather than as a wall-clock speed-up. Two things make it the
-right quantity to report even so. The base chain runs at a coupling where HMC
-mixes freely and is amortized over every configuration lifted from it, and the
-reverse diffusion is a fixed number of network evaluations that does not grow
-with the freezing it is deployed against, while the classical cost on the other
-side of the ratio diverges. Where a classical arm never equilibrates, no
-overhead makes the comparison close.
+The $t_{\rm interval}$ measurement counts only where the chain has
+equilibrated. HMC carries its own accept/reject step, so the distribution it
+samples is the right one and a long enough chain is correct for every
+observable. What fails within a finite budget is ergodicity, and it fails in one
+place: at these couplings the chain does not change $Q$ once, so what it
+explores is the distribution conditioned on the single sector it started in.
+Local observables are unbiased inside that sector and decorrelate quickly there,
+which is why a plaquette interval looks short on precisely the arms that are
+worst off; the ensemble average is nonetheless wrong, by the amount the sector
+weight is wrong. A short interval measured on such a chain is not a supply of
+independent configurations of the target, so where a classical arm does not
+equilibrate within the budget we take its cost as infinite and report $F$ as a
+lower bound.
 
 Two classical baselines are separated because they behave differently.
 Plain HMC is the generic sampler, and above $\beta\approx25$ its topology never
 moves, so it supplies no independent configurations at any budget. HMC augmented
 with the winding update of \sect{instanton_updates_classical} is the strongest
-classical sampler this theory admits, and it holds much further.
+classical sampler, and it holds much further.
 
 \fig{money} measures the improvement factor against the winding baseline across
 the coupling range, at both evaluated volumes, and the answer has two regimes.
@@ -640,26 +695,29 @@ there. That is the honest result in the regime where a practitioner has a good
 classical option, and we report it as such.
 
 Above $\beta\approx90$ no classical arm reaches equilibrium within $400$
-trajectories at any coupling tested, so it supplies no independent
-configurations at any budget and the factor is a lower bound, between $10$ and
-$200$ across the couplings evaluated. Topology is not what fails there. The
-winding move keeps firing and holds $\langle Q^2\rangle$ within about $10\%$ of
-exact out to $\beta=1660$; it is the local observables that never settle.
+trajectories at any coupling tested, so by the gate of \sect{cost} its cost is
+infinite and the factor is a lower bound, running from $5$ to $400$ across the
+couplings evaluated with a median of $29$. What is measured there is failure to
+equilibrate within the budget, not a frozen chain: the winding arm's interval
+stays short, between $4$ and $45$ trajectories, and it is the bias rather than
+the decorrelation that never settles. Only for plain HMC, whose topology does
+not move at all, is the cost infinite at any budget. Topology is not what fails there. The
+winding move keeps firing, and even at $\beta=1660$ it holds
+$\langle Q^2\rangle$ between $0.79$ and $1.25$ times exact (\tb{u2_L128}); it is the local observables that never settle.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\linewidth]{u2_2d/fig65_ladder.png}
   \caption{Cost of one independent, correctly distributed configuration along
   the matched ladder, where each step doubles $L$ and quadruples $\beta$ and so
-  holds $\chi_t V$ fixed: one physical setup at three lattice spacings, not
-  three unrelated volumes. (a) The preconditioned chain arrives already
-  equilibrated at the first two rungs and needs $25$--$30$ trajectories at the
-  third; the classical arms decorrelate in about $5$ trajectories at the first
-  rung, having spent $260$--$270$ reaching equilibrium once, and never
-  equilibrate at the second or third within the $400$ available. (b) The
-  resulting improvement factor. Every plotted value is a lower bound: the arrows
-  are budget divided by the preconditioned cost, and at the first rung that cost
-  is zero and the ratio is formed against a floor of one trajectory.}
+  holds $\chi_t V$ fixed: one physical setup at three lattice spacings. (a) The
+  preconditioned chain arrives equilibrated at the first two rungs and needs
+  $25$--$30$ trajectories at the third; the classical arms decorrelate in about
+  $5$ trajectories at the first rung, having spent $260$--$270$ reaching it, and
+  never equilibrate at the second or third within the $400$ available. (b) The
+  resulting factor, a lower bound at every rung: arrows are budget over
+  preconditioned cost, which at the first rung is zero and is floored at one
+  trajectory.}
   \label{fig:ladder}
 \end{figure*}
 
@@ -669,8 +727,8 @@ exact out to $\beta=1660$; it is the local observables that never settle.
 Reaching a target $(L,\beta)$ may take several lifts, and the error does not
 compound when it does: over eight cells spanning both theories, both an
 in-coverage and a past-ceiling endpoint, and intermediate rethermalization on or
-off, three lifts to a fixed endpoint cost $0.84$--$1.02$ times what one lift
-costs. The error enters at the last rung instead, so endpoint accuracy is set by
+off, three lifts to a fixed endpoint leave $0.84$--$1.02$ times the deviation
+from exact that one lift leaves. The error enters at the last rung instead, so endpoint accuracy is set by
 that rung's distance from training coverage and not by the number of rungs
 climbed. Laddering therefore buys volume, not coupling reach: each lift
 multiplies $\beta$ by about four, so the last one lands at the same fine
@@ -679,15 +737,14 @@ coupling whatever path reached it.
 The ladder was pushed one rung past the deployed configuration, to $L=128$ at
 $\beta=1660.08$, four times the largest linear size in the training set and
 sixteen times the sites (\fig{ladder}). Before a single trajectory the
-preconditioned configuration sits within one part in $10^{6}$ of the exact
-plaquette, $1500$ times closer than a cold start, and it reaches equilibrium in
-$25$--$30$ trajectories. Neither classical arm reaches equilibrium at all within
+preconditioned configuration sits $0.8$~ppm from the exact plaquette against a
+cold start's $1200$~ppm, and it reaches equilibrium in $25$--$30$ trajectories. Neither classical arm reaches equilibrium at all within
 the budget, so the improvement factor there is a lower bound.
 
 \section{Training coverage}
 \label{sec:coverage}
 
-Coupling coverage, not volume, sets where the method works. This section
+Coupling coverage sets the couplings at which the method works. This section
 measures how far, and what widening it recovers.
 
 One term carries the argument. A checkpoint's \emph{training ceiling} is the
@@ -695,8 +752,7 @@ largest coupling at which it was ever given training data, so a test coupling
 above it is an extrapolation for that checkpoint and one below it an
 interpolation between rungs it has seen. It is a property of the training set
 and not of performance; where the checkpoint actually stops working is what this
-section measures. Ceilings are quoted in the convention of the axis they are
-drawn on, raw $\beta$ in \fig{money} and model $\beta$ in \fig{coverage_beta}.
+section measures. Ceilings are quoted in raw $\beta$ throughout, matching \fig{money}.
 
 The experiment is a retrain. Within each theory the checkpoints share
 architecture, capacity, epoch budget and data recipe, and differ only in which
@@ -719,34 +775,68 @@ all four are tabulated in \app{u2cov} with the matching U(1) retrain.
   \centering
   \includegraphics[width=\linewidth]{u2_2d/fig64_money.png}
   \caption{Improvement factor over HMC with the winding update, against coupling
-  at both evaluated volumes, for the deployed checkpoint and for one trained
-  over a wider coupling range. Circles are measured; triangles are lower bounds,
-  where no classical arm equilibrates within $400$ trajectories; crosses mark a
-  measured failure of the lift itself, not missing data. Dotted lines are
-  training ceilings, which are not the failure point --- at $L=64$ the deployed
-  checkpoint fails well below its own.}
+  at both evaluated volumes, for the deployed checkpoint and one trained over a
+  wider range. Circles are measured; triangles are lower bounds, where no
+  classical arm equilibrates within $400$ trajectories; crosses mark a measured
+  failure of the lift, not missing data. Dotted lines are training ceilings,
+  which are not the failure point.}
   \label{fig:money}
 \end{figure*}
 
 Range is the axis that moves the edge. \texttt{default} stops equilibrating
 above $\beta=415$ at $L=32$ and above $\beta=94$ at $L=64$, while
 \texttt{wide\_dense} works at every coupling tested, to $\beta=1623$ and
-$\beta=1660$ respectively. Density acts somewhere else entirely: adding $31$
-rungs inside \texttt{wide}'s existing range improves it at $30$ of $44$
-couplings, but only inside coverage --- past the ceiling the interval on the
-same comparison spans unity (\tb{u2_coverage_tests}) --- and in U(1) it changes
-nothing measurable at all. The two axes act on disjoint sets of couplings, so a
-fixed rung budget is better spent extending the range than resampling what it
-already covers.
+$\beta=1660$ respectively. Density acts somewhere else entirely, and much more weakly: adding $31$ rungs
+inside \texttt{wide}'s existing range improves it at $30$ of $44$ couplings, but
+the median gain is $2.1\times$ against range's $34$ to $142\times$, and it is
+resolved only inside coverage, where the interval just excludes unity, and not
+past the ceiling, where it spans it (\tb{u2_coverage_tests}). In U(1) density
+changes nothing measurable at all. So the two axes act where the other does not,
+and on the evidence here a fixed rung budget is better spent extending the range
+than resampling what it already covers.
 
-Two limits belong with that. The wide checkpoints are never tested past their
-own ceiling, since the grid stops at $\beta=1660$ and they are trained to
-$2000$, so the claim rests on the narrow checkpoints failing at theirs rather
-than on the wide ones surviving. And the failure point is not the ceiling
-itself: at $L=32$ the narrowest checkpoint still works at $\beta=264$ against a
-ceiling of $227$, while at $L=64$ both narrow checkpoints fail well below
-theirs. A volume step costs reach even though it does not cost accuracy
-(\sect{u1obs}).
+\fig{money} wants reading with two cautions. The curves are jagged, and that
+belongs to $t_{\rm therm}$ rather than to the plot: it is a threshold crossing
+maximised over the scored observables, so it is set by whichever of them is
+slowest at that coupling and is quantized by the spacing of the measurements.
+Adjacent couplings differ by an order of magnitude, and the pattern reproduces
+across the two independent HMC rounds, so no single point carries a claim and
+the level of a curve does. That there is no clean trend in $\beta$ is the
+result rather than a defect: what the factor tracks is distance to the nearest
+training rung, which is not monotone in the coupling.
+
+The second caution is that above $\beta\approx90$ every point is a lower bound,
+and a lower bound says nothing about the classical arm. The classical arm never
+equilibrates there, so the plotted value is the budget divided by the
+preconditioned cost, and what the shape traces is $1/t_{\rm therm}$ of the lift.
+The peak at $L=64$, $\beta=174$ is exactly that: the lift arrives already
+equilibrated, $t_{\rm therm}=0$ against $22$ and $42$ at its two neighbours, so
+its bound is the whole budget.
+
+Two limits belong with that. The grid runs at fixed $L$, so a higher test
+coupling means a smaller physical volume, and the charge distribution collapses
+with it: at $L=32$ the exact $\chi_t V$ falls from $0.22$ at $\beta=415$ to
+$0.0008$ at $\beta=1623$, where $999$ configurations in $1000$ carry $Q=0$ and
+there is essentially no topology left to transport. The collapse is far faster
+than the leading-order $\chi_t V \approx V/(4\pi^2\beta_1)$ of
+\sect{naive-blocking} suggests, that form being reliable only while
+$\chi_t V$ is of order one. Reaching
+higher couplings therefore means climbing the ladder (\fig{ladder}) rather than
+extending the grid, which leaves the wide checkpoints untested past their own
+ceiling of $\beta=2000$ while the narrow ones are tested past theirs. What is
+established is that a checkpoint fails past its ceiling, at all $14$ such
+couplings for the narrow pair, and not that widening helps for any reason beyond
+bringing the test inside the trained range. Settling that needs a grid above
+$\beta=2000$ at $L\approx200$, beyond what was run here.
+
+The second limit is that the ceiling is not the failure point: at $L=32$ the
+narrowest checkpoint still works at $\beta=264$ against a ceiling of $227$,
+while at $L=64$ both narrow checkpoints fail well below theirs. The volume step
+moves that point without harming the lift, whose deviation is smaller at $L=64$
+for all four checkpoints (\tb{volume_scaling}). What grows with volume is the
+standard rather than the error: an ensemble mean carries a smaller error bar on
+more sites, because the spatial average self-averages, so the same bias has
+further to fall before the chain counts as equilibrated.
 
 \section{Discussion}
 \label{sec:conclusions}
@@ -754,7 +844,7 @@ theirs. A volume step costs reach even though it does not cost accuracy
 Pure 4D SU(3) differs from the theories studied here in four respects relevant
 to this method: it is not exactly solvable, it has no trivial blocking map, it
 has no trivial instanton update, and its topological charge has no
-unambiguous lattice definition. Full QCD adds a fifth: dynamical fermions.
+unambiguous lattice definition.
 
 Transport needs two things, and the blocking map supplies only the first. It
 pairs fine and coarse configurations while preserving $Q$ exactly, but only
@@ -791,6 +881,21 @@ is needed only while training data is built and only to visit sectors, so
 neither its acceptance rate nor the sector frequencies it produces need be
 correct.
 
+The second half of that is measured, not assumed. Two checkpoints were trained
+on data identical but for the distribution the training charges were drawn
+from: the exact $P(Q)$ in one arm, and uniform over the same support in the
+other, which uses no closed form and gives the same sector coverage at
+deliberately wrong weights. The arms separate strongly on the training data,
+whose $\langle Q^2\rangle$ differs by a median factor of $5.6$ across $106$
+re-seeded ensembles, and the ensembles they deliver after the ladder agree with
+the closed form equally well at both rungs. The bound this places is weak, since
+the observables entering it are strongly correlated and the smallest difference
+the test resolves is larger than the effect it is looking for, but it points one
+way, and the mechanism that would replace the closed form in a theory without
+one --- sector augmentation, above --- is a construction rather than an
+inference. What the closed form remains strictly necessary for here is
+\emph{scoring}: every accuracy statement in this paper is a deviation from it.
+
 That last point admits a cheaper route than a topological update, and it is the
 one we would try first. Coverage can be bought by deliberately biasing the
 generating action rather than by moving between sectors under the correct one:
@@ -811,21 +916,8 @@ each $Q$ it visits; how often it visits each one is free. A wrong $P(Q)$ in the
 training data is not a defect to be corrected but a degree of freedom to be
 spent on coverage.
 
-Dynamical fermions add a determinant to the target weight and leave the
-essentials untouched. The model generates gauge links only and is trained by
-score matching on whatever ensemble it is given, so training data generated with
-fermions teaches the correct conditional with no change to the objective or the
-architecture. Pseudofermion fields are refreshed from a heat bath every
-trajectory rather than carried between them, so a configuration whose topology
-has just been set is not left in an inconsistent state.
-
-What does degrade is the repair tail. The rethermalization used here is exact
-local heat bath and overrelaxation, available because the pure-gauge action is
-local and the single-link group integral is tractable; neither holds once a
-determinant is present, so the ultraviolet error of a raw lift would have to be
-repaired by HMC trajectories instead, a substantially less efficient move. The
-division of labour survives even so, and it is the part of this method we expect
-to outlast the particular architecture used here. Generating UV structure and
+The division of labour is the part of this method we expect to outlast the
+particular architecture used here. Generating UV structure and
 preserving IR and topological structure are different jobs, each best done by
 the tool suited to it: HMC for the UV, a learned generative model for the
 topological content HMC cannot reach on its own. Normalizing flows
@@ -833,14 +925,22 @@ topological content HMC cannot reach on its own. Normalizing flows
 diffusion architectures \cite{zhu2024,zhu2025,aarts2026} are natural candidates
 for extending it to more complicated theories.
 
-\section*{Data and code availability}
-All computations reported here were performed on a single workstation
-(AMD Ryzen 7 260, 8 cores, and one NVIDIA RTX 5060 Laptop GPU with 8\,GiB),
-including every training run, ladder, validation scan and coupling-coverage
-retrain.
+% REQUIRED BEFORE SUBMISSION -- funding and computing acknowledgments. Left
+% empty rather than guessed.
+% \begin{acknowledgments}
+% \end{acknowledgments}
 
-The complete implementation for this project
-is available at \url{https://github.com/sopanda0910/inverse_rg_testing}.
+\section*{Data and code availability}
+The complete implementation, the configuration files defining every checkpoint
+and ladder reported here, and the analysis scripts that produce every figure and
+table are available at
+\url{https://github.com/sopanda0910/inverse_rg_testing}. The summary records
+behind each table are included there; generated ensembles are regenerable from
+the configurations and are not distributed.
+
+Every computation reported here --- each training run, ladder, validation scan
+and coupling-coverage retrain --- was performed on a single workstation with an
+AMD Ryzen 7 260 (8 cores) and one NVIDIA RTX 5060 Laptop GPU with $8$\,GiB.
 
 \begin{thebibliography}{99}
 
@@ -871,6 +971,10 @@ Q. Zhu, G. Aarts, W. Wang, K. Zhou and L. Wang,
 \bibitem{aarts2026}
 G. Aarts, D.E. Habibi, A. Ipp, D.I. M\"uller, T.R. Ranner, L. Wang, W. Wang and Q. Zhu,
 \emph{Generalizable equivariant diffusion models for non-abelian lattice gauge theory}, [\href{https://arxiv.org/abs/2601.19552}{arXiv:2601.19552}].
+
+\bibitem{abbott2023}
+R. Abbott \textit{et al.},
+\emph{Aspects of scaling and scalability for flow-based sampling of lattice QCD}, Eur. Phys. J. A \textbf{59} (2023) 257, [\href{https://arxiv.org/abs/2211.07541}{arXiv:2211.07541}].
 
 \bibitem{detmoldendres2015}
 W. Detmold and M.G. Endres,
@@ -994,38 +1098,6 @@ B. Efron and R.J. Tibshirani,
 
 \appendix
 
-\section{The U(2) determinant sector: conditional and marginal weights}
-\label{app:su2-marginal}
-
-Two exact single-link results are used in the text. Both are standard SU(2)
-integrals \cite{creutz1980,kennedypendleton1985} applied to the split
-representation of Eq.~\eqref{eq:u2-link}.
-
-At frozen $\theta$ the local weight in $q$ is exactly the standard SU(2)
-single-link form $\exp(\beta\,\mathbf{k}\cdot q)$, with $\mathbf{k}$ the U(2)
-staple sum rotated by the link's phase and projected into the quaternion
-representation. It is sampled exactly by Creutz--Kennedy--Pendleton heatbath
-\cite{creutz1980,kennedypendleton1985}, and those sweeps leave $\psi$, and hence
-$Q$, unchanged.
-
-Integrating SU(2) out of one plaquette
-against normalized Haar measure is the same standard one-link integral,
-$\int dq\,\exp(\beta q_{0,p}\cos\theta_p) = 2I_1(z)/z$ with
-$z = \beta\cos\theta_p$ \cite{creutz1980}. Substituting the determinant-sector
-angle $\alpha=2\theta_p$ gives the marginal weight of $\psi$ quoted in the text,
-\begin{equation}
-    w_{\det}(\alpha;\beta) = \frac{2I_1(z)}{z}, \qquad z=\beta\cos(\alpha/2).
-    \label{eq:wdet}
-\end{equation}
-Its large-$\beta$ form, from $I_1(z)\sim e^{z}/\sqrt{2\pi z}$, is
-$-\log w_{\det} = \mathrm{const} + \beta[1-\cos(\alpha/2)] +
-\tfrac32\log\cos(\alpha/2) + O(\alpha^4)$. Matching the quadratic term to the
-U(1) Wilson form $(\beta_1/2)\alpha^2$ gives the tree-level relation
-$\beta_1=\beta/4$ used as a leading-order guide throughout; the
-$\tfrac32\log\cos(\alpha/2)$ measure term is exactly why that relation is only
-leading order, and why anything needing an analytic U(1) coupling uses the
-minimum-KL projection of \sect{u2-extension} instead.
-
 \section{Exact Observables in 2D U(1) and U(2)}
 \label{app:exact}
 
@@ -1126,31 +1198,46 @@ independent base chains and are themselves the independent unit; there the
 configuration-level bootstrap and the naive standard error agree to within a few
 percent, which we verify rather than assume.
 
+\section{Cost of building a preconditioned configuration}
+\label{app:overhead}
+
+The improvement factor of \Eq{improvement-factor} counts HMC trajectories in
+both its numerator and its denominator. One cost falls outside that count:
+producing the preconditioned configuration in the first place, which takes a
+base ensemble at the bottom of the ladder plus one reverse diffusion per lift.
+On the hardware used here that overhead is not small, and $F$ should not be
+read as a wall-clock speed-up. In U(1), where the classical baseline still
+converges, the one-time campaign that produced the checkpoint costs more than
+every classical burn-in that converges, and the marginal cost of a lifted
+configuration is larger than a trajectory's as well, so measured in seconds the
+method loses at every coupling where the classical baseline is correct. In U(2)
+the top rung of the ladder costs roughly twice what a winding-HMC configuration
+costs, dominated by the reverse-diffusion sampler, whose step count is set for
+accuracy and not tuned for speed.
+
+What that does not do is change the comparison, for two reasons. The base
+ensemble is generated once, at a coupling where sampling is cheap, and is
+amortized over every configuration lifted from it; and the reverse diffusion is
+a fixed number of network evaluations, the same at every coupling, while
+$t_{\rm interval}$ in the numerator grows without bound as the classical chain
+freezes. A fixed overhead cannot close a gap that diverges, and above
+$\beta\approx90$, where no classical arm equilibrates at all, there is no finite
+quantity for it to close. The case for the method is therefore the regime where
+the classical baseline stops being correct at any budget, together with the
+flatness of the generative cost in $\beta$ --- not a wall-clock win where that
+baseline still works.
+
 \section{Supporting tables and figures}
 \label{app:u1cov}
 
 This appendix collects the material referenced from the body, U(1) first and
 then U(2): the classical entry cost (\tb{u1_h2h}), the freezing diagnostic
-(\tb{u1_frozen}), the U(1) coverage retrain (\fig{u1_coverage_comparison},
-\tb{u1_coverage_tests}), the top rung of the ladder (\tb{u2_L128}), the per-arm
-U(2) benchmark (\tb{u2_observables}), the U(2) coverage comparisons
-(\tb{u2_coverage_tests}, \tb{volume_scaling}) with the raw-lift quality behind
-them (\fig{coverage_beta}), and the steady-state cost of the classical
-baselines (\tbs{table-s8}{u2-joint-marginal}).
-
-\begin{figure*}[t]
-  \centering
-  \includegraphics[width=0.85\linewidth]{u1_2d/fig67_coverage_comparison.png}
-  \caption{The U(1) coverage retrain, on the matched $L{=}8\to16$ grid:
-  \texttt{deployed} ($\beta_{\max}=60$), \texttt{wide2000}
-  ($\beta_{\max}=2000$) and \texttt{wide2000\_dense} (\texttt{wide2000} plus
-  $30$ density rungs), at equal capacity. The vertical axis is the endpoint of
-  \tb{u1_coverage_tests}, the raw lift's worst-case relative deviation from
-  exact before any trajectory. All fifteen couplings are past
-  \texttt{deployed}'s ceiling; open markers are the eight pre-registered
-  off-rung couplings, on which the widened checkpoints win $8/8$.}
-  \label{fig:u1_coverage_comparison}
-\end{figure*}
+(\tb{u1_frozen}), the U(1) coverage retrain (\tb{u1_coverage_tests}), the top
+rung of the ladder (\tb{u2_L128}), the per-arm U(2) benchmark
+(\tb{u2_observables}), the U(2) coverage comparisons (\tb{u2_coverage_tests},
+\tb{volume_scaling}), the per-configuration distributions behind
+\sect{distributions} (\figs{uv_distributions}{topology_distributions}) and the
+steady-state cost of the classical baselines (\tb{classical}).
 
 \begin{table*}[htbp]
 \centering
@@ -1182,8 +1269,8 @@ comparison & subset & $n$ & wins & median ratio \\
 \centering
 \caption{U(1): cold-started HMC with the winding update, $L=32$. Entry cost is
 the burn-in, in trajectories, at which the quality verdict is read; quality is
-whether every local Wilson observable sits within its statistical error of
-exact, judged separately from $\langle Q^2\rangle$ because the winding move
+whether every Wilson observable sits within $2.5$ standard errors of exact,
+judged separately from $\langle Q^2\rangle$ because the winding move
 samples topology correctly well before local observables equilibrate. The
 preconditioned chain's entry cost is zero at all four couplings.}
 \label{tab:u1_h2h}
@@ -1247,14 +1334,31 @@ lift $+$ odd winding & $-0.8$ & $-0.14$ & 1.244 & 0.063 & 1.000 & 4 \\
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=\linewidth]{u2_2d/fig60_coverage_money.png}
-  \caption{Coupling reach is set by training coverage. The endpoint of
-  \tb{u2_coverage_tests} against model coupling at both evaluation volumes, for
-  four checkpoints differing only in coverage. Past \texttt{default}'s ceiling
-  (dotted lines) the two narrow checkpoints stop improving while the two wide
-  ones fall one to two orders of magnitude below them; the wide checkpoints' own
-  ceiling is at the right edge of the range, so they are never tested past it.}
-  \label{fig:coverage_beta}
+  \includegraphics[width=\linewidth]{u2_2d/fig62_uv_distributions.png}
+  \caption{Per-configuration Wilson-loop distributions against the exact closed
+  form, for the preconditioned chain and for cold- and hot-started HMC under the
+  same plain sampler, at the hardest coupling benchmarked in each theory. One
+  value per configuration, pooled over the settled half of every chain. The
+  horizontal axis is the deviation from exact in units of the preconditioned
+  arm's own per-configuration spread $\sigma_{\rm cfg}$, whose physical value is
+  printed in each panel, so the figure tests the preconditioned centre against
+  exact and the other arms' widths against its. The cold arm, independently
+  equilibrated, is what tests the preconditioned width in turn. An arm whose
+  mass falls outside the window is drawn as an arrow labelled with its centre.}
+  \label{fig:uv_distributions}
+\end{figure*}
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=\linewidth]{u2_2d/fig63_topology_distributions.png}
+  \caption{Sector distributions against the closed form, at a coupling where
+  plain HMC is frozen in both theories. The preconditioned charge is transported
+  from the coarse ensemble rather than sampled, so it reproduces $P(Q)$ without
+  the chain ever changing sector; a cold start holds every configuration at
+  $Q=0$, and a hot start freezes into whatever sector it lands in, scattering
+  much of its weight beyond the plotted range. Inset values are
+  $\langle Q^2\rangle$ as a ratio to exact.}
+  \label{fig:topology_distributions}
 \end{figure*}
 
 \begin{table*}[htbp]
@@ -1336,11 +1440,11 @@ arm & $W(1{\times}1)$ & $W(2{\times}2)$ & $W(4{\times}4)$ & $W(8{\times}8)$
 \midrule
 \multicolumn{6}{l}{\textit{$L=32$, $\beta=105.651$}} \\
 lift, plain HMC     & $+7$ & $-9$ & $-156$ & $-5069$ & $1.14$ \\
-cold, plain HMC     & $+71$ & $+421$ & $+3201$ & $+3.0\times10^{4}$ & $0.00$ \\
-hot, plain HMC      & $-5.0\times10^{4}$ & $-2.3\times10^{5}$ & $-6.5\times10^{5}$ & $-9.8\times10^{5}$ & $21.2$ \\
+cold, plain HMC     & $+71$ & $+421$ & $+3201$ & $+2.5\times10^{4}$ & $0.00$ \\
+hot, plain HMC      & $-5.5\times10^{4}$ & $-2.3\times10^{5}$ & $-6.5\times10^{5}$ & $-9.8\times10^{5}$ & $21.2$ \\
 cold $+$ even winding & $+69$ & $+197$ & $+867$ & $+4172$ & $0.82$ \\
 lift $+$ even winding & $+18$ & $+29$ & $+422$ & $+381$ & $1.05$ \\
-hot $+$ even winding  & $-5.0\times10^{4}$ & $-2.3\times10^{5}$ & $-6.4\times10^{5}$ & $-9.4\times10^{5}$ & $1.10$ \\
+hot $+$ even winding  & $-5.5\times10^{4}$ & $-2.3\times10^{5}$ & $-6.4\times10^{5}$ & $-9.4\times10^{5}$ & $1.10$ \\
 cold $+$ odd winding  & $+64$ & $+149$ & $+970$ & $+6376$ & $1.01$ \\
 lift $+$ odd winding  & $+1$ & $+1$ & $-227$ & $-1898$ & $0.98$ \\
 \midrule
@@ -1359,13 +1463,22 @@ lift $+$ odd winding  & $-1$ & $-10$ & $-60$ & $+395$ & $1.00$ \\
 
 \label{app:classical}
 
-\begin{table*}[h]
+\begin{table*}[htbp]
 \centering
 \small
-\caption{U(1) steady-state cost of the classical baseline of record: $L=32$,
-$3000$ trajectories per arm. ``Frozen'' marks an arm whose charge never moved,
-for which $\tau_{\rm int}$ is not defined.}
-\label{tab:table-s8}
+\caption{The classical baselines, one panel per theory. \emph{Left}, U(1)
+steady-state cost at $L=32$ over $3000$ trajectories per arm; ``frozen'' marks
+an arm whose charge never moved, for which $\tau_{\rm int}$ is not defined.
+\emph{Right}, U(2) at $L=16$ from a hot start, $256$ chains and $2000$
+trajectories, where flips are changes of the parity of $Q$: the even-only move's
+low $\tau_{\mathrm{int}}(Q^2)$ is an artifact of never crossing parity at all,
+while the marginal move's $2$--$2.7$ is the honest cost of sampling that degree
+of freedom. In both panels $\tau_{\mathrm{int}}(Q^2)$ reports healthy on a chain
+that is not sampling topology, which is why it is not used on its own as an
+ergodicity test.}
+\label{tab:classical}
+\begin{minipage}[t]{0.52\linewidth}
+\centering
 \begin{tabular}{r l c c c}
 \toprule
 $\beta$ & arm & $\tau_{\mathrm{int}}(Q^2)$ & $\langle Q^2\rangle$ & exact \\
@@ -1378,27 +1491,21 @@ $\beta$ & arm & $\tau_{\mathrm{int}}(Q^2)$ & $\langle Q^2\rangle$ & exact \\
 218.58  & HMC+winding   & 1.39(15)        & 0.0296 & 0.0290 \\
 \bottomrule
 \end{tabular}
-\end{table*}
-
-\begin{table*}[h]
+\end{minipage}\hfill
+\begin{minipage}[t]{0.44\linewidth}
 \centering
-\small
-\caption{U(2), $L=16$, hot start, $256$ chains, $2000$ trajectories. Flips are
-changes of the parity of $Q$. The even-only move's low
-$\tau_{\mathrm{int}}(Q^2)$ is an artifact of never crossing parity at all, and
-the marginal move's $2$--$2.7$ is the honest cost of sampling that degree of
-freedom: $\tau_{\mathrm{int}}(Q^2)$ reports healthy on a parity-frozen chain and
-is not on its own an ergodicity test.}
-\label{tab:u2-joint-marginal}
-\begin{tabular}{r c c c c}
+\begin{tabular}{r rc rc}
 \toprule
-$\beta$ & even-only flips & even $\tau_{\mathrm{int}}(Q^2)$ & marginal flips & marginal $\tau_{\mathrm{int}}(Q^2)$ \\
+& \multicolumn{2}{c}{even-only} & \multicolumn{2}{c}{marginal} \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+$\beta$ & flips & $\tau_{\mathrm{int}}(Q^2)$ & flips & $\tau_{\mathrm{int}}(Q^2)$ \\
 \midrule
 14 & 4919 & 0.550 & 72522 & 2.734 \\
 21 & 13   & 0.534 & 67298 & 2.365 \\
 28 & 0    & 0.548 & 61403 & 1.980 \\
 \bottomrule
 \end{tabular}
+\end{minipage}
 \end{table*}
 
 \end{document}

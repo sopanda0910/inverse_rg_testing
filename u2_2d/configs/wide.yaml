@@ -45,10 +45,30 @@ data:
     - {beta: 416.524, lattice_size: 32, n_configs: 512, burn_in: 300, sector_augment: 0.5}
     - {beta: 416.524, lattice_size: 64, n_configs: 512, burn_in: 300, n_chains: 64,
        train: false}
-    # NEW: widening-coverage rungs, L=8, sector-augmented. n_chains matches
-    # the widening-test generation config (64), not this file's other L=8
-    # rungs (128) -- pass it explicitly per rung since expand_rungs takes
-    # the per-rung value where given.
+    # NEW: widening-coverage rungs, L=8. n_chains matches the widening-test
+    # generation config (64), not this file's other L=8 rungs (128) -- pass it
+    # explicitly per rung since expand_rungs takes the per-rung value where
+    # given.
+    #
+    # DO NOT READ THE CHARGE CONTENT OFF THESE ENTRIES. They carry no
+    # `sector_augment` key and inherit `seed_exact_sectors: true` from the
+    # `data:` block, which together READ as "seeded from the closed form, no
+    # augmentation". That is not what is on disk. These ensembles are
+    # PRE-GENERATED (header above) by configs/widening_test.yaml with
+    # sector_augment: 0.5, and 01_generate_data.py skips any rung whose .pt
+    # already exists -- so this file never regenerates them and its keys never
+    # take effect. Measured content of every one of the 12: 256 configs at
+    # Q = 0 plus 128 spread FLAT over dQ = +-1, +-2, i.e. all charged coverage
+    # comes from augmentation and none from the closed form. It could not come
+    # from the closed form at these couplings anyway: exact <Q^2> runs 0.011
+    # (beta 600) down to 0.003 (beta 2000), which is 1-4 charged configurations
+    # in 384.
+    #
+    # CONSEQUENCE IF THE .pt FILES ARE EVER DELETED: rerunning 01 with this
+    # config regenerates them at sector_augment = 0.0 (the global default),
+    # giving twelve rungs with NO charged coverage at all, silently. The
+    # paper's coupling-reach result rests on these rungs being augmented --
+    # regenerate from widening_test.yaml, not from here.
     - {beta: 600.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
     - {beta: 700.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
     - {beta: 800.0,  lattice_size: 8, n_configs: 384, burn_in: 300, n_chains: 64}
