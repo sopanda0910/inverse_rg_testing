@@ -132,62 +132,77 @@ def fig_architecture() -> None:
     hidden, depth = kw["hidden"], kw["depth"]
     cond_ch, k = kw["cond_channels"], kw["kernel_size"]
 
-    fig, ax = plt.subplots(figsize=(6.9, 3.2))
+    # Authored at the width it is actually shown at in the paper (\linewidth of
+    # a two-column figure*, 6.5 in), so nothing is downscaled and the text in
+    # the boxes stays the same size as the caption around it.
+    # Five boxes across \linewidth leaves ~1.1 in each, so every line has to be
+    # short. Sizes are final: the figure is drawn at the width it is displayed
+    # at, so nothing here is rescaled by \includegraphics.
+    fig, ax = plt.subplots(figsize=(6.5, 3.2))
     ax.set_xlim(0, 1)
     ax.set_ylim(0, 1)
     ax.axis("off")
 
-    y, h, w = 0.47, 0.25, 0.155
-    xs = [0.020, 0.215, 0.410, 0.605, 0.812]
+    y, h, w = 0.46, 0.30, 0.180
+    xs = [0.002, 0.200, 0.398, 0.596, 0.794]
+    FS = 7.0
 
     box(ax, xs[0], y, w, h,
-        r"noisy links $\theta$" "\n" r"$[B, 2, L, L]$" "\n"
-        r"coarse field $c$", MUTED, fill=0.07)
+        "noisy links " r"$\theta$" "\n" r"$[B, 2, L, L]$" "\n\n"
+        r"$+$ coarse field", MUTED, fill=0.07, fontsize=FS)
     box(ax, xs[1], y, w, h,
-        "gauge-invariant\nfeatures\n"
-        rf"$\cos/\sin$ of plaquette" "\n" rf"and $1\!\times\!2$, $2\!\times\!1$ rectangles"
-        "\n" rf"$[B, {6 + cond_ch}, L, L]$", EXACT_C, fontsize=8)
+        "gauge-invariant\nfeatures:\n"
+        r"$\cos/\sin$ plaq." "\n"
+        r"$+$ rectangles" "\n"
+        rf"$[B, {6 + cond_ch}, L, L]$", EXACT_C, fontsize=FS)
     box(ax, xs[2], y, w, h,
-        f"{depth} FiLM residual\nblocks\n"
-        rf"${k}\times{k}$ circular conv" "\n" rf"width {hidden}", LEARNED_C, fontsize=8.5)
+        f"{depth} FiLM blocks\nwidth {hidden}\n\n"
+        rf"${k}\times{k}$ circular" "\n" "convolutions", LEARNED_C, fontsize=FS)
     box(ax, xs[3], y, w, h,
-        "scalar head\n" r"$h(x)$, one per plaquette" "\n"
-        r"$+$ gated analytic" "\n" r"Wilson force", LEARNED_C, fontsize=8)
+        "scalar head:\n" r"one $h$/plaq." "\n\n"
+        r"$+$ gated" "\n" "Wilson force", LEARNED_C, fontsize=FS)
     box(ax, xs[4], y, w, h,
-        "plaquette curl\n" r"$s_\mu(x) = h(x) - h(x - \hat\nu)$" "\n"
-        r"$[B, 2, L, L]$", EXACT_C, fontsize=8.5)
+        "plaquette curl\n"
+        r"$s_\mu = h(x)$" "\n" r"$-\ h(x{-}\hat\nu)$" "\n\n"
+        r"$[B, 2, L, L]$", EXACT_C, fontsize=FS)
 
     mid = y + h / 2
     for a, b in zip(xs[:-1], xs[1:]):
         arrow(ax, (a + w, mid), (b, mid), MUTED)
 
-    box(ax, xs[2] - 0.10, 0.185, 0.30, 0.145,
+    # The box must span both consumers of the embedding, the residual blocks and
+    # the head's force gate, or the head's arrow starts in empty space.
+    emb_x0, emb_x1 = xs[2] - 0.008, xs[3] + w + 0.008
+    emb_y, emb_h = 0.185, 0.135
+    box(ax, emb_x0, emb_y, emb_x1 - emb_x0, emb_h,
         r"FiLM embedding from $(\log\sigma,\ \log\beta)$" "\n"
-        rf"plus the coarse winding density $2\pi Q_c / V$",
-        IMPOSED_C, fontsize=8.5)
+        r"plus the coarse winding density $2\pi Q / V$",
+        IMPOSED_C, fontsize=8)
     for x in (xs[2], xs[3]):
-        arrow(ax, (x + w / 2, 0.33), (x + w / 2, y), IMPOSED_C)
+        arrow(ax, (x + w / 2, emb_y + emb_h), (x + w / 2, y), IMPOSED_C)
 
-    ax.text(xs[1] + w / 2, y + h + 0.035, "gauge invariance in",
-            ha="center", fontsize=8.5, color=EXACT_C, fontweight="bold")
-    ax.text(xs[4] + w / 2, y + h + 0.035, "gauge covariance out",
-            ha="center", fontsize=8.5, color=EXACT_C, fontweight="bold")
-    ax.annotate("", xy=(xs[4] + w, y + h + 0.075),
-                xytext=(xs[1], y + h + 0.075),
+    ax.text(xs[1] + w / 2, y + h + 0.055, "gauge invariance in",
+            ha="center", fontsize=8, color=EXACT_C, fontweight="bold")
+    ax.text(xs[4] + w / 2, y + h + 0.055, "gauge covariance out",
+            ha="center", fontsize=8, color=EXACT_C, fontweight="bold")
+    ax.annotate("", xy=(xs[4] + w, y + h + 0.100),
+                xytext=(xs[1], y + h + 0.100),
                 arrowprops=dict(arrowstyle="-", color=EXACT_C, lw=1.2,
-                                connectionstyle="arc3,rad=-0.09"))
+                                connectionstyle="arc3,rad=-0.07"))
 
-    ax.text(0.012, 0.02,
-            "The curl head is COMPLETE, not merely contained in the covariant class: every "
-            "gauge-covariant field with vanishing holonomy is a plaquette curl,\n"
-            "so the parameterization costs no expressiveness. No layer sees $L$ -- the "
-            "convolutions are circular and the normalization is per-site -- which is why one "
-            "checkpoint serves\nevery rung and extrapolates in coupling.",
-            fontsize=7.5, color=MUTED, ha="left", linespacing=1.5)
+    # Anchored by its top and set below the box's rounded edge (which extends
+    # ~0.012 past emb_y), so the gap does not depend on the line count.
+    ax.text(0.004, emb_y - 0.070,
+            "Every gauge-covariant field with vanishing holonomy is a plaquette curl, "
+            "so the curl head costs no expressiveness.\n"
+            "No layer sees $L$: the convolutions are circular and the normalization is "
+            "per-site, which is why one checkpoint\nserves every rung and extrapolates "
+            "in coupling.",
+            fontsize=6.5, color=MUTED, ha="left", va="top", linespacing=1.5)
 
     fig.suptitle(f"The gauge-covariant score network   ({n_params:,} parameters, "
                  f"depth {depth}, width {hidden})",
-                 fontsize=12.5, color=INK, x=0.008, ha="left", y=0.985)
+                 fontsize=10, color=INK, x=0.004, ha="left", y=0.985)
     fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(FIG / "45_architecture.png", dpi=319)
     plt.close(fig)

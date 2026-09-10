@@ -42,12 +42,15 @@ def arrow(ax, p0, p1, colour=INK, ls="-", lw=1.7, rad=0.0):
 
 
 def main() -> int:
-    fig, ax = plt.subplots(figsize=(12.6, 4.2))
+    # Authored near the width it is displayed at in the paper (\linewidth of a
+    # two-column figure*, 6.5 in). Drawn much wider than that, every label is
+    # downscaled and the subscripts, at 0.7x again, become unreadable.
+    fig, ax = plt.subplots(figsize=(9.0, 3.3))
     ax.set_xlim(0, 100)
-    ax.set_ylim(0, 24)
+    ax.set_ylim(0, 24.5)
     ax.axis("off")
 
-    ROW = 12.5
+    ROW = 15.5
     H = 8.0
 
     # ---- main spine --------------------------------------------------
@@ -60,7 +63,7 @@ def main() -> int:
     box(ax, 31.5, ROW, 15.5, H, "REVERSE\nDIFFUSION\n(learned)",
         "#fdf0e6", ORANGE, weight="bold")
 
-    box(ax, 49.5, ROW, 17.5, H, "CHARGE CORRECTION\n+ CONTINUED\nDIFFUSION",
+    box(ax, 49.5, ROW, 17.5, H, "CHARGE\nCORRECTION\n+ CONTINUED\nDIFFUSION",
         "#fdf0e6", ORANGE, weight="bold")
 
     box(ax, 69.5, ROW, 11.5, H, "RETHERM.\n(exact)",
@@ -73,49 +76,51 @@ def main() -> int:
                    (81.0, 83.5)):
         arrow(ax, (x0, ROW + H / 2), (x1, ROW + H / 2))
 
-    # ---- charge injection, drawn INSIDE the trajectory (mid-sigma) ----
-    inj_x = 49.5
-    arrow(ax, (inj_x, ROW + H), (inj_x, 22.6), colour=GREEN, lw=1.8,
-          ls=(0, (4, 2)))
-    ax.text(inj_x + 1.2, 22.6, r"impose $Q_{\rm coarse}$",
-            ha="left", va="top", fontsize=10.0, color=GREEN, weight="bold")
-
-    # ---- coarse Q source, feeding the injection, below the row --------
+    # ---- the coarse charge, from its source into the correction step ----
+    # One labelled path, not two. An extra arrow leaving the top of the box
+    # duplicated this and pointed out of the step rather than into it.
+    # "coarse" is a word rather than a subscript: a subscript sets at 0.7x and
+    # was the smallest text in the figure.
     src_x = 7.75
-    feed_y = 9.9
+    inj_x = 53.0
+    feed_y = 13.0
     arrow(ax, (src_x, ROW), (src_x, feed_y), colour=GREEN, lw=1.6)
     ax.plot([src_x, inj_x], [feed_y, feed_y], color=GREEN, lw=1.6, zorder=2)
     arrow(ax, (inj_x, feed_y), (inj_x, ROW), colour=GREEN, lw=1.6)
-    ax.text((src_x + inj_x) / 2, feed_y - 0.5, r"$Q_{\rm coarse}$ (exact)",
-            ha="center", va="top", fontsize=9.6, color=GREEN)
+    ax.text((src_x + inj_x) / 2, feed_y - 0.6, r"impose coarse $Q$ (exact)",
+            ha="center", va="top", fontsize=13.0, color=GREEN, weight="bold")
 
     # ---- U(2)-only branch, dashed, below --------------------------
-    ubox_y = 0.6
-    ubox_h = 5.6
-    ubox_top = 8.0
-    ax.add_patch(FancyBboxPatch((31.5, 0.0), 35.5, ubox_top,
+    # Sized so the widest label ("EXACT CONDITIONAL") clears its box, the two
+    # boxes do not touch, and the "U(2) ONLY" tag sits clear of both the
+    # container edge and the boxes below it.
+    ubox_y, ubox_h = 0.8, 6.0
+    ubox_top = 9.6
+    ax.add_patch(FancyBboxPatch((29.5, 0.0), 41.0, ubox_top,
                                  boxstyle="round,pad=0.02", linewidth=1.2,
                                  facecolor="none", edgecolor=MUTED,
                                  linestyle=(0, (5, 3)), zorder=2))
-    ax.text(32.3, ubox_top - 0.7, "U(2) ONLY", fontsize=9.6, color=MUTED,
+    ax.text(30.4, ubox_top - 0.6, "U(2) ONLY", fontsize=10.5, color=MUTED,
             weight="bold", va="top")
 
-    box(ax, 32.5, ubox_y, 16.0, ubox_h,
+    box(ax, 31.0, ubox_y, 17.0, ubox_h,
         "NAIVE SU(2) SEED\n(inverse block)",
-        "#f5f0fa", PURPLE, fontsize=9.6, ls=(0, (4, 2)))
-    box(ax, 50.5, ubox_y, 16.0, ubox_h,
-        "EXACT CONDITIONAL\nHEATBATH " + r"$p(q\mid\psi)$",
-        "#eaf7ec", GREEN, fontsize=9.6, ls=(0, (4, 2)))
-    arrow(ax, (48.5, ubox_y + ubox_h / 2), (50.5, ubox_y + ubox_h / 2),
+        "#f5f0fa", PURPLE, fontsize=9.0, ls=(0, (4, 2)))
+    box(ax, 52.0, ubox_y, 17.0, ubox_h,
+        "EXACT CONDITIONAL\nHEATBATH\n" + r"$p(q\mid\psi)$",
+        "#eaf7ec", GREEN, fontsize=9.0, ls=(0, (4, 2)))
+    arrow(ax, (48.0, ubox_y + ubox_h / 2), (52.0, ubox_y + ubox_h / 2),
           colour=MUTED)
 
-    # psi_fine feeds the conditional (from the diffusion output)
-    arrow(ax, (57.0, ROW), (58.5, ubox_y + ubox_h), colour=MUTED, lw=1.2,
+    # psi_fine feeds the conditional (from the diffusion output). Kept clear of
+    # the charge feed, which now enters the same box from below at x = 53.
+    arrow(ax, (62.0, ROW), (60.5, ubox_y + ubox_h), colour=MUTED, lw=1.2,
           ls=(0, (2, 2)), rad=0.1)
 
-    # merges back up before rethermalization
-    arrow(ax, (66.5, ubox_y + ubox_h - 0.6), (72.5, ROW), colour=GREEN,
-          lw=1.5, rad=-0.25)
+    # Merges back up before rethermalization. Leaves from the right EDGE of the
+    # green box, not its top corner, so it does not cut across the border.
+    arrow(ax, (69.8, ubox_y + ubox_h / 2), (73.5, ROW), colour=GREEN,
+          lw=1.5, rad=-0.18)
 
     fig.tight_layout()
     fig.savefig("transport_pipeline.png", dpi=300, bbox_inches="tight",
