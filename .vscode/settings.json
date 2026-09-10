@@ -1,0 +1,49 @@
+{
+  // There is no TeX Live / MiKTeX on this machine, so `latexmk` does not exist
+  // and LaTeX Workshop's default recipe fails with `spawn latexmk ENOENT`.
+  // Tectonic is a single self-contained binary that fetches the packages it
+  // needs on first use; it lives at ~/.local/bin/tectonic.exe, which is already
+  // on PATH. It is what the paper has been built with throughout.
+  "latex-workshop.latex.tools": [
+    {
+      "name": "tectonic",
+      "command": "tectonic",
+      "args": [
+        "-X",
+        "compile",
+        "--synctex",
+        "--keep-logs",
+        "--keep-intermediates",
+        "%DOC%.tex"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "tectonic",
+      "tools": ["tectonic"]
+    }
+  ],
+  // Tectonic writes beside the source, so do not send it to a separate aux dir.
+  "latex-workshop.latex.outDir": "%DIR%",
+  // Build on save rather than on any file change: current.tex is also written
+  // by scripts outside the editor, and "onFileChange" would fire a build in the
+  // middle of those.
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.clean.fileTypes": [
+    "*.aux",
+    "*.bbl",
+    "*.blg",
+    "*.idx",
+    "*.ind",
+    "*.lof",
+    "*.lot",
+    "*.out",
+    "*.toc",
+    "*.fls",
+    "*.log",
+    "*.fdb_latexmk",
+    "*.synctex.gz"
+  ]
+}
