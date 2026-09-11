@@ -131,12 +131,18 @@ def topology_matched_fine_beta(coarse_beta: float, coarse_size: int) -> float:
     what every rung above it gets. Matching <Q^2> instead makes the transported
     value correct by construction and leaves only the base's statistical error.
 
-    The two criteria nearly agree and diverge only on small lattices, where the
-    determinant-sector P(Q) is still outside its asymptotic regime: starting from
-    L = 8, beta = 14 they differ by 5.2% at the first step, 1.2% at the second and
-    0.3% at the third. Preferring this one costs a slightly different coupling and
-    buys an unbiased <Q^2>; which matters depends on whether the study's claim is
-    about the action or about topology.
+    THE TWO CRITERIA DO NOT CONVERGE UP THE LADDER -- an earlier version of this
+    docstring said they did (5.2% / 1.2% / 0.3%) and that was wrong in both value
+    and direction. Measured, character matching against this one:
+
+        base L = 8,  beta = 14:  5.50%, 6.91%, 7.26% over three steps
+        base L = 16, beta = 28:  2.27%, 2.85%, 3.00%
+
+    The gap is set by how far the finite-volume P(Q) is from its asymptotic form,
+    so it is smaller at the weaker-coupling base, and it grows slowly with each
+    step rather than closing. Preferring this criterion costs a coupling 2-3%
+    below the character-matched one and buys an unbiased <Q^2>; which matters
+    depends on whether the study's claim is about the action or about topology.
     """
     target = det_topological_susceptibility(coarse_beta, coarse_size) * coarse_size ** 2
     fine_size = 2 * coarse_size

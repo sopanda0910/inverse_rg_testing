@@ -197,8 +197,10 @@ ladder:
   # L = 64, a systematic the ladder cannot correct. `blocking.topology_matched_
   # schedule` picks beta_f so the exact <Q^2> is preserved instead (1.00119 at
   # every rung here), leaving only the base's statistical error. The price is a
-  # coupling 2-3% below the plaquette-matched one; the two agree to 0.3% by the
-  # top rung and diverge only where the small-lattice P(Q) is pre-asymptotic.
+  # coupling 2-3% below the plaquette-matched one. The two do NOT converge up
+  # the ladder -- from this base they differ by 2.27%, 2.85%, 3.00% over the
+  # three steps, growing slowly rather than closing (an earlier note here said
+  # they agreed to 0.3% by the top rung; that was wrong).
   base: {beta: 28.0, lattice_size: 16}
   beta_schedule: [105.651, 416.524]
   # 1024 to carry all 1024 of the base's independent parity draws. At 512 the

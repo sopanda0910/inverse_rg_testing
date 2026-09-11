@@ -30,7 +30,7 @@
   // Build on save rather than on any file change: current.tex is also written
   // by scripts outside the editor, and "onFileChange" would fire a build in the
   // middle of those.
-  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.autoBuild.run": "never",
   "latex-workshop.latex.clean.fileTypes": [
     "*.aux",
     "*.bbl",
