@@ -128,8 +128,11 @@ def measure(path, L, beta, stem):
         arr, step = series(path, stem, key)
         tts.append(therm(arr, u2x(beta, area, lattice_size=L), step))
         ivs.append(interval(arr, step))
+    # t_therm is maximised over the Wilson loops ONLY; the interval also
+    # includes Q^2. A frozen chain has an exactly constant Q^2 and so never
+    # satisfies the equilibration criterion, which would make every classical
+    # t_therm infinite -- see the definition in the paper's Sec. IV.
     arr, step = series(path, stem, "charge")
-    tts.append(therm(arr ** 2, q2ex, step))
     ivs.append(interval(arr ** 2, step))
     return float(np.nanmax(tts)), max(ivs)
 

@@ -83,6 +83,24 @@ def worst(d, arm):
     return max(vals) if vals else float("nan")
 
 
+def record_every(ckpt, stem, beta):
+    """Records-to-trajectories factor for one scan point.
+
+    `t_therm_threshold_old` is a RECORD INDEX -- 28_crossover_scan.py writes it
+    straight out of `thermalization_time` with no `record_every` factor --
+    while the interval it is divided into is in TRAJECTORIES, because
+    90_standard_timescales.py multiplies by `record_every`. Dividing one by the
+    other unconverted inflates every improvement factor by this factor.
+    """
+    f = BASE / ckpt / "series" / f"{stem}_beta{beta:g}.npz"
+    if not f.exists():
+        raise FileNotFoundError(
+            f"no series file for {ckpt}/{stem} at beta={beta:g}; "
+            "the records-to-trajectories factor cannot be recovered")
+    with np.load(f) as z:
+        return float(z["record_every"])
+
+
 def load(ckpt, stem, ts):
     """model beta, lift equilibration cost, and both classical intervals."""
     f = BASE / ckpt / f"{stem}.json"
@@ -98,7 +116,8 @@ def load(ckpt, stem, ts):
         # lifts are independent by construction and the per-configuration cost
         # is the equilibration cost alone. A classical chain has to pay both.
         d["lift"].append(worst(r.get("t_therm_threshold_old", {}),
-                               "diffusion seed"))
+                               "diffusion seed")
+                         * record_every(ckpt, stem, b))
         for key, st in (("cost_wind", stem), ("cost_plain", plain_stem)):
             iv = ts.get(f"{ckpt}|{st}|{b:g}", {}).get("interval_cold")
             meta = (BASE / ckpt / f"{st}.json")
@@ -106,6 +125,8 @@ def load(ckpt, stem, ts):
             if meta.exists():
                 for rr in json.loads(meta.read_text()):
                     if abs(rr["beta"] - b) < 1e-9:
+                        # only tested for finiteness below, so the
+                        # records-to-trajectories factor is irrelevant here
                         tt = worst(rr.get("t_therm_threshold_old", {}),
                                    "cold start")
                         break
