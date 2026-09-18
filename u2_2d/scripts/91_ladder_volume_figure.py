@@ -52,6 +52,11 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+# The paper's typeface, shared with every other paper figure.
+sys.path.insert(0, str(ROOT / "u1_2d" / "scripts"))
+from _figstyle import apply_paper_font  # noqa: E402
+
+apply_paper_font()
 
 from u2_2d.lgt.exact import (det_topological_charge_distribution as pq2,  # noqa: E402
                              wilson_loop_exact as u2x)
@@ -69,11 +74,11 @@ RUNGS = [
 ARMS = [
     ("arm_A_diffusion_seed", "lift", "#D55E00", "lift, plain HMC"),
     ("arm_H_diffusion_plus_odd_winding", "lift", "#E8A87C",
-     r"lift $+$ odd winding"),
+     r"lift $+$ marginal"),
     ("arm_D_cold_plus_winding", "classical", "#0072B2",
-     r"cold $+$ even winding"),
+     r"cold $+$ even-only"),
     ("arm_G_cold_plus_odd_winding", "classical", "#333333",
-     r"cold $+$ odd winding"),
+     r"cold $+$ marginal"),
 ]
 
 
@@ -182,8 +187,12 @@ def main() -> int:
             ax.annotate("", xy=(x0, BUDGET * 6.0), xytext=(x0, BUDGET),
                         arrowprops=dict(arrowstyle="-|>", color=colour, lw=2.0))
     ax.axhline(ZERO, color=MUTED, ls=":", lw=1.0, zorder=1)
-    ax.text(0.02, 0.055, "already equilibrated ($t_{\\rm therm}=0$)",
-            transform=ax.transAxes, fontsize=7.5, color=MUTED)
+    # Labels the dotted floor line. It sits just right of the second rung: the
+    # floor to the left is occupied by the two rungs' markers, which the
+    # previous full-width label ran straight through, and further right the
+    # curve climbs to the third rung. The caption says in words what it means.
+    ax.text(1.2, ZERO * 1.12, r"$t_{\rm therm}=0$", fontsize=7.5, color=MUTED,
+            ha="left", va="bottom")
     ax.set_ylim(0.35, BUDGET * 40)
     ax.set_ylabel("trajectories per independent\nconfiguration", fontsize=9.5,
                   color=INK, linespacing=1.4)
@@ -243,13 +252,11 @@ def main() -> int:
     h1, l1 = axes[0].get_legend_handles_labels()
     fig.legend(h1, l1, loc="lower center", ncol=4, frameon=False,
                fontsize=8.5, bbox_to_anchor=(0.5, -0.13))
-    fig.suptitle("Climbing the matched ladder: the classical cost diverges, the lift's does not",
-                 fontsize=10.5, color=INK, y=1.0)
     fig.tight_layout()
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, dpi=200, facecolor="white", bbox_inches="tight")
+    fig.savefig(out, dpi=300, facecolor="white", bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out}")
     return 0

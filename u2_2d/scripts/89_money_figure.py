@@ -47,6 +47,11 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+# The paper's typeface, shared with every other paper figure.
+sys.path.insert(0, str(ROOT / "u1_2d" / "scripts"))
+from _figstyle import apply_paper_font  # noqa: E402
+
+apply_paper_font()
 
 BASE = ROOT / "out/u2_2d/coverage_scan_relaxation"
 TIMESCALES = BASE / "_standard_timescales.json"
@@ -60,13 +65,16 @@ BUDGET = 400.0
 # matched model coupling, which is roughly a quarter of it, and plotting in that
 # convention made a scan that reaches beta = 1660 look as though it stopped
 # at 400.
+# Checkpoint names are in Computer Modern typewriter, as \texttt is in the
+# paper. They go through mathtext rather than plain text because the plain-text
+# font, cmr10, is OT1-encoded: its underscore slot holds a dot accent, so
+# "wide_dense" typed plainly prints as "wide˙dense" without any warning.
 ARMS = [
-    ("cov60", "#CC79A7", 227.3, r"cov60 ($\beta_{\max}=227$)"),
-    ("default", "#0072B2", 416.5, r"default ($\beta_{\max}=416$)"),
-    ("wide", "#009E73", 2000.0, r"wide ($\beta_{\max}=2000$)"),
-    # matplotlib is not in LaTeX mode here, so the underscore is written plainly
-    # rather than escaped: an escaped one renders as a literal backslash.
-    ("wide_dense", "#D55E00", 2000.0, "wide_dense " + r"($\beta_{\max}=2000$)"),
+    ("cov60", "#CC79A7", 227.3, r"$\mathtt{cov60}$ ($\beta_{\max}=227$)"),
+    ("default", "#0072B2", 416.5, r"$\mathtt{default}$ ($\beta_{\max}=416$)"),
+    ("wide", "#009E73", 2000.0, r"$\mathtt{wide}$ ($\beta_{\max}=2000$)"),
+    ("wide_dense", "#D55E00", 2000.0,
+     r"$\mathtt{wide\_dense}$ ($\beta_{\max}=2000$)"),
 ]
 
 # Only two are drawn: the deployed checkpoint and the widest one, which is the
@@ -160,6 +168,12 @@ def _style(ax, title, ylab):
     ax.tick_params(colors=MUTED, labelsize=8.5)
 
 
+# The factor falls to 0.1 where the lift is slowest and the classical arm
+# still cheap, so the floor sits well below that and the failure markers below
+# every measured point.
+FLOOR, CROSS_Y = 0.04, 0.06
+
+
 def ratio_panel(ax, stem, title, ts):
     top = 2.0e3
     for ck, colour, ceil, label in ARMS:
@@ -181,14 +195,16 @@ def ratio_panel(ax, stem, title, ts):
         ax.plot(b[bound], F[bound], "^", color=colour, ms=7, zorder=4,
                 markeredgecolor="white", markeredgewidth=0.6)
         if (~alive).any():
-            ax.plot(b[~alive], np.full((~alive).sum(), 0.45), "x",
+            # Below every measured factor (the smallest is 0.1), so a
+            # failure cannot be read as a low measured value or vice versa.
+            ax.plot(b[~alive], np.full((~alive).sum(), CROSS_Y), "x",
                     color=colour, ms=7, mew=2.0, zorder=4)
         if b.min() <= ceil <= b.max() * 1.05:
             ax.axvline(ceil, color=colour, ls=":", lw=1.2, alpha=0.8, zorder=1)
 
     ax.axhspan(1.0, top, color="#2ca02c", alpha=0.06, zorder=0)
     ax.axhline(1.0, color=WHMC_C, lw=1.0, ls="--", alpha=0.8, zorder=2)
-    ax.set_ylim(0.35, top)
+    ax.set_ylim(FLOOR, top)
     ax.text(0.025, 0.965, "lift cheaper", transform=ax.transAxes, fontsize=7.5,
             color="#2ca02c", va="top")
     # kept clear of the markers themselves: at the bottom of the panel this
@@ -254,7 +270,7 @@ def save(fig, path, ncol, handles=None, labels=None, anchor=-0.13):
     fig.tight_layout()
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, dpi=200, facecolor="white", bbox_inches="tight")
+    fig.savefig(out, dpi=300, facecolor="white", bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out}")
 
@@ -273,8 +289,6 @@ def main() -> int:
     ratio_panel(axes[1], "crossover_L64_topo", r"(b)  $L=64$", ts)
     axes[1].set_ylabel("")
     h, lab = axes[0].get_legend_handles_labels()
-    fig.suptitle("Training coverage sets the coupling at which the lift stops working",
-                 fontsize=10.5, color=INK, y=1.0)
     save(fig, args.out, 4, h, lab)
 
     # The absolute costs, one representative checkpoint against both baselines,

@@ -35,7 +35,7 @@ from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
-from _figstyle import ARM, INK, MUTED  # noqa: E402
+from _figstyle import ARM, INK, MUTED, PAPER_BOLD, PAPER_FONT  # noqa: E402
 
 OUT = REPO / "out" / "u1_2d"
 FIG = OUT / "paper_appendix" / "figures"
@@ -138,14 +138,22 @@ def fig_architecture() -> None:
     # Five boxes across \linewidth leaves ~1.1 in each, so every line has to be
     # short. Sizes are final: the figure is drawn at the width it is displayed
     # at, so nothing here is rescaled by \includegraphics.
-    fig, ax = plt.subplots(figsize=(6.5, 3.2))
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
+    # The axes is cropped to the drawing rather than to [0, 1]: the invisible
+    # axes counts toward `bbox_inches="tight"`, so leaving it at [0, 1] kept a
+    # band of empty space where the title and note used to be. x starts below 0
+    # so the first box's rounded edge is not clipped. The figure height scales
+    # with the y-range kept, so text and boxes print at the same size as before.
+    X0, Y0, Y1 = -0.012, 0.15, 0.91
+    fig, ax = plt.subplots(figsize=(6.5 * (1.0 - X0), 3.2 * (Y1 - Y0)))
+    ax.set_xlim(X0, 1)
+    ax.set_ylim(Y0, Y1)
     ax.axis("off")
 
     y, h, w = 0.46, 0.30, 0.180
     xs = [0.002, 0.200, 0.398, 0.596, 0.794]
-    FS = 7.0
+    # 8 pt in the boxes: the figure prints at ~0.97x, and at 7 pt the labels
+    # came out near 6.7 pt, visibly smaller than the 9 pt caption beneath.
+    FS = 8.0
 
     box(ax, xs[0], y, w, h,
         "noisy links " r"$\theta$" "\n" r"$[B, 2, L, L]$" "\n\n"
@@ -177,34 +185,26 @@ def fig_architecture() -> None:
     box(ax, emb_x0, emb_y, emb_x1 - emb_x0, emb_h,
         r"FiLM embedding from $(\log\sigma,\ \log\beta)$" "\n"
         r"plus the coarse winding density $2\pi Q / V$",
-        IMPOSED_C, fontsize=8)
+        IMPOSED_C, fontsize=9)
     for x in (xs[2], xs[3]):
         arrow(ax, (x + w / 2, emb_y + emb_h), (x + w / 2, y), IMPOSED_C)
 
     ax.text(xs[1] + w / 2, y + h + 0.055, "gauge invariance in",
-            ha="center", fontsize=8, color=EXACT_C, fontweight="bold")
+            ha="center", fontsize=9, color=EXACT_C, fontproperties=PAPER_BOLD)
     ax.text(xs[4] + w / 2, y + h + 0.055, "gauge covariance out",
-            ha="center", fontsize=8, color=EXACT_C, fontweight="bold")
+            ha="center", fontsize=9, color=EXACT_C, fontproperties=PAPER_BOLD)
     ax.annotate("", xy=(xs[4] + w, y + h + 0.100),
                 xytext=(xs[1], y + h + 0.100),
                 arrowprops=dict(arrowstyle="-", color=EXACT_C, lw=1.2,
                                 connectionstyle="arc3,rad=-0.07"))
 
-    # Anchored by its top and set below the box's rounded edge (which extends
-    # ~0.012 past emb_y), so the gap does not depend on the line count.
-    ax.text(0.004, emb_y - 0.070,
-            "Every gauge-covariant field with vanishing holonomy is a plaquette curl, "
-            "so the curl head costs no expressiveness.\n"
-            "No layer sees $L$: the convolutions are circular and the normalization is "
-            "per-site, which is why one checkpoint\nserves every rung and extrapolates "
-            "in coupling.",
-            fontsize=6.5, color=MUTED, ha="left", va="top", linespacing=1.5)
-
-    fig.suptitle(f"The gauge-covariant score network   ({n_params:,} parameters, "
-                 f"depth {depth}, width {hidden})",
-                 fontsize=10, color=INK, x=0.004, ha="left", y=0.985)
-    fig.tight_layout(rect=(0, 0, 1, 0.96))
-    fig.savefig(FIG / "45_architecture.png", dpi=319)
+    # No title and no explanatory note inside the figure: the parameter count,
+    # depth, width and the two design points both live in the paper's caption,
+    # which is where a reader looks for them and where they are set in the
+    # body font. `bbox_inches="tight"` crops the space they used to occupy.
+    fig.tight_layout()
+    fig.savefig(FIG / "45_architecture.png", dpi=319, bbox_inches="tight",
+                facecolor="white")
     plt.close(fig)
     print(f"wrote 45_architecture.png  ({n_params:,} parameters)")
 
@@ -212,7 +212,10 @@ def fig_architecture() -> None:
 def main() -> int:
     FIG.mkdir(parents=True, exist_ok=True)
     fig_pipeline()
-    fig_architecture()
+    # Only the architecture diagram appears in the paper, so only it is set in
+    # the paper's typeface; the pipeline schematic keeps its own.
+    with plt.rc_context(PAPER_FONT):
+        fig_architecture()
     return 0
 
 

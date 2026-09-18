@@ -9,7 +9,42 @@ inside the floor band, so every series that uses hue must also carry a distinct
 marker or a direct label.
 """
 
+from pathlib import Path as _Path
+
+import matplotlib as _mpl
+from matplotlib.font_manager import FontProperties as _FontProperties
+
 INK, MUTED, GRID = "#1a1a1a", "#5c5c5c", "#d8d8d8"
+
+# The paper's body text is REVTeX's Computer Modern, and the figures match it:
+# cmr10 for text, matplotlib's Computer Modern mathtext for mathematics. Every
+# figure is drawn at the width it is printed at, so point sizes here are the
+# printed sizes. Two traps, both silent:
+#   * cmr10 has almost no non-ASCII glyphs. A Greek letter or a multiplication
+#     sign typed straight into a label renders as an empty box; write it as
+#     mathtext ($\beta$, $\times$) instead.
+#   * cmr10 has no bold weight, and asking for one returns regular without an
+#     error. Bold text must use PAPER_BOLD, the separate Computer Modern bold.
+PAPER_FONT = {
+    "font.family": "serif",
+    "font.serif": ["cmr10"],
+    "mathtext.fontset": "cm",
+    "axes.unicode_minus": False,
+    "axes.formatter.use_mathtext": True,
+}
+# math_fontfamily is pinned rather than inherited: a FontProperties records the
+# math font from rcParams at the moment it is CREATED, which is at import --
+# before apply_paper_font() runs -- so without this, mathtext inside a bold label
+# ("impose $Q_{\rm coarse}$") renders in matplotlib's default sans-serif.
+PAPER_BOLD = _FontProperties(
+    fname=str(_Path(_mpl.get_data_path()) / "fonts" / "ttf" / "cmb10.ttf"),
+    math_fontfamily="cm")
+
+
+def apply_paper_font():
+    """Set the paper's typeface for every figure drawn after this call."""
+    import matplotlib.pyplot as plt
+    plt.rcParams.update(PAPER_FONT)
 
 OKABE_ITO = {
     "orange": "#D55E00",
