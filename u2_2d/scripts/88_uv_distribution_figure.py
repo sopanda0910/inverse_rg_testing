@@ -45,6 +45,11 @@ import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
+# The paper's typeface, shared with every other paper figure.
+sys.path.insert(0, str(ROOT / "u1_2d" / "scripts"))
+from _figstyle import apply_paper_font  # noqa: E402
+
+apply_paper_font()
 
 from u1_2d.lgt.exact import wilson_loop_exact as u1_exact  # noqa: E402
 from u2_2d.lgt.exact import wilson_loop_exact as u2_exact  # noqa: E402
@@ -147,10 +152,11 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
                         xycoords=("data", "axes fraction"),
                         textcoords=("data", "axes fraction"),
                         arrowprops=dict(arrowstyle="-|>", color=colour, lw=1.5))
-            ax.text(side * xlim * 0.59, y, f"{v.mean():+.0f}",
+            # mathtext, for a true minus rather than cmr10's text hyphen
+            ax.text(side * xlim * 0.59, y, rf"$\mathbf{{{v.mean():+.0f}}}$",
                     transform=ax.get_xaxis_transform(),
                     ha="right" if side > 0 else "left", va="center",
-                    fontsize=8.5, color=colour, weight="bold")
+                    fontsize=8.5, color=colour)
 
     ax.axvline(0.0, color=INK, ls="--", lw=1.2, zorder=4)
     ax.set_xlim(-xlim, xlim)
@@ -168,10 +174,17 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
     w_cold = arms["cold"][key].std() / ref
     w_hot = arms["hot"][key].std() / ref
     ax.text(0.985, 0.88,
-            r"$\sigma_{\rm cfg}=$" + f"{ref:.1e}"
+            sci_label(r"\sigma_{\rm cfg}", ref)
             + f"\nwidth/lift\ncold {w_cold:.2f}\nhot {w_hot:.1f}",
             transform=ax.transAxes, ha="right", va="top", fontsize=7.5,
             color=MUTED, linespacing=1.4)
+
+
+def sci_label(symbol: str, x: float) -> str:
+    """`symbol = m x 10^e` in mathtext, as the body text would set it, rather
+    than "1.0e-04", whose hyphen-minus reads as a dash in Computer Modern."""
+    mant, exp = f"{x:.1e}".split("e")
+    return rf"${symbol} = {mant}\times10^{{{int(exp)}}}$"
 
 
 def load_charges():
@@ -240,7 +253,11 @@ def topo_panel(ax, arms, chains, qv, pq, title, volume, qmax=5, rng=None):
         ax.spines[sp].set_visible(False)
     ax.tick_params(colors=MUTED, labelsize=8.5)
 
-    lines = [r"$\langle Q^2\rangle$ / exact", f"exact  {exact_q2:.3f}"]
+    # The exact value is absolute and the arm values are ratios to it, so the
+    # absolute one is stated first with its own symbol; under a single
+    # "<Q^2> / exact" header, "exact 1.904" read as a ratio of 1.904.
+    lines = [rf"exact $\langle Q^2\rangle = {exact_q2:.3f}$",
+             r"$\langle Q^2\rangle$ / exact:"]
     for arm, colour in (("lift", SEED_C), ("cold", COLD_C), ("hot", HOT_C)):
         per_chain = (chains[arm] ** 2).mean(axis=0)
         m = float(per_chain.mean())
@@ -270,12 +287,10 @@ def figure_topology(out_path):
                plt.Line2D([], [], color=INK, lw=1.4, marker="o", ms=4, label="exact")]
     fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False,
                fontsize=9, bbox_to_anchor=(0.5, -0.06))
-    fig.suptitle("Only the transported charge reproduces the exact sector distribution",
-                 fontsize=10.5, color=INK, y=1.0)
     fig.tight_layout()
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, dpi=200, facecolor="white", bbox_inches="tight")
+    fig.savefig(out, dpi=300, facecolor="white", bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out}")
 
@@ -299,10 +314,12 @@ def main() -> int:
     for j, key in enumerate(U2_PLOT):
         panel(axes[1, j], u2_arms, u2_ex, key, labels2[key])
 
+    # linespacing: the math line is taller than the plain one, and without
+    # the extra room the two lines of each rotated label overlapped.
     axes[0, 0].set_ylabel("2D U(1)\n" r"$L=32,\ \beta=218.58$",
-                          fontsize=8.5, color=INK, labelpad=6)
+                          fontsize=8.5, color=INK, labelpad=6, linespacing=1.9)
     axes[1, 0].set_ylabel("2D U(2)\n" r"$L=64,\ \beta=416.52$",
-                          fontsize=8.5, color=INK, labelpad=6)
+                          fontsize=8.5, color=INK, labelpad=6, linespacing=1.9)
     for ax in axes[1]:
         ax.set_xlabel(r"$(W - W_{\rm exact})\,/\,\sigma_{\rm cfg}$",
                       fontsize=8.5, color=INK)
@@ -314,14 +331,11 @@ def main() -> int:
     fig.legend(handles=handles, loc="lower center", ncol=4, frameon=False,
                fontsize=8.5, bbox_to_anchor=(0.5, -0.035))
 
-    fig.suptitle("The preconditioned configuration reproduces the equilibrium "
-                 "distribution, not just its mean",
-                 fontsize=10.5, color=INK, y=1.0)
     fig.tight_layout()
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(out, dpi=200, facecolor="white", bbox_inches="tight")
+    fig.savefig(out, dpi=300, facecolor="white", bbox_inches="tight")
     plt.close(fig)
     print(f"wrote {out}")
 

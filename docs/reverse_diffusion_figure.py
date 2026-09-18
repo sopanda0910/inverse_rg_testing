@@ -41,14 +41,20 @@ and `u1_2d/pipeline/ladder.py` rather than from prose:
 """
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib.patches import Circle, FancyArrowPatch, FancyBboxPatch
 
-plt.rcParams["font.family"] = "STIXGeneral"
-plt.rcParams["mathtext.fontset"] = "stix"
+# The paper's typeface, shared with every other paper figure.
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "u1_2d" / "scripts"))
+from _figstyle import PAPER_BOLD, apply_paper_font  # noqa: E402
+
+apply_paper_font()
 
 INK, MUTED = "#1a1a1a", "#5c5c5c"
 SPINE_E, SPINE_F = "#B5540A", "#F3D3B3"
@@ -169,7 +175,7 @@ def main() -> int:
               colour=SPINE_E, lw=1.6)
 
     ax.text(63.0, 15.6, "Langevin corrector", ha="center", va="center",
-            fontsize=9.0, color=CORR_E, weight="bold")
+            fontsize=9.0, color=CORR_E, fontproperties=PAPER_BOLD)
     ax.text(63.0, 11.9,
             r"$\phi \leftarrow \phi + \epsilon\,s_\theta + \sqrt{2\epsilon}\,z$",
             ha="center", va="center", fontsize=9.0, color=MUTED)
@@ -180,7 +186,7 @@ def main() -> int:
                                 facecolor="none", edgecolor=GREEN, lw=1.4,
                                 linestyle=(0, (1, 2)), zorder=1))
     ax.text(20.5, 24.5, r"impose $Q_{\rm coarse}$", ha="center", va="center",
-            fontsize=9.0, color=GREEN, weight="bold")
+            fontsize=9.0, color=GREEN, fontproperties=PAPER_BOLD)
     ax.text(20.5, 19.0, r"$\Delta Q = Q_{\rm coarse} - Q(\phi)$",
             ha="center", va="center", fontsize=9.0, color=MUTED)
     ax.text(20.5, 14.0, r"$\phi \leftarrow \phi + \Delta Q\, I$",
@@ -198,12 +204,14 @@ def main() -> int:
             va="center", fontsize=9.0, color=INK, linespacing=1.4)
     arrow(ax, (x_0 - R - 0.6, ROW), (18.9, ROW), colour=MUTED)
     ax.text(10.25, 46.6, "ready for HMC", ha="center", va="bottom",
-            fontsize=8.5, color=INK, weight="bold")
+            fontsize=8.5, color=INK, fontproperties=PAPER_BOLD)
     ax.text(10.25, 33.3, "after exact local rethermalization", ha="center",
-            va="top", fontsize=7.5, color=MUTED, style="italic")
+            va="top", fontsize=7.5, color=MUTED)
 
     fig.tight_layout(pad=0.2)
-    out = "reverse_diffusion_schematic.png"
+    # Beside this script, not in the working directory: run from the repo root
+    # it used to drop the figure there instead of in docs/.
+    out = Path(__file__).resolve().parent / "reverse_diffusion_schematic.png"
     fig.savefig(out, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close(fig)
     print(f"wrote {out}")
