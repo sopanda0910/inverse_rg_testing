@@ -77,9 +77,22 @@ ARMS = [
      r"$\mathtt{wide\_dense}$ ($\beta_{\max}=2000$)"),
 ]
 
-# Only two are drawn: the deployed checkpoint and the widest one, which is the
-# sharpest contrast the grid contains and keeps four curves per panel from
-# burying it. All four are tabulated in the appendix.
+# Two variables, one per column, with `default` in both as the reference.
+#
+# Drawing `default` against `wide_dense` alone, which this figure used to do,
+# cannot show why the factor dips at intermediate beta, because those two
+# checkpoints share every training rung below beta = 416: of `wide_dense`'s 52
+# rungs only 4 lie in [30, 250], the same 52, 56, 106, 203 that `default` has,
+# and all 43 of its extra rungs sit above 416. So the right column varies RANGE
+# at fixed coverage underneath, and both curves dip together.
+#
+# `cov60` is the only checkpoint that is dense where the dip is (48 rungs in
+# [30, 250], including 85 and 92), so the left column varies DENSITY at fixed
+# range and separates the two effects. Counts read from each checkpoint's
+# .history.json val keys, which name the rungs actually trained on; the configs
+# have drifted from the checkpoints and cannot be used for this.
+COLUMNS = ((("default", "cov60"), "density"),
+           (("default", "wide", "wide_dense"), "range"))
 PLOT = ("default", "wide_dense")
 
 
@@ -116,10 +129,16 @@ def load(ckpt, stem, ts):
         return None
     plain_stem = stem.replace("_topo", "")
     rows = json.loads(f.read_text())
-    d = {k: [] for k in ("beta", "lift", "cost_wind", "cost_plain")}
+    d = {k: [] for k in ("beta", "lift", "cost_wind", "cost_plain", "budget")}
     for r in rows:
         b = r["beta"]
         d["beta"].append(b)
+        # THE BUDGET IS PER COUPLING, NOT 400 EVERYWHERE. The scan shortens the
+        # run as beta rises (400 trajectories to beta ~ 90, then 200, then 150
+        # at the top), so a bound of "the budget over the preconditioned cost"
+        # has to read each coupling's own `n_traj`. Using a flat 400 overstated
+        # every lower bound by up to 2.7x, and the top one by exactly that.
+        d["budget"].append(float(r.get("n_traj", BUDGET)))
         # Each lift descends from an independent base chain, so successive
         # lifts are independent by construction and the per-configuration cost
         # is the equilibration cost alone. A classical chain has to pay both.
@@ -174,10 +193,10 @@ def _style(ax, title, ylab):
 FLOOR, CROSS_Y = 0.04, 0.06
 
 
-def ratio_panel(ax, stem, title, ts):
+def ratio_panel(ax, stem, title, ts, plot=None):
     top = 2.0e3
     for ck, colour, ceil, label in ARMS:
-        if ck not in PLOT:
+        if ck not in (plot or PLOT):
             continue
         d = load(ck, stem, ts)
         if d is None:
@@ -187,7 +206,7 @@ def ratio_panel(ax, stem, title, ts):
         cost = np.maximum(s, 1.0)
         meas = alive & np.isfinite(iv)
         bound = alive & ~np.isfinite(iv)
-        F = np.where(np.isfinite(iv), iv / cost, BUDGET / cost)
+        F = np.where(np.isfinite(iv), iv / cost, d["budget"] / cost)
         ax.plot(b[alive], F[alive], "-", color=colour, lw=1.5, alpha=0.8,
                 zorder=3, label=label)
         ax.plot(b[meas], F[meas], "o", color=colour, ms=5, zorder=4,
@@ -224,12 +243,12 @@ def cost_panel(ax, stem, title, ts, only=None):
     """`only` restricts the lift curves to one checkpoint: six series in one
     panel was unreadable, and the divergence of the classical arms is the point
     here rather than the spread between checkpoints."""
-    plain, wind, betas = [], [], None
+    plain, wind, betas, budget = [], [], None, None
     for ck, _, _, _ in ARMS:
         d = load(ck, stem, ts)
         if d is None:
             continue
-        betas = d["beta"]
+        betas, budget = d["beta"], d["budget"]
         plain.append(d["cost_plain"])
         wind.append(d["cost_wind"])
     plain = np.nanmedian(np.vstack(plain), axis=0)
@@ -240,8 +259,8 @@ def cost_panel(ax, stem, title, ts, only=None):
         fin = np.isfinite(arr)
         ax.plot(betas[fin], arr[fin], mk + "-", color=colour, ms=4.5, lw=1.7,
                 zorder=4, label=lab)
-        ax.plot(betas[~fin], np.full((~fin).sum(), BUDGET), "^", color=colour,
-                ms=7, zorder=4)
+        # an arm that never equilibrates is drawn at that coupling's own budget
+        ax.plot(betas[~fin], budget[~fin], "^", color=colour, ms=7, zorder=4)
 
     for ck, colour, _, label in ARMS:
         if only and ck != only:
@@ -254,8 +273,7 @@ def cost_panel(ax, stem, title, ts, only=None):
         ax.plot(b[f], np.maximum(s[f], 0.6), "-o", color=colour, ms=4.5, lw=1.6,
                 zorder=3, markeredgecolor="white", markeredgewidth=0.5,
                 label=f"lift, {label}")
-        ax.plot(b[~f], np.full((~f).sum(), BUDGET), "^", color=colour, ms=6,
-                zorder=3)
+        ax.plot(b[~f], d["budget"][~f], "^", color=colour, ms=6, zorder=3)
     ax.set_ylim(0.4, BUDGET * 3.6)
     ax.text(0.975, 0.965, r"$\blacktriangle$ never, in $400$ trajectories",
             transform=ax.transAxes, ha="right", va="top", fontsize=7.5,
@@ -283,13 +301,25 @@ def main() -> int:
     args = ap.parse_args()
     ts = json.loads(TIMESCALES.read_text())
 
-    # The money plot on its own: four curves per panel and nothing else.
-    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.2), sharey=True)
-    ratio_panel(axes[0], "crossover_topo", r"(a)  $L=32$", ts)
-    ratio_panel(axes[1], "crossover_L64_topo", r"(b)  $L=64$", ts)
-    axes[1].set_ylabel("")
-    h, lab = axes[0].get_legend_handles_labels()
-    save(fig, args.out, 4, h, lab)
+    # Rows are volumes, columns are the two training variables.
+    fig, axes = plt.subplots(2, 2, figsize=(6.9, 6.0), sharey=True, sharex="col")
+    VOL = (("crossover_topo", "32"), ("crossover_L64_topo", "64"))
+    for i, (stem, vol) in enumerate(VOL):
+        for j, (plot, what) in enumerate(COLUMNS):
+            tag = f"({'ab'[j]}{i + 1})"
+            ratio_panel(axes[i][j], stem, rf"{tag}  $L={vol}$, {what}", ts,
+                        plot=plot)
+            if j:
+                axes[i][j].set_ylabel("")
+            if not i:
+                axes[i][j].set_xlabel("")
+    # One legend for the figure, in the order the checkpoints appear in ARMS
+    # rather than the order the panels happen to draw them.
+    seen = {}
+    for ax in (axes[0][0], axes[0][1]):
+        seen.update(dict(zip(*reversed(ax.get_legend_handles_labels()))))
+    order = [lb for _, _, _, lb in ARMS if lb in seen]
+    save(fig, args.out, 4, [seen[lb] for lb in order], order, anchor=-0.06)
 
     # The absolute costs, one representative checkpoint against both baselines,
     # so the divergence of the classical arms is legible.
