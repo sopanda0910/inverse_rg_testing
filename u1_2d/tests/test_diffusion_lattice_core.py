@@ -19,6 +19,8 @@ from u1_2d.lgt.blocking import (
     blocked_plaquette_from_fine,
     match_coarse_beta,
     matching_residuals,
+    topology_matched_fine_beta,
+    topology_matched_schedule,
 )
 from u1_2d.lgt.local_updates import (
     heatbath_sweep,
@@ -113,6 +115,45 @@ class TestGaugeInvariance:
         assert torch.allclose(
             topological_charge_float(field), topological_charge_float(transformed), atol=1e-3
         )
+
+
+class TestTopologyMatching:
+    """The u1 port of u2's <Q^2>-preserving ladder criterion."""
+
+    def test_preserves_exact_charge_variance_across_a_step(self):
+        for coarse_beta, coarse_size in ((1.3472, 8), (4.0, 16), (14.1464, 32)):
+            fine_beta = topology_matched_fine_beta(coarse_beta, coarse_size)
+            q_c = exact.topological_susceptibility_exact(
+                coarse_beta, "wilson", lattice_size=coarse_size) * coarse_size ** 2
+            q_f = exact.topological_susceptibility_exact(
+                fine_beta, "wilson", lattice_size=2 * coarse_size) * (2 * coarse_size) ** 2
+            assert q_f == pytest.approx(q_c, rel=1e-6)
+
+    def test_step_ratio_approaches_four(self):
+        """Same continuum limit as plaquette matching: beta_f / beta_c -> 4."""
+        beta, size, ratios = 1.3472, 8, []
+        for _ in range(5):
+            fine = topology_matched_fine_beta(beta, size)
+            ratios.append(fine / beta)
+            beta, size = fine, 2 * size
+        assert ratios[-1] == pytest.approx(4.0, abs=0.02)
+        assert all(b > a for a, b in zip(ratios, ratios[1:]))
+
+    def test_schedule_matches_iterated_single_steps(self):
+        schedule = topology_matched_schedule(1.3472, 8, 3)
+        beta, size = 1.3472, 8
+        for expected in schedule:
+            beta = topology_matched_fine_beta(beta, size)
+            size *= 2
+            assert beta == pytest.approx(expected, rel=1e-9)
+
+    def test_sits_below_the_plaquette_matched_schedule(self):
+        """The criteria differ at finite spacing; this fixes the sign and size."""
+        from u1_2d.lgt.blocking import approx_matched_fine_beta
+        topo = topology_matched_fine_beta(4.0, 16)
+        plaq = approx_matched_fine_beta(4.0)
+        assert topo < plaq
+        assert 0.01 < (plaq - topo) / plaq < 0.10
 
 
 class TestBlocking:

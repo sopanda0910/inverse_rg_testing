@@ -112,6 +112,48 @@ def approx_matched_fine_beta(coarse_beta: float, action_type: str = "wilson") ->
     return float(brentq(gap, coarse_beta, 64.0 * (coarse_beta + 1.0), xtol=1e-8))
 
 
+def topology_matched_fine_beta(coarse_beta: float, coarse_size: int,
+                               action_type: str = "wilson") -> float:
+    """Fine coupling that preserves the exact finite-volume <Q^2> across one step.
+
+    The companion of `approx_matched_fine_beta`, which matches the mean plaquette
+    instead. Both define the same continuum limit -- iterated, each gives
+    beta_f / beta_c -> 4 -- and they differ at finite spacing by which physical
+    volume the trajectory settles on, the usual scale-setting ambiguity. What
+    this criterion adds is that <Q^2> is constant ALONG the way rather than only
+    in the limit, which is what a ladder that TRANSPORTS the charge requires: the
+    charge is handed from rung to rung at finite spacing, so a schedule that is
+    only asymptotically right hands each rung a slightly wrong sector
+    distribution, and no later step can repair it.
+
+    Measured from the u1 base (L = 8, beta = 1.3472), plaquette matching drifts
+    <Q^2> = 1.986 -> 1.934 -> 1.904 -> 1.903 over three steps, 4.2%; this
+    criterion holds 1.986 throughout, at couplings 2-4% lower (3.92, 13.59,
+    52.75 against 4.0, 14.1464, 55.0237). The u2 port of the same function
+    carries the U(2) numbers.
+    """
+    target = topological_susceptibility_exact(
+        coarse_beta, action_type, lattice_size=coarse_size) * coarse_size ** 2
+    fine_size = 2 * coarse_size
+
+    def gap(beta: float) -> float:
+        return topological_susceptibility_exact(
+            beta, action_type, lattice_size=fine_size) * fine_size ** 2 - target
+
+    return float(brentq(gap, coarse_beta, 64.0 * (coarse_beta + 1.0), xtol=1e-9))
+
+
+def topology_matched_schedule(base_beta: float, base_size: int, n_rungs: int,
+                              action_type: str = "wilson") -> list[float]:
+    """`n_rungs` successive fine couplings, each preserving the exact <Q^2>."""
+    schedule, beta, size = [], base_beta, base_size
+    for _ in range(n_rungs):
+        beta = topology_matched_fine_beta(beta, size, action_type)
+        size *= 2
+        schedule.append(beta)
+    return schedule
+
+
 def match_coarse_beta(
     blocked_configs: torch.Tensor,
     action_type: str = "wilson",
