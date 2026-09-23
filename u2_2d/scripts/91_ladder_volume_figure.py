@@ -123,6 +123,39 @@ def therm(arr, exact, step):
     return float("inf")
 
 
+def bootstrap_cost(path, L, beta, stem, kind, n_boot=400, seed=0):
+    """16th/84th percentile of this arm's cost, resampling whole chains.
+
+    Recomputes the arm's OWN estimators on each resample rather than importing a
+    different one, so the band belongs to the number plotted. t_therm carries the
+    larger share: it is a first-crossing index set by the last chain to settle,
+    so which chains the ensemble contains is its dominant uncertainty.
+    """
+    if not (ROOT / path / f"{stem}.json").exists():
+        return None
+    rng = np.random.default_rng(seed)
+    cols = []
+    for key, area in OBS:
+        arr, step = series(path, stem, key)
+        cols.append((arr, step, u2x(beta, area, lattice_size=L)))
+    q_arr, q_step = series(path, stem, "charge")
+    n_chains = cols[0][0].shape[1]
+
+    draws = []
+    for _ in range(n_boot):
+        pick = rng.integers(0, n_chains, size=n_chains)
+        tts = [therm(a[:, pick], ex, st) for a, st, ex in cols]
+        ivs = [interval(a[:, pick], st) for a, st, _ in cols]
+        ivs.append(interval(q_arr[:, pick] ** 2, q_step))
+        tt, iv = float(np.nanmax(tts)), max(ivs)
+        draws.append(tt if kind == "lift" else
+                     (iv if np.isfinite(tt) and np.isfinite(iv) else np.inf))
+    finite = np.array([d for d in draws if np.isfinite(d)], dtype=float)
+    if finite.size < 0.5 * len(draws):
+        return None
+    return float(np.percentile(finite, 16)), float(np.percentile(finite, 84))
+
+
 def measure(path, L, beta, stem):
     if not (ROOT / path / f"{stem}.json").exists():
         return None
@@ -147,7 +180,7 @@ def main() -> int:
     ap.add_argument("--out", default=str(ROOT / "out/u2_2d/figures/fig65_ladder.png"))
     args = ap.parse_args()
 
-    data = {}
+    data, bands = {}, {}
     for path, L, beta in RUNGS:
         for stem, kind, _, _ in ARMS:
             m = measure(path, L, beta, stem)
@@ -157,6 +190,7 @@ def main() -> int:
             cost = tt if kind == "lift" else (
                 iv if np.isfinite(tt) and np.isfinite(iv) else float("inf"))
             data[(L, stem)] = (tt, iv, cost)
+            bands[(L, stem)] = bootstrap_cost(path, L, beta, stem, kind)
             print(f"L={L:4d} {stem[6:]:30s} t_therm={tt:7.1f} interval={iv:8.2f} "
                   f"cost={cost:8.1f}")
 
@@ -175,6 +209,10 @@ def main() -> int:
             c = data[(L, stem)][2]
             if np.isfinite(c):
                 xs.append(i + off); ys.append(max(c, ZERO))
+                bd = bands.get((L, stem))
+                if bd:
+                    ax.vlines(i + off, max(bd[0], ZERO), max(bd[1], ZERO),
+                              color=colour, lw=1.2, alpha=0.5, zorder=2)
             else:
                 bx.append(i + off)
         ls = "-" if kind == "lift" else "none"
@@ -220,6 +258,14 @@ def main() -> int:
                 ax2.plot([i + off], [cl / lf], "s", color=colour, ms=7, zorder=4,
                          markeredgecolor="white", markeredgewidth=0.6,
                          label=None)
+                # both arms resampled over their own chains; the lift's band
+                # dominates, since its cost is a first-crossing index
+                cb = bands.get((L, stem))
+                lb = bands.get((L, "arm_A_diffusion_seed"))
+                if cb and lb:
+                    ax2.vlines(i + off, cb[0] / max(lb[1], 1.0),
+                               cb[1] / max(lb[0], 1.0), color=colour, lw=1.2,
+                               alpha=0.5, zorder=3)
             else:
                 y0 = BUDGET / lf
                 ax2.annotate("", xy=(i + off, y0 * 9.0), xytext=(i + off, y0),

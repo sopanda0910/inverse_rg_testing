@@ -161,28 +161,36 @@ throughout.}}
 
 \SP{\sout{This seems too repetitive from the introduction. Rephrase this or just cut it from either?}}
 
+\SP{\sout{Are we really emphasizing the physical meaning or just briefly mentioning it? It should be better motivated then just the fact that it is computationally simple}}
 We work in two dimensions with two gauge groups, chosen so that the cost of
 producing independent, correctly distributed configurations is dominated by the
 same obstruction that dominates it in four-dimensional QCD, while the correct
 answer remains known in closed form.
 
-The first is compact U(1), the pure-gauge sector of quantum electrodynamics in
-two dimensions, which is the standard first testbed for generative models of
-gauge fields \cite{albergo2019,zhu2025}. A gauge link carries a group element on
-each edge of the lattice; for U(1) the group element is a phase,
+The first is compact U(1), the gauge sector of quantum electrodynamics in two
+dimensions. Compactifying the gauge group is what makes it a useful stand-in
+here rather than a simpler theory: the field then carries an integer topological
+charge and the configuration space separates into sectors, and a local update
+must drag a plaquette angle across $\pi$ to move between them. That is the same
+mechanism that freezes topology in four-dimensional QCD, and it is the reason
+the theory is studied here and is the standard first testbed for generative
+models of gauge fields \cite{albergo2019,zhu2025}. A gauge link carries a group
+element on each edge of the lattice; for U(1) that element is a phase,
 $U_{x,\mu}=e^{i\theta_{x,\mu}}$ with $\theta_{x,\mu}\in(-\pi,\pi]$, one angle
-per edge. Compactness of that angle is what gives the theory a
-topological charge and a sector structure, which is the feature it shares with
-four-dimensional QCD and the reason the theory is used here. We follow the
-conventions of \cite{gattringerlang2010} throughout.
+per edge. We follow the conventions of \cite{gattringerlang2010} throughout.
 
-The second is U(2), which is non-abelian and is the extension the method is
-tested on. Its group structure, $\mathrm{U}(2)=(\mathrm{U}(1)\times
-\mathrm{SU}(2))/\mathbb{Z}_2$, is the same product form as the electroweak gauge
-group $\mathrm{SU}(2)_L\times \mathrm{U}(1)_Y$, though the analogy is structural
+The second is U(2), the smallest non-abelian group whose topology is carried
+entirely by an abelian factor. Its structure,
+$\mathrm{U}(2)=(\mathrm{U}(1)\times \mathrm{SU}(2))/\mathbb{Z}_2$, has the
+product form of the electroweak gauge group
+$\mathrm{SU}(2)_L\times \mathrm{U}(1)_Y$, though the resemblance is structural
 rather than physical, the electroweak theory being chiral and four-dimensional.
-What matters for the method is that the whole topological charge sits in the
-abelian determinant factor while the dynamics remain genuinely non-abelian. A
+Its use here is that it separates two things that are entangled in QCD: the
+dynamics are genuinely non-abelian, with an ordered product of matrices around
+each plaquette, while the topological charge remains a property of the
+determinant alone. A method that relies on transporting charge can therefore be
+tested against non-abelian dynamics before it has to face non-abelian topology.
+A
 U(2) link is a unitary $2\times2$ matrix, which for computational convenience we
 store in the split representation
 \begin{equation}
@@ -224,9 +232,10 @@ The topological charge is the wrapped plaquette sum,
     Q = \frac{1}{2\pi}\sum_{x} \mathrm{wrap}\,(\theta_{x,p}),
     \label{eq:q-u1}
 \end{equation}
-where $\mathrm{wrap}(\alpha) \equiv \mathrm{atan2}(\sin\alpha,\cos\alpha)$
-returns the representative in $(-\pi,\pi]$, the two-argument arctangent being
-what resolves the quadrant.
+\SP{\sout{Is atan2 a mathematical function that we can use like this?}}
+where $\mathrm{wrap}(\alpha)$ returns the representative of $\alpha$ in
+$(-\pi,\pi]$. It is evaluated as the two-argument arctangent of
+$(\sin\alpha,\cos\alpha)$, which fixes the quadrant and so the branch.
 
 For U(2), $Q$ is defined by the same formula applied to the determinant plaquette
 phase, $\alpha_x = \mathrm{wrap}(\arg\det U_{x,p})$. The central phases in
@@ -405,7 +414,7 @@ itself \cite{bonatirossi2019}. Sector transport is an identity, so whatever
 $P(Q)$ the base ensemble carries is what every rung above it receives, and a
 drift in $\langle Q^2\rangle$ is the one error the pipeline has no mechanism to
 remove; a mismatch in the plaquette, by contrast, is repaired by the
-rethermalization sweeps of \sect{reverse_diffusion}. We therefore fix $\beta_f$ at
+local sweeps of \sect{reverse_diffusion}. We therefore fix $\beta_f$ at
 each step as the root of
 \begin{equation}
     \langle Q^2\rangle_{\beta_f,\,L_f} \;=\; \langle Q^2\rangle_{\beta_c,\,L_c},
@@ -415,7 +424,7 @@ each step as the root of
 with both sides evaluated in the closed form of \app{exact}. A solution exists
 near the character-matched coupling because to leading order
 $\chi_t V\approx V/(4\pi^2\beta)$, so doubling $L$ quadruples $V$ while the
-matched coupling quadruples $\beta$; \app{matching} gives the numerical solution
+matched coupling quadruples $\beta$, as a tree-level approximation \SP{\sout{as a tree-level approximation}}; \app{matching} gives the numerical solution
 and the resulting schedules.
 
 \SP{\sout{This next paragraph could possibly go into the appendix?}}
@@ -464,13 +473,12 @@ from the exact $P(Q)$ and impose it, which does.
   \includegraphics[width=0.9\linewidth]{u1_2d/45_architecture.png}
     \caption{The gauge-covariant score network, shown for U(1), with
   $324{,}954$ parameters in $4$ FiLM blocks of width $56$. The U(2) network has
-  the same structure, with width $64$ and $403{,}394$ parameters. The network
-  outputs one number per plaquette and turns these into a score with a lattice
-  curl, which can represent the gradient of any sum of functions of plaquettes,
-  so this form loses no generality. No part of the network depends on the
-  lattice size $L$, because the convolutions are circular and each site is
-  normalized on its own. One trained network can therefore be used at every
-  lattice size on the ladder.}
+  the same structure, with width $64$ and $403{,}394$ parameters. The network outputs
+  one number per plaquette and assembles the score from them with a lattice
+  curl; \sect{scoring-network} shows that this costs no generality, and that
+  nothing in the architecture refers to the lattice size.
+  \SP{\sout{Instead of going into the benefits of lattice curl here, just refer the reader to where we actually talk about it}}
+  \SP{\sout{This is a powerful statement and shouldn't be in the caption, it should be emphasized in the text}}}
   \label{fig:architecture}
 \end{figure*}
 
@@ -518,13 +526,18 @@ score, and the score is assembled by the lattice curl,
   s_x(x,y) &= h_p(x,y) - h_p(x,y-1), \label{eq:curl-x}\\
   s_y(x,y) &= h_p(x-1,y) - h_p(x,y). \label{eq:curl-y}
 \end{align}
-This is the general form of the gradient of any sum of functions of plaquettes.
+This costs no generality, because it is the general form of the gradient of any
+sum of functions of plaquettes: every such gradient is a lattice curl of some
+per-plaquette scalar, and every per-plaquette scalar produces one. Nor does any
+part of the network refer to the lattice size. The convolutions are circular and
+the normalization acts on each site separately, so one trained network applies
+at every volume on the ladder, which is what \sect{u1obs} tests directly.
 Each link belongs to exactly two plaquettes with opposite orientation, so
 $\partial\theta_p/\partial\theta_\ell\in\{+1,-1,0\}$ and only two terms survive.
 Because $h_p$ is itself a function of gauge-invariant inputs, the score is gauge-covariant by construction.
 
 Network capacity, the training budget and the couplings each checkpoint was
-trained on, together with the sampler and rethermalization settings used
+trained on, together with the sampler and local-sweep settings used
 throughout, are collected in \app{settings}.
 
 \subsection{Reverse Diffusion Process}
@@ -538,9 +551,11 @@ throughout, are collected in \app{settings}.
     $\phi_T$ drawn uniformly on the circle and ending at the lifted configuration
     $\phi_0$. Here $s_\theta$ is the learned score and
     $\Delta_t=\sigma_t^2-\sigma_{t-1}^2$, and each denoising step is followed by
-    one Langevin correction step (dashed). Before it is handed to HMC, the
-    configuration is rethermalized with exact local updates, preceded in U(2) by
-    the conditional SU(2) heatbath of \sect{u2-extension}.}
+    one Langevin correction step (dashed). \SP{\sout{Local rethermalization before ready for HMC is a bit unclear to the readers. Especially because later we call the time of thermalization for the HMC tail rethermalization. For the few tests that compare raw precondtioner quality, we should be comparing before the local rethermalization, except for the heatbath for U(2), which is well-justified.}}
+In U(2) the SU(2) sector is then drawn
+    conditionally by the exact heatbath of \sect{u2-extension}. The delivered
+    configuration additionally passes through a short run of exact local sweeps,
+    which is what \sect{reverse_diffusion} separates from the raw lift.}
     \label{fig:method_schematic}
 \end{figure*}
 
@@ -574,18 +589,29 @@ make the sampler more likely to settle in the correct sector on its own.
 
 Exactness comes instead from a fourth step: the sampler computes
 $\Delta Q = Q_{\mathrm{coarse}} - Q_{\mathrm{fine}}$ and adds $\Delta Q$ copies
-of the instanton field of \sect{instanton}. It does this once every ten
-reverse-SDE steps below $\sigma\approx0.5$, the level at which $Q$ becomes a
-well-defined quantity of the noisy sample, and once more unconditionally after
-sampling completes. Applying the projection partway through the reverse
+of the instanton field of \sect{instanton}. It does this at every tenth reverse-SDE step once the noise level
+has fallen below $\sigma=0.5$, and once more unconditionally after sampling
+completes.
+\SP{\sout{Why is this approximate, we should state exactly what we use}}
+The threshold is a stated setting rather than a fitted one: above it the charge
+of the noisy sample is not yet a meaningful quantity to project onto, and $0.5$
+is where it becomes one. Applying the projection partway through the reverse
 process, rather than only at the end, lets the remaining diffusion steps and the
-rethermalization tail relax the ultraviolet error it leaves behind; the final
+local sweeps relax the UV error it leaves behind; the final
 unconditional application fixes the delivered configuration's topology however
 close the soft mechanisms got on their own.
 \SP{\sout{Is this obvious? Even if it isn't, it can be much shorter than current paragraph. Honestly, should it even be mentioned here?}}
-The tail also separates the two things we score: the raw lift is the reverse
-diffusion output before it, and the delivered ensemble is what it returns. Both
-are reported wherever they differ.
+We call this tail the \emph{local sweeps}, and reserve \emph{rethermalization}
+for an HMC chain restarted from a lifted configuration, which is the sense
+\sect{relaxation-correction} gives it and the sense of
+\cite{detmoldendres2015}. The distinction matters because the two repair
+different things and only one of them is a cost the user pays per chain.
+The local sweeps also separate the two objects we score: the raw lift is the
+reverse-diffusion output together with the conditional SU(2) heatbath, before
+any local sweep, and the delivered ensemble is what the sweeps return. Where a
+number describes the map itself, as in \sect{coverage}, it is measured on the
+raw lift; where it describes what the pipeline hands to HMC, it is measured on
+the delivered ensemble. Both are reported wherever they differ.
 
 \SP{\sout{Isn't this redundant with literally a few paragraphs discussing charge transport? Maybe better integrate it there instead of clumping it all together here?}}
 \SP{\sout{Is this really a discretization effect? We are preserving topological susceptability, so it is methodological rather than a discretization effect?}}
@@ -628,7 +654,7 @@ and the charge it transports cannot be corrected downstream, so it is matched on
 $\langle Q^2\rangle$. The coupling $\beta_1$ only tells the network which
 distribution its input is drawn from; it cannot affect topology, since $Q$ is a
 functional of $\psi$ alone and is imposed by transport, and what it does affect,
-the local structure, is what the rethermalization tail repairs. It is therefore
+the local structure, is what the local sweeps repair. It is therefore
 matched on the local weight rather than on a global one. Matching
 $\langle Q^2\rangle$ here instead is possible and changes little: the two
 conditions give couplings differing by $0.19\%$, $0.01\%$ and $0.00\%$ at the
@@ -692,7 +718,11 @@ $t_{\rm interval}=2\tau_{\rm int}$, which we maximise over the scored
 observables and over $Q^2$ so that it is set by the slowest mode rather than by
 any single observable. A series that does not move at all is reported as
 infinite rather than integrated, since a constant has no autocorrelation to
-measure.
+measure. Both timescales are quoted with a chain-resampling interval, the
+resampling unit of \app{stats}. For $t_{\rm therm}$ that is the only way to
+express the dominant uncertainty: it is a first-crossing index, so it is set by
+the last chain to settle, and a single lagging chain among $64$ can move it
+severalfold.
 
 The approach to equilibrium is governed instead by the exponential
 autocorrelation time $\tau_{\rm exp}$, the slowest mode of the transition
@@ -752,7 +782,7 @@ order of magnitude across this range, while the lift's is zero throughout.
 The map itself survives a change of volume. In the volume scan, at fixed
 $\beta_f=14.1464$ over $L=32$, $64$ and $128$, the raw lift's plaquette sits
 $869$, $892$ and $820$ parts per million from exact before any trajectory or
-any rethermalization. That flatness is what the architecture predicts: the
+any local sweep. That flatness is what the architecture predicts: the
 network is fully convolutional and conditioned on the coupling rather than on
 the lattice size, so nothing in it ties the map to the volumes it trained on.
 The deviation is flat in volume; the precision against which it is measured is
@@ -760,7 +790,7 @@ not. \SP{\sout{If we will be using standard error units, then we should clearly 
 same three points are $5.2$, $9.6$ and $15.4$ standard errors, since averaging
 over four times as many sites reduces the error bar while the deviation itself
 is unchanged. The sixteen
-rethermalization sweeps of the delivered pipeline remove that deviation, in
+local sweeps of the delivered pipeline remove that deviation, in
 keeping with the division of labour set out in \sect{reverse_diffusion}. Topology is the exception, and
 we report it: $\langle Q^2\rangle$ comes out $0.95\pm0.10$ and $1.20\pm0.18$
 times exact at $L=32$ and $64$, but $0.71\pm0.13$ at $L=128$. \SP{\sout{Is there a reason for this? The attentive reader would criticize and say "I thought the inverse RG was used to preserve $\langle Q^2 \rangle$, so why is it changing?"}} Each ratio is
@@ -908,8 +938,10 @@ holds $\langle Q^2\rangle$ between $0.79$ and $1.25$ times exact
   \centering
   \includegraphics[width=\linewidth]{u2_2d/fig65_ladder.png}
   \caption{Cost of one independent, correctly distributed configuration along
-  the ladder. Each step doubles $L$ and quadruples $\beta$, which keeps
-  $\chi_t V$ nearly constant, so the three rungs describe the same physical
+  the ladder. Each step doubles $L$ and approximately quadruples $\beta$, the
+  fine coupling being fixed by \Eq{topology-matching}, which holds
+  $\chi_t V$ constant
+  \SP{\sout{approximately, not exactly}}, so the three rungs describe the same physical
   system at three lattice spacings. The first two rungs use the deployed
   checkpoint and the third uses the wider-coverage one, since only its training
   range reaches $\beta=1660$. (a) The number of trajectories the preconditioned
@@ -920,7 +952,15 @@ holds $\langle Q^2\rangle$ between $0.79$ and $1.25$ times exact
   $270$ trajectories of burn-in. (b) The resulting improvement factor. Every
   value is a lower bound: arrows mark rungs where no classical chain
   equilibrated within the $400$-trajectory budget, and at the first rung the
-  preconditioned cost of zero is counted as one trajectory.}
+  preconditioned cost of zero is counted as one trajectory.
+  Vertical bars are the chain-bootstrap interval of \app{stats}. They are
+  asymmetric on the preconditioned arm at the first two rungs because its cost
+  is already at the floor there, so resampling can only delay the crossing and
+  never bring it earlier; the upper edge is the coupling at which a resampled
+  set of chains fails the five-consecutive-record rule somewhere early rather
+  than a second estimate of the equilibration time. The classical intervals are
+  tight by comparison, $[5.0,5.9]$ and $[5.0,5.1]$ trajectories at the first
+  rung.}
   \label{fig:ladder}
 \end{figure*}
 
@@ -971,7 +1011,7 @@ rungs. \texttt{default}, \texttt{wide} and \texttt{wide\_dense} share
 architecture, capacity, optimisation and data recipe and differ only in which
 fixed rungs their training sets contain, so any change among them is
 attributable to coverage alone; \texttt{cov60} differs additionally as noted
-below. Four U(2) checkpoints are compared: \SP{We need to fix the cov60 results once ready} \texttt{cov60} and \texttt{default}
+below. Four U(2) checkpoints are compared: \SP{\sout{We need to fix the cov60 results once ready}} \texttt{cov60} and \texttt{default}
 are narrow, with ceilings at $\beta=227$ and $416$, \texttt{default} being the
 one deployed for every other result here; \texttt{wide} extends the ceiling to
 $\beta=2000$ using $23$ rungs against \texttt{default}'s $11$; and
@@ -987,42 +1027,44 @@ Each is scored over a grid held fixed across checkpoints, listed in
 \app{grid}, and run twice \SP{\sout{Should we have an appendix that shows what grid this is?}}, once
 with plain HMC in every arm and once with the winding update, so preconditioned
 and classical starts are always paired under an identical sampler.
-\fig{money} draws \texttt{default} and \texttt{wide\_dense}; all four are
-tabulated in \app{tables} with the matching U(1) retrain.
+\fig{money} draws the three that carry the two claims; \app{tables} tabulates
+all four with the matching U(1) retrain.
 
 \begin{figure*}[t]
   \centering
   \includegraphics[width=\linewidth]{u2_2d/fig64_money.png}
-  \caption{Improvement factor over HMC with the winding update, as a function of
-  the coupling. Rows are the two lattice sizes. The columns separate the two
-  properties of a training grid, with the deployed checkpoint \texttt{default}
-  in both as the reference: the left column varies the density of training
-  couplings below the ceiling, and the right column varies how far the ceiling
-  extends. Circles are measured values. Triangles are lower bounds, at couplings
-  where no classical chain equilibrated within that coupling's trajectory
-  budget, $400$ up to $\beta\approx90$ and $200$ or $150$ above it. Crosses mark
-  couplings where the lift itself did not equilibrate. Dotted lines mark the
-  training ceilings.
-  The two variables act in different places. Range rescues the method past the
-  ceiling, where \texttt{default} fails outright and the wide checkpoints
-  continue to $\beta=1660$, and contributes nothing below it: \texttt{wide\_dense} was
-  trained at exactly \texttt{default}'s couplings below $\beta=416$, all $31$ of
-  its additional rungs lying above that, so its curve dips wherever
-  \texttt{default}'s does. Density acts below the ceiling, where
-  \texttt{cov60}, trained at $48$ couplings between $\beta=30$ and $250$ against
-  the other two checkpoints' four, is above the break-even line at every
-  coupling it reaches but the weakest.
-  The dips at $L=32$ near $\beta\approx25$ and $\beta\approx89$ have two causes.
-  The winding baseline is still cheap there, giving an independent configuration
-  every $8$ to $14$ trajectories, which no amount of training changes; and a
-  lift landing between training couplings equilibrates slowly, which density
-  does change. At $\beta\approx89$ the deployed lift needs $80$ trajectories and
-  \texttt{cov60} needs $4$, moving the factor from $0.11$ to $1.96$. Even where
-  the factor is below one the lift is the better starting point: at that
-  coupling it equilibrates in $80$ trajectories against $176$ for a cold start
-  and more than $400$ for a hot start, under the same sampler. The factor falls
-  below one because a running classical chain pays its equilibration once and
-  each lift pays its own.}
+  \caption{Improvement factor over HMC with the marginal winding update, against
+  coupling, at both evaluated volumes. Three checkpoints are drawn: the deployed
+  \texttt{default}, \texttt{cov60}, which is trained densely below a low
+  ceiling, and \texttt{wide\_dense}, which extends the ceiling to $\beta=2000$;
+  \app{tables} tabulates all four. Circles are measured values. Triangles are
+  lower bounds, at couplings where no classical chain equilibrated within that
+  coupling's trajectory budget, $400$ up to $\beta\approx90$ and $200$ or $150$
+  above it. Crosses mark couplings where the lift itself did not equilibrate and
+  no factor exists. Dotted lines mark the training ceilings.
+  Vertical bars are a chain-bootstrap interval, resampling the chains of each
+  arm and propagating both timescales (\app{stats}). They are wide because
+  $t_{\rm therm}$ is a first-crossing index set by the last chain to settle, so
+  a single lagging chain among $64$ moves it; the bars are what separate a
+  resolved excursion from one that is not. The crosses carry none, since a chain
+  that never crosses has no crossing to resample.
+  The two training axes act in different places. Range rescues the method past
+  the ceiling, where \texttt{default} fails outright while \texttt{wide\_dense}
+  continues to $\beta=1660$, and buys nothing below it, since
+  \texttt{wide\_dense} was trained at exactly \texttt{default}'s couplings there.
+  Density acts below the ceiling, where \texttt{cov60}, trained at $48$ couplings
+  between $\beta=30$ and $250$ against the other two checkpoints' four, is above
+  break-even at every coupling it reaches but the weakest.
+  The dips at $L=32$ near $\beta\approx25$ and $\beta\approx89$ have two causes:
+  the winding baseline is still cheap there, giving an independent configuration
+  every $8$ to $14$ trajectories, which no amount of training changes, and a lift
+  landing between training couplings equilibrates slowly, which density does
+  change. At $\beta\approx89$ the deployed lift needs $80$ trajectories and
+  \texttt{cov60} needs $4$. Even where the factor is below one the lift is the
+  better starting point: at that coupling it equilibrates in $80$ trajectories
+  against $176$ for a cold start and more than $400$ for a hot start, under the
+  same sampler. The factor falls below one because a running classical chain pays
+  its equilibration once and each lift pays its own.}
   \label{fig:money}
 \end{figure*}
 
@@ -1033,11 +1075,17 @@ above $\beta=415$ at $L=32$ and above $\beta=94$ at $L=64$, while
 $\beta=1660$ respectively. \texttt{wide} does not: at $L=64$ it fails at three couplings inside its own
 trained range, $\beta=174$, $637$ and $1660$ under the winding sampler and
 $\beta=94$, $637$ and $1660$ under the plain one, so range alone does not
-guarantee that the coupling reached moves with it. Density acts elsewhere, and much more weakly. Adding $31$ rungs inside
+guarantee that the coupling reached moves with it. \SP{\sout{Too vague of an introductory sentence.}}
+Density acts below the ceiling instead, and much more weakly. Adding $31$ rungs inside
 \texttt{wide}'s existing range improves it at $30$ of $44$ couplings, but by a
 median of $2.1\times$ where range gives one to two orders of magnitude. Pooled
 over all $44$ cases that gain is resolved, $[1.2,2.7]$, while in either half
-alone the interval spans unity, so the effect is small and is resolved only in the combined sample. In U(1) density changes nothing measurable at all.
+alone the interval spans unity, so the effect is small and is resolved only in the combined sample. In U(1) density changes nothing measurable at all, which we attribute to the
+U(1) training sets already being dense: every U(1) checkpoint compared here
+carries the same $78$ randomly placed couplings below $\beta=60$ in addition to
+its fixed rungs, so the $30$ rungs that separate the two arms are a small
+increment on a grid that is already filled. The U(2) checkpoints have no random
+rungs, so there the same comparison is between a sparse grid and a dense one. \SP{\sout{Is there a hypothesis or reason for why this is?}}
 \tb{u2_coverage_tests} carries both comparisons, with the caveats that qualify
 their size. The two axes therefore act where the other does not, and on the
 evidence here a fixed rung budget is better spent extending the range than
@@ -1088,12 +1136,17 @@ embedding where it was never fit, and the score it returns is that of a
 different distribution. The two axes act on the two ways this can happen: range
 determines whether the test coupling lies inside the interval spanned by the
 rungs at all, and density determines how far the nearest rung is once it does.
-One qualification applies to the comparison: \texttt{cov60} was trained without
-the random symmetry augmentation and the high-$\beta$ noise-sampling bias used
-by the other three, so its contrast with \texttt{default} is not a
-single-variable experiment. The controlled density comparison is
-\texttt{wide\_dense} against \texttt{wide}, which differ by nothing but the
-$31$ added rungs.
+\texttt{cov60} differs from the other three in one further respect, having been
+trained without the random symmetry augmentation, the high-$\beta$ noise-sampling
+bias and the $\beta$-aware noise floor they use, so we measured whether that
+matters rather than assuming it does not. Retraining it with all three restored,
+on the same rungs and the same budget, and scoring the raw lift at the same
+couplings leaves it unchanged: the median ratio between the two is $1.05$ in
+units of the standard error and $1.00$ in relative deviation, with the retrained
+model closer to exact at $8$ and $7$ of the $14$ couplings respectively. The
+contrast between \texttt{cov60} and \texttt{default} is therefore a coverage
+effect. The independent check on the same axis is \texttt{wide\_dense} against
+\texttt{wide}, which differ by nothing but the $31$ added rungs.
 
 The second limit is that a ceiling predicts failure only roughly, and errs both
 ways: \texttt{cov60} still equilibrates at $\beta=264$, above its own ceiling of
@@ -1576,9 +1629,40 @@ $407.3$ & $1623$ & $150$ & & & \\
 \section{Statistical methodology}
 \label{app:stats}
 
-Standard machinery is used as specified in the sources cited where it appears,
-and the two timescales are defined in \sect{relaxation-correction}. One
-convention is ours.
+Standard machinery is used as specified in the sources cited where it appears.
+This appendix gives the two definitions \sect{relaxation-correction} defers, and
+states the one convention that is ours.
+
+For an observable $\mathcal{O}$ measured along a Markov chain, write
+$\delta\mathcal{O}=\mathcal{O}-\langle\mathcal{O}\rangle$ and let
+$\Gamma_\Delta(\mathcal{O})$ be the autocovariance at lag $\Delta$ in
+trajectories. The integrated autocorrelation time is
+\begin{equation}
+    \tau_{\rm int}(\mathcal{O}) = \frac{1}{2}
+      + \sum_{\Delta>0}\frac{\Gamma_\Delta(\mathcal{O})}{\Gamma_0(\mathcal{O})},
+    \label{eq:tau-int}
+\end{equation}
+truncated by Sokal's automatic windowing \cite{madrassokal1988,wolff2004}, and
+$t_{\rm interval}=2\tau_{\rm int}$.
+
+The equilibration time is read off the data as a crossing: $t_{\rm therm}$ is
+the first trajectory after which $|\langle\mathcal{O}\rangle_t-\mathcal{O}_{\rm
+exact}|$ stays within two standard errors for five consecutive measurements,
+maximised over the Wilson loops. Both quantities are quoted with a
+chain-resampling interval, drawn by resampling the chains of an arm with
+replacement and recomputing the quantity on each resample; we report the
+$16$th and $84$th percentiles. For $t_{\rm interval}$ this is the usual
+statement about a noisy estimator. For $t_{\rm therm}$ it carries more weight,
+because a first-crossing index is set by the last chain to settle, so its
+dominant uncertainty is which chains the ensemble happens to contain, and a
+resample in which the crossing never occurs is recorded as such rather than
+being dropped.
+
+A fitted relaxation time would be smoother, and is what Detmold and Endres use
+\cite{detmoldendres2015}, but it is not available for the quantity compared
+here: a preconditioned chain can begin at the target, leaving no transient to
+fit, so the fit cannot separate a start that is already correct from one that
+never arrives. That is the distinction the comparison exists to make.
 
 The resampling unit is the chain. Every error bar on a sampled ensemble quantity
 resamples whole chains. Beyond the usual underestimate for an autocorrelated
@@ -1596,7 +1680,7 @@ percent, which we verify rather than assume.
 Because a target may be reached by more than one lift, the error a single lift
 introduces must not accumulate along the chain of them, and it does not. Across
 eight cases, comprising both theories, an endpoint inside and one beyond the
-training range, and intermediate rethermalization between rungs enabled and
+training range, and intermediate local sweeps between rungs enabled and
 disabled, three lifts to a fixed endpoint leave $0.84$--$1.02$ times the
 deviation from exact that a single lift to the same endpoint leaves. The error
 is instead introduced by the final rung, which is why endpoint accuracy tracks that rung's

@@ -197,3 +197,108 @@ def mean_abs_z_sigma(mean_abs_z: float, n_effective: float) -> float:
     """
     se = math.sqrt(1.0 - 2.0 / math.pi) / math.sqrt(max(n_effective, 1e-9))
     return (null_mean_abs_z() - mean_abs_z) / max(se, 1e-30)
+
+
+# ---------------------------------------------------------------------------
+# Equilibration time, with a chain bootstrap on the crossing
+# ---------------------------------------------------------------------------
+# `t_therm` is a first-crossing index: the earliest record after which the bias
+# stays within `z_threshold` standard errors for `n_consecutive` records. That
+# makes it a discrete order statistic of a noisy series, with two consequences
+# the point estimate alone hides. It is quantized by the record spacing, and it
+# is set by the LAST chain to settle, so a single lagging chain out of 64 can
+# move it by a lot -- which is why the curves built from it are ragged in
+# coupling.
+#
+# A fitted relaxation time would be smooth but is not usable here: it is
+# INVERTED for a good starting configuration. A preconditioned chain that begins
+# at the target has no transient to fit, so the fit either fails or returns a
+# window-limited value, and it cannot separate "already correct" from "never
+# converged" -- the two cases the comparison exists to distinguish.
+#
+# So the crossing is kept and its uncertainty is measured instead, by resampling
+# whole chains. That is the same resampling unit used everywhere else in this
+# work, and it converts "one lagging chain" from a silent bias into a quoted
+# interval.
+
+
+def _crossing(series_by_obs: dict, targets: dict, chains: np.ndarray,
+              z_threshold: float, n_consecutive: int) -> float:
+    """Crossing record for one set of chains, maximised over the observables."""
+    worst = 0.0
+    for name, series in series_by_obs.items():
+        s = np.asarray(series, dtype=np.float64)[:, chains]
+        mean = s.mean(axis=1)
+        sem = s.std(axis=1, ddof=1) / math.sqrt(s.shape[1])
+        z = np.abs((mean - targets[name]) / np.maximum(sem, 1e-12))
+        ok = z <= z_threshold
+        hit = math.inf
+        last = max(len(ok) - n_consecutive + 1, 1)
+        for t in range(last):
+            if ok[t:t + n_consecutive].all():
+                hit = float(t)
+                break
+        if hit > worst:
+            worst = hit
+        if not math.isfinite(worst):
+            return math.inf
+    return worst
+
+
+def thermalization_crossing(series_by_obs: dict, targets: dict, *,
+                            record_every: float = 1.0,
+                            z_threshold: float = 2.0,
+                            n_consecutive: int = 5) -> float:
+    """Point estimate, in trajectories, of the equilibration time.
+
+    `series_by_obs` maps an observable name to a [n_records, n_chains] array;
+    `targets` gives its exact value. Identical to the estimator used in the
+    scans, with the record-to-trajectory conversion applied here rather than by
+    the caller.
+    """
+    n_chains = next(iter(series_by_obs.values())).shape[1]
+    value = _crossing(series_by_obs, targets, np.arange(n_chains),
+                      z_threshold, n_consecutive)
+    return value * record_every
+
+
+def bootstrap_thermalization(series_by_obs: dict, targets: dict, *,
+                             record_every: float = 1.0,
+                             z_threshold: float = 2.0,
+                             n_consecutive: int = 5,
+                             n_boot: int = 400, seed: int = 0,
+                             quantiles: tuple[float, float] = (16.0, 84.0)) -> dict:
+    """Crossing with a chain-resampling interval.
+
+    Returns the point estimate, the bootstrap median, the requested quantiles
+    (one standard-error-like band by default) and the fraction of resamples in
+    which the chain never crossed. That last number is the honest summary where
+    the point estimate is finite only marginally: a coupling whose crossing
+    exists in half its resamples is not the same measurement as one where it
+    exists in all of them, and the point estimate cannot say so.
+    """
+    arrays = {k: np.asarray(v, dtype=np.float64) for k, v in series_by_obs.items()}
+    n_chains = next(iter(arrays.values())).shape[1]
+    point = _crossing(arrays, targets, np.arange(n_chains), z_threshold, n_consecutive)
+
+    rng = np.random.default_rng(seed)
+    draws = np.empty(n_boot, dtype=np.float64)
+    for b in range(n_boot):
+        pick = rng.integers(0, n_chains, size=n_chains)
+        draws[b] = _crossing(arrays, targets, pick, z_threshold, n_consecutive)
+
+    finite = np.isfinite(draws)
+    never = float(1.0 - finite.mean())
+    if finite.any():
+        lo, hi = np.percentile(draws[finite], quantiles)
+        median = float(np.median(draws[finite]))
+    else:
+        lo = hi = median = math.inf
+
+    scale = float(record_every)
+    return {"t_therm": point * scale,
+            "median": median * scale if math.isfinite(median) else math.inf,
+            "lo": lo * scale if math.isfinite(lo) else math.inf,
+            "hi": hi * scale if math.isfinite(hi) else math.inf,
+            "never_fraction": never,
+            "n_boot": int(n_boot), "n_chains": int(n_chains)}
