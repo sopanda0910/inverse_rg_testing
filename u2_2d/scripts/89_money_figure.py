@@ -55,6 +55,25 @@ apply_paper_font()
 
 BASE = ROOT / "out/u2_2d/coverage_scan_relaxation"
 TIMESCALES = BASE / "_standard_timescales.json"
+BOOTSTRAP = BASE / "_therm_bootstrap.json"
+
+
+def _load_bands() -> dict:
+    """Bootstrap bands keyed [checkpoint][stem][beta], empty if not yet run."""
+    if not BOOTSTRAP.exists():
+        print(f"note: {BOOTSTRAP.name} absent; drawing points without bands")
+        return {}
+    out: dict = {}
+    for key, rec in json.loads(BOOTSTRAP.read_text()).items():
+        ck, stem, beta = key.split("|")
+        lift, iv = rec.get("lift"), rec.get("interval_cold", {})
+        if not lift:
+            continue
+        out.setdefault(ck, {}).setdefault(stem, {})[f"{float(beta):g}"] = {
+            "t_lo": lift["lo"], "t_hi": lift["hi"],
+            "iv_lo": iv.get("lo", float("nan")),
+            "iv_hi": iv.get("hi", float("nan"))}
+    return out
 
 INK, MUTED, GRID = "#1a1a1a", "#5c5c5c", "#d8d8d8"
 WHMC_C, PLAIN_C = "#333333", "#8a8a8a"
@@ -91,6 +110,8 @@ ARMS = [
 # range and separates the two effects. Counts read from each checkpoint's
 # .history.json val keys, which name the rungs actually trained on; the configs
 # have drifted from the checkpoints and cannot be used for this.
+BOOT = _load_bands()
+
 COLUMNS = ((("default", "cov60"), "density"),
            (("default", "wide", "wide_dense"), "range"))
 PLOT = ("default", "wide_dense")
@@ -207,6 +228,34 @@ def ratio_panel(ax, stem, title, ts, plot=None):
         meas = alive & np.isfinite(iv)
         bound = alive & ~np.isfinite(iv)
         F = np.where(np.isfinite(iv), iv / cost, d["budget"] / cost)
+
+        # A CHAIN-BOOTSTRAP BAND ON EVERY POINT. t_therm is a first-crossing
+        # index, quantized by the record spacing and set by the last chain to
+        # settle, so neighbouring couplings can differ severalfold from one
+        # laggard. That raggedness is a property of the estimator and belongs on
+        # the figure rather than being smoothed away or left implicit: the band
+        # is what says which excursions are resolved. Numerator and denominator
+        # are resampled over their own arms' chains (93_therm_bootstrap.py).
+        band = BOOT.get(ck, {}).get(stem)
+        if band:
+            lo, hi = [], []
+            for i, beta in enumerate(b):
+                e = band.get(f"{float(beta):g}")
+                if not e or not alive[i]:
+                    lo.append(np.nan)
+                    hi.append(np.nan)
+                    continue
+                t_lo = max(e["t_lo"], 1.0)
+                t_hi = max(e["t_hi"], 1.0)
+                num_lo, num_hi = (e["iv_lo"], e["iv_hi"]) if np.isfinite(iv[i]) \
+                    else (d["budget"][i], d["budget"][i])
+                lo.append(num_lo / t_hi)
+                hi.append(num_hi / t_lo)
+            lo, hi = np.asarray(lo), np.asarray(hi)
+            ok = np.isfinite(lo) & np.isfinite(hi)
+            ax.vlines(b[ok], lo[ok], hi[ok], color=colour, lw=1.0, alpha=0.45,
+                      zorder=2)
+
         ax.plot(b[alive], F[alive], "-", color=colour, lw=1.5, alpha=0.8,
                 zorder=3, label=label)
         ax.plot(b[meas], F[meas], "o", color=colour, ms=5, zorder=4,
@@ -301,25 +350,22 @@ def main() -> int:
     args = ap.parse_args()
     ts = json.loads(TIMESCALES.read_text())
 
-    # Rows are volumes, columns are the two training variables.
-    fig, axes = plt.subplots(2, 2, figsize=(6.9, 6.0), sharey=True, sharex="col")
-    VOL = (("crossover_topo", "32"), ("crossover_L64_topo", "64"))
-    for i, (stem, vol) in enumerate(VOL):
-        for j, (plot, what) in enumerate(COLUMNS):
-            tag = f"({'ab'[j]}{i + 1})"
-            ratio_panel(axes[i][j], stem, rf"{tag}  $L={vol}$, {what}", ts,
-                        plot=plot)
-            if j:
-                axes[i][j].set_ylabel("")
-            if not i:
-                axes[i][j].set_xlabel("")
-    # One legend for the figure, in the order the checkpoints appear in ARMS
-    # rather than the order the panels happen to draw them.
-    seen = {}
-    for ax in (axes[0][0], axes[0][1]):
-        seen.update(dict(zip(*reversed(ax.get_legend_handles_labels()))))
+    # THREE CHECKPOINTS, ONE PER CLAIM, at both volumes. `wide` is dropped from
+    # the figure: the only thing it adds over `wide_dense` is density at fixed
+    # range, which is a table-sized effect (a median of 2.1x, resolved only in
+    # the pooled sample) and not something a reader can take off a log axis.
+    # What remains is the deployed checkpoint as the reference, `cov60` for
+    # density below the ceiling, and `wide_dense` for range past it, which is
+    # the whole of what Sec. VII claims. All four stay in the appendix table.
+    fig, axes = plt.subplots(1, 2, figsize=(6.9, 3.2), sharey=True)
+    for ax, (stem, vol) in zip(axes, (("crossover_topo", "32"),
+                                      ("crossover_L64_topo", "64"))):
+        ratio_panel(ax, stem, rf"({'ab'[ax is axes[1]]})  $L={vol}$", ts,
+                    plot=("default", "cov60", "wide_dense"))
+    axes[1].set_ylabel("")
+    seen = dict(zip(*reversed(axes[0].get_legend_handles_labels())))
     order = [lb for _, _, _, lb in ARMS if lb in seen]
-    save(fig, args.out, 4, [seen[lb] for lb in order], order, anchor=-0.06)
+    save(fig, args.out, 3, [seen[lb] for lb in order], order)
 
     # The absolute costs, one representative checkpoint against both baselines,
     # so the divergence of the classical arms is legible.
