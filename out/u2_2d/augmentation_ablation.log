@@ -1,0 +1,56 @@
+cuda | NVIDIA GeForce RTX 5060 Laptop GPU | sm_120 | 8.0 GiB | torch 2.11.0+cu128/cu12.8 | tf32 off
+14 couplings, L_c = 16 -> L_f = 32, 64 configurations each, device cuda
+
+cov60  (out/u2_2d/checkpoints/det_score_net_cov60.pt)
+  beta_f=   10.930   Z=    5.15   PPM= 107633.2
+  beta_f=   13.856   Z=    1.20   PPM=  23773.6
+  beta_f=   24.625   Z=    1.03   PPM=   6794.4
+  beta_f=   44.004   Z=    2.75   PPM=   2186.9
+  beta_f=   58.034   Z=    2.93   PPM=   4447.5
+  beta_f=   88.757   Z=    1.35   PPM=   4232.7
+  beta_f=  127.547   Z=    1.28   PPM=   2018.8
+  beta_f=  183.589   Z=    2.42   PPM=    688.3
+  beta_f=  264.239   Z=   16.82   PPM=   1220.7
+  beta_f=  414.897   Z=   86.30   PPM=   9684.9
+  beta_f=  537.383   Z=  136.27   PPM=  10833.1
+  beta_f=  790.872   Z=  119.09   PPM=  13332.5
+  beta_f= 1065.396   Z=  119.78   PPM=  12895.4
+  beta_f= 1623.192   Z=  128.62   PPM=   9229.8
+
+cov60_aug  (out/u2_2d/checkpoints/det_score_net_cov60_aug.pt)
+  beta_f=   10.930   Z=    7.08   PPM=  18006.3
+  beta_f=   13.856   Z=    1.70   PPM=  35417.2
+  beta_f=   24.625   Z=    2.87   PPM=   7153.7
+  beta_f=   44.004   Z=    0.54   PPM=   3355.4
+  beta_f=   58.034   Z=    2.34   PPM=   2693.9
+  beta_f=   88.757   Z=    1.25   PPM=   2058.4
+  beta_f=  127.547   Z=    1.37   PPM=   2350.5
+  beta_f=  183.589   Z=    2.15   PPM=   3378.0
+  beta_f=  264.239   Z=   14.86   PPM=    866.2
+  beta_f=  414.897   Z=   78.95   PPM=   8732.4
+  beta_f=  537.383   Z=  104.41   PPM=  10826.2
+  beta_f=  790.872   Z=  126.42   PPM=  13781.6
+  beta_f= 1065.396   Z=  124.97   PPM=  12724.8
+  beta_f= 1623.192   Z=  125.62   PPM=   9263.6
+
+  beta_f        cov60 Z   cov60_aug Z      ratio |    cov60 PPM  cov60_aug PPM      ratio
+     10.930       5.15         7.08       0.73 |    107633.2        18006.3       5.98
+     13.856       1.20         1.70       0.71 |     23773.6        35417.2       0.67
+     24.625       1.03         2.87       0.36 |      6794.4         7153.7       0.95
+     44.004       2.75         0.54       5.11 |      2186.9         3355.4       0.65
+     58.034       2.93         2.34       1.25 |      4447.5         2693.9       1.65
+     88.757       1.35         1.25       1.08 |      4232.7         2058.4       2.06
+    127.547       1.28         1.37       0.94 |      2018.8         2350.5       0.86
+    183.589       2.42         2.15       1.13 |       688.3         3378.0       0.20
+    264.239      16.82        14.86       1.13 |      1220.7          866.2       1.41
+    414.897      86.30        78.95       1.09 |      9684.9         8732.4       1.11
+    537.383     136.27       104.41       1.31 |     10833.1        10826.2       1.00
+    790.872     119.09       126.42       0.94 |     13332.5        13781.6       0.97
+   1065.396     119.78       124.97       0.96 |     12895.4        12724.8       1.01
+   1623.192     128.62       125.62       1.02 |      9229.8         9263.6       1.00
+
+  ratio > 1 means the augmented model is closer to exact.
+  Z:   median 1.05, augmented better at 8/14
+  PPM: median 1.00, augmented better at 7/14
+
+wrote out/u2_2d/augmentation_ablation.json
