@@ -115,17 +115,47 @@ reverse diffusion as a stochastic-quantization scheme for lattice field theory
 \cite{wang2024}, Zhu et al.\ applied one to 2D U(1) configurations
 \cite{zhu2024,zhu2025}, conditioning on the coupling so that one model covers a
 range of them, and Aarts et al.\ generalized to non-abelian 2D U(2)/SU(2) with
-an equivariant architecture \cite{aarts2026}. In each of these the learned model
+an equivariant architecture \cite{aarts2026}. The construction has since been
+carried onto the group manifolds themselves and to further theories: score
+matching on SU($N$) \cite{komijani2026,kanwarvega2025}, two-dimensional SU(2) in
+a quaternion parameterization \cite{alharazin2026}, the Schwinger model with a
+gauge-equivariant score network \cite{vegaelkhadra2026}, equivariance imposed
+architecturally rather than by augmentation \cite{vega2025}, training
+bootstrapped from $\beta=0$ rather than from an existing ensemble
+\cite{tomiya2026}, and an extension to dynamical fermions
+\cite{tomiya2026fermions}; see \cite{wenger2026} for a review of the wider
+effort. In each of these the learned model
 is the sampler: the ensemble it produces is the result, and correctness is
 either taken from the model directly or restored by an accept/reject step
 wrapped around it, as in the Metropolis-adjusted annealed Langevin sampler of
-\cite{aarts2026}. Either way the burden falls on the model at the target
-volume, and \cite{zhu2025,aarts2026} both report that it transfers to larger
-couplings and lattice sizes. A separate line of work
-starts HMC from a constructed configuration instead: Detmold and Endres
-\cite{detmoldendres2015,detmoldendres2016} built a renormalization-group-matched
-coarse-to-fine map, started HMC from its output, and measured rethermalization
-against cold and hot starts, for pure Yang--Mills and then with fermions.
+\cite{aarts2026} or the sequential Monte Carlo of \cite{sexty2026}, which
+absorbs both the model's error and the finite step size of the reverse process.
+Either way the burden falls on the model at the target volume, and
+\cite{zhu2025,aarts2026,tan2026} report that it transfers to larger couplings
+and lattice sizes.
+
+A separate line of work starts HMC from a constructed configuration instead.
+Detmold and Endres \cite{detmoldendres2015,detmoldendres2016} built a
+renormalization-group-matched coarse-to-fine map, started HMC from its output,
+and measured rethermalization against cold and hot starts, for pure
+Yang--Mills and then with fermions. Hasenfratz et al.\
+\cite{hasenfratz2026,hasenfratz2026cascade} have since made the inverse step
+learned: a conditional normalizing flow restores the short-distance modes an
+optimized blocking transformation discarded, a brief rethermalization in the
+fine action removes the residual mismatch, and because the coarse ensemble
+supplies the long-distance modes the same flow is reapplied recursively,
+cascading a $16^2$ ensemble to $2048^2$ in two-dimensional $\phi^4$ theory.
+Hierarchical generative samplers have been built on the same coarse-to-fine
+structure \cite{singha2026multilevel}. The present work shares that division of
+labour and differs in what the map is asked to preserve: a scalar theory has no
+topological charge, and it is the sector structure, absent there and central in
+four-dimensional QCD, that this paper is built around.
+
+Two further routes leave HMC as the sampler. A learned change of variables can
+be applied inside the trajectory, reshaping the landscape the integrator sees
+rather than replacing it \cite{he2025}; and a generative model can resolve the
+topological sectors explicitly, evaluating their relative weights against one
+another instead of waiting for the chain to visit them \cite{singha2026}.
 
 This paper is organized as follows: \sect{setup} fixes notation and defines the classical baselines, \sect{method}
 gives the method, \sect{seedquality} and \sect{coverage} report what the
@@ -264,7 +294,15 @@ intermediate configuration with some $\theta_{x,p}$ near $\pm\pi$, which costs
 $\Delta S = 2\beta$ and is accepted with probability $\sim e^{-2\beta}$. That exponential
 suppression is the root cause of topological freezing, and it worsens toward the
 continuum limit as $\beta$ grows. By \Eq{det-plaquette} the mechanism
-is identical in U(2).
+is identical in U(2). The algorithmic response has been either to open a global
+move across the barrier, by tempering
+\cite{hasenbusch2017,bonanno2021,bonanno2024}, by biasing the action in $Q$
+\cite{laio2016,eichhorn2026}, or by replacing the local dynamics with one that
+can jump \cite{rothkopf2026}, or to learn a transformation that carries
+configurations between sectors \cite{bonanno2025su3,bonanno2026,singha2026};
+\sect{conclusions} returns to these. In the two dimensional theories studied
+here an exact global move is available, and it is the classical baseline of
+\sect{instanton_updates_classical}.
 
 \subsection{Classical Baseline}
 \label{sec:instanton_updates_classical}
@@ -785,6 +823,9 @@ $869$, $892$ and $820$ parts per million from exact before any trajectory or
 any local sweep. That flatness is what the architecture predicts: the
 network is fully convolutional and conditioned on the coupling rather than on
 the lattice size, so nothing in it ties the map to the volumes it trained on.
+The same property is what allows a convolutional score network or flow trained
+at one volume to be evaluated at another
+\cite{tan2026,hasenfratz2026cascade}.
 The deviation is flat in volume; the precision against which it is measured is
 not. \SP{\sout{If we will be using standard error units, then we should clearly define or point to the attentive reader to an appendix section where we show that this is precisely defined. I would suggest not doing it at all and staying consistent throughout, but if it is really critical, we can keep it.}} Measured against each ensemble's own standard error (\app{stats}) the
 same three points are $5.2$, $9.6$ and $15.4$ standard errors, since averaging
@@ -1205,7 +1246,10 @@ complex theories is parallel tempering on boundary conditions, introduced
 for the two-dimensional $\mathrm{CP}^{N-1}$ model \cite{hasenbusch2017} and
 since carried to four-dimensional $SU(N)$ gauge theory and to full QCD
 \cite{bonanno2021,bonanno2024}. This manufactures global topological moves for
-exactly the theories that lack a cheap analytic one. This method asks less of
+exactly the theories that lack a cheap analytic one, and it has recently been
+combined with learned out-of-equilibrium transformations: stochastic normalizing
+flows sample topology in four-dimensional SU(3) and remove the artifacts that
+open boundary conditions introduce \cite{bonanno2025su3,bonanno2026}. This method asks less of
 such a mechanism than a sampler does: it is needed only while training data is
 built, and only to visit sectors, so neither its acceptance rate nor the sector
 frequencies it produces need be correct. What the closed form does remain necessary for is \emph{scoring}:
@@ -1219,7 +1263,8 @@ add a term conjugate to the charge, a chemical potential $-\mu Q$ that tilts the
 ensemble toward a chosen sector, or a bias potential in $Q$ that flattens the
 barriers between sectors, as multicanonical sampling \cite{bergneuhaus1992} and
 metadynamics do, and the latter has already been applied to lattice topological freezing
-\cite{laio2016}. Ordinarily such a bias has to be undone, by reweighting each
+\cite{laio2016} and, combined with parallel tempering, to full QCD
+\cite{eichhorn2026}. Ordinarily such a bias has to be undone, by reweighting each
 configuration by $e^{+\mu Q}$ or by the accumulated bias potential. Here there
 is nothing to undo: the biased run only populates the training set with
 configurations at nonzero $Q$, and at deployment the charge is imposed by
@@ -1232,9 +1277,15 @@ The division of labour is the part of this method we expect to outlast the
 particular architecture used here. Generating UV structure and
 preserving IR and topological structure are different jobs, each best done by
 the tool suited to it: HMC for the UV, a learned generative model for the
-topological content HMC cannot reach on its own. Normalizing flows
-\cite{albergo2019}, gauge-equivariant L-CNNs \cite{favoni2020} and other
-diffusion architectures \cite{zhu2024,zhu2025,aarts2026} are natural candidates
+topological content HMC cannot reach on its own. The same asymmetry has been
+reported independently in two-dimensional $\phi^4$ theory, where a brief
+rethermalization was found to remove a short-distance mismatch quickly and a
+mismatch in a relevant direction slowly \cite{hasenfratz2026}, which suggests
+that where the boundary between the two falls is a property of the blocking step
+rather than of the theory or of the generative architecture. Normalizing flows
+\cite{albergo2019,hasenfratz2026cascade}, gauge-equivariant L-CNNs
+\cite{favoni2020} and other diffusion architectures
+\cite{zhu2024,zhu2025,aarts2026,komijani2026} are natural candidates
 for extending it to more complicated theories.
 
 \section*{Data and code availability}
@@ -1414,6 +1465,82 @@ B.E. Rusakov,
 \bibitem{witten1991}
 E. Witten,
 \emph{On quantum gauge theories in two dimensions}, Commun. Math. Phys. \textbf{141} (1991) 153.
+
+\bibitem{sexty2026}
+D. Sexty,
+\emph{Accurate sampling from diffusion models}, [\href{https://arxiv.org/abs/2609.29902}{arXiv:2609.29902}].
+
+\bibitem{hasenfratz2026}
+A. Hasenfratz, E.T. Neil, L. Parato and N. Schwartz,
+\emph{Renormalization-guided inverse blocking for lattice field generation: construction and validation}, [\href{https://arxiv.org/abs/2608.28580}{arXiv:2608.28580}].
+
+\bibitem{hasenfratz2026cascade}
+A. Hasenfratz, E.T. Neil, L. Parato and N. Schwartz,
+\emph{Renormalization-guided cascade upscaling for lattice field generation}, [\href{https://arxiv.org/abs/2608.28581}{arXiv:2608.28581}].
+
+\bibitem{singha2026}
+A. Singha, J. Kauffmann, K. Jansen, J. Finkenrath, V. Arora and S. Nakajima,
+\emph{Sector-resolved flow sampling for topologically frozen lattice gauge theories}, [\href{https://arxiv.org/abs/2609.07781}{arXiv:2609.07781}].
+
+\bibitem{singha2026multilevel}
+A. Singha, J. Kauffmann, E. Cellini, K. Jansen and S. Nakajima,
+\emph{Scalable generative sampling and multilevel estimation for lattice field theories near criticality}, [\href{https://arxiv.org/abs/2604.10209}{arXiv:2604.10209}].
+
+\bibitem{he2025}
+J. He, X.-Y. Jin, J.C. Osborn and Y. Zhao,
+\emph{Neural field transformations for hybrid Monte Carlo: architectural design and scaling}, in \emph{NeurIPS Machine Learning and the Physical Sciences Workshop} (2025), [\href{https://arxiv.org/abs/2511.02018}{arXiv:2511.02018}].
+
+\bibitem{komijani2026}
+J. Komijani, M.K. Marinkovic and L. Turgut,
+\emph{Diffusion model for SU(N) gauge theories}, [\href{https://arxiv.org/abs/2605.06134}{arXiv:2605.06134}].
+
+\bibitem{kanwarvega2025}
+G. Kanwar and O. Vega,
+\emph{Spectral diffusion for sampling on SU(N)}, [\href{https://arxiv.org/abs/2512.19877}{arXiv:2512.19877}].
+
+\bibitem{alharazin2026}
+H. Alharazin, J.Yu. Panteleeva and B.-D. Sungel,
+\emph{Diffusion models for SU(2) lattice gauge theory in two dimensions}, Phys. Rev. D \textbf{114} (2026) 014522, [\href{https://arxiv.org/abs/2602.09045}{arXiv:2602.09045}].
+
+\bibitem{vegaelkhadra2026}
+O. Vega and A.X. El-Khadra,
+\emph{Sampling the Schwinger model with gauge-equivariant diffusion}, [\href{https://arxiv.org/abs/2606.27481}{arXiv:2606.27481}].
+
+\bibitem{vega2025}
+O. Vega, J. Komijani, A.X. El-Khadra and M. Marinkovi\'c,
+\emph{Group-equivariant diffusion models for lattice field theory}, JHEP \textbf{07} (2026) 213, [\href{https://arxiv.org/abs/2510.26081}{arXiv:2510.26081}].
+
+\bibitem{tomiya2026}
+A. Tomiya,
+\emph{Lattice configuration generation with a self-learning diffusion model}, [\href{https://arxiv.org/abs/2607.12587}{arXiv:2607.12587}].
+
+\bibitem{tomiya2026fermions}
+A. Tomiya,
+\emph{Continuous Hasenbusch transport towards gauge diffusion with fermions}, [\href{https://arxiv.org/abs/2609.15959}{arXiv:2609.15959}].
+
+\bibitem{tan2026}
+Y.-y. Tan, G. Aarts, D.E. Habibi, B. Lucini and L. Wang,
+\emph{Diffusion models for sampling near criticality in lattice field theories}, [\href{https://arxiv.org/abs/2607.08505}{arXiv:2607.08505}].
+
+\bibitem{bonanno2025su3}
+C. Bonanno, A. Bulgarelli, E. Cellini, A. Nada, D. Panfalone, D. Vadacchino and L. Verzichelli,
+\emph{Scaling flow-based approaches for topology sampling in SU(3) gauge theory}, JHEP \textbf{04} (2026) 051, [\href{https://arxiv.org/abs/2510.25704}{arXiv:2510.25704}].
+
+\bibitem{bonanno2026}
+C. Bonanno, A. Bulgarelli, E. Cellini, A. Nada, D. Panfalone, D. Vadacchino and L. Verzichelli,
+\emph{A scalable flow-based approach to mitigate topological freezing}, [\href{https://arxiv.org/abs/2601.20708}{arXiv:2601.20708}].
+
+\bibitem{eichhorn2026}
+T. Eichhorn, G. Fuwa, C. Hoelbling and L. Varnhorst,
+\emph{Parallel tempered metadynamics for full QCD}, [\href{https://arxiv.org/abs/2607.21575}{arXiv:2607.21575}].
+
+\bibitem{rothkopf2026}
+A. Rothkopf,
+\emph{Jump-diffusion stochastic quantization for Euclidean lattice field theories}, [\href{https://arxiv.org/abs/2608.16451}{arXiv:2608.16451}].
+
+\bibitem{wenger2026}
+U. Wenger,
+\emph{Machine learning for four-dimensional SU(3) lattice gauge theories}, plenary talk at the 42nd International Symposium on Lattice Field Theory (LATTICE2025), [\href{https://arxiv.org/abs/2604.12416}{arXiv:2604.12416}].
 
 \bibitem{efron1993}
 B. Efron and R.J. Tibshirani,
