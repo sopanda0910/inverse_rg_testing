@@ -1,8 +1,16 @@
 # v2 with the ladder matched on <Q^2> (blocking.topology_matched_schedule)
 # instead of on the plaquette: 3.9174, 13.5864, 52.7535 from the same base,
-# couplings 2-4% below the deployed 4.0, 14.1464, 55.0237. The deployed U(1)
-# ensembles use the plaquette-matched schedule; this config exists so the
-# alternative is reproducible, and running it re-generates every U(1) number.
+# couplings 2-4% below the deployed 4.0, 14.1464, 55.0237. Running it
+# re-generates every U(1) ladder number.
+#
+# n_base_configs is 2048, not the 192 of the first run (kept at
+# out/u1_2d/*_topomatched_n192_superseded/). Sector transport is exact, so every
+# rung reports the SAME measured <Q^2> and that number is purely the base draw;
+# at 192 configurations its independent-sample SEM is ~0.20, which left the first
+# run at z = -1.49 against the exact 1.986 with no available explanation but the
+# base size. 2048 configurations take that to ~0.058. The base is L=8,
+# beta=1.3472, where HMC is fully ergodic in topology, so this is the one knob
+# that moves the number.
 seed: 0
 device: auto
 action_type: wilson
@@ -86,7 +94,7 @@ ladder:
   base:
     beta: 1.3472
     lattice_size: 8
-  n_base_configs: 192
+  n_base_configs: 2048
   beta_schedule:
   - 3.9174
   - 13.5864

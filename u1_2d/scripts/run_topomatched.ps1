@@ -48,9 +48,15 @@ if (Test-Path $keepAwake) {
 
 # stage name, script, log, and the artifact whose presence means it is done
 $stages = @(
+    # Done must name the LAST artifact the stage writes, not its output directory:
+    # the ladder saves the base ensemble into that directory before it samples a
+    # single rung, so a directory test counts a run killed during rung 0 as
+    # finished and hands an empty ladder to validation. The top rung file is the
+    # only artifact that means the stage really completed. (Assumes the 3-rung
+    # schedule this config carries.)
     @{ Name = "03_ladder";   Script = "u1_2d\scripts\03_run_ladder.py";
        Log = "out\u1_2d\topomatched_ladder.log";
-       Done = "out\u1_2d\generated_topomatched" },
+       Done = "out\u1_2d\generated_topomatched\ladder_rung2_wilson_*.pt" },
     @{ Name = "04_validate"; Script = "u1_2d\scripts\04_validate.py";
        Log = "out\u1_2d\topomatched_validate.log";
        Done = "out\u1_2d\validation_topomatched\report.md" }
