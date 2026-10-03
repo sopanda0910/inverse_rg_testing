@@ -72,7 +72,12 @@ U2_BETA, U2_L = 416.524, 64
 # beta = 14.1464 a cold start's LOCAL observables are fully thermalised after
 # 640 trajectories (+0.06 sigma on the plaquette) while its topology has not
 # moved once.
-U1_TOPO_SERIES = ROOT / ("out/u1_2d/thermalization/L32_beta14.1464/"
+# From the VOLUME SCAN run, which is the one Sec. IV A quotes. There is a
+# second ensemble at this same (L, beta) under out/u1_2d/thermalization/, from
+# a separate run: it gives <Q^2>/exact = 0.86 where this one gives 0.95, and
+# drawing the figure from it while the text quoted the other put two numbers
+# for one quantity in the same paper.
+U1_TOPO_SERIES = ROOT / ("out/u1_2d/thermalization_volume/L32_beta14.1464/"
                          "A_bc4_L32_beta14.1464_series.npz")
 U1_TOPO_BETA, U1_L = 14.1464, 32
 
@@ -159,6 +164,9 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
                     fontsize=8.5, color=colour)
 
     ax.axvline(0.0, color=INK, ls="--", lw=1.2, zorder=4)
+    # headroom for the annotation card, which is opaque and would otherwise
+    # have to sit on top of the distribution it is annotating
+    ax.set_ylim(0, ax.get_ylim()[1] * 1.3)
     ax.set_xlim(-xlim, xlim)
     ax.set_xticks([-4, -2, 0, 2, 4])
     ax.set_title(label, fontsize=9, color=INK, pad=3)
@@ -173,11 +181,15 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
     # off-window arrows.
     w_cold = arms["cold"][key].std() / ref
     w_hot = arms["hot"][key].std() / ref
+    # on an opaque card: the distributions reach the top right corner at the
+      # narrow couplings and the block was being read through the bars
     ax.text(0.985, 0.88,
             sci_label(r"\sigma_{\rm cfg}", ref)
-            + f"\nwidth/lift\ncold {w_cold:.2f}\nhot {w_hot:.1f}",
+            + f"\nwidth/preconditioned\ncold {w_cold:.2f}\nhot {w_hot:.1f}",
             transform=ax.transAxes, ha="right", va="top", fontsize=7.5,
-            color=MUTED, linespacing=1.4)
+            color=MUTED, linespacing=1.4, zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", alpha=1.0,
+                      boxstyle="square,pad=0.25"))
 
 
 def sci_label(symbol: str, x: float) -> str:
@@ -264,10 +276,15 @@ def topo_panel(ax, arms, chains, qv, pq, title, volume, qmax=5, rng=None):
         idx = rng.integers(0, per_chain.size, size=(4000, per_chain.size))
         err = float(per_chain[idx].mean(axis=1).std())
         zs = (m - exact_q2) / err if err > 0 else np.inf
-        lines.append(f"{arm}  {m / exact_q2:.2f}"
-                     if np.isfinite(zs) else f"{arm}  0.00   (frozen)")
+        # the legend below the figure calls this arm "preconditioned";
+        # calling it "lift" here made it read as a fourth arm
+        name = {"lift": "preconditioned"}.get(arm, arm)
+        lines.append(f"{name}  {m / exact_q2:.2f}"
+                     if np.isfinite(zs) else f"{name}  0.00   (frozen)")
     ax.text(0.03, 0.97, "\n".join(lines), transform=ax.transAxes, ha="left",
-            va="top", fontsize=8.0, color=MUTED, linespacing=1.5)
+            va="top", fontsize=8.0, color=MUTED, linespacing=1.5, zorder=6,
+            bbox=dict(facecolor="white", edgecolor="none", alpha=1.0,
+                      boxstyle="square,pad=0.3"))
 
 
 def figure_topology(out_path):

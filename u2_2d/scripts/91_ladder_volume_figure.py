@@ -273,7 +273,10 @@ def main() -> int:
                                              lw=2.0))
     ax2.axhspan(BUDGET, 1e5, color="#2ca02c", alpha=0.07, zorder=0)
     ax2.axhline(1.0, color=MUTED, ls=":", lw=1.2, zorder=1)
-    ax2.set_ylim(0.5, 1e5)
+    # The first rung's classical interval reaches ~0.12, below the old 0.5
+    # floor, and was being clipped into the spine with no truncation mark --
+    # which hid that it straddles F = 1.
+    ax2.set_ylim(0.1, 1e5)
     ax2.set_ylabel("improvement factor", fontsize=9.5, color=INK)
     ax2.set_title("(b)  improvement factor", fontsize=9.5, color=INK, loc="left")
     ax2.text(0.5, 0.965,
