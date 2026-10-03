@@ -205,7 +205,7 @@ def main() -> int:
     arrow(ax, (x_0 - R - 0.6, ROW), (18.9, ROW), colour=MUTED)
     ax.text(10.25, 46.6, "ready for HMC", ha="center", va="bottom",
             fontsize=8.5, color=INK, fontproperties=PAPER_BOLD)
-    ax.text(10.25, 33.3, "after exact local rethermalization", ha="center",
+    ax.text(10.25, 33.3, "after exact local sweeps", ha="center",
             va="top", fontsize=7.5, color=MUTED)
 
     fig.tight_layout(pad=0.2)

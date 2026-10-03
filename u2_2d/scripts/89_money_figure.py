@@ -258,14 +258,24 @@ def ratio_panel(ax, stem, title, ts, plot=None):
 
         ax.plot(b[alive], F[alive], "-", color=colour, lw=1.5, alpha=0.8,
                 zorder=3, label=label)
-        ax.plot(b[meas], F[meas], "o", color=colour, ms=5, zorder=4,
+        # Checkpoints that agree at a coupling land on the same point, and the
+        # one drawn second hides the first. Stagger the marker SIZE rather than
+        # the position: x is data and must not move.
+        bump = {"cov60": 1.6, "default": 0.0, "wide": -0.6,
+                "wide_dense": -1.2}.get(ck, 0.0)
+        ax.plot(b[meas], F[meas], "o", color=colour, ms=5 + bump, zorder=4,
                 markeredgecolor="white", markeredgewidth=0.6)
-        ax.plot(b[bound], F[bound], "^", color=colour, ms=7, zorder=4,
+        ax.plot(b[bound], F[bound], "^", color=colour, ms=7 + bump, zorder=4,
                 markeredgecolor="white", markeredgewidth=0.6)
         if (~alive).any():
             # Below every measured factor (the smallest is 0.1), so a
             # failure cannot be read as a low measured value or vice versa.
-            ax.plot(b[~alive], np.full((~alive).sum(), CROSS_Y), "x",
+            # Checkpoints that fail at the SAME coupling would otherwise draw
+            # one cross on top of another and the lower one would be invisible,
+            # so each is nudged along the log axis by its own factor.
+            nudge = {"cov60": 0.955, "default": 1.0, "wide": 1.045,
+                     "wide_dense": 1.09}.get(ck, 1.0)
+            ax.plot(b[~alive] * nudge, np.full((~alive).sum(), CROSS_Y), "x",
                     color=colour, ms=7, mew=2.0, zorder=4)
         if b.min() <= ceil <= b.max() * 1.05:
             ax.axvline(ceil, color=colour, ls=":", lw=1.2, alpha=0.8, zorder=1)
@@ -285,7 +295,7 @@ def ratio_panel(ax, stem, title, ts, plot=None):
             transform=ax.transAxes, fontsize=7.5, color=MUTED, va="top")
     ax.text(0.975, 0.965, r"$\blacktriangle$ lower bound", transform=ax.transAxes,
             fontsize=7.5, color=MUTED, ha="right", va="top")
-    _style(ax, title, "improvement factor over HMC $+$ winding")
+    _style(ax, title, "improvement factor over winding HMC")
 
 
 def cost_panel(ax, stem, title, ts, only=None):
@@ -304,7 +314,7 @@ def cost_panel(ax, stem, title, ts, only=None):
     wind = np.nanmedian(np.vstack(wind), axis=0)
 
     for arr, colour, lab, mk in ((plain, PLAIN_C, "plain HMC", "D"),
-                                 (wind, WHMC_C, r"HMC $+$ winding", "s")):
+                                 (wind, WHMC_C, r"winding HMC", "s")):
         fin = np.isfinite(arr)
         ax.plot(betas[fin], arr[fin], mk + "-", color=colour, ms=4.5, lw=1.7,
                 zorder=4, label=lab)
