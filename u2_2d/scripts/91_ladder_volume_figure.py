@@ -67,9 +67,12 @@ BUDGET = 400.0
 OBS = (("wilson_1x1", 1), ("wilson_2x2", 4), ("wilson_4x4", 16))
 
 RUNGS = [
-    ("out/u2_2d/seed_benchmark_rung0", 32, 105.651),
-    ("out/u2_2d/seed_benchmark", 64, 416.524),
-    ("out/u2_2d/seed_benchmark_wide_L128", 128, 1660.076283),
+    # lifted arms from the no-tail runs; the classical arms, which never
+    # involve the preconditioner, are read from the original directories by
+    # CLASSICAL_RUNGS below.
+    ("out/u2_2d/seed_benchmark_rung0_noretherm", 32, 105.651),
+    ("out/u2_2d/seed_benchmark_noretherm", 64, 416.524),
+    ("out/u2_2d/seed_benchmark_wide_L128_noretherm", 128, 1660.076283),
 ]
 ARMS = [
     ("arm_A_diffusion_seed", "lift", "#D55E00", "lift, plain HMC"),
@@ -271,7 +274,11 @@ def main() -> int:
                 ax2.annotate("", xy=(i + off, y0 * 9.0), xytext=(i + off, y0),
                              arrowprops=dict(arrowstyle="-|>", color=colour,
                                              lw=2.0))
-    ax2.axhspan(BUDGET, 1e5, color="#2ca02c", alpha=0.07, zorder=0)
+    # same convention as fig64: green is the region where the lift is cheaper
+    ax2.axhspan(1.0, 1e5, color="#2ca02c", alpha=0.06, zorder=0)
+    # just above F = 1 at the right, clear of the arrow note at the top
+    ax2.text(len(Ls) - 0.7, 1.35, "lift cheaper", fontsize=7.5,
+             color="#2ca02c", ha="right", va="bottom")
     ax2.axhline(1.0, color=MUTED, ls=":", lw=1.2, zorder=1)
     # The first rung's classical interval reaches ~0.12, below the old 0.5
     # floor, and was being clipped into the spine with no truncation mark --
@@ -299,9 +306,13 @@ def main() -> int:
     # one legend only: panel (b) reuses panel (a)'s colours, and repeating them
     # as "vs cold + ..." doubled every entry
     h1, l1 = axes[0].get_legend_handles_labels()
-    fig.legend(h1, l1, loc="lower center", ncol=4, frameon=False,
-               fontsize=8.5, bbox_to_anchor=(0.5, -0.13))
-    fig.tight_layout()
+    # laid out above the legend's MEASURED height: a guessed negative anchor
+    # left a dead band between the tick labels and the legend
+    leg = fig.legend(h1, l1, loc="lower center", ncol=4, frameon=False,
+                     fontsize=8.5, bbox_to_anchor=(0.5, 0.0))
+    fig.canvas.draw()
+    fig.tight_layout(rect=(0, leg.get_window_extent().height / fig.bbox.height
+                           + 0.01, 1, 1))
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)

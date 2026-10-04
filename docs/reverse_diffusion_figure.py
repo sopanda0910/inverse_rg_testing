@@ -87,8 +87,11 @@ def arrow(ax, p0, p1, colour=INK, lw=1.7, ls="-", ms=14):
 
 def dots(ax, x0, x1, y, colour=SPINE_E):
     """A dashed span standing for the omitted intermediate noise levels."""
-    ax.plot([x0, x1], [y, y], color=colour, lw=1.7, ls=(0, (4, 3)), zorder=3)
-    arrow(ax, ((x0 + x1) / 2 + 0.6, y), (x1 - 0.1, y), colour=colour)
+    ax.plot([x0, x1 + 1.5], [y, y], color=colour, lw=1.7, ls=(0, (4, 3)),
+            zorder=3)
+    # arrowhead only: a solid shaft over half the span read as a second,
+    # different kind of step
+    arrow(ax, (x1 + 2.0, y), (x1 - 0.1, y), colour=colour)
 
 
 def gapped_box(ax, x0, y0, x1, y1, gaps, colour, lw=1.4):
@@ -205,8 +208,12 @@ def main() -> int:
     arrow(ax, (x_0 - R - 0.6, ROW), (18.9, ROW), colour=MUTED)
     ax.text(10.25, 46.6, "ready for HMC", ha="center", va="bottom",
             fontsize=8.5, color=INK, fontproperties=PAPER_BOLD)
-    ax.text(10.25, 33.3, "after exact local sweeps", ha="center",
-            va="top", fontsize=7.5, color=MUTED)
+    # No repair stage follows. In U(1) the reverse chain's output IS the
+    # preconditioned configuration; in U(2) the conditional SU(2) heatbath
+    # still runs, but that GENERATES a sector the model does not produce
+    # rather than repairing one it does.
+    ax.text(10.25, 33.3, "U(2): after the conditional SU(2) heatbath",
+            ha="center", va="top", fontsize=7.5, color=MUTED)
 
     fig.tight_layout(pad=0.2)
     # Beside this script, not in the working directory: run from the repo root

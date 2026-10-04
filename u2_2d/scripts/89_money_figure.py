@@ -285,16 +285,10 @@ def ratio_panel(ax, stem, title, ts, plot=None):
     ax.set_ylim(FLOOR, top)
     ax.text(0.025, 0.965, "lift cheaper", transform=ax.transAxes, fontsize=7.5,
             color="#2ca02c", va="top")
-    # kept clear of the markers themselves: at the bottom of the panel this
-    # legend sat directly behind the crosses it was explaining
-    # The cross marks a MEASURED failure of the lift, not a gap in the data:
-    # every coupling is evaluated for every checkpoint. It is not the same
-    # thing as the training ceiling (dotted line), and at L=64 the narrow
-    # checkpoints fail well before theirs.
-    ax.text(0.025, 0.895, r"$\times$ = lift did not equilibrate",
-            transform=ax.transAxes, fontsize=7.5, color=MUTED, va="top")
-    ax.text(0.975, 0.965, r"$\blacktriangle$ lower bound", transform=ax.transAxes,
-            fontsize=7.5, color=MUTED, ha="right", va="top")
+    # The marker key (cross, triangle, dotted ceiling) lives in the figure
+    # legend, not in the panels: as in-panel notes they collided with the
+    # largest factors. The cross marks a MEASURED failure of the lift, not a
+    # gap in the data, and is distinct from the training ceiling.
     _style(ax, title, "improvement factor over winding HMC")
 
 
@@ -340,11 +334,25 @@ def cost_panel(ax, stem, title, ts, only=None):
     _style(ax, title, "trajectories per independent configuration")
 
 
-def save(fig, path, ncol, handles=None, labels=None, anchor=-0.13):
+MARKER_KEY = [
+    (plt.Line2D([], [], ls="", marker="^", ms=6, color=MUTED), "lower bound"),
+    (plt.Line2D([], [], ls="", marker="x", ms=6, mew=1.8, color=MUTED),
+     "lift did not equilibrate"),
+    (plt.Line2D([], [], ls=":", lw=1.2, color=MUTED), "training ceiling"),
+]
+
+
+def save(fig, path, ncol, handles=None, labels=None):
     if handles:
-        fig.legend(handles, labels, loc="lower center", ncol=ncol, frameon=False,
-                   fontsize=9, bbox_to_anchor=(0.5, anchor))
-    fig.tight_layout()
+        # The legend sits at the bottom edge and the axes are laid out above
+        # its MEASURED height, so there is no guessed offset and no dead band.
+        leg = fig.legend(handles, labels, loc="lower center", ncol=ncol,
+                         frameon=False, fontsize=9, bbox_to_anchor=(0.5, 0.0))
+        fig.canvas.draw()
+        h = leg.get_window_extent().height / fig.bbox.height
+        fig.tight_layout(rect=(0, h + 0.01, 1, 1))
+    else:
+        fig.tight_layout()
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=300, facecolor="white", bbox_inches="tight")
@@ -375,7 +383,8 @@ def main() -> int:
     axes[1].set_ylabel("")
     seen = dict(zip(*reversed(axes[0].get_legend_handles_labels())))
     order = [lb for _, _, _, lb in ARMS if lb in seen]
-    save(fig, args.out, 3, [seen[lb] for lb in order], order)
+    save(fig, args.out, 3, [seen[lb] for lb in order] + [h for h, _ in MARKER_KEY],
+         order + [lb for _, lb in MARKER_KEY])
 
     # The absolute costs, one representative checkpoint against both baselines,
     # so the divergence of the classical arms is legible.

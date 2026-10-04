@@ -60,7 +60,10 @@ SEED_C, COLD_C, HOT_C = "#0072B2", "#D55E00", "#7a3fa0"
 U1_SERIES = ROOT / ("out/u1_2d/thermalization/L32_beta218.58/"
                     "D_bc55.0237_L32_beta218.58_series.npz")
 U1_BETA = 218.5802136261687
-U2_BENCH = ROOT / "out/u2_2d/seed_benchmark"
+# The lifted arm comes from the run without the local-sweep tail; the cold
+# and hot arms never involve the preconditioner and are unchanged, so they
+# are still read from the original benchmark.
+U2_BENCH = ROOT / "out/u2_2d/seed_benchmark_noretherm"
 U2_BETA, U2_L = 416.524, 64
 
 # Topology is scored at a DIFFERENT u1 coupling from the Wilson loops, and the
@@ -132,6 +135,8 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
     ref = arms["lift"][key].std()
     ex = exact[key]
     bins = np.linspace(-xlim, xlim, 61)
+    heights = np.zeros(bins.size - 1)
+    keepout = []
 
     for arm, colour, style in (("lift", SEED_C, "fill"), ("cold", COLD_C, "step"),
                                ("hot", HOT_C, "step")):
@@ -140,6 +145,8 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
         # density=True divides by the in-window count, so an arm with nothing in
         # the window must not be handed to hist() at all.
         if inside.size:
+            heights = np.maximum(heights,
+                                 np.histogram(v, bins=bins, density=True)[0])
             if style == "fill":
                 ax.hist(v, bins=bins, density=True, color=colour, alpha=0.45,
                         zorder=2)
@@ -152,21 +159,19 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
         if inside.size < 0.5 * v.size:
             side = -1 if v.mean() < 0 else 1
             y = 0.93
-            ax.annotate("", xy=(side * xlim * 0.98, y),
+            arrow = ax.annotate("", xy=(side * xlim * 0.98, y),
                         xytext=(side * xlim * 0.62, y),
                         xycoords=("data", "axes fraction"),
                         textcoords=("data", "axes fraction"),
                         arrowprops=dict(arrowstyle="-|>", color=colour, lw=1.5))
+            keepout.append(arrow)
             # mathtext, for a true minus rather than cmr10's text hyphen
-            ax.text(side * xlim * 0.59, y, rf"$\mathbf{{{v.mean():+.0f}}}$",
+            keepout.append(ax.text(side * xlim * 0.59, y, rf"$\mathbf{{{v.mean():+.0f}}}$",
                     transform=ax.get_xaxis_transform(),
                     ha="right" if side > 0 else "left", va="center",
-                    fontsize=8.5, color=colour)
+                    fontsize=8.5, color=colour))
 
     ax.axvline(0.0, color=INK, ls="--", lw=1.2, zorder=4)
-    # headroom for the annotation card, which is opaque and would otherwise
-    # have to sit on top of the distribution it is annotating
-    ax.set_ylim(0, ax.get_ylim()[1] * 1.3)
     ax.set_xlim(-xlim, xlim)
     ax.set_xticks([-4, -2, 0, 2, 4])
     ax.set_title(label, fontsize=9, color=INK, pad=3)
@@ -181,15 +186,37 @@ def panel(ax, arms, exact, key, label, xlim=6.0):
     # off-window arrows.
     w_cold = arms["cold"][key].std() / ref
     w_hot = arms["hot"][key].std() / ref
-    # on an opaque card: the distributions reach the top right corner at the
-      # narrow couplings and the block was being read through the bars
-    ax.text(0.985, 0.88,
+    # plain text, no card: clear_headroom keeps the bars below it, and every
+    # line is short enough to stay right of the exact line at x = 0
+    keepout.append(ax.text(0.985, 0.88,
             sci_label(r"\sigma_{\rm cfg}", ref)
-            + f"\nwidth/preconditioned\ncold {w_cold:.2f}\nhot {w_hot:.1f}",
+            + "\n" + rf"$\sigma_{{\rm cold}}/\sigma_{{\rm cfg}} = {w_cold:.2f}$"
+            + "\n" + rf"$\sigma_{{\rm hot}}/\sigma_{{\rm cfg}} = {w_hot:.1f}$",
             transform=ax.transAxes, ha="right", va="top", fontsize=7.5,
-            color=MUTED, linespacing=1.4, zorder=6,
-            bbox=dict(facecolor="white", edgecolor="none", alpha=1.0,
-                      boxstyle="square,pad=0.25"))
+            color=MUTED, linespacing=1.5, zorder=6))
+    return bins, heights, keepout
+
+
+def clear_headroom(fig, ax, bins, heights, keepout, gap=0.03):
+    """Raise the y limit just far enough that no bar reaches under an
+    annotation. The annotations sit at fixed axes-fraction heights, so a fixed
+    headroom factor cannot guarantee clearance: it has to be measured from the
+    rendered extents. Call after the layout is final."""
+    fig.canvas.draw()
+    r = fig.canvas.get_renderer()
+    to_data = ax.transData.inverted()
+    to_axes = ax.transAxes.inverted()
+    top = heights.max() * 1.05
+    for art in keepout:
+        patch = art.get_bbox_patch() if hasattr(art, "get_bbox_patch") else None
+        bb = (patch or art).get_window_extent(r)
+        x0 = to_data.transform((bb.x0, bb.y0))[0]
+        x1 = to_data.transform((bb.x1, bb.y0))[0]
+        y_bottom = to_axes.transform((bb.x0, bb.y0))[1]
+        under = (bins[1:] > x0) & (bins[:-1] < x1)
+        if under.any() and y_bottom > gap:
+            top = max(top, heights[under].max() / (y_bottom - gap))
+    ax.set_ylim(0, top)
 
 
 def sci_label(symbol: str, x: float) -> str:
@@ -326,10 +353,13 @@ def main() -> int:
 
     labels1 = {k: lab for k, _, lab in U1_LOOPS}
     labels2 = {k: lab for k, _, lab in U2_LOOPS}
+    headroom = []
     for j, key in enumerate(U1_PLOT):
-        panel(axes[0, j], u1_arms, u1_ex, key, labels1[key])
+        headroom.append((axes[0, j], panel(axes[0, j], u1_arms, u1_ex, key,
+                                           labels1[key])))
     for j, key in enumerate(U2_PLOT):
-        panel(axes[1, j], u2_arms, u2_ex, key, labels2[key])
+        headroom.append((axes[1, j], panel(axes[1, j], u2_arms, u2_ex, key,
+                                           labels2[key])))
 
     # linespacing: the math line is taller than the plain one, and without
     # the extra room the two lines of each rotated label overlapped.
@@ -349,6 +379,8 @@ def main() -> int:
                fontsize=8.5, bbox_to_anchor=(0.5, -0.035))
 
     fig.tight_layout()
+    for ax, info in headroom:
+        clear_headroom(fig, ax, *info)
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
