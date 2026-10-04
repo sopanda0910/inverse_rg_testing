@@ -149,8 +149,14 @@ def fig_architecture() -> None:
     ax.set_ylim(Y0, Y1)
     ax.axis("off")
 
-    y, h, w = 0.46, 0.30, 0.180
-    xs = [0.002, 0.200, 0.398, 0.596, 0.794]
+    # FancyBboxPatch's pad (0.012) draws each box that far OUTSIDE (x, w), so
+    # the visible gap is pitch - w - 2*pad; at w = 0.180 on a 0.198 pitch it was
+    # negative and neighbouring boxes overlapped. 0.044 leaves room for arrows.
+    # Five padded boxes must also fit inside [X0, 1] or the last is clipped.
+    y, h, w = 0.46, 0.30, 0.145
+    PAD = 0.012
+    pitch = w + 2 * PAD + 0.040
+    xs = [0.0 + i * pitch for i in range(5)]
     # 8 pt in the boxes: the figure prints at ~0.97x, and at 7 pt the labels
     # came out near 6.7 pt, visibly smaller than the 9 pt caption beneath.
     FS = 8.0
@@ -176,7 +182,7 @@ def fig_architecture() -> None:
 
     mid = y + h / 2
     for a, b in zip(xs[:-1], xs[1:]):
-        arrow(ax, (a + w, mid), (b, mid), MUTED)
+        arrow(ax, (a + w + PAD, mid), (b - PAD, mid), MUTED)
 
     # The box must span both consumers of the embedding, the residual blocks and
     # the head's force gate, or the head's arrow starts in empty space.

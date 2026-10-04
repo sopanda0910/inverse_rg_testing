@@ -1,0 +1,41 @@
+[
+  {
+    "plaquette": 0.981156587600708,
+    "det_plaquette": 0.9814972281455994,
+    "q_mean": 0.09375,
+    "q_squared": 1.171875,
+    "plaquette_pre_retherm": 0.981156587600708,
+    "q_squared_pre_retherm": 1.171875,
+    "beta": 105.651,
+    "lattice_size": 32,
+    "plaquette_exact": 0.9810231809265313,
+    "q_squared_exact": 1.001189460037426,
+    "n_chains": 1024
+  },
+  {
+    "plaquette": 0.9952893257141113,
+    "det_plaquette": 0.9955592155456543,
+    "q_mean": 0.09375,
+    "q_squared": 1.171875,
+    "plaquette_pre_retherm": 0.9952892661094666,
+    "q_squared_pre_retherm": 1.171875,
+    "beta": 416.524,
+    "lattice_size": 64,
+    "plaquette_exact": 0.9951954459438838,
+    "q_squared_exact": 1.0011887008808318,
+    "n_chains": 1024
+  },
+  {
+    "plaquette": 0.9988623261451721,
+    "det_plaquette": 0.999064028263092,
+    "q_mean": 0.09375,
+    "q_squared": 1.171875,
+    "plaquette_pre_retherm": 0.9988623261451721,
+    "q_squared_pre_retherm": 1.171875,
+    "beta": 1660.076283,
+    "lattice_size": 128,
+    "plaquette_exact": 0.9987950542116679,
+    "q_squared_exact": 1.0011887010243956,
+    "n_chains": 1024
+  }
+]

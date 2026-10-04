@@ -1,0 +1,40 @@
+{
+  "beta": 1660.076283,
+  "lattice_size": 128,
+  "tail_fraction": 0.5,
+  "exact_q_squared": 1.0011887010243956,
+  "arms": [
+    {
+      "arm": "A_diffusion_seed",
+      "q_squared_mean": 0.75,
+      "q_squared_sem": 0.23890695460573008,
+      "q_squared_exact": 1.0011887010243956,
+      "q_squared_z": -1.0514080740719087,
+      "charge_conjugation_asymmetry_z": 0.3396776803430902,
+      "sector_gof_chi2": 0.0452546999540906,
+      "sector_gof_dof": 3,
+      "sector_gof_p": 0.9625187406296851,
+      "sector_gof_bins": 5,
+      "exact_probability_covered": 0.936733816410746,
+      "odd_sectors_visited": 2,
+      "n_chains_bootstrapped": 16,
+      "n_draws_kept": 41
+    },
+    {
+      "arm": "H_diffusion_plus_odd_winding",
+      "q_squared_mean": 1.1585365853658536,
+      "q_squared_sem": 0.07799069833144218,
+      "q_squared_exact": 1.0011887010243956,
+      "q_squared_z": 2.017521162238686,
+      "charge_conjugation_asymmetry_z": -1.5464055437552826,
+      "sector_gof_chi2": 8.006061610480629,
+      "sector_gof_dof": 4,
+      "sector_gof_p": 0.351824087956022,
+      "sector_gof_bins": 5,
+      "exact_probability_covered": 0.9997269165470734,
+      "odd_sectors_visited": 4,
+      "n_chains_bootstrapped": 16,
+      "n_draws_kept": 41
+    }
+  ]
+}

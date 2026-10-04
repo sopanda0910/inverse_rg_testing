@@ -1,0 +1,76 @@
+
+==========================================================================
+beta = 4.44, L = 32, 512 configs  [105s]
+  entry-cost gate (W1x1,W2x2,W4x4 within 2.5 sigma): 6 sweeps
+  same gate including W6x6 and W8x8:                 6
+  at the deployed tail length of 16 sweeps:
+    W(1x1)         +50.6 ppm   |z| =    0.20
+    W(2x2)       -1213.2 ppm   |z| =    0.79
+    W(4x4)      +19322.9 ppm   |z| =    1.28
+    W(6x6)     +266494.8 ppm   |z| =    1.66
+    W(8x8)    +1038603.0 ppm   |z| =    0.21
+    <Q^2> = 3.4336  (invariant: sweeps are topology-preserving)
+
+==========================================================================
+beta = 14.1464, L = 32, 512 configs  [108s]
+  entry-cost gate (W1x1,W2x2,W4x4 within 2.5 sigma): 18 sweeps
+  same gate including W6x6 and W8x8:                 52
+  at the deployed tail length of 16 sweeps:
+    W(1x1)         +43.7 ppm   |z| =    0.58
+    W(2x2)       +1012.4 ppm   |z| =    2.22
+    W(4x4)      +14087.6 ppm   |z| =    4.34
+    W(6x6)      +63157.8 ppm   |z| =    5.36
+    W(8x8)     +191191.6 ppm   |z| =    5.61
+    <Q^2> = 0.0000  (invariant: sweeps are topology-preserving)
+
+==========================================================================
+beta = 55.0237, L = 32, 512 configs  [114s]
+  entry-cost gate (W1x1,W2x2,W4x4 within 2.5 sigma): 6 sweeps
+  same gate including W6x6 and W8x8:                 None
+  at the deployed tail length of 16 sweeps:
+    W(1x1)         -17.7 ppm   |z| =    1.06
+    W(2x2)          +8.9 ppm   |z| =    0.08
+    W(4x4)       +1791.9 ppm   |z| =    2.30
+    W(6x6)      +13213.4 ppm   |z| =    5.21
+    W(8x8)      +42762.8 ppm   |z| =    7.15
+    <Q^2> = 0.0000  (invariant: sweeps are topology-preserving)
+
+==========================================================================
+beta = 118.5, L = 32, 512 configs  [108s]
+  entry-cost gate (W1x1,W2x2,W4x4 within 2.5 sigma): 8 sweeps
+  same gate including W6x6 and W8x8:                 38
+  at the deployed tail length of 16 sweeps:
+    W(1x1)          +6.3 ppm   |z| =    0.72
+    W(2x2)         +68.0 ppm   |z| =    1.33
+    W(4x4)        +921.8 ppm   |z| =    2.43
+    W(6x6)       +4861.2 ppm   |z| =    3.92
+    W(8x8)      +13937.2 ppm   |z| =    4.99
+    <Q^2> = 0.0000  (invariant: sweeps are topology-preserving)
+
+==========================================================================
+beta = 218.58, L = 32, 512 configs  [110s]
+  entry-cost gate (W1x1,W2x2,W4x4 within 2.5 sigma): 4 sweeps
+  same gate including W6x6 and W8x8:                 4
+  at the deployed tail length of 16 sweeps:
+    W(1x1)          -6.7 ppm   |z| =    1.45
+    W(2x2)         -14.3 ppm   |z| =    0.51
+    W(4x4)        +231.0 ppm   |z| =    1.17
+    W(6x6)       +1446.9 ppm   |z| =    2.27
+    W(8x8)       +3781.0 ppm   |z| =    2.57
+    <Q^2> = 0.0000  (invariant: sweeps are topology-preserving)
+
+==========================================================================
+VERDICT
+  beta     4.44: entry-cost gate     6 sweeps   with large loops     6 sweeps   <Q^2> 3.434
+  beta  14.1464: entry-cost gate    18 sweeps   with large loops    52 sweeps   <Q^2> 0.000
+  beta  55.0237: entry-cost gate     6 sweeps   with large loops        never   <Q^2> 0.000
+  beta    118.5: entry-cost gate     8 sweeps   with large loops    38 sweeps   <Q^2> 0.000
+  beta   218.58: entry-cost gate     4 sweeps   with large loops     4 sweeps   <Q^2> 0.000
+
+  Read against Table IX: the lift's entry cost is 0 trajectories and
+  winding HMC's is 500-8000. If this arm clears the gate cheaply, the
+  LOCAL half of that comparison is about HMC being a poor local
+  relaxer; the topological half is unaffected either way, since
+  <Q^2> is pinned at 0 here by construction.
+
+wrote out\u1_2d\cold_sweeps_control\cold_sweeps_control.json
