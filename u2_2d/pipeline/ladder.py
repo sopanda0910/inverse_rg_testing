@@ -41,7 +41,7 @@ from ..lgt.lattice import (
     plaquette,
     topological_charge,
 )
-from ..lgt.local_updates import conditional_su2_sweeps, retherm_sweeps
+from ..lgt.local_updates import conditional_su2_sweeps
 
 
 from ..model.det_lift import model_beta
@@ -297,11 +297,9 @@ def generate_ladder(
     model,
     noise_schedule,
     n_su2_sweeps: int = 20,
-    n_retherm_sweeps: int = 10,
     batch_size: int = 64,
     device: str = "cpu",
     verbose: bool = True,
-    retherm_topological_updates: bool = False,
     on_rung=None,
     **lift_kwargs,
 ) -> list[LadderRungResult]:
@@ -309,9 +307,22 @@ def generate_ladder(
 
     `coarse_ensemble`: [N, 2, L0, L0, 5] equilibrated at the coarsest rung.
     `beta_schedule`: target U(2) couplings for successive fine rungs.
-    Observables are logged at every rung so bias accumulation stays visible, and
-    both the pre- and post-rethermalization values are recorded so it is clear how
-    much of the agreement the model earned and how much the sweeps repaired.
+    Observables are logged at every rung so bias accumulation stays visible.
+
+    THE LOCAL REPAIR TAIL IS GONE AND IS NOT COMING BACK BY ACCIDENT. Rungs used
+    to end with `n_retherm_sweeps` of heatbath plus overrelaxation on BOTH
+    sectors, which made each rung's agreement a mixture of what the model
+    produced and what cheap exact local updates then repaired -- not separable
+    from outside, and large. The parameters are removed rather than defaulted to
+    zero so no caller can pass them, and `03_run_ladder.py` refuses a config
+    that still asks for them. Local repair belongs to HMC downstream, where it
+    is charged for in trajectories.
+
+    What remains, and must not be confused with it, is `conditional_su2_sweeps`
+    inside `generate_fine_from_coarse`: that is the exact sampler for
+    p(q | psi), it generates a sector the model never produces rather than
+    repairing one it did, and it leaves psi -- and so Q -- bit-for-bit
+    unchanged.
 
     `on_rung(result)` fires as each rung completes. A rung costs minutes and the
     top one is the most likely to fail -- it has the largest working set and the
@@ -327,18 +338,12 @@ def generate_ladder(
             n_su2_sweeps=n_su2_sweeps, batch_size=batch_size, device=device,
             **lift_kwargs,
         )
-        obs_raw = _rung_observables(fine)
-        raw = fine.clone()
-        action = WilsonU2Action(beta_target)
-        fine = _sweep_on_device(
-            fine,
-            lambda x: retherm_sweeps(x, action, n_retherm_sweeps,
-                                     topological_updates=retherm_topological_updates),
-            device,
-        )
         obs = _rung_observables(fine)
-        obs["plaquette_pre_retherm"] = obs_raw["plaquette"]
-        obs["q_squared_pre_retherm"] = obs_raw["q_squared"]
+        raw = fine.clone()
+        # Kept, equal to `plaquette`/`q_squared`, so downstream readers that
+        # expect the pre-retherm keys still work and plainly see the tail is off.
+        obs["plaquette_pre_retherm"] = obs["plaquette"]
+        obs["q_squared_pre_retherm"] = obs["q_squared"]
         result = LadderRungResult(beta=beta_target, lattice_size=fine.shape[-2],
                                   configs=fine, observables=obs, raw_configs=raw)
         results.append(result)
@@ -346,7 +351,7 @@ def generate_ladder(
             on_rung(result)
         if verbose:
             print(f"rung {rung_index}: L={fine.shape[-2]} beta={beta_target:g} "
-                  f"plaq={obs['plaquette']:.4f} (pre-retherm {obs_raw['plaquette']:.4f}) "
+                  f"plaq={obs['plaquette']:.4f} (no local repair) "
                   f"<Q^2>={obs['q_squared']:.3f}  [{time.time()-t0:.0f}s]")
         current = fine
     return results

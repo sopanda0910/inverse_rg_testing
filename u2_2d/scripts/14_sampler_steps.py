@@ -134,7 +134,6 @@ def main() -> int:
         results = generate_ladder(
             coarse, beta_schedule, model, schedule,
             n_su2_sweeps=int(ladder_cfg.get("n_su2_sweeps", 30)),
-            n_retherm_sweeps=int(ladder_cfg.get("n_retherm_sweeps", 10)),
             batch_size=int(ladder_cfg.get("batch_size", 64)),
             device=device,
             verbose=False,

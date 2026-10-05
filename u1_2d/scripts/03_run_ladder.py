@@ -40,6 +40,21 @@ def main() -> None:
     print(f"device: {configure_device(device)}")
     action_type = config["action_type"]
     ladder_cfg = config["ladder"]
+
+    # The post-lift repair tail was removed from the pipeline. A config that
+    # still asks for it is describing a run this code cannot produce, so fail
+    # here rather than silently deliver an unrepaired ensemble under its name.
+    stale = int(ladder_cfg.get("n_retherm_sweeps", 0) or 0)
+    if stale or ladder_cfg.get("retherm_topological_updates"):
+        raise SystemExit(
+            f"{args.config}: ladder.n_retherm_sweeps={stale} and "
+            f"ladder.retherm_topological_updates="
+            f"{bool(ladder_cfg.get('retherm_topological_updates'))}, but the "
+            "local repair tail no longer exists -- the lift is handed to HMC as "
+            "the model produces it. Delete both keys (or set n_retherm_sweeps "
+            "to 0) to run the current pipeline. Results produced with the tail "
+            "are not comparable with results produced without it."
+        )
     data_cfg = config["data"]
     out_dir = Path(ladder_cfg["out_dir"])
 
@@ -91,7 +106,6 @@ def main() -> None:
         [float(b) for b in ladder_cfg["beta_schedule"]],
         model,
         schedule,
-        n_retherm_sweeps=int(ladder_cfg["n_retherm_sweeps"]),
         action_type=action_type,
         n_sampler_steps=int(ladder_cfg["n_sampler_steps"]),
         n_corrector_steps=int(ladder_cfg["n_corrector_steps"]),
@@ -99,7 +113,6 @@ def main() -> None:
         device=device,
         consistency_weight=float(ladder_cfg.get("consistency_weight", 1.0)),
         enforce_coarse_charge=bool(ladder_cfg.get("enforce_coarse_charge", True)),
-        retherm_topological_updates=bool(ladder_cfg.get("retherm_topological_updates", False)),
         physics_blend_coef=physics_blend_coef,
         physics_blend_beta_min=float(ladder_cfg.get("physics_blend_beta_min", 0.0)),
         charge_projection_sigma=float(ladder_cfg.get("charge_projection_sigma", 0.5)),
@@ -116,7 +129,7 @@ def main() -> None:
                 "beta": rung.beta,
                 "lattice_size": rung.lattice_size,
                 "action_type": action_type,
-                "provenance": f"ladder rung {i}: conditional diffusion + {ladder_cfg['n_retherm_sweeps']} retherm sweeps",
+                "provenance": f"ladder rung {i}: conditional diffusion, no local repair",
                 "observables": rung.observables,
             },
         )
