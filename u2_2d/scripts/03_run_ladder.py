@@ -77,6 +77,23 @@ def main() -> int:
     set_seed(int(config.get("seed", 0)))
 
     ladder_cfg = config["ladder"]
+
+    # The post-lift repair tail was removed from the pipeline. A config that
+    # still asks for it is describing a run this code cannot produce, so fail
+    # here rather than silently deliver an unrepaired ensemble under its name.
+    # This is NOT the conditional SU(2) heatbath, which is the exact sampler for
+    # p(q | psi) and still runs inside every lift.
+    _stale = int(ladder_cfg.get("n_retherm_sweeps", 0) or 0)
+    if _stale or ladder_cfg.get("retherm_topological_updates"):
+        raise SystemExit(
+            f"{args.config}: ladder.n_retherm_sweeps={_stale} and "
+            f"ladder.retherm_topological_updates="
+            f"{bool(ladder_cfg.get('retherm_topological_updates'))}, but the "
+            "local repair tail no longer exists -- the lift is handed to HMC as "
+            "the model produces it. Delete both keys (or set n_retherm_sweeps "
+            "to 0) to run the current pipeline. Results produced with the tail "
+            "are not comparable with results produced without it."
+        )
     data_dir = Path(args.data_dir or config["data"].get("out_dir", "out/u2_2d/data"))
     out_dir = Path(args.out_dir or ladder_cfg.get("out_dir", "out/u2_2d/ladder"))
     out_dir.mkdir(parents=True, exist_ok=True)
@@ -189,7 +206,6 @@ def main() -> int:
         model,
         schedule,
         n_su2_sweeps=int(ladder_cfg.get("n_su2_sweeps", 20)),
-        n_retherm_sweeps=int(ladder_cfg.get("n_retherm_sweeps", 10)),
         batch_size=int(ladder_cfg.get("batch_size", 64)),
         device=device,
         consistency_weight=float(ladder_cfg.get("consistency_weight", 1.0)),
@@ -197,7 +213,6 @@ def main() -> int:
         physics_blend_coef=float(ladder_cfg.get("physics_blend_coef", 0.0)),
         n_sampler_steps=int(ladder_cfg.get("n_sampler_steps", 200)),
         n_corrector_steps=int(ladder_cfg.get("n_corrector_steps", 1)),
-        retherm_topological_updates=bool(ladder_cfg.get("retherm_topological_updates", False)),
         on_rung=save_rung,
     )
 

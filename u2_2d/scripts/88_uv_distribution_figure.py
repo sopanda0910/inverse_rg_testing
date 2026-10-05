@@ -283,7 +283,10 @@ def topo_panel(ax, arms, chains, qv, pq, title, volume, qmax=5, rng=None):
 
     ax.set_xlim(-qmax - 0.6, qmax + 0.6)
     ax.set_ylim(0, 1.04)
-    ax.set_xticks(qs[::2])
+    # Every other charge STARTING FROM -qmax drops Q = 0 whenever qmax is odd,
+    # which is the one label a charge distribution has to carry. Tick the even
+    # charges instead, so zero is always among them.
+    ax.set_xticks([q for q in qs if q % 2 == 0])
     ax.set_xlabel(r"topological charge $Q$", fontsize=9.5, color=INK)
     ax.set_title(title, fontsize=10, color=INK)
     ax.grid(True, axis="y", color=GRID, lw=0.5, alpha=0.7)

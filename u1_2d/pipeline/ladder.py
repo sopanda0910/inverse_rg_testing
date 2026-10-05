@@ -14,8 +14,7 @@ from dataclasses import dataclass, field
 
 import torch
 
-from ..lgt.actions import make_action
-from ..lgt.local_updates import retherm_sweeps, instanton_field
+from ..lgt.local_updates import instanton_field
 from ..lgt.lattice import mean_plaquette, topological_charge, plaquette_angles, wrap
 from ..model.sampler import sample_ancestral
 from ..model.score_net import coarse_conditioning_channels, plaquette_curl
@@ -253,7 +252,6 @@ def generate_ladder(
     beta_schedule: list[float],
     model,
     noise_schedule,
-    n_retherm_sweeps: int = 10,
     action_type: str = "wilson",
     n_sampler_steps: int = 200,
     n_corrector_steps: int = 1,
@@ -262,7 +260,6 @@ def generate_ladder(
     verbose: bool = True,
     consistency_weight: float = 1.0,
     enforce_coarse_charge: bool = True,
-    retherm_topological_updates: bool = False,
     physics_blend_coef: float = 0.0,
     physics_blend_beta_min: float = 0.0,
     charge_projection_sigma: float = 0.5,
@@ -276,12 +273,19 @@ def generate_ladder(
     Returns one LadderRungResult per generated rung (observables logged at every
     rung so drift/bias accumulation is visible).
 
-    retherm_topological_updates: include instanton Q-hop proposals in the
-    rethermalization at every rung. The smooth-instanton dS is O(beta / V), so
-    acceptance stays high even at couplings where local updates never tunnel;
-    this re-equilibrates P(Q) at each rung instead of freezing in the sector
-    inherited from the base ensemble. Leave off to test whether the model and
-    charge transport alone reproduce topology.
+    THE LOCAL REPAIR TAIL IS GONE AND IS NOT COMING BACK BY ACCIDENT. Rungs used
+    to end with `n_retherm_sweeps` of heatbath plus overrelaxation, which made
+    every rung's agreement a mixture of what the model produced and what cheap
+    exact local updates then fixed -- unmeasurable from the outside, and large:
+    the repair factor on the plaquette reached 64x. The parameters are removed
+    rather than defaulted to zero so that no caller can pass them, and
+    `03_run_ladder.py` refuses a config that still asks for them. Local repair
+    now belongs to HMC downstream, where it is charged for in trajectories.
+
+    `retherm_sweeps` itself stays in `lgt.local_updates`: it is the cold-start
+    thermalizer for stage 01 and the sector-augmentation relaxer, and in u2 it
+    is also the exact conditional SU(2) sampler. What is removed is applying it
+    to the lift.
     """
     current = coarse_ensemble
     results = []
@@ -304,15 +308,12 @@ def generate_ladder(
             charge_projection_interval=charge_projection_interval,
             corrector_snr=corrector_snr,
         )
-        obs_raw = _rung_observables(fine)
-        raw = fine.clone()
-        action = make_action(action_type, beta_target)
-        fine = retherm_sweeps(
-            fine, action, n_retherm_sweeps, topological_updates=retherm_topological_updates
-        )
         obs = _rung_observables(fine)
-        obs["plaquette_pre_retherm"] = obs_raw["plaquette"]
-        obs["q_squared_pre_retherm"] = obs_raw["q_squared"]
+        raw = fine.clone()
+        # Kept, equal to `plaquette`/`q_squared`, so downstream readers that
+        # expect the pre-retherm keys still work and plainly see the tail is off.
+        obs["plaquette_pre_retherm"] = obs["plaquette"]
+        obs["q_squared_pre_retherm"] = obs["q_squared"]
         result = LadderRungResult(
             beta=beta_target, lattice_size=fine.shape[-1], configs=fine, observables=obs,
             raw_configs=raw,
@@ -321,7 +322,7 @@ def generate_ladder(
         if verbose:
             print(
                 f"rung {rung_index}: L={fine.shape[-1]} beta={beta_target} "
-                f"plaq={obs['plaquette']:.4f} (pre-retherm {obs_raw['plaquette']:.4f}) "
+                f"plaq={obs['plaquette']:.4f} (no local repair) "
                 f"<Q^2>={obs['q_squared']:.3f}  [{time.time()-t0:.0f}s]"
             )
         current = fine

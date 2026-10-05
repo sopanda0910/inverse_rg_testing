@@ -1,0 +1,72 @@
+{
+  "beta": 1660.076283,
+  "lattice_size": 128,
+  "tail_fraction": 0.5,
+  "exact_q_squared": 1.0011887010243956,
+  "arms": [
+    {
+      "arm": "A_diffusion_seed",
+      "q_squared_mean": 0.75,
+      "q_squared_sem": 0.23890695460573008,
+      "q_squared_exact": 1.0011887010243956,
+      "q_squared_z": -1.0514080740719087,
+      "charge_conjugation_asymmetry_z": 0.3396776803430902,
+      "sector_gof_chi2": 0.0452546999540906,
+      "sector_gof_dof": 3,
+      "sector_gof_p": 0.9625187406296851,
+      "sector_gof_bins": 5,
+      "exact_probability_covered": 0.936733816410746,
+      "odd_sectors_visited": 2,
+      "n_chains_bootstrapped": 16,
+      "n_draws_kept": 41
+    },
+    {
+      "arm": "D_cold_plus_winding",
+      "q_squared_mean": 0.7865853658536586,
+      "q_squared_sem": 0.0489157180200725,
+      "q_squared_exact": 1.0011887010243956,
+      "q_squared_z": -4.3872060731619,
+      "charge_conjugation_asymmetry_z": -1.1891510620714334,
+      "sector_gof_chi2": 52.0061311877001,
+      "sector_gof_dof": 2,
+      "sector_gof_p": 0.0004997501249375312,
+      "sector_gof_bins": 5,
+      "exact_probability_covered": 0.5071498005638789,
+      "odd_sectors_visited": 0,
+      "n_chains_bootstrapped": 32,
+      "n_draws_kept": 41
+    },
+    {
+      "arm": "G_cold_plus_odd_winding",
+      "q_squared_mean": 1.25,
+      "q_squared_sem": 0.0522191507955338,
+      "q_squared_exact": 1.0011887010243956,
+      "q_squared_z": 4.764751919268758,
+      "charge_conjugation_asymmetry_z": 0.5449351488705729,
+      "sector_gof_chi2": 23.246442982154786,
+      "sector_gof_dof": 4,
+      "sector_gof_p": 0.0079960019990005,
+      "sector_gof_bins": 5,
+      "exact_probability_covered": 0.9997269165470734,
+      "odd_sectors_visited": 4,
+      "n_chains_bootstrapped": 32,
+      "n_draws_kept": 41
+    },
+    {
+      "arm": "H_diffusion_plus_odd_winding",
+      "q_squared_mean": 1.204268292682927,
+      "q_squared_sem": 0.08468430231466581,
+      "q_squared_exact": 1.0011887010243956,
+      "q_squared_z": 2.3980783463733104,
+      "charge_conjugation_asymmetry_z": -0.1396853598975681,
+      "sector_gof_chi2": 6.420931339762743,
+      "sector_gof_dof": 4,
+      "sector_gof_p": 0.35332333833083457,
+      "sector_gof_bins": 5,
+      "exact_probability_covered": 0.9997269165470734,
+      "odd_sectors_visited": 4,
+      "n_chains_bootstrapped": 16,
+      "n_draws_kept": 41
+    }
+  ]
+}

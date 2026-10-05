@@ -74,6 +74,10 @@ RUNGS = [
     ("out/u2_2d/seed_benchmark_noretherm", 64, 416.524),
     ("out/u2_2d/seed_benchmark_wide_L128_noretherm", 128, 1660.076283),
 ]
+# Panel (b) divides each classical arm's interval by arm A's t_therm. Arm H is
+# plotted in (a) for completeness and is deliberately NOT a second denominator:
+# a factor per (lift, classical) pair would put four markers on every rung and
+# the lift of record is arm A.
 ARMS = [
     ("arm_A_diffusion_seed", "lift", "#D55E00", "lift, plain HMC"),
     ("arm_H_diffusion_plus_odd_winding", "lift", "#E8A87C",
@@ -274,6 +278,13 @@ def main() -> int:
                 ax2.annotate("", xy=(i + off, y0 * 9.0), xytext=(i + off, y0),
                              arrowprops=dict(arrowstyle="-|>", color=colour,
                                              lw=2.0))
+    # A rung where NO arm equilibrates has no factor, and leaving its column
+    # blank reads as missing data rather than as an undefined ratio. Say it.
+    for i, L in enumerate(Ls):
+        lift = data.get((L, "arm_A_diffusion_seed"))
+        if lift is not None and not np.isfinite(lift[0]):
+            ax2.text(i, 1.2e2, "no arm\nequilibrates", fontsize=7.5, color=MUTED,
+                     ha="center", va="center", linespacing=1.4, zorder=5)
     # same convention as fig64: green is the region where the lift is cheaper
     ax2.axhspan(1.0, 1e5, color="#2ca02c", alpha=0.06, zorder=0)
     # just above F = 1 at the right, clear of the arrow note at the top
@@ -284,8 +295,9 @@ def main() -> int:
     # floor, and was being clipped into the spine with no truncation mark --
     # which hid that it straddles F = 1.
     ax2.set_ylim(0.1, 1e5)
-    ax2.set_ylabel("improvement factor", fontsize=9.5, color=INK)
-    ax2.set_title("(b)  improvement factor", fontsize=9.5, color=INK, loc="left")
+    ax2.set_ylabel("improvement factor $F$", fontsize=9.5, color=INK)
+    ax2.set_title("(b)  $F$: the lift against each classical arm", fontsize=9.5,
+                  color=INK, loc="left")
     ax2.text(0.5, 0.965,
              "arrows: classical arm never\nequilibrates, factor unbounded",
              transform=ax2.transAxes, ha="center", va="top", fontsize=7.5,
@@ -303,8 +315,11 @@ def main() -> int:
             a.spines[sp].set_visible(False)
         a.tick_params(colors=MUTED, labelsize=8.5)
 
-    # one legend only: panel (b) reuses panel (a)'s colours, and repeating them
-    # as "vs cold + ..." doubled every entry
+    # One legend for both panels. Marker SHAPE carries the distinction and is
+    # consistent across them -- circles are lifted arms, squares classical ones
+    # -- but the QUANTITY differs: a square in (a) is that classical arm's own
+    # interval, while a square in (b) is F for the lift measured against it.
+    # Panel (b)'s title says so, rather than doubling every legend entry.
     h1, l1 = axes[0].get_legend_handles_labels()
     # laid out above the legend's MEASURED height: a guessed negative anchor
     # left a dead band between the tick labels and the legend
