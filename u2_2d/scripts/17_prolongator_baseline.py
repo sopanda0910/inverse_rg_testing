@@ -67,6 +67,7 @@ from u2_2d.lgt.hmc import BatchedHMCU2, adapted_hmc_params
 from u2_2d.lgt.lattice import det_links, half_retr, plaquette, topological_charge, wilson_loop
 from u2_2d.lgt.local_updates import conditional_su2_sweeps, retherm_sweeps
 from u2_2d.model.su2_lift import assemble_links, naive_su2_inverse_block
+from u2_2d.validate.stats import integrated_autocorrelation_time
 from u2_2d.utils import (
     configure_device,
     ensemble_path,
@@ -196,6 +197,28 @@ def ape_for(beta: float):
     return _ape
 
 
+def cold_psi(psi: torch.Tensor) -> torch.Tensor:
+    """[B,2,Lc,Lc] -> [B,2,2Lc,2Lc] of zeros: ordered, Q = 0, carrying NO coarse
+    information at all.
+
+    The control for "does the coarse configuration contribute anything beyond
+    its topological charge?". `assemble` still enforces the coarse charge on it,
+    so this arm has the correct sector and nothing else -- the fine determinant
+    phase is the bare instanton field. Paired with `tune_smear` it answers the
+    question in one number: if it tunes to the same sweep count as `flux`, the
+    coarse long-distance structure is doing no work that cheap exact local
+    updates cannot, and the inverse-RG framing reduces to imposing Q on a
+    smoothed ordered start.
+
+    Cold rather than hot deliberately. At the benchmark coupling the equilibrium
+    is highly ordered (plaquette 0.9988); a hot start is ~100% away and would
+    mostly measure how long heatbath takes to order a random field, which is a
+    different question.
+    """
+    b, _, lc, _ = psi.shape
+    return torch.zeros(b, 2, 2 * lc, 2 * lc, dtype=psi.dtype, device=psi.device)
+
+
 GEOMETRIC = {"tile": tile, "halve": halve, "flux": flux}
 
 
@@ -227,31 +250,105 @@ def assemble(psi_fine: torch.Tensor, coarse: torch.Tensor, beta: float,
     return fine.cpu(), pre
 
 
-def tune_smear(fine: torch.Tensor, beta: float, device: str, max_sweeps: int = 400,
-               check_every: int = 5) -> tuple[torch.Tensor, int, float]:
-    """Extra heatbath + overrelaxation sweeps until the plaquette crosses exact.
+def _plaq_gap(links: torch.Tensor, target: float) -> tuple[float, float]:
+    """|mean plaquette - exact| and the ACROSS-CHAIN standard error of that mean.
 
-    Stopping on the exact plaquette rather than a fixed count is what makes this
-    a competitor instead of a strawman -- and the count it needs, together with
-    the seconds it cost, is returned so the arm is charged for its own tuning.
+    Per-chain means, not a batch mean: the chains are the independent replicas,
+    so they are what sets the resolution this comparison can actually claim.
+    """
+    per_chain = half_retr(plaquette(links)).mean(dim=(-2, -1))
+    mean = float(per_chain.mean())
+    sem = float(per_chain.std(unbiased=True)) / math.sqrt(per_chain.shape[0])
+    return abs(mean - target), sem
+
+
+def tune_smear(fine: torch.Tensor, beta: float, device: str, max_sweeps: int = 400,
+               check_every: int = 1, n_sem: float = 2.0) -> dict:
+    """Heatbath + overrelaxation sweeps until the plaquette is INDISTINGUISHABLE
+    from exact at this ensemble's own resolution. Returns the first crossing.
+
+    THE CRITERION IS A RESOLUTION-AWARE THRESHOLD CROSSING, NOT AN ARGMIN, and
+    the previous version being an argmin on a stride of five is why the tuned
+    count was unreproducible (`smear` returned 50 / 25 / 15 / 10 across four runs
+    at the SAME coupling). Two defects, both fixed here:
+
+      * `check_every = 5` quantized every count to a multiple of five, so the
+        learned lift's "5" was the FIRST GRID POINT -- floor-limited, possibly
+        truly 1 -- and no margin finer than a factor of two was resolvable. Now
+        every sweep is checked.
+      * the old rule kept the count with the smallest |gap| over the whole scan.
+        Once a configuration is inside the ensemble's standard error the gap is
+        pure noise, so that argmin selected wherever noise happened to dip --
+        the same failure mode `docs` records for the discrete `t_therm`, which
+        was replaced by a fitted estimator for exactly this reason.
+
+    The replacement stops at the first `n` with `gap <= n_sem * sem`, both
+    measured across chains. `n = 0` is a real answer and means the lift needed no
+    local updating at all. `None` means it never got there within `max_sweeps`.
+
+    `sem` is reported so a margin can be read against the resolution that
+    produced it: two arms whose gaps differ by less than one SEM are not
+    separated by this measurement, however different their counts look.
     """
     target = plaquette_exact(beta, fine.shape[-3])
     action = WilsonU2Action(beta)
     links = fine.to(device)
     t0 = time.time()
-    best, best_n, best_err = links.clone(), 0, abs(
-        float(half_retr(plaquette(links)).mean()) - target)
+    gap, sem = _plaq_gap(links, target)
+    history = [{"n": 0, "gap": gap, "sem": sem}]
+    hit, n_hit = gap <= n_sem * sem, 0
     with torch.no_grad():
-        for n in range(1, max_sweeps + 1):
+        n = 0
+        while not hit and n < max_sweeps:
             links = retherm_sweeps(links, action, 1, topological_updates=False)
+            n += 1
             if n % check_every:
                 continue
-            err = abs(float(half_retr(plaquette(links)).mean()) - target)
-            if err < best_err:
-                best, best_n, best_err = links.clone(), n, err
-            elif err > 3.0 * best_err and best_n:
-                break
-    return best.cpu(), best_n, time.time() - t0
+            gap, sem = _plaq_gap(links, target)
+            history.append({"n": n, "gap": gap, "sem": sem})
+            if gap <= n_sem * sem:
+                hit, n_hit = True, n
+    return {
+        "links": links.cpu(),
+        "n_sweeps": n_hit if hit else None,
+        "gap": gap,
+        "sem": sem,
+        "n_sem": n_sem,
+        "target": target,
+        "max_sweeps": max_sweeps,
+        "seconds": time.time() - t0,
+        "history": history,
+    }
+
+
+def fixed_smear(fine: torch.Tensor, beta: float, device: str, n_sweeps: int) -> dict:
+    """`n_sweeps` sweeps, chosen WITHOUT reference to the exact plaquette.
+
+    The transfer control. `tune_smear` consumes `plaquette_exact`, which exists
+    only because 2D U(2) is solvable -- so a practitioner in 4D SU(3) cannot run
+    it, and the only way they could use a classical prolongator is to carry a
+    count over from somewhere else. This arm is that: one count, applied
+    unchanged at every coupling, with the resulting gap reported rather than
+    minimized.
+    """
+    target = plaquette_exact(beta, fine.shape[-3])
+    action = WilsonU2Action(beta)
+    links = fine.to(device)
+    t0 = time.time()
+    with torch.no_grad():
+        links = retherm_sweeps(links, action, n_sweeps, topological_updates=False)
+    gap, sem = _plaq_gap(links, target)
+    return {
+        "links": links.cpu(),
+        "n_sweeps": n_sweeps,
+        "gap": gap,
+        "sem": sem,
+        "n_sem": None,
+        "target": target,
+        "max_sweeps": None,
+        "seconds": time.time() - t0,
+        "history": [],
+    }
 
 
 # --------------------------------------------------------------------------
@@ -318,6 +415,23 @@ def main() -> int:
     parser.add_argument("--n-chains", type=int, default=64)
     parser.add_argument("--rung", type=int, default=-1,
                         help="ladder rung to test (-1 = the top one)")
+    parser.add_argument("--coarse-path", default=None,
+                        help="lift THIS coarse ensemble instead of a ladder "
+                             "rung, so the comparison can be run at any "
+                             "coupling rather than only at the two the deployed "
+                             "ladder happens to have. Requires --beta. The "
+                             "`diffusion` arm is unavailable (it loads stage "
+                             "03's output); use diffusion_raw.")
+    parser.add_argument("--beta", type=float, default=None,
+                        help="fine beta, with --coarse-path. Omit to take the "
+                             "topology-matched value for the coarse ensemble.")
+    parser.add_argument("--fixed-sweeps", type=int, default=25,
+                        help="sweep count for the *_fixed arms, applied "
+                             "unchanged at every coupling. These are the "
+                             "TRANSFER controls: tune_smear consumes the exact "
+                             "plaquette, which only exists because 2D U(2) is "
+                             "solvable, so a fixed transferred count is what a "
+                             "practitioner without a closed form could run.")
     parser.add_argument("--checkpoint", default=None,
                         help="score-net checkpoint for the `diffusion_raw` arm "
                              "(default: the config's)")
@@ -350,31 +464,70 @@ def main() -> int:
     base = ladder_cfg["base"]
     schedule = [float(b) for b in ladder_cfg["beta_schedule"]]
     sizes = [int(base["lattice_size"]) * 2 ** (i + 1) for i in range(len(schedule))]
-    rung = args.rung if args.rung >= 0 else len(schedule) - 1
-    beta, size = schedule[rung], sizes[rung]
     ladder_dir = Path(ladder_cfg.get("out_dir", "out/u2_2d/ladder"))
 
-    # the coarse ensemble this rung was lifted FROM -- the base for rung 0, the
-    # previous rung's own output above it, exactly as `generate_ladder` chains them
-    if rung == 0:
-        coarse_path = ensemble_path(config["data"]["out_dir"],
-                                    int(base["lattice_size"]), float(base["beta"]))
-    else:
-        coarse_path = ensemble_path(ladder_dir, sizes[rung - 1], schedule[rung - 1],
-                                    tag="ladder")
-    fine_path = ensemble_path(ladder_dir, size, beta, tag="ladder")
-    for p in (coarse_path, fine_path):
-        if not p.exists():
-            print(f"missing {p} -- run stage 03 first")
-            return 1
+    if args.coarse_path:
+        # ARBITRARY COUPLING. The ladder has exactly two rungs, so --rung alone
+        # cannot scan beta, and a scaling claim needs more than two points. Any
+        # L=16 ensemble in the data directory serves as a coarse input; the fine
+        # coupling comes from the same topology-matched relation the ladder
+        # itself uses, so each point is a legitimate inverse-RG step rather than
+        # an arbitrary pairing.
+        from u2_2d.lgt.blocking import topology_matched_fine_beta
 
-    coarse, _ = load_ensemble(coarse_path)
-    generated, _ = load_ensemble(fine_path)
-    n_chains = min(args.n_chains, coarse.shape[0], generated.shape[0])
-    coarse, generated = coarse[:n_chains], generated[:n_chains]
-    print(f"rung {rung}: L={size} beta={beta:g}, {n_chains} chains, "
-          f"{args.n_traj} trajectories per arm")
-    print(f"  coarse from {coarse_path.name}  ({coarse.shape[-3]}^2)")
+        coarse_path = Path(args.coarse_path)
+        if not coarse_path.exists():
+            print(f"missing {coarse_path}")
+            return 1
+        coarse, meta = load_ensemble(coarse_path)
+        coarse_size = int(coarse.shape[-3])
+        coarse_beta = float((meta or {}).get("beta", 0.0)) or _beta_from_name(
+            coarse_path)
+        if coarse_beta is None:
+            print(f"cannot determine the coarse beta of {coarse_path.name}; "
+                  "pass --beta")
+            return 1
+        size = 2 * coarse_size
+        beta = (args.beta if args.beta is not None
+                else topology_matched_fine_beta(coarse_beta, coarse_size))
+        generated = None
+        rung = None
+        n_chains = min(args.n_chains, coarse.shape[0])
+        coarse = coarse[:n_chains]
+        print(f"arbitrary coupling: L={size} beta={beta:g} "
+              f"(from L={coarse_size} beta={coarse_beta:g}), {n_chains} chains, "
+              f"{args.n_traj} trajectories per arm")
+        print(f"  coarse from {coarse_path.name}  ({coarse_size}^2)")
+        if "diffusion" in args.arms:
+            print("  `diffusion` needs stage 03's output; use diffusion_raw")
+            args.arms = [a for a in args.arms if a != "diffusion"]
+    else:
+        rung = args.rung if args.rung >= 0 else len(schedule) - 1
+        beta, size = schedule[rung], sizes[rung]
+
+        # the coarse ensemble this rung was lifted FROM -- the base for rung 0,
+        # the previous rung's own output above it, exactly as `generate_ladder`
+        # chains them
+        if rung == 0:
+            coarse_path = ensemble_path(config["data"]["out_dir"],
+                                        int(base["lattice_size"]),
+                                        float(base["beta"]))
+        else:
+            coarse_path = ensemble_path(ladder_dir, sizes[rung - 1],
+                                        schedule[rung - 1], tag="ladder")
+        fine_path = ensemble_path(ladder_dir, size, beta, tag="ladder")
+        for p in (coarse_path, fine_path):
+            if not p.exists():
+                print(f"missing {p} -- run stage 03 first")
+                return 1
+
+        coarse, _ = load_ensemble(coarse_path)
+        generated, _ = load_ensemble(fine_path)
+        n_chains = min(args.n_chains, coarse.shape[0], generated.shape[0])
+        coarse, generated = coarse[:n_chains], generated[:n_chains]
+        print(f"rung {rung}: L={size} beta={beta:g}, {n_chains} chains, "
+              f"{args.n_traj} trajectories per arm")
+        print(f"  coarse from {coarse_path.name}  ({coarse.shape[-3]}^2)")
 
     # Both sweep counts are overridable, and --n-retherm 0 is the setting that
     # makes this ablation comparable to u1_2d's `37_tiling_baseline.py`.
@@ -406,7 +559,7 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
 
     psi_coarse = det_links(coarse)
-    starts, build_cost, smear_count, pre_plaq = {}, {}, {}, {}
+    starts, build_cost, smear_count, pre_plaq, tune_info = {}, {}, {}, {}, {}
     _diffusion_lift_cache = {}
     raw_pre = _load_raw_pre_retherm(ladder_dir, size, beta)
     for name in args.arms:
@@ -455,11 +608,26 @@ def main() -> int:
                 print("  diffusion_tuned needs `diffusion_raw` listed first, "
                       "skipping")
                 continue
-            tuned, count, secs = tune_smear(base, beta, device)
-            starts[name] = tuned
-            smear_count[name] = count
+            info = tune_smear(base, beta, device)
+            starts[name] = info["links"]
+            smear_count[name] = info["n_sweeps"]
+            tune_info[name] = info
             pre_plaq[name] = pre_plaq.get("diffusion_raw")
-            print(f"  diffusion_tuned: {count} tuned sweeps ({secs:.0f}s)")
+            _report_tuning(name, info)
+        elif name == "diffusion_fixed":
+            # The learned lift on the SAME untuned budget the classical transfer
+            # arms get, so the comparison at a fixed count is like-for-like.
+            base = _diffusion_lift_cache.get("fine")
+            if base is None:
+                print("  diffusion_fixed needs `diffusion_raw` listed first, "
+                      "skipping")
+                continue
+            info = fixed_smear(base, beta, device, args.fixed_sweeps)
+            starts[name] = info["links"]
+            smear_count[name] = info["n_sweeps"]
+            tune_info[name] = info
+            pre_plaq[name] = pre_plaq.get("diffusion_raw")
+            _report_tuning(name, info)
         elif name in GEOMETRIC:
             starts[name], pre_plaq[name] = assemble(
                 GEOMETRIC[name](psi_coarse), coarse, beta, n_su2, n_retherm, device)
@@ -475,11 +643,50 @@ def main() -> int:
             # which is why it always carried ~25 more sweeps than every other
             # arm and won comparisons it was not entitled to win.
             fine, pre = assemble(flux(psi_coarse), coarse, beta, n_su2, 0, device)
-            smeared, count, secs = tune_smear(fine, beta, device)
-            starts[name] = smeared
-            smear_count[name] = count
+            info = tune_smear(fine, beta, device)
+            starts[name] = info["links"]
+            smear_count[name] = info["n_sweeps"]
+            tune_info[name] = info
             pre_plaq[name] = pre
-            print(f"  smear: {count} tuned sweeps ({secs:.0f}s)")
+            _report_tuning(name, info)
+        elif name == "smear_fixed":
+            # `flux` on a transferred count: the classical arm as a practitioner
+            # without a closed form would have to run it.
+            fine, pre = assemble(flux(psi_coarse), coarse, beta, n_su2, 0, device)
+            info = fixed_smear(fine, beta, device, args.fixed_sweeps)
+            starts[name] = info["links"]
+            smear_count[name] = info["n_sweeps"]
+            tune_info[name] = info
+            pre_plaq[name] = pre
+            _report_tuning(name, info)
+        elif name == "cold_tuned":
+            # The coarse-information control. Same charge enforcement, same
+            # conditional SU(2) sweeps, same tuning procedure as `smear` -- and
+            # a fine determinant phase that is identically zero before the
+            # charge is imposed. n_retherm=0 inside assemble for the same reason
+            # `smear` uses it: the tuned count is this arm's entire budget.
+            fine, pre = assemble(cold_psi(psi_coarse), coarse, beta, n_su2, 0,
+                                 device)
+            info = tune_smear(fine, beta, device)
+            starts[name] = info["links"]
+            smear_count[name] = info["n_sweeps"]
+            tune_info[name] = info
+            pre_plaq[name] = pre
+            _report_tuning(name, info)
+        elif name == "cold_fixed":
+            # The whole classical route with NO closed form anywhere in it: an
+            # ordered field, the coarse charge, and a transferred sweep count.
+            # If this arm competes, the method reduces to imposing Q on a
+            # smoothed ordered start and needs neither a model nor a coarse
+            # ensemble beyond a charge draw.
+            fine, pre = assemble(cold_psi(psi_coarse), coarse, beta, n_su2, 0,
+                                 device)
+            info = fixed_smear(fine, beta, device, args.fixed_sweeps)
+            starts[name] = info["links"]
+            smear_count[name] = info["n_sweeps"]
+            tune_info[name] = info
+            pre_plaq[name] = pre
+            _report_tuning(name, info)
         elif name == "cold":
             starts[name] = sampler.initialize(hot=False).cpu()
         elif name == "hot":
@@ -499,6 +706,21 @@ def main() -> int:
         t_therm = {k: thermalization_time(v, exact[k]) for k, v in arm["series"].items()}
         initial = {k: float(v[0].mean()) for k, v in arm["series"].items()}
         final = {k: float(v[-1].mean()) for k, v in arm["series"].items()}
+        # Local-update sweeps this arm actually received. `tune_info` carries it
+        # for the tuned and fixed-count arms (None there means the tuning never
+        # reached the resolution threshold, which is NOT zero sweeps); every
+        # other arm got exactly what `assemble` applied, and the cold/hot arms
+        # bypass `assemble` entirely.
+        if name in tune_info:
+            local_sweeps = tune_info[name]["n_sweeps"]
+        elif name in ("cold", "hot"):
+            local_sweeps = 0
+        elif name == "diffusion":
+            local_sweeps = int(ladder_cfg.get("n_retherm_sweeps", 10))
+        else:
+            local_sweeps = n_retherm
+        slowest = (max(t_therm.values()) if all(
+            math.isfinite(v) for v in t_therm.values()) else None)
         row = {
             "arm": name,
             "lattice_size": size,
@@ -507,11 +729,32 @@ def main() -> int:
             "n_traj": args.n_traj,
             "build_seconds": build_cost.get(name),
             "tuned_sweeps": smear_count.get(name),
+            "local_sweeps": local_sweeps,
+            "tuning_converged": (None if name not in tune_info
+                                 else tune_info[name]["n_sweeps"] is not None),
+            "plaquette_gap": (None if name not in tune_info
+                              else tune_info[name]["gap"]),
+            "plaquette_gap_sem": (None if name not in tune_info
+                                  else tune_info[name]["sem"]),
+            "plaquette_gap_in_sem": (
+                None if name not in tune_info or not tune_info[name]["sem"]
+                else tune_info[name]["gap"] / tune_info[name]["sem"]),
+            "tuning_seconds": (None if name not in tune_info
+                               else tune_info[name]["seconds"]),
+            "tuning_history": (None if name not in tune_info
+                               else tune_info[name]["history"]),
+            # cost in one currency; see SWEEP_TOUCHES for why this is needed
+            "hmc_n_steps": n_steps,
+            "sweep_touches": SWEEP_TOUCHES,
+            "link_touches": _link_touches(local_sweeps, slowest, n_steps),
+            # NOT folded into the total: the conditional SU(2) sweeps act on the
+            # q sector at frozen psi, are identical for every arm that goes
+            # through `assemble`, and are a different move from a retherm sweep.
+            "su2_sweeps": 0 if name in ("cold", "hot") else n_su2,
             "hmc_seconds": arm["seconds"],
             "t_therm": {k: (v if math.isfinite(v) else None) for k, v in t_therm.items()},
             "t_therm_budget": args.n_traj,
-            "t_therm_slowest": (max(t_therm.values()) if all(
-                math.isfinite(v) for v in t_therm.values()) else None),
+            "t_therm_slowest": slowest,
             "rel_err_initial": {k: (initial[k] - exact[k]) / abs(exact[k]) for k in exact},
             "rel_err_final": {k: (final[k] - exact[k]) / abs(exact[k]) for k in exact},
             "plaquette_pre_retherm": pre_plaq.get(name),
@@ -519,6 +762,10 @@ def main() -> int:
                 None if pre_plaq.get(name) is None
                 else (pre_plaq[name] - exact["plaquette"]) / abs(exact["plaquette"])),
             "exact": exact,
+            # the project's standard seed score, fit-free, at record 0
+            "z_initial": {k: _raw_seed_z(v, exact[k])[0]
+                          for k, v in arm["series"].items()},
+            "tau_int_tail": {k: _tail_tau_int(v) for k, v in arm["series"].items()},
             "q_squared_initial": float((arm["charge"][0] ** 2).mean()),
             "q_squared_final": float((arm["charge"][-1] ** 2).mean()),
         }
@@ -538,6 +785,87 @@ def main() -> int:
 
 def _fmt(v: float, budget: int) -> str:
     return f"> {budget}" if v is None or not math.isfinite(v) else f"{v:.0f}"
+
+
+def _raw_seed_z(series: np.ndarray, exact: float) -> tuple[float, float]:
+    """|mean - exact| / SEM and the relative deviation, at RECORD 0.
+
+    `84_raw_seed_quality.py`'s endpoint, which is the project's standard for
+    scoring a starting configuration and is deliberately fit-free: a relaxation
+    time is INVERTED for a good seed (a seed already at target has no transient
+    to resolve, so the fit fails and scores it a failure), while this is just how
+    far from exact the thing you were handed actually is.
+
+    Both are reported because they answer different questions. `z = sqrt(N) *
+    bias / sigma`, so a noisier arm scores a smaller z at equal bias; a relative
+    deviation ignores that the theory's own spread moves by orders of magnitude
+    across couplings. At FIXED coupling the ratio is comparable between arms
+    (they face the identical spread); ACROSS couplings use z.
+    """
+    first = np.asarray(series[0], dtype=float)
+    mean = float(first.mean())
+    sem = float(first.std(ddof=1)) / math.sqrt(len(first)) if len(first) > 1 else 0.0
+    z = abs(mean - exact) / sem if sem > 0 else float("inf")
+    return z, (mean - exact) / abs(exact)
+
+
+def _tail_tau_int(series: np.ndarray) -> float:
+    """Mean per-chain tau_int of the second half of the history.
+
+    The second half so the transient is excluded, and PER CHAIN because the
+    chains are the independent replicas -- pooling them first would measure the
+    across-chain mean's autocorrelation, which is not what an interval between
+    independent configurations means.
+    """
+    tail = np.asarray(series, dtype=float)[len(series) // 2:]
+    if tail.shape[0] < 8:
+        return float("nan")
+    taus = [integrated_autocorrelation_time(tail[:, c])[0]
+            for c in range(tail.shape[1])]
+    return float(np.mean(taus))
+
+
+def _report_tuning(name: str, info: dict) -> None:
+    n = info["n_sweeps"]
+    count = f"> {info['max_sweeps']}" if n is None else str(n)
+    ratio = info["gap"] / info["sem"] if info["sem"] > 0 else float("inf")
+    print(f"  {name}: {count} sweeps, gap {info['gap']:.2e} = {ratio:.1f} SEM "
+          f"({info['seconds']:.0f}s)", flush=True)
+
+
+# One retherm sweep is heatbath plus two overrelaxations, so it touches every
+# link three times; one leapfrog trajectory touches every link `n_steps` times.
+# This is `44_sweeps_vs_trajectories.py`'s convention verbatim, and without it
+# the sweep column and the t_therm column cannot be added together at all --
+# at beta = 416.524 one trajectory costs twelve sweeps, so an arm that saves
+# five sweeps and spends four extra trajectories is five times WORSE, not
+# better. It prices only local updates and HMC; the reverse-diffusion sampler
+# is not expressible in link touches and is charged in `build_seconds`.
+SWEEP_TOUCHES = 3
+
+
+def _link_touches(tuned_sweeps, t_therm_slowest, n_steps: int):
+    """Total local-update + HMC cost in link touches, or None if either part
+    never finished (an unconverged arm has no total, and writing one would
+    quietly turn a failure into a number)."""
+    if tuned_sweeps is None or t_therm_slowest is None:
+        return None
+    return int(SWEEP_TOUCHES * tuned_sweeps + n_steps * t_therm_slowest)
+
+
+def _beta_from_name(path: Path):
+    """Recover the coupling from an ensemble filename, `u2_L16_beta105.244.pt`.
+
+    The metadata is authoritative where it exists; this is the fallback for the
+    older ensembles that predate it.
+    """
+    stem = path.stem
+    if "beta" not in stem:
+        return None
+    try:
+        return float(stem.split("beta")[-1])
+    except ValueError:
+        return None
 
 
 def _load_raw_pre_retherm(ladder_dir: Path, size: int, beta: float):
@@ -561,8 +889,9 @@ def _load_raw_pre_retherm(ladder_dir: Path, size: int, beta: float):
     return None
 
 
-ORDER = ["tile", "halve", "flux", "ape", "smear", "hot", "cold",
-         "diffusion_raw", "diffusion_tuned", "diffusion"]
+ORDER = ["tile", "halve", "flux", "ape", "smear", "smear_fixed",
+         "cold_tuned", "cold_fixed", "hot", "cold",
+         "diffusion_raw", "diffusion_tuned", "diffusion_fixed", "diffusion"]
 
 
 def _write_report(path: Path, rows: list, n_su2: int, n_retherm: int) -> None:
@@ -590,19 +919,42 @@ def _write_report(path: Path, rows: list, n_su2: int, n_retherm: int) -> None:
         f"gets there is written `> {budget}`, against its own budget, never "
         "\"never\".",
         "",
-        "| arm | " + " | ".join(f"$t$ {o.replace('wilson_', 'W')}" for o in obs)
-        + " | slowest | rel err **pre**-retherm | $|\\Delta P/P|$ at $t=0$ | build s |",
-        "|---|" + "---|" * (len(obs) + 4),
+        "Cost is reported in LINK TOUCHES, `44_sweeps_vs_trajectories.py`'s "
+        f"convention: one retherm sweep touches every link {SWEEP_TOUCHES} times "
+        f"and one trajectory touches it {rows[0].get('hmc_n_steps', 0)} times at "
+        "this coupling. Without a common currency the sweep column and the "
+        "$t_{\\rm therm}$ column cannot be added, and an arm that saves sweeps "
+        "while spending trajectories looks cheaper when it is not. The "
+        "reverse-diffusion sampler is NOT expressible in link touches and is "
+        "charged in `build s` instead.",
+        "",
+        "`gap/SEM` is the plaquette's distance from exact in units of the "
+        "across-chain standard error at the moment the arm was handed to HMC. "
+        "Two arms within about one SEM of each other are not separated by this "
+        "measurement however different their sweep counts look.",
+        "",
+        "| arm | sweeps | " + " | ".join(f"$t$ {o.replace('wilson_', 'W')}" for o in obs)
+        + " | slowest | link touches | gap/SEM | rel err **pre**-retherm "
+        "| $|\\Delta P/P|$ at $t=0$ | build s |",
+        "|---|---|" + "---|" * (len(obs) + 6),
     ]
     for r in rows:
         cells = [_fmt(r["t_therm"][o], budget) for o in obs]
         slow = r["t_therm_slowest"]
-        name = r["arm"] + (f" ({r['tuned_sweeps']} sweeps)" if r.get("tuned_sweeps") else "")
+        name = r["arm"]
+        if r.get("tuning_converged") is False:
+            name += " (never tuned in)"
         bold = "**" if r["arm"] == "diffusion" else ""
         pre = r.get("rel_err_pre_retherm")
+        sweeps = r.get("local_sweeps")
+        touches = r.get("link_touches")
+        in_sem = r.get("plaquette_gap_in_sem")
         lines.append(
-            f"| {bold}{name}{bold} | " + " | ".join(f"{bold}{c}{bold}" for c in cells)
+            f"| {bold}{name}{bold} | {'--' if sweeps is None else sweeps} | "
+            + " | ".join(f"{bold}{c}{bold}" for c in cells)
             + f" | {bold}{_fmt(slow if slow is not None else float('inf'), budget)}{bold}"
+            + f" | {'--' if touches is None else touches}"
+            + f" | {'--' if in_sem is None else f'{in_sem:.1f}'}"
             + f" | {'--' if pre is None else f'{pre:+.2e}'}"
             + f" | {abs(r['rel_err_initial']['plaquette']):.2e}"
             + f" | {r['build_seconds']:.0f} |")
