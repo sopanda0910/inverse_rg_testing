@@ -348,11 +348,99 @@ The same comparison at L=64, where the checkpoints separate decisively: the two 
 
 *Drawn by `u2_2d/scripts/59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png`.*
 
+## Main text, sections 4 and 5 -- distributions, cost and endpoint
+
+The five figures the paper itself carries beyond the method schematic, plus the two it does not. fig64 is the improvement factor where one is defined; fig67 shows the two timescales it is a ratio of, so a non-equilibrating arm reads as a failure rather than a missing point; fig66 reports an endpoint that stays defined when neither arm equilibrates. fig65_money_split and fig65_cost are kept as diagnostics and are not in the paper.
+
+### Figure U2-39: `fig62_uv_distributions.png`
+
+![fig62_uv_distributions.png](figures/fig62_uv_distributions.png)
+
+Per-configuration distributions of the local observables at the benchmarked couplings, preconditioned against cold and hot starts. IN THE PAPER.
+
+*Drawn by `u2_2d/scripts/88_uv_distribution_figure.py`.*
+
+### Figure U2-40: `fig63_topology_distributions.png`
+
+![fig63_topology_distributions.png](figures/fig63_topology_distributions.png)
+
+The same for the topological charge, against the closed-form P(Q). IN THE PAPER.
+
+*Drawn by `u2_2d/scripts/88_uv_distribution_figure.py`.*
+
+### Figure U2-41: `fig64_money.png`
+
+![fig64_money.png](figures/fig64_money.png)
+
+Improvement factor over winding HMC against coupling, four checkpoints, both volumes. IN THE PAPER. Built on coverage_scan_relaxation, whose L=64 leg has 8 couplings and no W(8x8), while figs 66-67 use coverage_scan_w8, which has 14 at both volumes; the two grids disagree about how many sub-beta=90 couplings L=64 has (2 against 4).
+
+*Drawn by `u2_2d/scripts/89_money_figure.py`.*
+
+### Figure U2-42: `fig67_thermalization.png`
+
+![fig67_thermalization.png](figures/fig67_thermalization.png)
+
+Trajectories to equilibrate against the decorrelation interval, both arms, both samplers, both volumes. IN THE PAPER.
+
+*Drawn by `u2_2d/scripts/93_thermalization_figure.py --base out/u2_2d/coverage_scan_w8`.*
+
+### Figure U2-43: `fig66_seed_quality.png`
+
+![fig66_seed_quality.png](figures/fig66_seed_quality.png)
+
+Ratio of the cold arm's final deviation from exact to the preconditioned arm's, in standard errors at the end of each coupling's budget. Stays defined where an improvement factor does not. IN THE PAPER.
+
+*Drawn by `u2_2d/scripts/92_seed_quality_figure.py --base out/u2_2d/coverage_scan_w8`.*
+
+### Figure U2-44: `fig65_cost.png`
+
+![fig65_cost.png](figures/fig65_cost.png)
+
+Companion to fig64: per-configuration cost rather than the ratio. Written by the SAME script as fig64 despite the number.
+
+*Drawn by `u2_2d/scripts/89_money_figure.py`.*
+
+### Figure U2-45: `fig65_money_split.png`
+
+![fig65_money_split.png](figures/fig65_money_split.png)
+
+Improvement factor split by observable and volume. Deliberately NOT in the paper: after the gate fix its local panels carry five points at L=32 and one at L=64, so most of the figure is the absence of a comparison, and what it does show is in fig64 and fig67.
+
+*Drawn by `u2_2d/scripts/91_money_split_figure.py --base out/u2_2d/coverage_scan_w8`.*
+
+### Figure U2-46: `fig65_ladder.png`
+
+![fig65_ladder.png](figures/fig65_ladder.png)
+
+Ladder behaviour across the three benchmarked volumes. This is 91_ladder_volume_figure.py, NOT 91_money_split_figure.py.
+
+*Drawn by `u2_2d/scripts/91_ladder_volume_figure.py`.*
+
+## Appendix U2-C2. Coverage pooled across the two theories
+
+Checkpoint coverage against what it buys, and the volume dependence at fixed coverage. Both also read the u1 coverage scan.
+
+### Figure U2-47: `fig60_coverage_money.png`
+
+![fig60_coverage_money.png](figures/fig60_coverage_money.png)
+
+Coverage against improvement over the checkpoint grid. Also reads out/u1_2d/coverage_scan/, which this checker does not glob, so a u1-side regeneration will not be caught here.
+
+*Drawn by `u2_2d/scripts/86_coverage_money_figure.py`.*
+
+### Figure U2-48: `fig61_volume_scaling.png`
+
+![fig61_volume_scaling.png](figures/fig61_volume_scaling.png)
+
+Seed quality against volume at fixed coverage. Same u1-side caveat as fig60.
+
+*Drawn by `u2_2d/scripts/87_volume_scaling_figure.py`.*
+
 ## Appendix U2-E. Cost and tuning
 
 Cost claims, and the two knobs that were measured rather than assumed.
 
-### Figure U2-39: `fig14_sampler_steps.png`
+### Figure U2-49: `fig14_sampler_steps.png`
 
 ![fig14_sampler_steps.png](figures/fig14_sampler_steps.png)
 
@@ -360,7 +448,7 @@ Cost and accuracy against the number of reverse-diffusion steps. Read the RUNG 0
 
 *Drawn by `u2_2d/scripts/16_cost_figures.py`.*
 
-### Figure U2-40: `fig25_retherm_scan.png`
+### Figure U2-50: `fig25_retherm_scan.png`
 
 ![fig25_retherm_scan.png](figures/fig25_retherm_scan.png)
 
@@ -368,7 +456,7 @@ Observable error against rethermalization sweep count. Note the retraction recor
 
 *Drawn by `u2_2d/scripts/33_retherm_scan.py`.*
 
-### Figure U2-41: `fig15_prolongator.png`
+### Figure U2-51: `fig15_prolongator.png`
 
 ![fig15_prolongator.png](figures/fig15_prolongator.png)
 

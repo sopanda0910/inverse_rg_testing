@@ -27,3 +27,9 @@ out/u2_2d/keep_awake.log
 
 paper/
 paper/current.tex
+
+# Diffusion-lift caches under the coverage scans: regenerable from the
+# checkpoint and the coarse ensemble, ~180 MB per scan directory, and the
+# older coverage_scan_relaxation/ tracks its series/ and result json without
+# them. Keep that precedent.
+out/*/coverage_scan*/*/seeds/

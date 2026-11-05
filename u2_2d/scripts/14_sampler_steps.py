@@ -192,8 +192,7 @@ def main() -> int:
         records.append(rec)
         print(f"steps={n_steps:4d}  {wall:7.1f}s total  top rung "
               f"{top['seconds'] / n_configs:.4f} s/config  "
-              f"rel_err(pre) {top['rel_err_pre_retherm']:+.2e}  "
-              f"rel_err(post) {top['rel_err']:+.2e}", flush=True)
+              f"rel_err(raw) {top['rel_err_pre_retherm']:+.2e}", flush=True)
         del results
         if str(device).startswith("cuda"):
             torch.cuda.empty_cache()
@@ -211,11 +210,16 @@ def main() -> int:
              "output, so its plaquette error is two lifts that partially cancel and it",
              "moves the wrong way across the scan. Extended loops at the top rung are",
              "the other honest column.", "",
-             "The post-rethermalization columns are repaired by 10 local sweeps and stay",
-             "healthy long past the point where the model has stopped working -- at 8",
-             "steps the lift is 1% off and the sweeps hide all of it.", "",
-             "| steps | top-rung s | s/config | vs hmc+winding | r0 pre | r0 post | r1 pre | top W(8x8) |",
-             "|---|---|---|---|---|---|---|---|"]
+             "THERE IS NO POST-RETHERMALIZATION COLUMN, because the ladder has no repair",
+             "tail: `generate_ladder`'s retherm parameters were removed rather than",
+             "defaulted to zero, and `pipeline/ladder.py` sets `plaquette_pre_retherm`",
+             "equal to `plaquette` so older readers still find the key. An earlier",
+             "version of this report printed both and described the second as repaired",
+             "by ten local sweeps; they were the same number at every step count. What",
+             "the raw lift delivers IS the delivered product, and local repair is",
+             "charged for downstream in HMC trajectories.", "",
+             "| steps | top-rung s | s/config | vs hmc+winding | r0 raw | r1 raw | top W(8x8) |",
+             "|---|---|---|---|---|---|---|"]
     for r in records:
         first, top = r["rungs"][0], r["rungs"][-1]
         ratio = r.get("ratio_vs_hmc_winding_top_rung")
@@ -224,7 +228,7 @@ def main() -> int:
         lines.append(
             f"| {r['n_sampler_steps']} | {top['seconds']:.1f} | "
             f"{r['seconds_per_config_top_rung']:.4f} | {rs} | "
-            f"{first['rel_err_pre_retherm']:+.2e} | {first['rel_err']:+.2e} | "
+            f"{first['rel_err_pre_retherm']:+.2e} | "
             f"{top['rel_err_pre_retherm']:+.2e} | {w8:+.2e} |")
     (out_dir / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(f"\nwrote {out_dir / 'report.md'}")

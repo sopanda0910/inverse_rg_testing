@@ -319,6 +319,75 @@ FIGURES: dict[str, tuple[str, list[str], str]] = {
         "14/16 couplings, the two narrow ones at 7/16 and 3/16. No checkpoint "
         "is trained at L=64, and wide's coverage extension is entirely at "
         "L=8, so what transfers across volume is coupling coverage."),
+
+    # --- added 2026-11-05. These ten were on disk and untracked, so the
+    # staleness check was silent about them, fig64 (the paper's money figure)
+    # included. NOTE the number collisions: 89_money_figure writes fig65_cost,
+    # 91_ladder_volume_figure writes fig65_ladder, 91_money_split_figure
+    # writes fig65_money_split, and the last two are both numbered 91.
+    "fig60_coverage_money.png": (
+        "86_coverage_money_figure.py", ["coverage_scan_relaxation/*/crossover*.json",
+         "coverage_scan_relaxation/_standard_timescales.json"],
+        "Coverage against improvement over the checkpoint grid. Also reads "
+        "out/u1_2d/coverage_scan/, which this checker does not glob, so a "
+        "u1-side regeneration will not be caught here."),
+    "fig61_volume_scaling.png": (
+        "87_volume_scaling_figure.py", ["coverage_scan_relaxation/*/crossover*.json",
+         "coverage_scan_relaxation/_standard_timescales.json"],
+        "Seed quality against volume at fixed coverage. Same u1-side caveat "
+        "as fig60."),
+    "fig62_uv_distributions.png": (
+        "88_uv_distribution_figure.py", ["seed_benchmark_noretherm/*.json"],
+        "Per-configuration distributions of the local observables at the "
+        "benchmarked couplings, preconditioned against cold and hot starts. "
+        "IN THE PAPER."),
+    "fig63_topology_distributions.png": (
+        "88_uv_distribution_figure.py", ["seed_benchmark_noretherm/*.json"],
+        "The same for the topological charge, against the closed-form P(Q). "
+        "IN THE PAPER."),
+    "fig64_money.png": (
+        "89_money_figure.py", ["coverage_scan_relaxation/*/crossover*.json",
+         "coverage_scan_relaxation/_standard_timescales.json"],
+        "Improvement factor over winding HMC against coupling, four "
+        "checkpoints, both volumes. IN THE PAPER. Built on "
+        "coverage_scan_relaxation, whose L=64 leg has 8 couplings and no "
+        "W(8x8), while figs 66-67 use coverage_scan_w8, which has 14 at both "
+        "volumes; the two grids disagree about how many sub-beta=90 couplings "
+        "L=64 has (2 against 4)."),
+    "fig65_cost.png": (
+        "89_money_figure.py", ["coverage_scan_relaxation/*/crossover*.json",
+         "coverage_scan_relaxation/_standard_timescales.json"],
+        "Companion to fig64: per-configuration cost rather than the ratio. "
+        "Written by the SAME script as fig64 despite the number."),
+    "fig65_ladder.png": (
+        "91_ladder_volume_figure.py",
+        ["seed_benchmark_rung0_noretherm/*.json",
+         "seed_benchmark_noretherm/*.json",
+         "seed_benchmark_wide_L128_noretherm/*.json"],
+        "Ladder behaviour across the three benchmarked volumes. This is "
+        "91_ladder_volume_figure.py, NOT 91_money_split_figure.py."),
+    "fig65_money_split.png": (
+        "91_money_split_figure.py --base out/u2_2d/coverage_scan_w8",
+        ["coverage_scan_w8/*/crossover*.json",
+         "coverage_scan_w8/_standard_timescales.json"],
+        "Improvement factor split by observable and volume. Deliberately NOT "
+        "in the paper: after the gate fix its local panels carry five points "
+        "at L=32 and one at L=64, so most of the figure is the absence of a "
+        "comparison, and what it does show is in fig64 and fig67."),
+    "fig66_seed_quality.png": (
+        "92_seed_quality_figure.py --base out/u2_2d/coverage_scan_w8",
+        ["coverage_scan_w8/*/crossover*.json",
+         "coverage_scan_w8/_standard_timescales.json"],
+        "Ratio of the cold arm's final deviation from exact to the "
+        "preconditioned arm's, in standard errors at the end of each "
+        "coupling's budget. Stays defined where an improvement factor does "
+        "not. IN THE PAPER."),
+    "fig67_thermalization.png": (
+        "93_thermalization_figure.py --base out/u2_2d/coverage_scan_w8",
+        ["coverage_scan_w8/*/crossover*.json",
+         "coverage_scan_w8/_standard_timescales.json"],
+        "Trajectories to equilibrate against the decorrelation interval, both "
+        "arms, both samplers, both volumes. IN THE PAPER."),
 }
 
 # Where each figure sits in the paper. The order here is the order of
@@ -378,6 +447,22 @@ SECTIONS: list[tuple[str, str, list[str]]] = [
      "and no checkpoint is trained at L=64 at all.",
      ["fig57_cost_efficiency.png", "fig57b_cost_efficiency_wide.png",
       "fig59_coverage_comparison.png", "fig59b_coverage_comparison_L64.png"]),
+    ("Main text, sections 4 and 5 -- distributions, cost and endpoint",
+     "The five figures the paper itself carries beyond the method schematic, "
+     "plus the two it does not. fig64 is the improvement factor where one is "
+     "defined; fig67 shows the two timescales it is a ratio of, so a "
+     "non-equilibrating arm reads as a failure rather than a missing point; "
+     "fig66 reports an endpoint that stays defined when neither arm "
+     "equilibrates. fig65_money_split and fig65_cost are kept as diagnostics "
+     "and are not in the paper.",
+     ["fig62_uv_distributions.png", "fig63_topology_distributions.png",
+      "fig64_money.png", "fig67_thermalization.png",
+      "fig66_seed_quality.png", "fig65_cost.png",
+      "fig65_money_split.png", "fig65_ladder.png"]),
+    ("Appendix U2-C2. Coverage pooled across the two theories",
+     "Checkpoint coverage against what it buys, and the volume dependence at "
+     "fixed coverage. Both also read the u1 coverage scan.",
+     ["fig60_coverage_money.png", "fig61_volume_scaling.png"]),
     ("Appendix U2-E. Cost and tuning",
      "Cost claims, and the two knobs that were measured rather than assumed.",
      ["fig14_sampler_steps.png", "fig25_retherm_scan.png",

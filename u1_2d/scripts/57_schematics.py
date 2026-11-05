@@ -170,7 +170,7 @@ def fig_architecture() -> None:
         r"$+$ rectangles" "\n"
         rf"$[B, {6 + cond_ch}, L, L]$", EXACT_C, fontsize=FS)
     box(ax, xs[2], y, w, h,
-        f"{depth} FiLM blocks\nwidth {hidden}\n\n"
+        f"stack of {depth}\nFiLM blocks\n{hidden} channels\n\n"
         rf"${k}\times{k}$ circular" "\n" "convolutions", LEARNED_C, fontsize=FS)
     box(ax, xs[3], y, w, h,
         "scalar head:\n" r"one $h$/plaq." "\n\n"

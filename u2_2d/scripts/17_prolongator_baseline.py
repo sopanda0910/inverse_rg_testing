@@ -425,6 +425,11 @@ def main() -> int:
     parser.add_argument("--beta", type=float, default=None,
                         help="fine beta, with --coarse-path. Omit to take the "
                              "topology-matched value for the coarse ensemble.")
+    parser.add_argument("--save-series", action="store_true",
+                        help="write out-dir/series/<arm>.npz with the raw "
+                             "[n_records, n_chains] history of every observable, "
+                             "so a later change to t_therm or tau_int is a "
+                             "reanalysis instead of a re-run.")
     parser.add_argument("--fixed-sweeps", type=int, default=25,
                         help="sweep count for the *_fixed arms, applied "
                              "unchanged at every coupling. These are the "
@@ -696,13 +701,37 @@ def main() -> int:
             continue
         build_cost[name] = time.time() - t0
 
+    # FINITE VOLUME on every observable. The simulation is at finite L, so the
+    # finite-volume value is simply the correct reference; the infinite-volume
+    # area law is what would need defending. `plaquette_exact` always took
+    # `size`; `wilson_loop_exact` was being called without `lattice_size` and so
+    # fell back to the infinite-volume law, which made the plaquette and the
+    # loops disagree about which theory they were scored against. The gap is
+    # 1e-12 to 1e-8 relative here, far below the measurement, so no result moves
+    # -- but the two columns should not answer different questions.
     exact = {n: (plaquette_exact(beta, size) if n == "plaquette"
-                 else wilson_loop_exact(beta, a * b))
+                 else wilson_loop_exact(beta, a * b, lattice_size=size))
              for n, (a, b) in LOOPS.items() if a < size}
 
     rows = []
     for name, start in starts.items():
         arm = run_arm(name, sampler, start, args.n_traj, size)
+        if args.save_series:
+            # [n_records, n_chains] per observable, plus the charge history and
+            # the exact references, so any later change to t_therm or tau_int is
+            # a reanalysis rather than a re-run. The project learned this the
+            # expensive way when a t_therm redefinition cost a full re-run of
+            # the coverage matrix; this script had not yet been brought up to it.
+            series_dir = out_dir / "series"
+            series_dir.mkdir(parents=True, exist_ok=True)
+            np.savez_compressed(
+                series_dir / f"{name}.npz",
+                charge=arm["charge"],
+                beta=np.array(beta), lattice_size=np.array(size),
+                n_chains=np.array(n_chains),
+                **{f"obs_{k}": v for k, v in arm["series"].items()},
+                **{f"exact_{k}": np.array(v) for k, v in exact.items()},
+            )
         t_therm = {k: thermalization_time(v, exact[k]) for k, v in arm["series"].items()}
         initial = {k: float(v[0].mean()) for k, v in arm["series"].items()}
         final = {k: float(v[-1].mean()) for k, v in arm["series"].items()}

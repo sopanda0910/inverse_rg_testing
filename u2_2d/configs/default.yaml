@@ -1,3 +1,21 @@
+# SUPERSEDED LADDER -- READ BEFORE RUNNING ANYTHING WITH THIS CONFIG.
+#
+# `ladder.out_dir` below points at out/u2_2d/ladder/, which was built on
+# 2026-08-20 WITH the local repair tail (n_retherm_sweeps: 10). That tail was
+# removed from `generate_ladder` afterwards, and `03_run_ladder.py` now refuses
+# any config that still sets `n_retherm_sweeps` -- so THIS CONFIG CANNOT BE
+# RE-RUN, by design. The key is kept rather than deleted because it is what
+# honestly describes the artifact at that path; deleting it would leave the
+# config claiming no repair while pointing at an ensemble that has it.
+#
+# The CURRENT pipeline is u2_2d/configs/default_noretherm.yaml, which differs
+# from this file in exactly two lines (out_dir and n_retherm_sweeps) and whose
+# ladder is out/u2_2d/ladder_noretherm/, built 2026-10-04.
+#
+# NOTE that most scripts still default to `--config u2_2d/configs/default.yaml`,
+# so a default invocation reads the SUPERSEDED ladder. Pass the noretherm
+# config explicitly for anything that should reflect the current pipeline.
+
 # Full three-rung ladder: L = 8 -> 16 -> 32 -> 64 with beta_f = 4 beta_c.
 # The determinant sector's exact <Q^2> is nearly a fixed point of this ladder
 # (lgt.blocking.ladder_charge_fixed_point), so climbing it is a continuum-limit

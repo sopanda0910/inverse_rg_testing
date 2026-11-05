@@ -1,6 +1,6 @@
 # u2 appendix figure manifest
 
-Assembled 2026-09-08 06:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py`.
+Assembled 2026-11-05 12:56 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py`.
 
 `source mtime` is the figure's own; `newest input` is the most recently modified file it was drawn from. A figure whose input is newer than itself is stale, which is what `--check` gates on.
 
@@ -25,11 +25,11 @@ Assembled 2026-09-08 06:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py
 | fig14_sampler_steps.png | `16_cost_figures.py` | `a380cfffe8b6` | 2026-09-01 23:40 | `sampler_steps\sampler_steps.json` |
 | fig15_prolongator.png | `20_prolongator_figure.py` | `79326e066c8e` | 2026-09-01 17:59 | `prolongator_L64\prolongator.json` |
 | fig16_distributions_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `b88e86340442` | 2026-09-01 17:51 | `ladder\summary.json` |
-| fig16_distributions_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `6d54f7399653` | 2026-09-01 17:56 | `ladder\summary.json` |
+| fig16_distributions_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `07c5a6c98579` | 2026-09-08 19:29 | `ladder\summary.json` |
 | fig17_z_distribution_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `c4c526c13d0c` | 2026-09-01 17:51 | `ladder\summary.json` |
-| fig17_z_distribution_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `f4554c80988f` | 2026-09-01 17:56 | `ladder\summary.json` |
+| fig17_z_distribution_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `3a360ae0c163` | 2026-09-08 19:29 | `ladder\summary.json` |
 | fig18_z_vs_loop_area_L32_beta105.651.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml --rung 0` | `bb6e07c9c55b` | 2026-09-01 17:51 | `ladder\summary.json` |
-| fig18_z_vs_loop_area_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `aacf98faeffd` | 2026-09-01 17:56 | `ladder\summary.json` |
+| fig18_z_vs_loop_area_L64_beta416.524.png | `22_distribution_figures.py --config u2_2d/configs/default.yaml` | `aacf98faeffd` | 2026-09-08 19:29 | `ladder\summary.json` |
 | fig19_freezing.png | `27_freezing_figure.py` | `4d5258e7fffa` | 2026-09-01 22:09 | `seed_benchmark\seed_benchmark.json` |
 | fig20_honest_distributions_L64_beta416.524.png | `29_honest_distributions.py --config u2_2d/configs/default.yaml` | `25c171f55f77` | 2026-09-02 01:58 | `freezing_arms\freezing_arms.json` |
 | fig21_seed_quality.png | `30_seed_quality_figure.py` | `457bcffe2fd6` | 2026-08-22 01:17 | `crossover\topo_c.json` |
@@ -43,10 +43,20 @@ Assembled 2026-09-08 06:38 UTC by `u2_2d/scripts/49_assemble_appendix_figures.py
 | fig29_observable_scan.png | `43_observable_scan.py` | `d788b4255a15` | 2026-09-01 17:24 | `observable_scan\observable_scan.json` |
 | fig30_multi_lift.png | `46_multi_lift_figure.py` | `b0b5b9fb67db` | 2026-08-22 10:14 | `multi_lift_incov\multi_lift_r0.json` |
 | fig31_seed_vs_classical_significance.png | `56_seed_benchmark_cross_beta_figure.py` | `0792cf308141` | 2026-09-02 13:51 | `seed_benchmark_rung0\observable_stats.json` |
-| fig57_cost_efficiency.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default` | `bb85f9880dbd` | 2026-09-08 06:38 | `coverage_scan_relaxation\default\crossover_L64_topo.json` |
+| fig57_cost_efficiency.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/default` | `bb85f9880dbd` | 2026-09-08 07:24 | `coverage_scan_relaxation\default\crossover_L64_topo.json` |
 | fig57b_cost_efficiency_wide.png | `57_cost_efficiency_figure.py --dirs out/u2_2d/coverage_scan_relaxation/wide --train-model-beta-max 2000` | `061c5c2ad174` | 2026-09-07 23:44 | `coverage_scan_relaxation\wide\crossover_L64_topo.json` |
-| fig59_coverage_comparison.png | `59_coverage_comparison_figure.py --fine-size 32` | `be69c2f2b829` | 2026-09-08 06:37 | `coverage_scan_relaxation\wide_dense\crossover_topo.json` |
-| fig59b_coverage_comparison_L64.png | `59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png` | `5705dce21728` | 2026-09-08 06:37 | `coverage_scan_relaxation\wide_dense\crossover_L64_topo.json` |
+| fig59_coverage_comparison.png | `59_coverage_comparison_figure.py --fine-size 32` | `fc3c935232d1` | 2026-09-08 16:27 | `coverage_scan_relaxation\wide_dense\crossover_topo.json` |
+| fig59b_coverage_comparison_L64.png | `59_coverage_comparison_figure.py --fine-size 64 --out out/u2_2d/figures/fig59b_coverage_comparison_L64.png` | `d24990b3587a` | 2026-09-08 16:27 | `coverage_scan_relaxation\wide_dense\crossover_L64_topo.json` |
+| fig60_coverage_money.png | `86_coverage_money_figure.py` | `003f93428b45` | 2026-11-05 12:55 | `coverage_scan_relaxation\_standard_timescales.json` |
+| fig61_volume_scaling.png | `87_volume_scaling_figure.py` | `aa2fadae0292` | 2026-11-05 12:56 | `coverage_scan_relaxation\_standard_timescales.json` |
+| fig62_uv_distributions.png | `88_uv_distribution_figure.py` | `9a97e716725b` | 2026-10-05 00:40 | `seed_benchmark_noretherm\seed_benchmark.json` |
+| fig63_topology_distributions.png | `88_uv_distribution_figure.py` | `aecfd052ec97` | 2026-10-05 00:40 | `seed_benchmark_noretherm\seed_benchmark.json` |
+| fig64_money.png | `89_money_figure.py` | `b67351e8e0e4` | 2026-10-28 21:15 | `coverage_scan_relaxation\_standard_timescales.json` |
+| fig65_cost.png | `89_money_figure.py` | `c6acbbe24191` | 2026-10-28 21:15 | `coverage_scan_relaxation\_standard_timescales.json` |
+| fig65_ladder.png | `91_ladder_volume_figure.py` | `ef1ff80ef80b` | 2026-10-04 23:49 | `seed_benchmark_wide_L128_noretherm\seed_benchmark.json` |
+| fig65_money_split.png | `91_money_split_figure.py --base out/u2_2d/coverage_scan_w8` | `d2d225ed531d` | 2026-10-28 21:13 | `coverage_scan_w8\_standard_timescales.json` |
+| fig66_seed_quality.png | `92_seed_quality_figure.py --base out/u2_2d/coverage_scan_w8` | `60ff468896cf` | 2026-11-05 12:50 | `coverage_scan_w8\_standard_timescales.json` |
+| fig67_thermalization.png | `93_thermalization_figure.py --base out/u2_2d/coverage_scan_w8` | `ab5d86e2d393` | 2026-11-05 12:50 | `coverage_scan_w8\_standard_timescales.json` |
 
 ## Present but deliberately not tracked
 

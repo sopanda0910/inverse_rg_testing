@@ -126,17 +126,25 @@ def therm_time(series, exact, record_every):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--out", default=str(OUT))
+    # The scan directory is a parameter, not a constant: the W(8x8) re-run lives
+    # under coverage_scan_w8/ and the older grid under coverage_scan_relaxation/,
+    # and both have to be scorable without editing this file.
+    ap.add_argument("--base", default=str(BASE))
+    ap.add_argument("--out", default=None,
+                    help="defaults to <base>/_standard_timescales.json")
     args = ap.parse_args()
+
+    base = Path(args.base)
+    out_path = Path(args.out) if args.out else base / "_standard_timescales.json"
 
     out = {}
     for ck in CKPTS:
         for stem in STEMS:
-            meta = BASE / ck / f"{stem}.json"
+            meta = base / ck / f"{stem}.json"
             if not meta.exists():
                 continue
             for r in json.loads(meta.read_text()):
-                sf = BASE / ck / "series" / f"{stem}_beta{r['beta']:g}.npz"
+                sf = base / ck / "series" / f"{stem}_beta{r['beta']:g}.npz"
                 if not sf.exists():
                     continue
                 z = np.load(sf)
@@ -163,11 +171,38 @@ def main() -> int:
                     rec[f"interval_local_{tag}"] = (
                         None if not np.isfinite(2.0 * max(ivs[:-1]))
                         else 2.0 * max(ivs[:-1]))
+                    # Per-scale INTERVALS, so the UV/IR split does not have
+                    # to be reconstructed downstream. ivs is in OBS order, so
+                    # index 0 is the plaquette and index 2 is W(4x4).
+                    #
+                    # Deliberately no per-scale therm_time. `therm_time` above
+                    # requires the bias to stay inside a ONE-SIGMA band for the
+                    # whole rest of the window; a record falls outside that
+                    # band about 32% of the time by chance, so over ~80 records
+                    # the last chance excursion sits near the end and the
+                    # walk-back returns roughly the budget for a chain that is
+                    # perfectly equilibrated. Measured: the diffusion seed
+                    # scores 396-398 here against 0-11 RECORDS from the scan's
+                    # own `t_therm_threshold_old` at the same coupling. Use
+                    # that instead, times `record_every`, as 89_money_figure.py
+                    # does. The `therm_{tag}` fields already written above
+                    # carry the same defect and should not be consumed either.
+                    for lbl, idx in (("uv", 0), ("ir", 2), ("q", -1)):
+                        iv_s = 2.0 * ivs[idx]
+                        rec[f"interval_{lbl}_{tag}"] = (
+                            None if not np.isfinite(iv_s) else float(iv_s))
+                    # WARNING on interval_q_*: tau_int returns 0.5 for a series
+                    # with zero variance, so a chain FROZEN at one charge gets
+                    # an interval of 1.0 -- the smallest possible -- when it in
+                    # fact supplies no independent charge at any budget. Any
+                    # consumer must gate on `q_changes` from the scan JSON, not
+                    # on this number. Same hazard the project records for
+                    # tau_int(Q^2) on parity-frozen chains.
                 out[f"{ck}|{stem}|{beta:g}"] = rec
             print(f"  done {ck} {stem}")
 
-    Path(args.out).write_text(json.dumps(out, indent=1))
-    print(f"wrote {len(out)} records -> {args.out}")
+    out_path.write_text(json.dumps(out, indent=1))
+    print(f"wrote {len(out)} records -> {out_path}")
 
     def show(v):
         return "inf" if v is None else f"{v:.0f}"

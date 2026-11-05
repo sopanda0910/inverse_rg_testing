@@ -367,13 +367,42 @@ closed and `su2_2d/` is set aside.
   occupies was inherited from the seed, not manufactured. Same endpoint, 2.9x less
   cost, and arm A shows the seed starts there with no winding moves at all.
   `scripts/13_cost_comparison.py`. **The "the sampler is untuned" hedge was tested
-  (2026-08-20, `scripts/14_sampler_steps.py`) and it is REAL, worth about 3x:** at 25
-  steps instead of 200 the top rung goes from 2.22x slower to 1.38x FASTER than
-  hmc+winding, at ~2.7x the extended-loop error and no measurable change in local
-  observables after retherm. Below 18 steps the lift collapses. The ladder of record
-  stays at 200 because it is the accuracy measurement; a production run should use
-  25. What does not move is the ~90 s fixed overhead per ladder pass (30 SU(2) +
-  10 retherm sweeps) — that is the next knob, not the sampler.
+  (2026-08-20, `scripts/14_sampler_steps.py`) and it is REAL, worth about 5x in
+  cost — but every magnitude first quoted here was wrong and is corrected below
+  (2026-10-28, re-measured at 1024 configs, `out/u2_2d/sampler_steps_1024/`).**
+
+  | steps | s/config | vs hmc+winding | top W(8x8) rel_err |
+  |---|---|---|---|
+  | 18 | 0.0763 | 0.36x | -6.43e-02 |
+  | 25 | 0.0878 | **0.41x** | -3.58e-02 |
+  | 50 | 0.1339 | 0.63x | -1.68e-02 |
+  | 100 | 0.2325 | 1.10x | -8.34e-03 |
+  | **200** | 0.4179 | **1.97x** | -2.59e-03 |
+
+  The direction holds and the magnitudes do not. 200 steps is **1.97x slower**,
+  not 2.22x; 25 steps is **2.4x FASTER**, not 1.38x; and the extended-loop price
+  of that step cut is **13.8x**, not the ~2.7x first quoted — five times the
+  accuracy cost the old note put on it, which is the number a production run
+  would actually be trading against. The old figures came from
+  `13_cost_comparison.py`'s stale 512-config default, the same bug recorded twice
+  elsewhere in this file.
+
+  **The clause "and no measurable change in local observables after retherm" is
+  WITHDRAWN, not corrected — it was never measurable.** `generate_ladder` has no
+  repair tail (the parameters were removed, not defaulted to zero) and
+  `pipeline/ladder.py` sets `plaquette_pre_retherm = plaquette` explicitly, so the
+  two columns that claim was read off are the SAME NUMBER at every step count.
+  `14_sampler_steps.py` printed both and described the second as repaired by ten
+  sweeps; that prose and the duplicate column are now gone. Retherm's effect on
+  local observables is UNMEASURED on this artifact.
+
+  Below 18 steps the lift collapses. The ladder of record stays at 200 because it
+  is the accuracy measurement; a production run should use 25 if it can afford a
+  14x larger extended-loop error, and 50 (0.63x, 6.5x the error) is the better
+  trade if it cannot. What does not move is the fixed overhead per ladder pass
+  from the 30 conditional SU(2) sweeps — that is the next knob, not the sampler.
+  (The "+ 10 retherm sweeps" in the old version of this sentence is part of the
+  same removed tail and was not in the measured overhead either.)
 
   **The seed benchmark (`scripts/08_hmc_seed_benchmark.py`) is the headline.** At
   L = 64, beta = 416.524, 300 trajectories, four arms: the diffusion seed starts at

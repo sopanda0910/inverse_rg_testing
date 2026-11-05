@@ -39,6 +39,9 @@ from u2_2d.validate.stats import (  # noqa: E402
 )
 
 BASE = ROOT / "out/u2_2d/coverage_scan_relaxation"
+# Rebound by main() from --base. The default is the grid the paper's
+# current numbers come from, so it never changes implicitly.
+_BASE = BASE
 CKPTS = ("cov60", "default", "wide", "wide_dense")
 STEMS = ("crossover_topo", "crossover_L64_topo")
 OBS = ("plaquette", "wilson_2x2", "wilson_4x4")
@@ -113,20 +116,28 @@ def interval_band(series_by_obs: dict, charge: np.ndarray | None,
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default=str(BASE),
+                    help="scan directory; "
+                         "out/u2_2d/coverage_scan_w8 for the W(8x8) grid")
     ap.add_argument("--n-boot", type=int, default=400)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--out", default=str(BASE / "_therm_bootstrap.json"))
+    ap.add_argument("--out", default=None,
+                    help="defaults to <base>/_therm_bootstrap.json")
     args = ap.parse_args()
+    global _BASE
+    _BASE = Path(args.base)
+    if args.out is None:
+        args.out = str(_BASE / "_therm_bootstrap.json")
 
     out = {}
     for ckpt in CKPTS:
         for stem in STEMS:
-            meta = BASE / ckpt / f"{stem}.json"
+            meta = _BASE / ckpt / f"{stem}.json"
             if not meta.exists():
                 continue
             for rec in json.loads(meta.read_text()):
                 beta, size = rec["beta"], rec["lattice_size"]
-                f = BASE / ckpt / "series" / f"{stem}_beta{beta:g}.npz"
+                f = _BASE / ckpt / "series" / f"{stem}_beta{beta:g}.npz"
                 if not f.exists():
                     continue
                 z = np.load(f)

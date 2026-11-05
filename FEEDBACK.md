@@ -1528,3 +1528,1155 @@ quoting a number whose denominator or excluded cost was never measured. The
 single discipline that prevents all of them is the one this file keeps
 rediscovering: **before quoting a ratio, ask what value it would take if nothing
 were wrong, and whether both its terms were measured on the same footing.**
+
+---
+
+## 14. Lingxiao Wang — meeting 2026-10-23, with proposed fixes for approval
+
+From `TODO.md`, written up during the meeting. Nine items; each gets the
+diagnosis and a specific proposed edit. **Nothing here is applied yet.**
+
+**Note the convergence before reading the list.** L3 and L7 are the SAME defect
+Kai raised as K5, arrived at independently. Three readers have now hit the
+`t_therm`/interval treatment, which makes it the highest-priority change in the
+paper regardless of effort.
+
+### L1 — "We shouldn't state it is an inverse RG since we aren't actually doing inverse RG"
+
+**He is right about what we do, and the phrase oversells it.** The RG map is
+many-to-one -- it integrates degrees of freedom out -- so it has no inverse. What
+the model actually does is sample from the CONDITIONAL distribution of the fine
+field given its blocked image, along a coupling-matched trajectory. That is a
+well-defined object and a legitimate one; it is just not an inversion.
+
+Four occurrences (`grep -ci "inverse renormalization\|inverse RG"` = 4):
+
+| line | what it describes | action |
+|---|---|---|
+| 62 (abstract) | **our own operation** | **change** |
+| 129 | other authors' use of inverse RG transformations | keep |
+| 131 | `cotler2023`, diffusion/inverse-RG-flow connection | keep |
+| 132 | "the inverse RG step has itself been..." (others' work) | keep |
+
+So only ONE sentence describes us, which makes this cheap.
+
+**PROPOSED FIX.** Abstract line 62: "it performs one inverse
+renormalization-group step, upsampling a coarse configuration to a fine one"
+-> "it performs one RG-matched upsampling step, generating a fine configuration
+conditioned on a coarse one". Keep lines 129-132 verbatim: they describe the
+literature, where the term is established, and dropping them would lose the
+connection to `cotler2023` that motivates the architecture. Then sweep §II-§III
+for any remaining self-description in those terms.
+
+**Do NOT rename the repository or the code.** `inverse_rg_testing`, `det_lift`
+and friends are identifiers, not claims.
+
+### L2 — "Make the cold/hot start definition more clear"
+
+Cold and hot appear ~10 times (abstract, §III, §IV, the benchmark tables) and
+are **never defined**. A reader outside the group cannot tell whether "hot"
+means Haar-random links, random in the algebra, or a high-temperature
+equilibrated ensemble.
+
+**PROPOSED FIX.** One sentence at first use in the methods section, giving the
+construction and what each is for:
+
+> A *cold* start sets every link to the identity, the ordered extreme
+> ($\langle\frac12\mathrm{Re\,Tr}P\rangle = 1$, $Q = 0$); a *hot* start draws
+> each link independently from Haar measure, the disordered extreme. They
+> bracket the equilibrium ensemble, which at the couplings studied here sits far
+> closer to the cold end.
+
+Then add the measured justification for why cold is the meaningful classical
+baseline and hot is only a bracket: at $\beta = 416.524$ the equilibrium
+plaquette is $0.9988$, so a cold start is $4.8\times10^{-3}$ away while a hot
+start is $O(1)$ away and does not thermalize within 400 trajectories (it sits
+flat at $6\times10^{-2}$). Without that, a reader wonders why the hot arm is
+reported at all.
+
+### L3 — "We use a finite thermalization"
+
+**This is Kai's K5 from the other direction** and the two fixes must be written
+once, not twice. `t_therm` is a FIRST CROSSING against a per-record band WITHIN A
+FINITE TRAJECTORY BUDGET. The budget is a property of the experiment, not of the
+chain, and **nothing about the stationary $\tau_{\rm int}$ follows from failing
+to cross it** -- which is exactly what Sec. IV E currently infers
+(`current.tex:816-819`).
+
+**PROPOSED FIX**, merging with §13.1:
+
+1. Where `t_therm` is defined, state plainly that it is a finite-budget
+   crossing, that an arm which does not cross is reported as `> budget` against
+   its own budget, and that no bound on $\tau_{\rm int}$ is implied.
+2. Delete the lower-bound construction at `current.tex:816-819`. Replace the
+   budget substitution with the MEASURED stationary interval (§13.1:
+   $2\tau_{\rm int} = 4.69$--$5.17$ trajectories, flat across $\beta = 49$ to
+   $791$ at $L = 32$).
+3. Relabel Fig. 5's triangles: they are not lower bounds. See L8.
+4. Rephrase the abstract's "cheaper by a median factor of at least nine", which
+   is a median over 24 of those constructions.
+
+### L4 — "Fix the figure, explain why there are more FiLM blocks" (Fig. 1)
+
+**Diagnosed, and there are two readings. Confirm which he meant before editing.**
+
+The deployed U(1) checkpoint really is `depth = 4, hidden = 56, 324,954`
+parameters, so the caption's "4 FiLM blocks of width 56" is CORRECT about the
+model. The confusion is in the drawing (`u1_2d/scripts/57_schematics.py`):
+
+* **Reading A -- he counted boxes.** Line 159 draws **five** boxes:
+  `xs = [0.0 + i * pitch for i in range(5)]`. They are pipeline STAGES, not
+  blocks -- (1) noisy links + coarse field, (2) gauge-invariant features,
+  (3) *"4 FiLM blocks, width 56"*, (4) scalar head, (5) plaquette curl. Only box
+  3 is the FiLM stack. Five boxes beside a caption saying "4 FiLM blocks" is an
+  easy mis-read.
+* **Reading B -- he counted FiLM consumers.** The FiLM embedding box spans boxes
+  3 and 4 and sends an arrow into EACH (`for x in (xs[2], xs[3])`). The code's
+  own comment says it "must span both consumers of the embedding, the residual
+  blocks and the head's force gate". So FiLM modulation enters in **two** places
+  while the caption mentions only the residual stack. That is a genuine
+  omission, not just a drawing artefact.
+
+**PROPOSED FIX, which covers both readings:**
+
+1. Caption enumerates the stages explicitly, so "five boxes" cannot be read as
+   "five blocks": *"Left to right: input, gauge-invariant features, the stack of
+   four FiLM-modulated residual blocks, the scalar head, and the curl that makes
+   the output gauge-covariant."*
+2. Caption states the second FiLM consumer: *"The $(\log\sigma, \log\beta)$
+   embedding modulates both the residual stack and the head's Wilson-force
+   gate."*
+3. In the figure, label box 3 "**stack of 4** FiLM blocks" rather than "4 FiLM
+   blocks", and label the two embedding arrows.
+4. Give the U(2) numbers in the caption the same treatment
+   (`hidden = 64`, `403,394` parameters, same depth).
+
+### L5 — "Maybe we don't want to use ppm, use standard HMC uncertainties and a z-score"
+
+**He is right, and this is already the project's own standing rule being
+violated in the paper's prose.** The internal standard
+(`84_raw_seed_quality.py`) is to report BOTH `Z = |mean - exact|/SEM` and the
+relative deviation, with the rule: *at fixed coupling the ratio is comparable
+between arms, because both face the identical spread; ACROSS couplings use z.*
+
+The paper has 26 ppm occurrences and the abstract is ppm-only -- "35 parts per
+million against a cold start's 1200", "6 parts per million against 25" -- which
+is exactly the across-coupling, across-volume case where a bare ratio is least
+defensible. A lattice reader also simply expects a mean with its statistical
+error.
+
+**PROPOSED FIX.**
+
+1. **Abstract and every cross-coupling or cross-volume comparison lead with
+   $z$**, with the relative deviation in parentheses where it adds something.
+2. Keep ppm at FIXED coupling where both arms face the same per-configuration
+   spread and the ratio is meaningful.
+3. **Never quote a ppm ratio across couplings or volumes.**
+4. **Check the $6$ vs $25$ figure before it survives into the revision.** That is
+   a factor of 4 after 400 trajectories at $L = 128$, and this project has
+   already quoted one seed error that was at the ensemble's sampling floor. The
+   $35$ vs $1200$ pair, a factor of 34, is safe.
+
+### L6 — "Don't use 'lifted configuration'; use upsampling or similar"
+
+Pervasive: 68 "lift", 25 "lifted", 11 "lifted configuration". The term is ours
+and carries no meaning outside the group.
+
+**PROPOSED FIX**, and it should be consistent with L1's replacement:
+
+| current | proposed |
+|---|---|
+| lifted configuration | **upsampled configuration** |
+| the lift (the operation) | **the upsampling step** |
+| the lift (the model's output) | **the upsampled configuration** |
+| lifted chain | **preconditioned chain** |
+
+"Preconditioned chain" for the HMC run is worth keeping -- it matches the title
+and the central claim, and distinguishes the CHAIN from the CONFIGURATION it
+started from, a distinction the current text blurs.
+
+**Prose only.** `det_lift`, `lift_batch`, `generate_fine_from_coarse` and the
+rest are identifiers and stay.
+
+### L7 — "Show improvement factors compared to local observables and IR observables"
+
+**Same defect as K5 and L3, and we already have the measurement.** Stationary
+$2\tau_{\rm int}$, median over equilibrated arms, from the §11 scan:
+
+| fine beta | plaquette (UV) | W(2x2) | W(4x4) | W(8x8) (IR) |
+|---|---|---|---|---|
+| 49.1 | 4.81 | 3.87 | 3.33 | 2.27 |
+| 200.8 | 4.93 | 4.09 | 3.78 | 3.27 |
+| 414.9 | 4.99 | 3.87 | 3.72 | 3.09 |
+| 790.9 | 4.69 | 4.07 | 3.89 | 3.31 |
+
+**PROPOSED FIX: report $F$ in three columns -- UV (plaquette), IR (largest
+Wilson loop), and topology ($\langle Q^2\rangle$)** -- rather than one number
+maximized over loops.
+
+**CORRECTED 2026-10-24 -- do NOT lead with "larger loops decorrelate faster".**
+An earlier version of this item proposed that as a headline. It is most likely a
+SIGNAL-TO-NOISE ARTEFACT, not a statement about the theory. `tau_int` is built
+from the NORMALIZED autocorrelation `rho(t) = C(t)/C(0)`, so an observable
+carrying a large trajectory-to-trajectory-independent component has that
+component inflate `C(0)`, shrink `rho(t)` at every lag, and pull `tau_int`
+toward its uncorrelated floor of 0.5. Large Wilson loops have exactly that:
+per-configuration spread grows ~374x from W(1x1) to W(4x4), much of it
+short-distance noise HMC refreshes in one trajectory. Measured `tau_int` is
+1.15-1.7 at W(8x8) against 2.4-2.6 at the plaquette -- the large loop is the one
+sitting near the floor.
+
+**Before this appears in the paper, check it properly**: plot `rho(t)` for each
+loop and ask whether the decay RATE differs or only the intercept. If only the
+intercept, the correlated mode is common to all scales and the ranking is pure
+dilution. Report the interval per observable because the cost formula needs it,
+but do not dress the ordering up as physics.
+The infrared slowness is real but it lives in THERMALIZATION, not decorrelation:
+`t_therm` is maximized over loops and the largest loop is what sets it, while
+local repair is a low-pass filter whose effectiveness falls 64x to 1.6x from
+W(1x1) to W(6x6). Interval and thermalization order the scales OPPOSITELY, and
+saying so is a better result than the single number we currently report.
+
+Topology is the third column and the only one where a frozen classical chain
+honestly has no finite interval -- so that is where an unbounded $F$ belongs,
+and nowhere else.
+
+### L8 — "Explain why we are doing winding HMC. The money plot is not clear"
+
+Two separate asks.
+
+**(a) Justify the baseline, early and explicitly.** `current.tex:276` asserts
+winding HMC "is the classical baseline of record here" without saying why. The
+reason is strong and should be stated where $F$ is defined: plain HMC is
+TOPOLOGICALLY FROZEN at these couplings -- zero sector changes in 3000
+trajectories at $\beta = 14.15/55.02/218.58$ -- so it has no finite topological
+interval at all, and benchmarking against it would be a strawman that flatters
+us. The winding update reproduces exact $\langle Q^2\rangle$ to 2% with
+$\tau_{\rm int}(Q^2) \approx 1.2$--$2.9$ for a 1-18% overhead. A properly tuned
+PTBC ladder costs 25-121x more and exists to manufacture a global topological
+move for theories that LACK one; this theory has an exact one, so importing that
+comparison measures nothing. **One short paragraph; all three numbers already
+exist.**
+
+**(b) The money plot (fig64) carries too many encodings.** Currently: three
+checkpoints x two volumes x three marker shapes (circles measured, triangles
+lower bounds, crosses no-factor) x dotted per-checkpoint ceiling lines x
+chain-bootstrap error bars, all in one panel pair.
+
+**PROPOSED FIX:**
+
+1. **Remove the triangles as plotted.** They are the K5 artefact -- budget-built
+   "lower bounds" that are not bounds. Either drop those couplings from the
+   numeric axis and mark them in a rug or annotation strip reading "no classical
+   equilibration within budget", or give them a measured value from the new
+   stationary interval. **This is a correction, not a cosmetic change.**
+2. **Facet by observable class** per L7: a UV panel, an IR panel, a topology
+   panel. The topology panel is where the method's claim actually lives and it
+   is currently buried in a maximized number.
+3. **One checkpoint per panel, or small multiples.** Three checkpoints x two
+   volumes in one axes is the main legibility problem.
+4. Name the baseline in the axis label ("improvement factor over winding HMC"),
+   so the plot stands alone.
+5. Keep the training-ceiling lines -- they are the figure's best feature and
+   they carry the abstract's last sentence.
+
+### L9 — Timeline
+
+Lattice conferences next **May** and **July**; workshops next **November**. The
+revision implied by §13 and §14 is weeks, not months, so the May deadline is the
+binding one. **Decide which venue is the target before starting, because it
+determines whether the 4D SU(N) discussion (§12.4) is a paragraph of outlook or
+a programme with preliminary numbers.**
+
+### 14.1 Suggested order
+
+1. **L3 + L7 + L8(a) together** -- one coherent rewrite of the $F$ definition,
+   its measurement, and its baseline. Three reviewers, one defect; highest value.
+2. **L5** -- $z$ throughout, ppm only at fixed coupling. Mechanical, touches the
+   abstract, and verify the $6$ vs $25$ number while doing it.
+3. **L8(b)** -- redraw fig64 once (1) has settled what it should contain.
+4. **L1, L6** -- terminology sweeps, mechanical, do them in one pass.
+5. **L2, L4** -- two captions and one definition. Confirm L4's reading with
+   Lingxiao first.
+
+---
+
+## 15. Decisions taken 2026-10-24, and the facts behind them
+
+Follows §14. These are settled, not proposals -- §14's items stay as written
+except where contradicted here.
+
+### 15.1 The architecture, stated exactly (closes L4)
+
+Read off `u1_2d/model/score_net.py` and the deployed checkpoint's
+`model_kwargs`, so the Fig. 1 caption can be rewritten without guessing.
+
+* **`depth = 4`** -- four `FiLMResBlock`s. This is the "4 FiLM blocks".
+* **`hidden = 56`** (U(1)) / **`64`** (U(2)) -- the CHANNEL COUNT, which the
+  caption calls "width". The stem maps `[B, 6 + cond_channels, L, L]` ->
+  `[B, hidden, L, L]`; each block is two `3x3` circular convolutions at
+  `hidden -> hidden`; the head collapses `hidden -> 1`. Reproduces 324,954 and
+  403,394 parameters respectively.
+* **`emb_dim = 128`**, and **sigma and beta are treated SYMMETRICALLY**:
+  `cat([sigma_embed(log sigma), beta_embed(log beta)])`, 64 dims each, through a
+  two-layer MLP. The log is because sigma spans the noise schedule and beta
+  spans the ladder, both over orders of magnitude; a sinusoidal basis on a
+  linear scale wastes its resolution. **An earlier reading of this file assumed
+  the two were handled differently. They are not.**
+* **The coarse field enters TWICE, and this is the design point the paper never
+  states.** Spatially, as input channels concatenated with the gauge-invariant
+  features; and GLOBALLY, as `emb = emb + cond_film_proj(cond.mean(dim=(-2,-1)))`
+  -- the spatial mean of the conditioning channels projected into the FiLM
+  embedding. The global path is what carries the coarse winding density
+  `2 pi Q / V`. It is ADDITIVE and ZERO-INITIALISED (`nn.init.zeros_` on weight
+  and bias) so it is an exact no-op at initialisation, cannot destabilise a
+  recipe that trained without it, and does not change `emb_dim` or break
+  checkpoint compatibility.
+* **The embedding has five consumers**: the four block modulations, plus
+  `force_gate = nn.Linear(emb_dim, 1)`, also zero-initialised, which gates an
+  ANALYTIC Wilson force added to the head's output:
+  `h = h + gate * (-(beta * sigma) * sin(plaq))`. At `sigma -> 0` the exact
+  scaled score is `sigma * curl(-beta sin theta_p)`, so the network is handed
+  its own small-noise limit and learns only the envelope. **That is a physics
+  prior, not an architectural detail, and it deserves a sentence in the text
+  independently of the caption fix.**
+
+So: four FiLM blocks is correct; one shared embedding; three inputs to it
+(log sigma, log beta, coarse global mean); five consumers of it.
+
+### 15.2 Statistics: z with N_eff, and no ppm as the currency (settles L5)
+
+**Decision: z is the reporting currency. ppm survives only as a single absolute
+number used to anchor the physical scale, never as a comparative statistic and
+never as a ratio across couplings or volumes.**
+
+The error, by case, and all three already exist in the codebase:
+
+| case | estimator | why |
+|---|---|---|
+| **record 0** (raw seed quality -- the headline) | plain across-chain SEM, `sigma / sqrt(n_chains)` | chains are independent replicas and NO Monte Carlo time has elapsed, so there is no autocorrelation to correct for. This is the cleanest case in the paper and it needs no machinery |
+| equilibrated means | `autocorr_aware_mean_err` (tau_int-aware) | already the validation of record; `out/u2_2d/validation/` holds these and the naive-SEM run is kept superseded |
+| ratios, anything non-Gaussian | `chain_bootstrap` | calibrated, with an exact fast path for the mean |
+
+**The reference contributes NO error.** The character expansion is exact at
+finite volume and numerically converged -- recomputed on a 16x finer k grid, 4x
+wider k cut and 4x finer alpha grid, stable to 1e-6 relative at every coupling
+tested. Say this in the text: it means z is a statement about the measurement
+alone, which is stronger than the usual situation where both sides carry error.
+
+**Always print `N_eff` beside any `mean |z|`.** The 41 scored observables are
+strongly correlated -- participation ratio **3.77** at L = 32, **3.25** at
+L = 64, and only **1.45** on the thirteen extended loops. So `SE(mean |z|)` on
+the extended-loop column is ~0.50, not 0.09, and three previously-quoted
+"significant" moves were overstated by 3.3x. `validate.report.compare` already
+records `n_effective` on every summary it writes.
+
+### 15.3 Seed quality is reported at record 0, and `t_therm` is demoted to a gate
+
+**Decision, and it is the most consequential one here.** The paper currently
+lets `t_therm` carry the seed-quality claim. It should not, for reasons the
+project already established internally but never applied to the manuscript:
+
+* the band is `+-2 SEM` ACROSS CHAINS, so it narrows with more chains and with
+  falling `sigma_cfg` -- it depends on volume and coupling, and the paper
+  already concedes values at different rungs "are not comparable at face value",
+  which is a confession that it is not a measurement;
+* it is a FIRST crossing, so it can fire on a fluctuation;
+* it is measured to be **rugged in coupling, reproducibly** -- ~10x scatter
+  between adjacent couplings, confirmed across two independent rounds and two
+  independent implementations;
+* at large volume it can admit an arm whose settled mean is still many SEM from
+  exact;
+* and the alternative fails the other way: the Detmold-Endres-style exponential
+  relaxation fit is **INVERTED for good seeds**, because a seed already at
+  target has no transient to resolve, so the fit returns `inf` or is vetoed and
+  the best possible seed is scored a failure.
+
+**So neither estimator ranks seeds soundly, and the replacement is the project's
+own standard** (`u2_2d/scripts/84_raw_seed_quality.py`), which the paper does
+not currently use:
+
+    Z = max over {plaquette, W(2x2), W(4x4)} of |mean - exact| / SEM,  at RECORD 0
+
+Fit-free, so it inherits none of the failure modes above. **`t_therm` stays in
+the paper as a GATE** -- did this arm reach the target band within its budget,
+yes or no -- and as the denominator of a cost, but it stops being the thing that
+says how good a starting configuration is.
+
+### 15.4 The comparison is against FINITE-VOLUME exact values, and it barely matters
+
+Lingxiao asked whether we compare against infinite- or finite-volume exact
+values. Checked:
+
+* `u2_2d/validate/observables.py:158` passes `lattice_size`, so **the validation
+  of record is finite-volume**. `plaquette_exact(beta, L)` likewise.
+* The difference is negligible. Infinite-volume area law against finite volume:
+
+| beta, L | loop | infinite-V | finite-V | relative difference |
+|---|---|---|---|---|
+| 105.651, 32 | 4x4 | 0.73598390 | 0.73598390 | -5.6e-10 |
+| 105.651, 32 | 8x8 | 0.29340888 | 0.29340889 | -1.3e-08 |
+| 416.524, 64 | 4x4 | 0.92583603 | 0.92583603 | -3.0e-11 |
+| 416.524, 64 | 8x8 | 0.73474446 | 0.73474446 | -5.3e-10 |
+
+1e-12 to 1e-8 relative, at least five orders of magnitude below the measurement
+precision. The reason is structural: in 2D the plaquettes are independent after
+gauge fixing, so the area law is essentially exact and the finite-volume
+correction enters only through the global torus constraint, which is
+exponentially suppressed.
+
+**CORRECTED 2026-10-24: this table does NOT belong in the paper.** An earlier
+version of this item proposed it as a justification. There is nothing to
+justify -- the simulation is at finite `L`, so the exact finite-volume value is
+simply the correct reference, and defending it would imply it were a choice.
+Using the infinite-volume law is what would need an argument.
+
+**ACTIONS.** (i) State in ONE CLAUSE which reference is used ("against the exact
+finite-volume values"), so a reader knows, and stop there. The table stays here,
+in this file, for the internal purpose it actually serves: it is the reason the
+inconsistency below never corrupted a result and no re-run is needed.
+(ii) Fix the one inconsistency:
+`17_prolongator_baseline.py` calls `wilson_loop_exact(beta, a * b)` with no
+`lattice_size`, so it scores the plaquette against finite volume and every
+Wilson loop against the infinite-volume law. Harmless at this precision but it
+should not be left for someone to find.
+
+### 15.5 The loop-decorrelation ordering is REAL -- the dilution hypothesis is refuted
+
+**Measured 2026-10-24 and the hypothesis this section used to advance is
+WRONG.** §14/L7 originally proposed leading with "the plaquette has the longest
+interval and larger loops decorrelate faster"; §15.5 then retracted that as
+"most likely a signal-to-noise artefact". The check says the original claim was
+right and the retraction was wrong.
+
+**The test, and why it discriminates.** `tau_int` is built from the NORMALIZED
+autocorrelation `rho(t) = C(t)/C(0)`. Under the dilution hypothesis a large loop
+carries extra trajectory-to-trajectory-INDEPENDENT variance, which inflates
+`C(0)` and therefore scales `rho(t)` at EVERY lag by one common factor. So
+rescaling each curve by its own `rho(1)` would make the curves COLLAPSE. They
+do not.
+
+Rescaled `rho(t)/rho(1)`, equilibrated tail, L = 32, beta = 105.651:
+
+| loop | t=2 | t=3 | t=4 |
+|---|---|---|---|
+| plaquette | 0.708 | 0.507 | 0.376 |
+| W(2x2) | 0.637 | 0.416 | 0.277 |
+| W(4x4) | 0.574 | 0.352 | 0.218 |
+| W(8x8) | **0.490** | **0.250** | **0.130** |
+
+Monotone separation AFTER the level difference is removed, so the decay RATE
+differs and not merely the intercept.
+
+**Resolved and replicated.** Chain-resampling bootstrap on the
+plaquette-minus-W(8x8) difference in rescaled `rho(2)`: **0.218 +- 0.020
+(10.7 sigma)** at L = 32 and **0.121 +- 0.010 (12.4 sigma)** at L = 64. All four
+arms at each volume -- cold_fixed, smear_fixed, diffusion_raw, diffusion_fixed
+-- reproduce the curve to about +-0.01, which is an independent replication
+since they are different starting configurations.
+
+**And there is a mechanism.** In 2D a Wilson loop of area A is essentially a
+product of many nearly-independent plaquettes; each refreshes under HMC
+somewhat independently, so the composite decorrelates faster than any one of
+them. Both effects are present -- large loops have a lower `rho(1)` AND a
+faster-decaying shape -- but only the second would survive the rescaling, and it
+does.
+
+**So the ordering may be reported as a result.** The useful form pairs it with
+its opposite: interval and thermalization order the scales OPPOSITELY. The
+infrared decorrelates FASTER (tau_int 4.8 -> 2.3 across the loop range at
+L = 32) but equilibrates SLOWER, because `t_therm` is set by the largest loop
+while local repair is low-pass (u1's repair factor falls 64x to 1.6x from
+W(1x1) to W(6x6)). Reporting a single interval maximized over scales hides
+both halves.
+
+**Process note, because this is the second such episode in one session.** A
+plausible mechanism was proposed, written into this file as probable, and
+refuted by a cheap measurement. The other was an alarm that `tab:u2_observables`
+was stale, which dissolved once the right source directory
+(`seed_benchmark_noretherm`, as its own caption specifies) was identified. The
+rule that would have prevented both: **state the discriminating test before
+stating the hypothesis, and run it first when it is cheap.** Here the test cost
+two 600-trajectory runs and twenty minutes.
+
+Note also what made the check affordable: `17_prolongator_baseline.py` now takes
+`--save-series`, so a further change to any of these estimators is a reanalysis
+rather than a re-run.
+
+### 15.6 Front matter
+
+* Shivam Panda: `shivam.panda@univ.ox.ac.uk`, Department of Physics, University
+  of Oxford. **Confirm with the department before circulating** that listing the
+  departmental affiliation is appropriate for this work -- see the plan for who
+  to ask.
+* Jinchen He: three affiliations, already filled.
+* **Yong Zhao: still commented out** (`current.tex:61`). Requested 2026-10-24.
+* **REVTeX `superscriptaddress` makes this all-or-nothing**: an author left
+  without `\affiliation` silently inherits the NEXT author's institution, so a
+  half-filled block produces a wrong paper rather than an obviously broken one.
+  Fill all three in one commit and check the rendered superscripts against
+  intent before circulating.
+
+---
+
+## 16. The cost question, and why "better seed" and "cheaper configurations" are different claims (2026-10-24)
+
+Raised by the question "shouldn't they go hand in hand?". They do not, and the
+reason is structural rather than a defect. It reframes what the paper should
+claim, so it is written down here rather than left in a conversation.
+
+### 16.1 A factory versus a per-item process
+
+The cost of N configurations:
+
+    classical       t_therm(cold)  +  N x interval
+    preconditioned  N x (lift + repair + t_therm(preconditioned))
+
+A classical chain pays its burn-in ONCE and then emits a configuration every
+`interval` trajectories forever, so its marginal cost tends to the interval,
+about 4-6 trajectories here, and the burn-in amortizes to nothing. The
+preconditioner amortizes NOTHING: every configuration descends from an
+independent coarse one, so each needs its own reverse diffusion, its own repair
+and its own equilibration.
+
+**Consequence, and it is the thing that makes the two claims independent: a
+PERFECT preconditioner -- `t_therm` identically zero -- still loses at large N
+if the lift alone costs more than one interval.** Being a better starting point
+improves a term the classical route pays once. That is why the seed can be
+30-130x closer to exact (SS 15, fig66) while the pipeline is 2.4x slower per
+configuration (0.410 s against winding HMC's 0.212 s at L = 64, beta = 416.5).
+
+### 16.2 Where the factory argument fails, which is the method's actual case
+
+The amortization assumes the factory WORKS. Where the classical chain is
+frozen -- above beta ~ 100 at L = 32 and beta ~ 40 at L = 64, measured in
+`fig67_thermalization` -- its marginal cost is not the interval at all: it emits
+correlated configurations from one topological sector forever, so it has no
+product and no finite per-configuration cost. The preconditioner's per-item cost
+is then the only finite number in the comparison.
+
+So the defensible claim is the one Sec. IV E already makes: **break-even at best
+where a good classical sampler exists, and the only option where one does not.**
+That is not a hedge; it is what a preconditioner buys.
+
+### 16.3 The 512-vs-1024 difference is NOT the stale-count bug -- RETRACTED
+
+An earlier version of this section diagnosed
+`out/u2_2d/sampler_steps/sampler_steps.json` (`n_configs: 512` against
+`default.yaml`'s 1024) as a third instance of the stale-configuration-count bug
+documented in CLAUDE.md, and predicted the per-configuration cost would halve on
+a re-run. **It did not, and the diagnosis was wrong.** Re-run at 1024
+(`out/u2_2d/sampler_steps_1024/`):
+
+| sampler steps | 512 s/config | 1024 s/config | change |
+|---|---|---|---|
+| 18 | 0.1032 | 0.0763 | -26% |
+| 25 | 0.1535 | 0.0878 | -43% |
+| 50 | 0.1670 | 0.1339 | -20% |
+| 100 | 0.2681 | 0.2325 | -13% |
+| 200 | 0.4703 | 0.4179 | -11% |
+
+A stale COUNT would divide the same wall-clock by half the configurations and
+give a flat factor of two. This is 11-43% with a clear GRADIENT, largest where
+the sampler is cheapest, which is the signature of a fixed per-pass overhead
+amortizing better over more configurations. `14_sampler_steps.py` reads
+`n_configs` from the config and actually lifts that many, so it was never
+exposed to the bug; only `13_cost_comparison.py`'s `--rung-configs` default was.
+
+Lesson worth keeping, since the wrong diagnosis was reached from a real
+coincidence (0.470 against a recorded 0.240 is close to a factor of two):
+**check the SHAPE of a discrepancy before naming its cause.** A division error
+is flat; an overhead effect has a gradient.
+
+### 16.4 The cost/accuracy trade at reduced sampler steps -- MEASURED
+
+Against winding HMC's 0.212 s per independent configuration, at 1024
+configurations:
+
+| sampler steps | s/config (top rung) | ratio | rung-0 plaquette rel. err | rung-0 W(2x2) z |
+|---|---|---|---|---|
+| 18 | 0.0763 | **0.36** | +1.72e-04 | +7.4 |
+| 25 | 0.0878 | **0.41** | +3.51e-04 | **+14.0** |
+| 50 | 0.1339 | 0.63 | +2.02e-04 | +5.2 |
+| 100 | 0.2325 | 1.10 | +1.44e-04 | +2.9 |
+| 200 (deployed) | 0.4179 | 1.97 | +1.18e-04 | **+2.1** |
+
+**The trade is real and it is not small.** At 25 steps the ladder is 2.4x
+CHEAPER per configuration than winding HMC, and its raw lift is 14 standard
+errors off on W(2x2) against 2.1 at 200 steps -- a factor of 6.7 -- with the
+plaquette 3x worse as well. So "cheaper per configuration" and "a good lift"
+are themselves in tension, on top of the factory/per-item tension of SS 16.1.
+
+**Read rung 0, not the top rung.** The top-rung plaquette is flat across the
+whole range (-9.0e-05 to +7.5e-05, no trend), which would suggest step count
+costs nothing. It compounds two lifts and crosses zero near 18 steps, exactly as
+CLAUDE.md warns, so it is insensitive by construction and tuning on it picks a
+bad setting.
+
+**Two things this run does NOT settle.** The z values use a naive
+across-configuration SEM while the validation of record is tau_int-aware, so
+the absolute numbers are inflated -- though every row gets identical treatment,
+so the 14.0 -> 2.1 comparison holds. And the run applied NO rethermalization
+(`rel_err_pre_retherm` equals `rel_err` in every row), so it cannot say whether
+the deployed 10 sweeps close the gap. CLAUDE.md's claim that 25 steps shows "no
+measurable change in local observables after retherm" predates this run and was
+made on a different column; **it should be re-measured before 25 steps is
+recommended.**
+
+**The 1.38x-faster figure in CLAUDE.md is superseded**: it came from the
+512-configuration run (ratio 0.72 at 25 steps). The corrected value is 2.4x.
+
+### 16.5 What none of the three figures measures
+
+`fig65` (improvement factor), `fig66` (accuracy at fixed budget) and `fig67`
+(trajectories to equilibrate) all score the RAW lift.
+`28_crossover_scan.py` calls `generate_fine_from_coarse` with
+`n_su2_sweeps = 30` and NO rethermalization, while the deployed ladder applies
+`n_retherm_sweeps: 10` on top.
+
+That matters because fig67's bottleneck is specifically the PLAQUETTE -- the
+preconditioned arm starts 4.5-19.4 standard errors off on it at L = 64 and
+`t_therm` tracks that almost exactly (the one coupling with z = 0.6 has
+`t_therm` = 0), while W(2x2) and W(4x4) are mostly 0-10 records. The plaquette
+is the most ultraviolet observable and precisely what cheap local sweeps repair:
+the project has measured **two retherm sweeps, six link touches, reaching
+|z| <= 2 at every coupling tested**, against 920-2560 link touches for the
+trajectory route.
+
+So fig67 charges the preconditioned arm 27-47 records of HMC to remove a bias
+that about two sweeps would remove for a thousandth of the cost. **The honest
+statement is that the raw lift's UV bias is real and expensive to remove BY HMC,
+and that nobody would remove it that way.** A `t_therm` measured on the
+delivered product does not exist yet; `28_crossover_scan.py` has no
+`--n-retherm`, the retherm living in `03_run_ladder.py`.
+
+Sec. IV already warns that scoring post-retherm "cannot separate a good model
+from a good repair". That is the right caution for ACCURACY. It is the wrong one
+for COST, where the repair is exactly what should be counted, because it is part
+of the method and it is cheap.
+
+---
+
+## 17. The loop-size scan (2026-10-28): UV/IR is the wrong axis, and F was floored
+
+The coverage scan was re-run with **W(8x8) added** and at **14 couplings at both
+volumes** instead of 14 and 8. W(8x8) could not be recovered from the old runs:
+the scan stores observables only, no configurations along the trajectory, so the
+larger loop needed new HMC. The cached lifts under `seeds/` were reused.
+
+L = 32 is complete (`out/u2_2d/coverage_scan_w8/`); L = 64 is running.
+
+### 17.1 Difficulty falls MONOTONICALLY with loop size, at BOTH volumes
+
+Cold arm, fraction of couplings at which it never equilibrates within budget,
+by the scan's own discrete criterion (`t_therm_threshold_old`: |z| <= 2 for
+five consecutive records):
+
+| observable | L=32 winding | L=32 plain | L=64 winding | L=64 plain* |
+|---|---|---|---|---|
+| plaquette | **8/14** | **8/14** | **13/14** | 9/11 |
+| W(2x2) | 8/14 | 7/14 | 13/14 | 10/11 |
+| W(4x4) | 5/14 | 6/14 | 10/14 | 6/11 |
+| **W(8x8)** | **2/14** | **2/14** | **6/14** | 4/11 |
+
+\* L=64 plain is 11 of 14 couplings: that wave was killed mid-run (see 17.7)
+and the three missing points are the three HARDEST, so its column is
+optimistic and must not be compared against the 14-coupling columns yet.
+
+**The ordering transfers to L=64 and the margin widens.** The largest loop is
+the easiest at both volumes, and the cold arm's plaquette failure rate goes
+8/14 -> 13/14 from L=32 to L=64 while W(8x8) goes 2/14 -> 6/14.
+
+**The preconditioned arm fails 0/14 on every local observable, at both volumes
+and in both rounds.** That is on the unambiguous criterion -- `inf` means the
+band was never reached -- and it is the cleanest single statement in the scan.
+
+Two measured causes for the loop-size ordering, both already in this file:
+large loops carry far more per-configuration spread, so the `+-2` s.e. band is
+wider and easier to clear; and they decorrelate faster, which is a difference
+in the DECAY RATE of `rho(t)` and not signal-to-noise dilution (10.7 sigma at
+L = 32, 12.4 at L = 64, SS 15.5).
+
+**So "ultraviolet versus infrared" is backwards for this theory.** The ordering
+is plaquette hardest, large loops easiest. The honest axis is LOOP SIZE.
+
+Note this is a statement about 2D, not about the programme: after gauge fixing
+there is very little long-distance structure here for a large loop to probe,
+which is the same fact that lets cold + charge + a few exact sweeps reach
+equilibrium at all (SS 11.7). In 4D the label would mean something.
+
+**APPLIED to the paper**: `sec:scoring` no longer says the loops probe
+"ultraviolet (UV) and infrared structure"; `sec:u2obs` now states the measured
+ordering explicitly; "no classical arm reaches both the UV and the topological
+target" is now "both the local and the topological target".
+
+### 17.2 RETRACTED: topology is NOT the only unconditional failure
+
+**This section previously read "charge fails 14/14 at both samplers, at every
+coupling, at both volumes" and called that the claim to lead with. It is
+wrong, and the paper carried it for one revision.**
+
+The number had no source. `t_therm_threshold_old` in the scan JSON runs over
+`LOCAL` only -- the four Wilson loops -- and has no `charge` key at all;
+`90_standard_timescales.py`'s `therm_*` fields do cover charge but its own
+in-code comment marks them unusable (the one-sigma walk-back scores a
+perfectly equilibrated seed at ~397 records against the scan's 0-11).
+
+Scored on the SAME footing as the loop rows -- `28_crossover_scan.
+thermalization_time` applied to `Q^2` against the exact `<Q^2>` from the closed
+form, which is exactly what the loop rows do against `wilson_loop_exact`
+(`artifacts/charge_therm.py`, no new HMC):
+
+| arm | L=32 winding | L=32 plain | L=64 winding | L=64 plain* |
+|---|---|---|---|---|
+| cold start | **1/14** | **12/14** | **0/14** | **11/11** |
+| diffusion seed | 0/14 | 4/14 | 0/14 | 2/11 |
+
+The two rounds are different in kind, not in degree:
+
+* **Plain HMC is totally frozen.** Above beta ~ 14 its `<Q^2>` is `0.000` to
+  three decimals at every coupling and its parity-flip count is exactly zero.
+  The `inf` is not a budget artefact; there is no sector motion to be slow.
+* **The winding arm reaches the exact `<Q^2>` essentially everywhere**, with
+  423-5698 parity flips. The single L=32 failure is beta = 1623, where the
+  marginal move itself dies (0 flips) -- already on record in CLAUDE.md as the
+  move's decay at the top of the range.
+
+So the retracted sentence was true only against plain HMC, which is **not**
+this project's declared baseline (CLAUDE.md: "the classical baseline of record
+is HMC + winding update, not PTBC and not plain HMC"). Stating it against the
+winding arm overclaimed against the strongest sampler we run.
+
+**CAVEAT that applies to the whole charge row, in both directions.** `<Q^2>`
+is a single moment, so matching it to 2 s.e. is a far weaker test than matching
+`P(Q)` -- CLAUDE.md is explicit that sector-change counts and `tau_int(Q^2)`
+both report HEALTHY on parity-frozen chains. The row says the winding arm's
+`<Q^2>` arrives, not that its topology is correctly sampled. It is scored this
+way because every loop row is also a single-mean test, so the comparison is
+internally consistent; it is not a replacement for the `P(Q)` goodness-of-fit
+machinery in stage 07.
+
+The diffusion seed's own plain-round failures (4/14, 2/11) are real and not an
+estimator artefact: at those couplings the transported `<Q^2>` sits off exact
+(beta = 88.76: 0.719 against 1.196; beta = 537: 0.031 against 0.132) and plain
+HMC cannot move it. In the winding round they vanish, 0/14 at both volumes.
+
+**What survives, and it is sharper than what was retracted**: the division of
+labour in 17.3, which holds against the strongest classical sampler rather than
+against the weakest.
+
+### 17.3 The winding move buys topology and essentially nothing else
+
+Local-observable failure counts, winding against plain, from 17.1:
+
+| | plaquette | W(2x2) | W(4x4) | W(8x8) |
+|---|---|---|---|---|
+| L=32 | 8 vs 8 | 8 vs 7 | 5 vs 6 | 2 vs 2 |
+
+Within one coupling at every loop size. Meanwhile the charge row moves from
+12/14 failures to 1/14. The winding update buys topological mobility and
+essentially nothing else, which is what it was designed to do.
+
+Worth stating, because it justifies winding HMC as the baseline without
+flattering it: it is the strongest classical sampler precisely and only where
+the method claims an advantage. The L=64 comparison is deferred until the plain
+wave is complete -- at 11 of 14 couplings its local column is optimistic by
+construction, and comparing 13/14 against 9/11 would read the missing hard
+couplings as a win for plain HMC.
+
+
+### 17.4 fig65's local-observable panels were floored -- CORRECTED
+
+`91_money_split_figure.py` divided each panel's interval by THAT OBSERVABLE'S
+own `t_therm`. For the larger loops that value is 0 at many couplings, gets
+charged as one trajectory to keep the ratio finite, and so reports a floor as
+an improvement. The denominator must be the SLOWEST observable, because a
+configuration is not usable when W(4x4) has converged and the plaquette has
+not. Measured at L = 64: preconditioned `t_therm` is 0 on W(4x4) at five of
+eight couplings while the plaquette is 44-94 trajectories.
+
+Corrected (median F), on the OLD grid, as first measured:
+
+| panel | per-observable (wrong) | slowest (correct) |
+|---|---|---|
+| L=32 W(4x4) vs plain | 3.29 | **0.42** |
+| L=64 W(4x4) vs plain | 6.14 | **0.19** |
+| L=64 plaquette vs winding | 0.09 | 0.08 |
+| topology vs winding | 10.1 / 6.8 | unchanged |
+
+Local-observable F falls by a factor of 10-15. Topology is unaffected, because
+the preconditioned charge is correct at `t = 0` by transport and its
+denominator was never the issue.
+
+**Final values, on the W(8x8) grid and after the SS 18 gate fix:**
+
+| panel | vs plain | vs winding | n of 14 |
+|---|---|---|---|
+| L=32 plaquette | 0.29 | 0.36 | 5 |
+| L=32 W(4x4) | 0.18 | 0.21 | 5 |
+| L=32 topology | 25.6 | 11.4 | 2 / 13 |
+| L=64 plaquette | 0.22 | 0.11 | 1 |
+| L=64 W(4x4) | 0.16 | 0.09 | 1 |
+| L=64 topology | **all 14 unbounded** | 6.4 | 0 / 14 |
+
+Read the `n` column before the medians. After SS 18 the local panels carry
+five points at L = 32 and ONE at L = 64, because at the other couplings the
+classical arm never equilibrated and no factor can be quoted. The honest
+summary of the local half is therefore not "we lose" but **"the comparison
+exists at 5 of 14 and 1 of 14 couplings, and where it exists we lose"** -- the
+13 of 14 classical failures ARE the result, not a gap in it.
+
+Topology is the opposite: at L = 64 against plain HMC every one of the 14
+couplings is unbounded, and against the winding move the factor is finite at
+all 14 with a median of 6.4.
+
+### 17.5 Per-observable relaxation times need their own guard
+
+`28_crossover_scan.fit_relaxation_time` applies its tail-bias check only when
+the point estimate is exactly zero. A cold start at strong coupling drops FAST
+from far away to a plateau that is still wrong, which fits a sharp exponential
+and returns a small NON-ZERO tau that escapes the check. Measured, L = 64,
+beta = 636.85, cold, plaquette: starts 648 sigma from exact, ends 12.3 sigma
+from exact with `t_therm = inf`, and the fit returns **tau = 2.24 +- 0.07
+trajectories** while `_tail_is_biased` returns True and is never consulted.
+
+The scan's stored `t_therm` is NOT affected -- it uses the joint fit across
+observables, which returns `nan` for these arms. Only a per-observable re-fit
+is exposed. `u2_2d/scripts/94_per_observable_tau.py` therefore applies the
+guard UNCONDITIONALLY, which is strictly more conservative and cannot turn a
+non-converging chain into a fast one. With it:
+
+Re-run on the W(8x8) grid, which has 14 couplings x 4 observables = 56 cells
+per volume against the old grid's 42 and 24 (`artifacts/per_obs_tau_w8.json`):
+
+| arm | L=32 finite / never | L=64 finite / never |
+|---|---|---|
+| cold start | 18 / 38 | **2 / 54** |
+| diffusion seed | 42 / 14 | 41 / 15 |
+
+**CORRECTED: the cold arm's L=64 count is 2 of 56, not zero.** The earlier
+"ZERO finite tau at L = 64, across all 24 observable-coupling cells" was true
+of the 24-cell grid it was measured on and is false on the 56-cell one. The
+spirit survives -- the cold arm essentially never resolves a relaxation time at
+L = 64 -- but the absolute form does not, and it should not be quoted.
+
+**The two exceptions are coherent rather than noise: both are W(8x8)**, at
+beta = 25.29 (tau = 0, i.e. inside the band from the first record) and
+beta = 1206.16 (tau = 2). W(8x8) is the observable 17.1 identifies as the
+easiest at both volumes, so the one place the cold arm resolves a decay rate at
+L = 64 is the one place 17.1 predicts it should. That is a cross-check between
+two independent estimators, not a leak.
+
+Note also that the seed's `inf` cells (14-15 per volume) are NOT the inverted
+mode: `guarded_tau` returns `inf` when the settled half is significantly biased
+from target, so a seed `inf` is a genuine failure, and `tau = 0` is the seed's
+success case. They cluster where coverage runs out -- beta = 790.87 at L = 32
+is `inf` on all four observables at model beta ~198, far past the ceiling.
+
+**Why that matters for the volume question.** `tau` is a decay RATE and carries
+no band dependence, where `t_therm = tau * ln(b0/band)` is a crossing and
+does. So the band tightening explains why `t_therm` grows with volume -- but it
+does NOT explain the L = 64 cold failures, because tau is band-free and still
+infinite at 54 of 56 cells. That removes the "the criterion merely got
+stricter" reading.
+
+### 17.6 Two estimator fields that must not be consumed
+
+Both were reached for while building 17.1-17.2 and both are wrong for the job.
+Recorded here because the next person to want a per-observable thermalization
+number will reach for the same two.
+
+* **`t_therm_per_observable`** (the scan's per-observable exponential fit).
+  Scored as a failure table it puts the DIFFUSION SEED at 5/14 failures on the
+  plaquette against the cold arm's 1/14 -- the ranking inverted. That is the
+  inverted-estimator failure mode already on record: a seed already at target
+  has no transient to resolve, so the fit returns `nan` and is scored a
+  failure, while a start far from target relaxes visibly and is scored a
+  success. `nan` from this field is AMBIGUOUS between "never arrived" and "was
+  already there", so it cannot support a failure count in either direction.
+* **`therm_*` in `_standard_timescales.json`**. Its one-sigma walk-back
+  requires the bias to stay inside a 1 s.e. band for the whole remaining
+  window; a record falls outside by chance ~32% of the time, so over ~80
+  records the last chance excursion sits near the end and a perfectly
+  equilibrated chain scores roughly its own budget. The script's own comment
+  says so and the fields are written anyway. They are `null` throughout the
+  W(8x8) run because `nanmax` over the observables returns `inf`.
+
+The field that IS right for a failure count is `t_therm_threshold_old`, because
+`inf` from it means one thing only: the band was never reached. 17.1 and 17.2
+both use it, and 17.2 extends it to charge by calling the same function.
+
+### 17.7 Wave d was killed, not crashed -- and the resume needs a separate tag
+
+The L=64 plain wave stopped after 11 of 14 couplings. The log ends mid-scan
+with no traceback and no `COMPLETE` line, and the queue wrapper never printed
+`wave d done` -- a crash leaves a traceback and a clean exit leaves the line,
+so both halves died together. That is the `KILL_ON_JOB_CLOSE` signature
+CLAUDE.md documents for the editor-attached shell, and the fix it prescribes is
+Task Scheduler. Relaunched the three missing couplings as task `u2_w8_tail`
+(`artifacts/resume_w8_d.ps1`), which gets `LimitFlags=0x0` and survives.
+
+**The resume writes to a separate tag and out-dir on purpose.**
+`28_crossover_scan.py` re-writes `{stem}.json` from its own in-memory `rows`
+after every coupling, so running `--betas` against the real tag would have
+truncated the 11 finished rows to 3 -- destroying the part that survived in
+order to recover the part that did not. `artifacts/merge_w8_d.py` folds the
+rows and renames the series files afterwards.
+
+Also added `--base` to `90_standard_timescales.py`, whose scan directory was
+hardcoded to `coverage_scan_relaxation/`, so the W(8x8) grid can be scored
+without editing the file.
+
+### 17.8 Still open
+
+* L = 64 plain is 11/14 and its three missing couplings are the three hardest,
+  so its column in 17.1 is optimistic and the L=64 sampler comparison in 17.3
+  is deferred. L = 64 winding is complete at 14/14.
+* A literature search found no precedent for a thermalization criterion whose
+  threshold tightens with volume. What the literature does instead is fit a
+  relaxation time, which is band-free by construction -- which is why 17.5
+  matters and why the paper should report tau alongside `t_therm`.
+* `fit_relaxation_time` itself is unchanged. Extending its guard to every fit
+  outcome would be the proper fix, but it is a validated estimator with its own
+  regression tests and the per-observable path is the only consumer exposed.
+
+---
+
+## 18. One figure's equilibration gate dropped failures -- and two did not (2026-10-28)
+
+Found while trying to reconcile `sec:money`'s "twenty-four cases" against the
+W(8x8) grid. **The first diagnosis written here was wrong and is corrected
+below**; the error is instructive, so both the defect and the misdiagnosis are
+recorded.
+
+### 18.1 The defect, and why it needs TWO steps to appear
+
+Three figures reduce a per-observable `t_therm` dict to one number before
+gating on it, all with the same shape:
+
+```python
+vals = [v for v in (d or {}).values() if v is not None]
+return max(vals) if vals else None
+```
+
+Taken alone this is HARMLESS, because `28_crossover_scan.py` writes
+non-convergence as `Infinity`, not `null` -- verified, zero literal nulls in
+1056 cells. `Infinity` survives the `is not None` filter, `max()` returns it,
+and the gate `not np.isfinite(...)` catches it correctly.
+
+It becomes a defect only when something converts the sentinel FIRST.
+`91_money_split_figure._scan_tt` does exactly that:
+
+```python
+arm: {o: (None if v is None or not np.isfinite(v) else float(v) * re_)
+      for o, v in d.items()}
+```
+
+`inf` becomes `None`, and `_worst` then filters it away -- so `max()` returns
+**the slowest observable that converged**, not the slowest observable, and the
+gate fires only when EVERY observable failed. A classical arm counts as a
+supplier of independent configurations of the target at couplings where its
+plaquette never equilibrated at all. At `beta = 1065.4`, `L = 32` the cold arm
+never arrived on the plaquette, W(2x2) or W(4x4), and the rule credited it with
+**21 trajectories** from W(8x8) alone.
+
+This is the SAME floor error that `91`'s own comment three lines above `_worst`
+was written to prevent -- "the denominator must be the slowest observable,
+because a configuration is not usable when W(4x4) has converged and the
+plaquette has not" -- displaced from the denominator into the gate, where the
+comment did not follow it.
+
+**fig64 (`89_money_figure.py`) and fig67 (`93_thermalization_figure.py`) read
+the RAW JSON and so never had it.** fig67's 1/14 cold-arm count at `L=64`
+printed correctly all along, which is what first contradicted the misdiagnosis.
+fig64's `worst` was rewritten to propagate explicitly anyway; that change is a
+verified NO-OP (0 disagreements in 1056 cells) kept only because the explicit
+form cannot acquire the bug if a sentinel conversion is ever added upstream.
+
+### 18.2 Scale, in fig65 only
+
+Cold arm counted as having equilibrated, before and after:
+
+| cell set | before | after |
+|---|---|---|
+| L=32 winding | 12/14 | **5/14** |
+| L=32 plain | 12/14 | **5/14** |
+| L=64 winding | 8/14 | **1/14** |
+| L=64 plain | 8/14 | **1/14** |
+
+The SEED is unaffected -- it has no non-finite cell at any coupling or volume --
+so the correction changes which couplings are comparable, not the
+preconditioned cost. fig65's local panels now carry five points at `L = 32` and
+one at `L = 64` (see SS 17.4).
+
+### 18.3 The paper's factor statistics never matched its own figure
+
+Separate from the bug, and real. `sec:money`'s case COUNTS reproduce fig64
+exactly -- eighteen measured cases over six distinct couplings -- but four
+statistics in the same sentence do not. Recomputed with arithmetic verified
+against the figure's own per-checkpoint medians (1.36 / 0.75 / 1.02 at `L=32`
+and 1.12 / 0.61 / 0.48 at `L=64`, all reproduced to the digit by
+`artifacts/f_stats.py`):
+
+| | published | fig64's actual output |
+|---|---|---|
+| median F | 1.4 | **0.85** |
+| range | 0.1 to 18 | **0.08 to 11.9** |
+| below one | 6 of 18 | **10 of 18** |
+| charged at the 1-trajectory floor | 3 of 18 | **1 of 18** |
+
+Provenance of the published four could not be reconstructed: they match neither
+the current output, nor the output without the `record_every` conversion
+(which would double every F to a pooled median of 1.7), nor any single
+checkpoint's column except that `1.4` is close to `default`'s `L=32` median of
+1.36. They are corrected rather than explained.
+
+The conclusion needed a word changed, not a reversal: at a median of 0.85 with
+ten of eighteen below one, "break-even at best" became **"slightly below
+break-even"**, still the expected result where a good classical sampler exists.
+
+"Twenty-four cases" above `beta ~ 90` also does not reproduce -- the figure's
+accounting gives 30 cells over 14 distinct couplings -- and is replaced by that,
+stated in the same (checkpoint, volume, coupling) units the "eighteen" uses so
+the two are checkable against each other.
+
+### 18.4 What survived verification unchanged
+
+Worth listing, because the rest of this section is corrections:
+
+* **"Every case in which winding HMC equilibrates lies below `beta ~ 90`"** is
+  EXACTLY true and sharp: the measured couplings are 10.9, 13.9, 24.6, 25.3,
+  44.0 and 88.8, highest 88.8. At `L = 64` the boundary is far lower -- only
+  `beta = 25.3`, the lowest coupling on the grid -- so `beta ~ 90` is an
+  `L = 32` statement and the volume dependence is real.
+* **"Two couplings below the crossover"** (`beta = 58.0` at `L=32`,
+  `beta = 41.5` at `L=64`) = 6 cells across three checkpoints, correct on
+  fig64's grid. On the W(8x8) grid two MORE sub-90 couplings exist at `L = 64`
+  (67.5, 71.4) and both fail, so this count is grid-specific and must be
+  re-read if fig64 is rebuilt on the wider grid.
+* **The floor-charged case is the largest value quoted** -- `wide_dense`,
+  `L=32`, `beta=44.0`, seed `t_therm = 0` charged as 1, F = 11.86, the maximum
+  of the eighteen. The hedge in the text does exactly what it claims.
+* `sec:money`'s plain-HMC paragraph ("finite only at `beta = 10.9` and `13.9`
+  at `L=32`; at every `L=64` coupling its charge does not move") matches the
+  independent charge table in SS 17.2 exactly, at 12/14 and 14/14.
+
+### 18.5 Why fig64 was NOT rebuilt on the W(8x8) grid
+
+fig64 spans three checkpoints for its range column and four for density; the
+W(8x8) re-run covers `wide_dense` only. Rebuilding it on the new grid means
+re-running the scan for `default`, `wide` and `cov60` too. So fig64 stays on
+`coverage_scan_relaxation/` while fig65/66/67 are on `coverage_scan_w8/`. The
+two grids disagree about how many sub-90 couplings `L = 64` has (2 against 4),
+which is the one place a reader could be misled, and SS 18.4 flags it.
+
+### 18.6 The lesson, including from the misdiagnosis
+
+`None` in a reduction is not a missing value to be skipped; here it was the
+LARGEST possible value. But the sharper lesson is that **neither half of this
+bug is wrong on its own** -- normalising `inf` to `None` is reasonable, and
+filtering `None` out of a reduction is reasonable -- and it only bites where one
+feeds the other. Grep for a sentinel conversion UPSTREAM of a filtering
+reduction, not for either pattern alone.
+
+And on the misdiagnosis: the first version of this section asserted the bug in
+all three figures, with a "94 of 176 cells" table for fig64. That number came
+from a check script which replicated the `inf -> None` conversion itself before
+applying the two rules, so it measured a hypothetical rather than the deployed
+code. **fig67 printing the correct 1/14 is what exposed it.** A figure that
+disagrees with your diagnosis is evidence about the diagnosis, not noise.
+
+---
+
+## 19. arXiv preparation (2026-11-05): the Overleaf merge, and what tracking caught
+
+### 19.1 The merge direction, and why it was not the obvious one
+
+`paper/latest.tex` came back from Overleaf 84 lines SHORTER than
+`paper/current.tex`, and a line diff against the committed base showed ~3600
+changed lines on each side -- almost all of it re-wrapping. Normalising the
+wrapping first (`artifacts/merge/normalize.py`) cut that to 63 real changes on
+the Overleaf side and 142 on ours, which is what made a merge possible at all.
+
+**`current.tex` was the base, not `latest.tex`.** The Overleaf copy predates
+this session, so merging it wholesale would have reinstated three corrections:
+the UV/IR framing (measured backwards -- the cold arm fails on the plaquette at
+8 of 14 couplings and on W(8x8) at 2), the improvement-factor statistics
+(median 1.4 / 6 of 18 / twenty-four cases, against the figure's actual 0.85 /
+10 of 18 / thirty), and the expanded architecture caption.
+
+Ported in: `preprintnumbers`, `\preprint{FERMILAB-PUB-26-0786-T}`, Yong Zhao's
+Argonne affiliation, and the finalised acknowledgments with the `\JH{}` review
+wrappers removed. Zero live review macros remain, and the definitions are gone
+too, so a stray `\JH{...}` can no longer typeset a reviewer note in blue.
+
+**Both of us independently renamed lifted -> upsampled and both produced the
+same artefact**, "a upsampled". Three instances were fixed by exact match and a
+FOURTH was missed because the article sat at the end of a line and the noun at
+the start of the next, so `\ba upsampled\b` could not see it. It was found by
+re-running the search on whitespace-collapsed text. **Any post-rename grammar
+sweep of a wrapped LaTeX source has to flatten the whitespace first.**
+
+### 19.2 Registering the untracked figures immediately found two stale ones
+
+`49_assemble_appendix_figures.py` tracked 41 figures and reported 10 untracked,
+and its own doc says untracked means UNEXAMINED. Among the ten was
+`fig64_money.png`, which the paper cites as `\fig{money}`. So nothing was
+watching the paper's central cost figure for staleness -- and when its input
+`_standard_timescales.json` was rewritten on 2026-10-24, the checker could not
+say whether the figure predated it. That had to be reconstructed by hand, and
+the reconstruction produced a false alarm before it produced an answer.
+
+All ten are now tracked and placed in sections. The check went from
+`41 tracked, 0 stale, 10 untracked` to `51 tracked, 2 stale, 0 untracked`, and
+**the two it flagged were real**: fig60 and fig61 were older than the Oct 24
+rewrite and have been regenerated. The directory is now consistent.
+
+**Three number collisions are recorded in the manifest rather than fixed**, as
+renaming output files would strand every path already quoted in notes:
+
+* `89_money_figure.py` writes BOTH `fig64_money` and `fig65_cost`
+* `91_ladder_volume_figure.py` and `91_money_split_figure.py` are both `91`
+* `93_therm_bootstrap.py` and `93_thermalization_figure.py` are both `93`
+
+So the figure number no longer identifies the script, and three different
+scripts write a `fig65_*`. Every manifest entry now names its generator.
+
+### 19.3 Which figures went into the paper, and which did not
+
+fig66 and fig67 are IN, after the cost-accounting section, with text. They
+answer the objection that section invites -- it reports thirty cases as
+classical failures, and a reader may fairly ask what the advantage is there:
+
+* **fig67** plots the two timescales directly instead of as a ratio, so a
+  non-equilibrating arm reads as a triangle rather than as an absent point.
+  Cold equilibrates at 5/14 (L=32) and 1/14 (L=64) under either sampler;
+  the preconditioned chain at 14/14 at both, in a median of 13-18 and 38-54
+  trajectories against intervals of 4.0-7.1.
+* **fig66** reports an endpoint that stays defined when no ratio does -- how
+  much closer to exact each arm is when its budget runs out. The advantage
+  grows with volume (plaquette median 2.0 at L=32, 6.2 at L=64 against plain
+  HMC) and its topology column against WINDING HMC sits at one, which is the
+  same retraction as SS 17.2 arriving by a third route.
+
+**fig65_money_split is deliberately OUT.** After the SS 18 gate fix its local
+panels carry five points at L=32 and one at L=64, so most of the figure is the
+absence of a comparison, and what it does show is already in fig64 and fig67.
+It stays tracked as a diagnostic.
+
+### 19.4 In flight
+
+Twelve scans are running (`u2_regrid`, concurrency 3, ~16 h) to put
+`default`, `wide` and `cov60` on the W(8x8) grid, so fig64 can be rebuilt
+where figs 65-67 already live and the paper stops describing two grids. The
+one cross-grid discrepancy this removes is the number of sub-beta=90 couplings
+at L=64 -- 2 on the old grid against 4 on the new, with both of the extra ones
+failing. `u2_after_regrid` waits on the queue and then re-scores timescales,
+regenerates the bootstrap bands, rebuilds every figure and reprints the
+paper's quoted counts.
+
+`--base` was added to `89_money_figure.py` and `93_therm_bootstrap.py` so that
+rebuild is a flag rather than an edit; both were verified to reproduce their
+published numbers exactly on the default grid before being trusted on the new
+one (fig64 medians 1.36 / 0.75 / 1.02 at L=32 and 1.12 / 0.61 / 0.48 at L=64,
+unchanged).

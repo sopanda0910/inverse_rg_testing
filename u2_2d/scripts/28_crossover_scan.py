@@ -4,7 +4,8 @@ This is `u1_2d/scripts/05_hmc_thermalization.py --generalization` followed by
 `35_crossover_window.py`, ported rather than reinvented. What that pair does, and
 why each piece is load-bearing:
 
-  * `t_therm` is measured on LOCAL observables (plaquette, W2x2, W4x4) and is the
+  * `t_therm` is measured on LOCAL observables (plaquette, W2x2, W4x4,
+    W8x8) and is the
     SLOWEST of them, using u1's criterion: the first trajectory at which the
     across-chain |z| against the EXACT value stays <= 2 for five consecutive
     records. Topology is deliberately NOT in that list -- it is measured
@@ -76,7 +77,7 @@ from u2_2d.pipeline.ladder import generate_fine_from_coarse
 from u2_2d.utils import (configure_device, load_config, load_ensemble, resolve_device,
                          save_ensemble, save_json, set_seed)
 
-LOCAL = ("plaquette", "wilson_2x2", "wilson_4x4")
+LOCAL = ("plaquette", "wilson_2x2", "wilson_4x4", "wilson_8x8")
 
 
 def thermalization_time(series: np.ndarray, target: float,
@@ -467,6 +468,16 @@ def observe(links: torch.Tensor) -> dict:
             "plaquette": half_retr(plaquette(links)).mean(dim=(1, 2)),
             "wilson_2x2": half_retr(wilson_loop(links, 2, 2)).mean(dim=(1, 2)),
             "wilson_4x4": half_retr(wilson_loop(links, 4, 4)).mean(dim=(1, 2)),
+            # W(8x8) added 2026-10-28. W(4x4) was being described as an
+            # infrared observable and is not: it spans an eighth of L = 32 and
+            # a sixteenth of L = 64, and at beta = 416 it sits at r^16 = 0.93,
+            # nowhere near the area-law regime. W(8x8) is a quarter of L = 32,
+            # which is the largest loop that stays matched across BOTH volumes.
+            # W(16x16) is deliberately NOT added: at L = 32 it is half the
+            # lattice and r^256 = 0.0073 at beta = 105, numerically tiny with
+            # enormous relative noise, so it would be usable at L = 64 only and
+            # would break the cross-volume comparison this scan exists for.
+            "wilson_8x8": half_retr(wilson_loop(links, 8, 8)).mean(dim=(1, 2)),
             "charge": topological_charge(links),
         }
 
@@ -616,6 +627,7 @@ def main() -> int:
             "plaquette": plaquette_exact(beta, size),
             "wilson_2x2": wilson_loop_exact(beta, 4),
             "wilson_4x4": wilson_loop_exact(beta, 16),
+            "wilson_8x8": wilson_loop_exact(beta, 64, lattice_size=size),
         }
         qs, ps = det_topological_charge_distribution(beta, size)
         q2_exact = float((np.asarray(qs) ** 2 * np.asarray(ps)).sum())

@@ -54,6 +54,9 @@ from _figstyle import apply_paper_font  # noqa: E402
 apply_paper_font()
 
 BASE = ROOT / "out/u2_2d/coverage_scan_relaxation"
+# Rebound by main() from --base. The default is the grid the paper's
+# current numbers come from, so it never changes implicitly.
+_BASE = BASE
 TIMESCALES = BASE / "_standard_timescales.json"
 BOOTSTRAP = BASE / "_therm_bootstrap.json"
 
@@ -118,11 +121,21 @@ PLOT = ("default", "wide_dense")
 
 
 def worst(d, arm):
+    """Slowest observable, with non-convergence PROPAGATED.
+
+    A configuration is usable only once the slowest observable has settled, so
+    an observable that never settles makes the cost unbounded. Returning the
+    max over only the observables that DID converge would report the slowest
+    convergent one and let the `np.isfinite` gate below pass a chain whose
+    plaquette never arrived -- half the cells on this grid.
+    """
     v = (d or {}).get(arm)
     if not isinstance(v, dict):
         return float(v) if v is not None else float("nan")
-    vals = [float(x) for x in v.values() if x is not None]
-    return max(vals) if vals else float("nan")
+    vals = list(v.values())
+    if not vals or any(x is None or not np.isfinite(float(x)) for x in vals):
+        return float("inf")
+    return max(float(x) for x in vals)
 
 
 def record_every(ckpt, stem, beta):
@@ -134,7 +147,7 @@ def record_every(ckpt, stem, beta):
     90_standard_timescales.py multiplies by `record_every`. Dividing one by the
     other unconverted inflates every improvement factor by this factor.
     """
-    f = BASE / ckpt / "series" / f"{stem}_beta{beta:g}.npz"
+    f = _BASE / ckpt / "series" / f"{stem}_beta{beta:g}.npz"
     if not f.exists():
         raise FileNotFoundError(
             f"no series file for {ckpt}/{stem} at beta={beta:g}; "
@@ -145,7 +158,7 @@ def record_every(ckpt, stem, beta):
 
 def load(ckpt, stem, ts):
     """model beta, lift equilibration cost, and both classical intervals."""
-    f = BASE / ckpt / f"{stem}.json"
+    f = _BASE / ckpt / f"{stem}.json"
     if not f.exists():
         return None
     plain_stem = stem.replace("_topo", "")
@@ -168,7 +181,7 @@ def load(ckpt, stem, ts):
                          * record_every(ckpt, stem, b))
         for key, st in (("cost_wind", stem), ("cost_plain", plain_stem)):
             iv = ts.get(f"{ckpt}|{st}|{b:g}", {}).get("interval_cold")
-            meta = (BASE / ckpt / f"{st}.json")
+            meta = (_BASE / ckpt / f"{st}.json")
             tt = np.inf
             if meta.exists():
                 for rr in json.loads(meta.read_text()):
@@ -362,10 +375,17 @@ def save(fig, path, ncol, handles=None, labels=None):
 
 def main() -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--base", default=str(BASE),
+                    help="scan directory; "
+                         "out/u2_2d/coverage_scan_w8 for the W(8x8) grid")
     ap.add_argument("--out", default=str(ROOT / "out/u2_2d/figures/fig64_money.png"))
     ap.add_argument("--out-cost",
                     default=str(ROOT / "out/u2_2d/figures/fig65_cost.png"))
     args = ap.parse_args()
+    global _BASE, TIMESCALES, BOOTSTRAP
+    _BASE = Path(args.base)
+    TIMESCALES = _BASE / "_standard_timescales.json"
+    BOOTSTRAP = _BASE / "_therm_bootstrap.json"
     ts = json.loads(TIMESCALES.read_text())
 
     # THREE CHECKPOINTS, ONE PER CLAIM, at both volumes. `wide` is dropped from
